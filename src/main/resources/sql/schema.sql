@@ -1,0 +1,3 @@
+CREATE TABLE "repo" ("name" VARCHAR PRIMARY KEY  NOT NULL  UNIQUE , "scm" VARCHAR DEFAULT git, "url" VARCHAR, "username" VARCHAR, "password" VARCHAR, "source" VARCHAR)
+CREATE TABLE "code" ("reponame" VARCHAR, "location" VARCHAR, "filename" VARCHAR, "reponamelocationfilename" VARCHAR UNIQUE , "hash" VARCHAR, "simhash" VARCHAR, "languagename" VARCHAR, "blanklines" INTEGER, "commentlines" INTEGER, "lines" );
+CREATE TABLE "data" ("key" VARCHAR PRIMARY KEY  NOT NULL , "value" VARCHAR);

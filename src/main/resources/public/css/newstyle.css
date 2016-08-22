@@ -1,0 +1,163 @@
+div.search-count {
+    border-bottom: 1px solid #eee;
+    padding: 10px;
+    margin-top:10px;
+}
+
+#search-chart {
+    width: 100%;
+    height: 0px;
+}
+
+div.search-chart {
+    width:100%;
+    height: 0px;
+}
+
+input.repo-filter {
+    width: 100%;
+    border: 1px solid #eee;
+    border-radius: 2px;
+}
+
+.green {
+    color: #5cb85c;
+}
+.white {
+    color:white;
+}
+
+.repocount {
+    margin-top:20px;
+    font-size: 1.3em;
+    background: rgba(0,0,0,0.8);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.form-signin {
+    max-width: 330px;
+    padding: 15px;
+    margin: 0px auto;
+}
+
+.inside-container {
+    margin-top: 20px;
+}
+
+.grey {
+    color:grey;
+}
+
+.codepath {
+    margin-top: 20px;
+}
+
+.filter-button {
+    width: 102px;
+}
+.center {
+    text-align: center;
+}
+
+pre {
+    background-color:transparent;
+    border: none;
+    width:100%;
+    padding:0px;
+    margin:0px;
+}
+
+div.search-filters h5 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    
+}
+
+div.search-filters {
+    border-right: 1px solid #eee;
+}
+
+div.search-loading {
+    padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #eee;
+    border-radius: 5px;
+    position:absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    z-index:90000;
+    text-align: center;
+}
+
+div.search-filters-empty {
+    position: absolute;
+    background-color: white;
+    z-index: 1000;
+    padding: 5px;
+    width: 600px;
+    height: 25px;
+    overflow: hidden;
+    border: 1px solid white;
+    border-radius: 5px;
+}
+
+div.search-pagination {
+    text-align: center;
+}
+
+div.search-options {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 5px;
+    margin-top: -50px;
+    z-index: 10000;
+    position: relative;
+}
+
+
+/*Resets the padding for ol > li in firefox*/
+li a {
+  display:inline-block; // add this line
+  vertical-align:top; // add this line
+  width:100%;
+}
+
+ol.code-result {
+    color: #888;
+}
+
+ol.code-result a {
+    text-decoration: none;
+    color: black;
+}
+
+ol.code-result pre {
+    margin: 0px;
+    padding:0px;
+    border:none;
+    background-color: transparent;
+}
+
+ol.code-result pre strong{
+    background-color: rgba(255,255,60,0.4)
+}
+
+nav.navbar-default {
+/*    background-color: transparent;
+    border:none;*/
+    margin-bottom:0px;
+    border-radius: 0px;
+}
+
+div.footer {
+    width: 565px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    padding: 5px;
+    margin-top: 60px;
+}
