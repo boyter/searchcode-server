@@ -1,3 +1,19 @@
+To Build
+--------
+To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
+maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement.
+
+To test the application you can either run "mvn test" or "fab test". To build a full release IE ready
+for production you should run "fab build_release" which will test compile and build a release into
+the release folder and produce the file "searchcode-server.tar.gz" which is a ready to deploy release.
+
+If you want to simply test and run then you can run "fab run" however this will be default build a package
+and run that. To run quickly just open in your IDE of choice and start running App.java
+
+
+To Run
+------
+
 To run searchcode server you will need to have any Windows, Linux or OSX machine with Java 8 installed.
 Testing and packaging was done using the below version.
 
