@@ -792,7 +792,8 @@ var SearchOptionsComponent = {
                             placeholder: 'Search Expression',
                             onkeyup: m.withAttr('value', testing.vm.searchvalue),
                             value: testing.vm.searchvalue(),
-                            type: 'search'})
+                            type: 'search',
+                            id: 'searchbox'})
                     ),
                     // m('div.form-group', 
                     //     m('select.form-control', [

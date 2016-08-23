@@ -1,3 +1,7 @@
+#searchbox {
+    font-family: Monaco,Menlo,Consolas,"Courier New",monospace;
+}
+
 div.search-count {
     border-bottom: 1px solid #eee;
     padding: 10px;

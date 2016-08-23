@@ -60,7 +60,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.2.2.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.2.3.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 * Start your instance again
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
@@ -68,6 +68,11 @@ It is also worth comparing your searchcode.properties file to the new one (or th
 
 Change Log
 ==========
+
+23 August 2016 - 1.2.3
+ - Upgrade mithril to 0.2.5 to resolve Safari bug where pages would not render
+ - Release under fair source license
+ - Set search box to use monospaced font
 
 17 August 2016 - 1.2.2
  - Add -w option to external git to avoid whitespace blame issue

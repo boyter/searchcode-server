@@ -48,7 +48,7 @@
   <div style="text-align:center; top: 350px;left: 50%; transform: translate(-50%, 0); position:absolute;">
     <form method="GET" class="form-inline" <#if isHtml??>action="/html/"</#if>>
       <div class="form-group">
-        <input type="text" size="50" class="form-control" name="q" autofocus="autofocus" placeholder="Type a code snippet or function" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false">
+        <input id="searchbox" type="text" size="50" class="form-control" name="q" autofocus="autofocus" placeholder="Type a code snippet or function" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false">
       </div>
       <button type="submit" class="btn btn-success">search</button>
     </form>
