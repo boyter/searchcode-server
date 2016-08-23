@@ -47,7 +47,7 @@ import java.util.*;
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class IndexSvnRepoJob implements Job {
+public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
     private int SLEEPTIME = 5000;
     private boolean LOWMEMORY;
@@ -141,7 +141,7 @@ public class IndexSvnRepoJob implements Job {
         }
     }
 
-    private void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         String repoSvnLocation = repoLocations + repoName;
         Path docDir = Paths.get(repoSvnLocation);
 
@@ -601,47 +601,5 @@ public class IndexSvnRepoJob implements Job {
         repositoryChanged.setClone(true);
 
         return repositoryChanged;
-    }
-
-    // The below are used to create temp files indicating everything worked
-
-    public void createCloneUpdateSuccess(String repoLocation) {
-        createFile(repoLocation, "cloneupdate");
-    }
-
-    public void deleteCloneUpdateSuccess(String repoLocation) {
-        deleteFile(repoLocation, "cloneupdate");
-    }
-
-    public boolean checkCloneUpdateSucess(String repoLocation) {
-        return checkFile(repoLocation, "cloneupdate");
-    }
-
-    public void createIndexSuccess(String repoLocation) {
-        createFile(repoLocation, "index");
-    }
-
-    public void deleteIndexSuccess(String repoLocation) {
-        deleteFile(repoLocation, "index");
-    }
-
-    public boolean checkIndexSucess(String repoLocation) {
-        return checkFile(repoLocation, "index");
-    }
-
-    private boolean checkFile(String repoLocation, String type) {
-        File f = new File(repoLocation + "/searchcode." + type + ".success");
-        return f.exists();
-    }
-
-    private void createFile(String repoLocation, String type) {
-        File file = new File(repoLocation, "/searchcode." + type + ".success");
-        file.mkdir();
-    }
-
-    private void deleteFile(String repoLocation, String type) {
-        File file = new File(repoLocation, "/searchcode." + type + ".success");
-
-        file.delete();
     }
 }
