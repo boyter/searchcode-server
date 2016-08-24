@@ -69,6 +69,9 @@ It is also worth comparing your searchcode.properties file to the new one (or th
 Change Log
 ==========
 
+XX XXXXXX XXXX - 1.2.4
+ - Add gzip compression to most used routes
+
 23 August 2016 - 1.2.3
  - Upgrade mithril to 0.2.5 to resolve Safari bug where pages would not render
  - Release under fair source license
