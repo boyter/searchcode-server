@@ -75,77 +75,12 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         }
     }
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return this.updateGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+    }
 
-        while(CodeIndexer.shouldPauseAdding()) {
-            Singleton.getLogger().info("Pausing parser.");
-            return;
-        }
-
-        // Pull the next repo to index from the queue
-        UniqueRepoQueue repoQueue = Singleton.getUniqueGitRepoQueue();
-
-        RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexGitRepoJobs = Singleton.getRunningIndexRepoJobs();
-
-        if (repoResult != null && !runningIndexGitRepoJobs.containsKey(repoResult.getName())) {
-            Singleton.getLogger().info("Indexing " + repoResult.getName());
-            try {
-                runningIndexGitRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
-
-                JobDataMap data = context.getJobDetail().getJobDataMap();
-
-                String repoName = repoResult.getName();
-                String repoRemoteLocation = repoResult.getUrl();
-                String repoUserName = repoResult.getUsername();
-                String repoPassword = repoResult.getPassword();
-                String repoBranch = repoResult.getBranch();
-
-                String repoLocations = data.get("REPOLOCATIONS").toString();
-                this.LOWMEMORY = Boolean.parseBoolean(data.get("LOWMEMORY").toString());
-
-                // Check if sucessfully cloned, and if not delete and restart
-                boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
-                if (cloneSucess == false) {
-                    // Delete the folder and delete from the index
-                    try {
-                        FileUtils.deleteDirectory(new File(repoLocations + "/" + repoName + "/"));
-                        CodeIndexer.deleteByReponame(repoName);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
-                    }
-                }
-                deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
-
-                String repoGitLocation = repoLocations + "/" + repoName + "/.git/";
-
-                File f = new File(repoGitLocation);
-                boolean existingRepo = f.exists();
-                boolean useCredentials = repoUserName != null && !repoUserName.isEmpty();
-                RepositoryChanged repositoryChanged = null;
-
-                if (existingRepo) {
-                    repositoryChanged = this.updateGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
-                } else {
-                    repositoryChanged = this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
-                }
-
-                // Write file indicating we have sucessfully cloned
-                createCloneUpdateSuccess(repoLocations + "/" + repoName);
-                // If the last index was not sucessful, then trigger full index
-                boolean indexsuccess = checkIndexSucess(repoGitLocation);
-
-                if (repositoryChanged.isChanged() || indexsuccess == false) {
-                    Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-                    this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
-                }
-            }
-            finally {
-                // Clean up the job
-                runningIndexGitRepoJobs.remove(repoResult.getName());
-            }
-        }
+    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
     }
 
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
