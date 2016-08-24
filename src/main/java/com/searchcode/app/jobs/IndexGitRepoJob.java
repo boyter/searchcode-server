@@ -95,7 +95,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             while(CodeIndexer.shouldPauseAdding()) {
                 Singleton.getLogger().info("Pausing parser.");
                 try {
-                    Thread.sleep(SLEEPTIME);
+                    Thread.sleep(super.SLEEPTIME);
                 } catch (InterruptedException ex) {}
             }
 
@@ -144,7 +144,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
 
             if (codeLines != null) {
-                if (this.LOWMEMORY) {
+                if (super.LOWMEMORY) {
                     try {
                         CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                     } catch (IOException ex) {
@@ -168,12 +168,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
 
-
-    public String getBlameFilePath(String fileLocationFilename) {
-        String[] split = fileLocationFilename.split("/");
-        String newString = String.join("/", Arrays.asList(split).subList(1, split.length));
-        return newString;
-    }
 
 
     /**

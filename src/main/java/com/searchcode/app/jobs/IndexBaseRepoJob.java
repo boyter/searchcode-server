@@ -27,8 +27,8 @@ import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
 
-    private boolean LOWMEMORY = true;
-    private int SLEEPTIME = 5000;
+    protected boolean LOWMEMORY = true;
+    protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -104,10 +104,16 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
+    /**
+     * This method to be implemented by the extending class
+     */
     public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
         return null;
     }
 
+    /**
+     * This method to be implemented by the extending class
+     */
     public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
         return null;
     }
