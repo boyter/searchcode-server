@@ -93,6 +93,7 @@ public class App {
         });
 
         get("/", (req, res) -> {
+            res.header("Content-Encoding", "gzip");
             Map<String, Object> map = new HashMap<>();
 
             map.put("repoCount", repo.getRepoCount());
@@ -171,6 +172,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/html/", (req, res) -> {
+            res.header("Content-Encoding", "gzip");
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
             Map<String, Object> map = new HashMap<>();
@@ -338,6 +340,7 @@ public class App {
          * This is the endpoint used by the frontend.
          */
         get("/api/codesearch/", (req, res) -> {
+            res.header("Content-Encoding", "gzip");
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
 
