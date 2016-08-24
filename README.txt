@@ -156,3 +156,5 @@ XX XXXXXX XXXX - 1.2.4
 
 8 March 2016 - 0.9.9
  - Inital release
+
+Join the chat at https://gitter.im/searchcode-server/Lobby
