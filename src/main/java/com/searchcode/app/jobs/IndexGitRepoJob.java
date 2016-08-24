@@ -56,14 +56,10 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexGitRepoJob extends IndexBaseRepoJob {
 
-    private int SLEEPTIME = 5000;
-    private boolean LOWMEMORY;
     private String GITBINARYPATH;
     private boolean USESYSTEMGIT;
-    public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
     public IndexGitRepoJob() {
-        this.LOWMEMORY = true;
         this.GITBINARYPATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
         this.USESYSTEMGIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
 
@@ -81,32 +77,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
     public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
         return this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
-    }
-
-    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        String repoGitLocation = repoLocations + "/" + repoName;
-        Path docDir = Paths.get(repoGitLocation);
-
-        // Was the previous index sucessful? if not then index by path
-        boolean indexsucess = checkIndexSucess(repoGitLocation);
-        deleteIndexSuccess(repoGitLocation);
-
-        if (!repositoryChanged.isClone() && indexsucess == false) {
-            Singleton.getLogger().info("Failed to index " + repoName + " fully, performing a full index.");
-        }
-
-        if (repositoryChanged.isClone() || indexsucess == false) {
-            Singleton.getLogger().info("Doing full index of files for " + repoName);
-            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
-        }
-        else {
-            Singleton.getLogger().info("Doing delta index of files " + repoName);
-            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged);
-        }
-
-        // Write file indicating that the index was sucessful
-        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoName);
-        createIndexSuccess(repoGitLocation);
     }
 
 
@@ -197,116 +167,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         }
     }
 
-    /**
-     * Indexes all the documents in the path provided. Will also remove anything from the index if not on disk
-     * Generally this is a slow update used only for the inital clone of a repository
-     * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
-     */
-    public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
-        List<String> fileLocations = new ArrayList<>();
-        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
 
-        // Convert once outside the main loop
-        String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-        boolean lowMemory = this.LOWMEMORY;
-        boolean useSystemGit = this.USESYSTEMGIT;
-
-        try {
-            Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-
-                    while(CodeIndexer.shouldPauseAdding()) {
-                        Singleton.getLogger().info("Pausing parser.");
-                        try {
-                            Thread.sleep(SLEEPTIME);
-                        } catch (InterruptedException ex) {}
-                    }
-
-                    // Convert Path file to unix style that way everything is easier to reason about
-                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                    String fileName = file.getFileName().toString();
-                    String md5Hash = Values.EMPTYSTRING;
-
-                    if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-
-                    List<String> codeLines;
-                    try {
-                        codeLines = Helpers.readFileLines(fileToString, MAXFILELINEDEPTH);
-                    } catch (IOException ex) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    try {
-                        FileInputStream fis = new FileInputStream(new File(fileToString));
-                        md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                        fis.close();
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
-                    }
-
-                    // is the file minified?
-                    if(scl.isMinified(codeLines)) {
-                        Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    String languageName = scl.languageGuesser(fileName, codeLines);
-                    String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-                    String fileLocationFilename = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
-                    String repoLocationRepoNameLocationFilename = fileToString;
-
-
-                    String newString = getBlameFilePath(fileLocationFilename);
-                    List<CodeOwner> owners;
-                    if (useSystemGit) {
-                        owners = getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
-                    }
-                    else {
-                        owners = getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
-                    }
-
-                    String codeOwner = scl.codeOwner(owners);
-
-
-                    // If low memory don't add to the queue, just index it directly
-                    if (lowMemory) {
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    }
-                    else {
-                        Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                        codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    }
-
-                    fileLocations.add(fileLocationFilename);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-        }
-
-        if (existingRepo) {
-            CodeSearcher cs = new CodeSearcher();
-            List<String> indexLocations = cs.getRepoDocuments(repoName);
-
-            for (String file : indexLocations) {
-                if (!fileLocations.contains(file)) {
-                    Singleton.getLogger().info("Missing from disk, removing from index " + file);
-                    try {
-                        CodeIndexer.deleteByFileLocationFilename(file);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                    }
-                }
-            }
-        }
-    }
 
     public String getBlameFilePath(String fileLocationFilename) {
         String[] split = fileLocationFilename.split("/");
