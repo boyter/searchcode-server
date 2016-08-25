@@ -50,7 +50,6 @@ import java.util.*;
  * This job is responsible for pulling and indexing git repositories
  *
  * TODO add more tests as they are lacking
- * TODO use inheritance/template methods to combine the common stuff between this and SVN job then subclass
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
@@ -71,18 +70,22 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         }
     }
 
+    @Override
     public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
         return this.updateGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
     }
 
+    @Override
     public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
         return this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
     }
 
+    @Override
     public UniqueRepoQueue getNextQueuedRepo() {
         return Singleton.getUniqueGitRepoQueue();
     }
 
+    @Override
     public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
         List<CodeOwner> owners;
         if (this.USESYSTEMGIT) {
@@ -93,95 +96,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         return scl.codeOwner(owners);
     }
-
-    /**
-     * Indexes all the documents in the repository changed file effectively performing a delta update
-     * Should only be called when there is a genuine update IE something was indexed previously and
-     * has has a new commit.
-     */
-    public void indexDocsByDelta(Path path, String repoName, String repoLocations, String repoRemoteLocation, RepositoryChanged repositoryChanged) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
-        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
-        String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-
-        for(String changedFile: repositoryChanged.getChangedFiles()) {
-
-            while(CodeIndexer.shouldPauseAdding()) {
-                Singleton.getLogger().info("Pausing parser.");
-                try {
-                    Thread.sleep(super.SLEEPTIME);
-                } catch (InterruptedException ex) {}
-            }
-
-            String[] split = changedFile.split("/");
-            String fileName = split[split.length - 1];
-            changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
-
-            String md5Hash = Values.EMPTYSTRING;
-            List<String> codeLines = null;
-
-            try {
-                codeLines = Helpers.readFileLines(changedFile, this.MAXFILELINEDEPTH);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                break;
-            }
-
-            try {
-                FileInputStream fis = new FileInputStream(new File(changedFile));
-                md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                fis.close();
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
-            }
-
-            if(scl.isMinified(codeLines)) {
-                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
-                break;
-            }
-
-            String languageName = scl.languageGuesser(changedFile, codeLines);
-            String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
-            String repoLocationRepoNameLocationFilename = changedFile;
-
-
-            String newString = super.getBlameFilePath(fileLocationFilename);
-            List<CodeOwner> owners;
-            if (this.USESYSTEMGIT) {
-                owners = getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
-            }
-            else {
-                owners = getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
-            }
-            String codeOwner = scl.codeOwner(owners);
-
-
-            if (codeLines != null) {
-                if (super.LOWMEMORY) {
-                    try {
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                    }
-                } else {
-                    Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                    codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                }
-            }
-        }
-
-        for(String deletedFile: repositoryChanged.getDeletedFiles()) {
-            Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
-            try {
-                CodeIndexer.deleteByFileLocationFilename(deletedFile);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-            }
-        }
-    }
-
-
 
     /**
      * Only works if we have path to GIT

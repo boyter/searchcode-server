@@ -3,13 +3,14 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.*;
+import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,34 @@ public abstract class IndexBaseRepoJob implements Job {
     protected boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+
+    /**
+     * This method to be implemented by the extending class
+     */
+    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return null;
+    }
+
+    /**
+     * This method to be implemented by the extending class
+     */
+    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return null;
+    }
+
+    /**
+     * This method to be implemented by the extending class
+     */
+    public UniqueRepoQueue getNextQueuedRepo() {
+        return null;
+    }
+
+    /**
+     * This method to be implemented by the extending class
+     */
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+        return null;
+    }
 
     /**
      * The main method used for finding jobs to index and actually doing the work
@@ -107,28 +136,6 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    /**
-     * This method to be implemented by the extending class
-     */
-    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return null;
-    }
-
-    /**
-     * This method to be implemented by the extending class
-     */
-    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return null;
-    }
-
-    /**
-     * This method to be implemented by the extending class
-     */
-    public UniqueRepoQueue getNextQueuedRepo() {
-        return null;
-    }
-
-
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         String repoGitLocation = repoLocations + "/" + repoName;
         Path docDir = Paths.get(repoGitLocation);
@@ -155,7 +162,84 @@ public abstract class IndexBaseRepoJob implements Job {
         createIndexSuccess(repoGitLocation);
     }
 
+    /**
+     * Indexes all the documents in the repository changed file effectively performing a delta update
+     * Should only be called when there is a genuine update IE something was indexed previously and
+     * has has a new commit.
+     */
     public void indexDocsByDelta(Path path, String repoName, String repoLocations, String repoRemoteLocation, RepositoryChanged repositoryChanged) {
+        SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
+        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
+        String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
+
+        for(String changedFile: repositoryChanged.getChangedFiles()) {
+
+            while(CodeIndexer.shouldPauseAdding()) {
+                Singleton.getLogger().info("Pausing parser.");
+                try {
+                    Thread.sleep(this.SLEEPTIME);
+                } catch (InterruptedException ex) {}
+            }
+
+            String[] split = changedFile.split("/");
+            String fileName = split[split.length - 1];
+            changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
+
+            String md5Hash = Values.EMPTYSTRING;
+            List<String> codeLines = null;
+
+            try {
+                codeLines = Helpers.readFileLines(changedFile, this.MAXFILELINEDEPTH);
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                break;
+            }
+
+            try {
+                FileInputStream fis = new FileInputStream(new File(changedFile));
+                md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+                fis.close();
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
+            }
+
+            if(scl.isMinified(codeLines)) {
+                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
+                break;
+            }
+
+            String languageName = scl.languageGuesser(changedFile, codeLines);
+            String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
+            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
+            String repoLocationRepoNameLocationFilename = changedFile;
+
+
+            String newString = this.getBlameFilePath(fileLocationFilename);
+            String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
+
+
+            if (codeLines != null) {
+                if (this.LOWMEMORY) {
+                    try {
+                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                    } catch (IOException ex) {
+                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                    }
+                } else {
+                    Singleton.incrementCodeIndexLinesCount(codeLines.size());
+                    codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                }
+            }
+        }
+
+        for(String deletedFile: repositoryChanged.getDeletedFiles()) {
+            Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
+            try {
+                CodeIndexer.deleteByFileLocationFilename(deletedFile);
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            }
+        }
     }
 
     /**
@@ -259,28 +343,16 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    /**
-     * This method to be implemented by the extending class
+
+    /*
+     * The below are are shared among all extending classes
      */
-    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
-        return null;
-    }
-
-
     public String getBlameFilePath(String fileLocationFilename) {
         String[] split = fileLocationFilename.split("/");
         String newString = String.join("/", Arrays.asList(split).subList(1, split.length));
         return newString;
     }
 
-    public RepositoryChanged cloneGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
-        return null;
-    }
-
-    /*
-     * The below are used to create temp files indicating everything worked
-     * they are shared among all classes that extend this
-     */
     public void createCloneUpdateSuccess(String repoLocation) {
         createFile(repoLocation, "cloneupdate");
     }
