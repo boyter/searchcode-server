@@ -66,80 +66,26 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         }
     }
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (this.ENABLED == false) {
-            return;
-        }
-
-        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
-        while(CodeIndexer.shouldPauseAdding()) {
-            Singleton.getLogger().info("Pausing parser.");
-            return;
-        }
-
-        // Pull the next repo to index from the queue
-        UniqueRepoQueue repoQueue = Singleton.getUniqueSvnRepoQueue();
-
-        RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
-
-        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
-            Singleton.getLogger().info("Indexing " + repoResult.getName());
-            try {
-                runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
-
-                JobDataMap data = context.getJobDetail().getJobDataMap();
-
-                String repoName = repoResult.getName();
-                String repoRemoteLocation = repoResult.getUrl();
-                String repoUserName = repoResult.getUsername();
-                String repoPassword = repoResult.getPassword();
-
-                String repoLocations = data.get("REPOLOCATIONS").toString();
-                this.LOWMEMORY = Boolean.parseBoolean(data.get("LOWMEMORY").toString());
-
-                // Check if sucessfully cloned, and if not delete and restart
-                boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
-                if (cloneSucess == false) {
-                    // Delete the folder
-                    try {
-                        FileUtils.deleteDirectory(new File(repoLocations + repoName + "/"));
-                        CodeIndexer.deleteByReponame(repoName);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
-                        return;
-                    }
-                }
-                deleteCloneUpdateSuccess(repoLocations + repoName);
-
-                String repoGitLocation = repoLocations + repoName + "/.svn/";
-
-                File f = new File(repoGitLocation);
-                boolean existingRepo = f.exists();
-                boolean useCredentials = repoUserName != null && !repoUserName.isEmpty();
-                RepositoryChanged repositoryChanged;
-
-                if (existingRepo) {
-                    repositoryChanged = this.updateSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
-                } else {
-                    repositoryChanged = this.checkoutSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
-                }
-
-                // Write file indicating we have sucessfully cloned
-                createCloneUpdateSuccess(repoLocations + repoName);
-
-                if (repositoryChanged.isChanged()) {
-                    Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-                    this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
-                }
-            }
-            finally {
-                // Clean up the job
-                runningIndexRepoJobs.remove(repoResult.getName());
-            }
-        }
+    @Override
+    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return this.updateSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
     }
+
+    @Override
+    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return this.checkoutSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
+    }
+
+    @Override
+    public UniqueRepoQueue getNextQueuedRepo() {
+        return Singleton.getUniqueSvnRepoQueue();
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.ENABLED;
+    }
+
 
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         String repoSvnLocation = repoLocations + repoName;

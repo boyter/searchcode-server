@@ -61,9 +61,21 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     /**
+     * This method to be implemented by the extending class
+     */
+    public boolean isEnabled() {
+        return false;
+    }
+
+    /**
      * The main method used for finding jobs to index and actually doing the work
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        if (isEnabled() == false) {
+            return;
+        }
+
+
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
         while(CodeIndexer.shouldPauseAdding()) {
@@ -275,6 +287,8 @@ public abstract class IndexBaseRepoJob implements Job {
                     String fileName = file.getFileName().toString();
                     String md5Hash = Values.EMPTYSTRING;
 
+                    // TODO check for ignored types here .get .svn .hg should be good to start with
+                    // TODO template method this sucker
                     if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
                         return FileVisitResult.CONTINUE;
                     }

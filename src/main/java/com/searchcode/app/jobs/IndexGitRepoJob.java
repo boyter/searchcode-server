@@ -97,6 +97,11 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return scl.codeOwner(owners);
     }
 
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     /**
      * Only works if we have path to GIT
      */
