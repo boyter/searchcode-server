@@ -31,6 +31,9 @@ public abstract class IndexBaseRepoJob implements Job {
     protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
+    /**
+     * The main method used for finding jobs to index and actually doing the work
+     */
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
@@ -168,7 +171,6 @@ public abstract class IndexBaseRepoJob implements Job {
         // Convert once outside the main loop
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
         boolean lowMemory = this.LOWMEMORY;
-        boolean useSystemGit = this.USESYSTEMGIT;
 
         try {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
@@ -222,15 +224,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
 
                     String newString = getBlameFilePath(fileLocationFilename);
-                    List<CodeOwner> owners;
-                    if (useSystemGit) {
-                        owners = getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
-                    } else {
-                        owners = getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
-                    }
-
-                    String codeOwner = scl.codeOwner(owners);
-
+                    String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
 
                     // If low memory don't add to the queue, just index it directly
                     if (lowMemory) {
@@ -265,6 +259,14 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
+    /**
+     * This method to be implemented by the extending class
+     */
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+        return null;
+    }
+
+
     public String getBlameFilePath(String fileLocationFilename) {
         String[] split = fileLocationFilename.split("/");
         String newString = String.join("/", Arrays.asList(split).subList(1, split.length));
@@ -275,8 +277,10 @@ public abstract class IndexBaseRepoJob implements Job {
         return null;
     }
 
-    // The below are used to create temp files indicating everything worked
-
+    /*
+     * The below are used to create temp files indicating everything worked
+     * they are shared among all classes that extend this
+     */
     public void createCloneUpdateSuccess(String repoLocation) {
         createFile(repoLocation, "cloneupdate");
     }

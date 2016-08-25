@@ -83,6 +83,16 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return Singleton.getUniqueGitRepoQueue();
     }
 
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+        List<CodeOwner> owners;
+        if (this.USESYSTEMGIT) {
+            owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
+        } else {
+            owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
+        }
+
+        return scl.codeOwner(owners);
+    }
 
     /**
      * Indexes all the documents in the repository changed file effectively performing a delta update
@@ -136,7 +146,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             String repoLocationRepoNameLocationFilename = changedFile;
 
 
-            String newString = getBlameFilePath(fileLocationFilename);
+            String newString = super.getBlameFilePath(fileLocationFilename);
             List<CodeOwner> owners;
             if (this.USESYSTEMGIT) {
                 owners = getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
@@ -170,7 +180,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             }
         }
     }
-
 
 
 
