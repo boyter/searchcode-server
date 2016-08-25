@@ -40,15 +40,15 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         // Pull the next repo to index from the queue
-        UniqueRepoQueue repoQueue = Singleton.getUniqueGitRepoQueue();
+        UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
 
         RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexGitRepoJobs = Singleton.getRunningIndexRepoJobs();
+        AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
 
-        if (repoResult != null && !runningIndexGitRepoJobs.containsKey(repoResult.getName())) {
+        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
             Singleton.getLogger().info("Indexing " + repoResult.getName());
             try {
-                runningIndexGitRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
+                runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -99,7 +99,7 @@ public abstract class IndexBaseRepoJob implements Job {
             }
             finally {
                 // Clean up the job
-                runningIndexGitRepoJobs.remove(repoResult.getName());
+                runningIndexRepoJobs.remove(repoResult.getName());
             }
         }
     }
@@ -115,6 +115,13 @@ public abstract class IndexBaseRepoJob implements Job {
      * This method to be implemented by the extending class
      */
     public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return null;
+    }
+
+    /**
+     * This method to be implemented by the extending class
+     */
+    public UniqueRepoQueue getNextQueuedRepo() {
         return null;
     }
 

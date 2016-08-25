@@ -79,6 +79,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
     }
 
+    public UniqueRepoQueue getNextQueuedRepo() {
+        return Singleton.getUniqueGitRepoQueue();
+    }
+
 
     /**
      * Indexes all the documents in the repository changed file effectively performing a delta update
