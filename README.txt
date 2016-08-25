@@ -1,3 +1,21 @@
+searchcode server
+
+What is it?
+-----------
+searchcode server is a powerful code search engine with a sleak web user interface.
+
+searchcode server works in tandem with your source control system, indexing thousands of repositories 
+and files allowing you and your developers to quickly find and reuse code across teams.
+
+See https://searchcode.com/product/ for more details
+
+Support
+-------
+If you are building from source then you get no support and must work within the restrictions specified of the
+fair source licence (see LICENSE.txt for details). To purchase support see 
+https://searchcode.com/product/#downloadlinks
+
+
 To Build
 --------
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
