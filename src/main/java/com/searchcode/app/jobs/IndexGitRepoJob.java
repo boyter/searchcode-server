@@ -100,7 +100,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     /**
      * Only works if we have path to GIT
      */
-    private List<CodeOwner> getBlameInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
+    public List<CodeOwner> getBlameInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         List<CodeOwner> codeOwners = new ArrayList<>(codeLinesSize);
 
         try {
@@ -173,8 +173,12 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return codeOwners;
     }
 
-    // TODO this method appears to leak memory like crazy... need to resolve this
-    private List<CodeOwner> getBlameInfo(int codeLinesSize, String repoName, String repoLocations, String fileName) {
+    /**
+     * Uses the inbuilt git
+     * TODO this method appears to leak memory like crazy... need to investigate
+     * TODO lots of hairy bits in here need tests to capture issues
+     */
+    public List<CodeOwner> getBlameInfo(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         List<CodeOwner> codeOwners = new ArrayList<>(codeLinesSize);
         try {
             // The / part is required due to centos bug for version 1.1.1
@@ -268,7 +272,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
 
-    private RepositoryChanged updateGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
+    /**
+     * Update a git repository and return if it has changed and the differences
+     */
+    public RepositoryChanged updateGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
         boolean changed = false;
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
@@ -334,6 +341,9 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
 
+    /**
+     * Clones the repository from scratch
+     */
     public RepositoryChanged cloneGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
         boolean successful = false;
         Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
