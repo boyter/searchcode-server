@@ -12,18 +12,13 @@ package com.searchcode.app.jobs;
 // http://stackoverflow.com/questions/1685228/how-to-cat-a-file-in-jgit
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
-import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
-import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
-import org.apache.commons.io.FileUtils;
+import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jgit.api.BlameCommand;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -36,15 +31,18 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.PersistJobDataAfterExecution;
 
 import java.io.*;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.InvalidPathException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This job is responsible for pulling and indexing git repositories

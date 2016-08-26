@@ -8,36 +8,30 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
-import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
-import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.quartz.*;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
-
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.PersistJobDataAfterExecution;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.util.*;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This job is responsible for pulling and indexing svn repositories
@@ -49,11 +43,8 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
-    private int SLEEPTIME = 5000;
-    private boolean LOWMEMORY;
     private String SVNBINARYPATH;
     private boolean ENABLED = true;
-    public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
     public IndexSvnRepoJob() {
         this.LOWMEMORY = true;
@@ -82,10 +73,14 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+        return getInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString).getName();
+    }
+
+    @Override
     public boolean isEnabled() {
         return this.ENABLED;
     }
-
 
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         String repoSvnLocation = repoLocations + repoName;
@@ -113,91 +108,6 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         createIndexSuccess(repoSvnLocation);
     }
 
-
-    /**
-     * Indexes all the documents in the repository changed file effectively performing a delta update
-     * Should only be called when there is a genuine update IE something was indexed previously and
-     * has has a new commit.
-     */
-    public void indexDocsByDelta(Path path, String repoName, String repoLocations, String repoRemoteLocation, RepositoryChanged repositoryChanged) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
-        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
-        String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-
-        Singleton.getLogger().info("Repository Changed File List " + repositoryChanged.getChangedFiles());
-
-        for(String changedFile: repositoryChanged.getChangedFiles()) {
-
-            Singleton.getLogger().info("Indexing " + changedFile + " in " + repoName);
-
-            while(CodeIndexer.shouldPauseAdding()) {
-                Singleton.getLogger().info("Pausing parser.");
-                try {
-                    Thread.sleep(SLEEPTIME);
-                } catch (InterruptedException ex) {}
-            }
-
-            String[] split = changedFile.split("/");
-            String fileName = split[split.length - 1];
-            changedFile = fileRepoLocations + repoName + "/" + changedFile;
-
-            String md5Hash = Values.EMPTYSTRING;
-            List<String> codeLines = null;
-
-            try {
-                codeLines = Helpers.readFileLines(changedFile, MAXFILELINEDEPTH);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                break;
-            }
-
-            try {
-                FileInputStream fis = new FileInputStream(new File(changedFile));
-                md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                fis.close();
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
-            }
-
-            if(scl.isMinified(codeLines)) {
-                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
-                break;
-            }
-
-            String languageName = scl.languageGuesser(changedFile, codeLines);
-            String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
-            String repoLocationRepoNameLocationFilename = changedFile;
-
-
-            String newString = getBlameFilePath(fileLocationFilename);
-            String codeOwner = getInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString).getName();
-
-
-            if (codeLines != null) {
-                if (this.LOWMEMORY) {
-                    try {
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } catch (IOException ex) {
-                        Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                    }
-                } else {
-                    codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                }
-            }
-        }
-
-        for(String deletedFile: repositoryChanged.getDeletedFiles()) {
-            Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
-            try {
-                CodeIndexer.deleteByFileLocationFilename(deletedFile);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-            }
-        }
-    }
-    
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         CodeOwner owner = new CodeOwner("Unknown", codeLinesSize, (int)(System.currentTimeMillis() / 1000));
 
