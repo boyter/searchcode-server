@@ -1,8 +1,33 @@
 <#import "masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="Search Results">
 
+<div class="row">
+<div class="row search-count">
 
+
+
+    <#if searchResult.totalHits == 0>
+        <#if repoCount == 0>
+        <b>You have no repositories indexed.</b>
+        <h5>Add some using the <a href="/admin/">admin</a> page. Read the <a href="/documentation/#repositories">documentation</a> for more details.</h5>
+        <#else>
+        <h4>No results found for <i>${searchValue?html}</i></h4>
+            <#if searchValue == altQuery>
+            <h5>Try searching with fewer keywords or more general keywords.</h5>
+            <#else>
+            <h5>Try searching using for "<a href="/?q=${altQuery?url('ISO-8859-1')}">${altQuery?html}</a>" instead.</h5>
+            </#if>
+        </#if>
+    <#else>
+        <b>${searchResult.totalHits} results:</b> <span class="grey">"test"</span>
+    </#if>
+
+</div>
+</div>
+
+<!--
 <div class="col-md-10 inside-container">
+
     <#if searchResult.totalHits == 0>
         <#if repoCount == 0>
         <h4>You have no repositories indexed.</h4>
@@ -87,5 +112,5 @@
         </#list>
     </form>
 </div>
-
+-->
 </@layout.masterTemplate>

@@ -36,7 +36,7 @@
       </div>
     </nav>
       <div class="container">
-      <div class="search-options"><form method="GET" <#if isHtml??>action="/html/"<#else>action="/"</#if>><div class="form-inline"><div class="form-group"><input name="q" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="true" size="50" placeholder="Search Expression" type="search" class="form-control"></div><input type="submit" value="search" class="btn btn-success"></div></form></div>
+        <div class="search-options"><form method="GET" <#if isHtml??>action="/html/"<#else>action="/"</#if>><div class="form-inline"><div class="form-group"><input name="q" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="true" size="50" placeholder="Search Expression" type="search" class="form-control"></div><input type="submit" value="search" class="btn btn-success"></div></form></div>
         <#nested />
       </div>
       <div class="footer center">
