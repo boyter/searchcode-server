@@ -100,6 +100,15 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return true;
     }
 
+    @Override
+    public boolean ignoreFile(String fileParent) {
+        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * Only works if we have path to GIT
      */

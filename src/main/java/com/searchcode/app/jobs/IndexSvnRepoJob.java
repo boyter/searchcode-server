@@ -8,30 +8,36 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.CodeIndexer;
+import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
-import org.quartz.DisallowConcurrentExecution;
-import org.quartz.PersistJobDataAfterExecution;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.quartz.*;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.*;
 
 /**
  * This job is responsible for pulling and indexing svn repositories
@@ -80,6 +86,15 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     @Override
     public boolean isEnabled() {
         return this.ENABLED;
+    }
+
+    @Override
+    public boolean ignoreFile(String fileParent) {
+        if (fileParent.endsWith("/.svn") || fileParent.contains("/.svn/")) {
+            return true;
+        }
+
+        return false;
     }
 
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {

@@ -67,6 +67,10 @@ public abstract class IndexBaseRepoJob implements Job {
         return false;
     }
 
+    public boolean ignoreFile(String fileParent) {
+        return true;
+    }
+
     /**
      * The main method used for finding jobs to index and actually doing the work
      */
@@ -287,12 +291,9 @@ public abstract class IndexBaseRepoJob implements Job {
                     String fileName = file.getFileName().toString();
                     String md5Hash = Values.EMPTYSTRING;
 
-                    // TODO check for ignored types here .get .svn .hg should be good to start with
-                    // TODO template method this sucker
-                    if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
+                    if (ignoreFile(fileParent)) {
                         return FileVisitResult.CONTINUE;
                     }
-
 
                     List<String> codeLines;
                     try {
