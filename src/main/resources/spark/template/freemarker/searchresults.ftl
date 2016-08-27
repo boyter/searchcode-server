@@ -1,7 +1,7 @@
 <#import "masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="Search Results">
 
-<div class="row">
+
 <div class="row search-count">
 
 
@@ -23,6 +23,62 @@
     </#if>
 
 </div>
+
+
+<div class="row">
+  <div class="col-md-3 search-filters-container search-filters">
+    <div>
+      <h5>Page 1 of 1</h5>
+
+      <div class="center">
+        <input type="submit" disabled="disabled" value="&#9664; Previous" class=
+        "btn btn-xs btn-success filter-button" /><span>&nbsp;</span><input type=
+        "submit" disabled="disabled" value="Next &#9654;" class=
+        "btn btn-xs btn-success filter-button" />
+      </div>
+    </div>
+
+    <div>
+      <h5>Filter Results</h5>
+      <div class="center">
+        <input type="submit" value="Remove" class="btn btn-xs btn-success filter-button" /><span>&nbsp;</span><input type="submit" value="Apply" class="btn btn-xs btn-success filter-button" />
+      </div>
+    </div>
+
+    <div>
+      <#list searchResult.repoFacetResults>
+      <h5>Repositories</h5>
+      <#items as result>
+      <div class="checkbox">
+        <label><input type="checkbox" value="${result.repoName}" <#if result.selected >checked</#if> /><span>${result.repoName[0..*12]}</span><span class="badge pull-right">${result.count}</span></label>
+      </div>
+      </#items>
+      </#list>
+    </div>
+
+    <div>
+      <#list searchResult.languageFacetResults>
+      <h5>Languages</h5>
+      <#items as result>
+      <div class="checkbox">
+        <label><input type="checkbox" value="${result.languageName}" <#if result.selected >checked</#if> /><span>${result.languageName[0..*12]}</span><span class="badge pull-right">${result.count}</span></label>
+      </div>
+      </#items>
+      </#list>
+    </div>
+
+
+    <div>
+      <h5>Owners</h5><input placeholder="Filter Owners" class="repo-filter" />
+      <div class="checkbox">
+        <label><input type="checkbox" /><span>unknown</span><span class="badge pull-right">5</span></label>
+      </div>
+    </div>
+  </div>
+
+
+  
+
 </div>
 
 <!--
