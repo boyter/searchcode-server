@@ -83,6 +83,19 @@ To upgrade your current instance of searchcode perform the following steps.
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
 
+Licence
+-------
+Copyright (c) 2016 Boyter Online Services
+
+Use of this software is governed by the Fair Source License included in the LICENSE.TXT file
+
+In order to deal with the case of my death or this software becoming abandoned it has a time-bomb where the licence will change 
+exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it 
+can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
+
+After the following date 27-August-2019 you may choose to use this software, version "1.2.3" or "1.2.4" 
+under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+
 
 Change Log
 ==========
