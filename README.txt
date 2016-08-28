@@ -91,6 +91,7 @@ XX XXXXXX XXXX - 1.2.4
  - Add gzip compression to most used routes
  - Refactor repository jobs to resolve bugs and make more extensible
  - Fix lines to index bug with SVN which could result in index pausing
+ - Update HTML page to have new look and feel
 
 23 August 2016 - 1.2.3
  - Upgrade mithril to 0.2.5 to resolve Safari bug where pages would not render

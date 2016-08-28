@@ -69,11 +69,58 @@
 
 
     <div>
-      <h5>Owners</h5><input placeholder="Filter Owners" class="repo-filter" />
+      <!-- <h5>Owners</h5><input placeholder="Filter Owners" class="repo-filter" />
       <div class="checkbox">
         <label><input type="checkbox" /><span>unknown</span><span class="badge pull-right">5</span></label>
-      </div>
+      </div> -->
     </div>
+  </div>
+
+  <div class="col-md-9 search-results">
+            <!-- <div>
+            <ol class="code-result">
+                <li value="10">
+                  <a href="/file/1/svnrepo/_UpgradeReport_Files/UpgradeReport.xslt#10"></a>
+                  <pre>&lt;xsl:if <strong>test</strong>="(1=position()) or (preceding-sibling::*[1]/@Project != @Project)"&gt;</pre>
+                </li>
+
+                <li value="19">
+                  <a href="/file/1/svnrepo/_UpgradeReport_Files/UpgradeReport.xslt#19"></a>
+                  <pre>&lt;xsl:if <strong>test</strong>="@Project=''"&gt;</pre>
+                </li>
+
+                <li value="27">
+                  <a href="/file/1/svnrepo/_UpgradeReport_Files/UpgradeReport.xslt#27"></a>
+                  <pre>&lt;xsl:if <strong>test</strong>="(1=position()) or (preceding-sibling::*[1]/@Source != @Source)"&gt;</pre>
+                </li>
+              </ol>
+              <hr class="spacer" />
+            </div> -->
+
+
+            <#list searchResult.codeResultList>
+            <#items as result>
+              <div>
+                <h5><a href="/file/1/svnrepo/_UpgradeReport_Files/UpgradeReport.xslt">UpgradeReport.xslt in svnrepo</a> <small>| https://keygen.svn.codeplex.com/svn/ | ${result.codeLines} lines | ${result.languageName?html}</small></h5>
+              </div>
+              <ol class="code-result">
+                  <#list result.matchingResults>
+                      <#items as line>
+                      <li value="${line.lineNumber?c}">
+                          <a href="/file/${result.documentId?c}#${line.lineNumber?c}">
+                              <pre>${line.line}</pre>
+                          </a>
+                          <#if line.addBreak ><hr class="codesplit"></#if>
+                      </li>
+                      </#items>
+                  </#list>
+               </ol>
+              <hr class="spacer" />
+            </#items>
+            </#list>
+
+
+          </div>
   </div>
 
 
