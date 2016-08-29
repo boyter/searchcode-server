@@ -282,7 +282,7 @@ public class App {
                         f.setSelected(true);
                     }
                 }
-                
+
                 map.put("searchValue", query);
                 map.put("searchResult", searchResult);
                 map.put("reposQueryString", reposQueryString);
@@ -290,6 +290,8 @@ public class App {
                 map.put("ownsQueryString", ownsQueryString);
 
                 map.put("altQuery", altquery);
+
+                map.put("totalPages", searchResult.getPages().size());
 
 
                 map.put("isHtml", true);

@@ -3,25 +3,7 @@
 
 
 <div class="row search-count">
-
-
-
-    <#if searchResult.totalHits == 0>
-        <#if repoCount == 0>
-        <b>You have no repositories indexed.</b>
-        <h5>Add some using the <a href="/admin/">admin</a> page. Read the <a href="/documentation/#repositories">documentation</a> for more details.</h5>
-        <#else>
-        <h4>No results found for <i>${searchValue?html}</i></h4>
-            <#if searchValue == altQuery>
-            <h5>Try searching with fewer keywords or more general keywords.</h5>
-            <#else>
-            <h5>Try searching using for "<a href="/?q=${altQuery?url('ISO-8859-1')}">${altQuery?html}</a>" instead.</h5>
-            </#if>
-        </#if>
-    <#else>
-        <b>${searchResult.totalHits} results:</b> <span class="grey">"test"</span>
-    </#if>
-
+    <b>${searchResult.totalHits} results:</b> <span class="grey">"${searchValue}"</span>
 </div>
 
 
@@ -33,10 +15,13 @@
     <input name="q" value="${searchValue}" type="hidden">
 
     <div>
-      <h5>Page 1 of 1</h5>
+      <h5>Page ${searchResult.page + 1} of ${totalPages + 1}</h5>
 
       <div class="center">
-        <input type="submit" disabled="disabled" value="&#9664; Previous" class="btn btn-xs btn-success filter-button" /><span>&nbsp;</span><input type="submit" disabled="disabled" value="Next &#9654;" class="btn btn-xs btn-success filter-button" />
+        <!-- <input type="submit" <#if searchResult.page == 0 >disabled="disabled"</#if> value="&#9664; Previous" class="btn btn-xs btn-success filter-button" /> -->
+        <a class="btn btn-xs btn-success filter-button" href="?q=${searchValue}&p=${searchResult.page - 1}${reposQueryString}${langsQueryString}${ownsQueryString}" <#if searchResult.page == 0 >disabled="disabled"</#if>>&#9664; Previous</a>
+        <span>&nbsp;</span>
+        <a class="btn btn-xs btn-success filter-button" href="?q=${searchValue}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}" <#if searchResult.page == totalPages >disabled="disabled"</#if>>Next &#9654;</a>
       </div>
     </div>
 
@@ -85,6 +70,20 @@
   </div>
 
   <div class="col-md-9 search-results">
+
+    <#if searchResult.totalHits == 0>
+        <#if repoCount == 0>
+        <b>You have no repositories indexed.</b>
+        <h5>Add some using the <a href="/admin/">admin</a> page. Read the <a href="/documentation/#repositories">documentation</a> for more details.</h5>
+        <#else>
+        <h4>No results found for <i class="grey">${searchValue?html}</i></h4>
+            <#if searchValue == altQuery>
+            <h5>Try searching with fewer keywords or more general keywords.</h5>
+            <#else>
+            <h5>Try searching using for "<a href="/?q=${altQuery?url('ISO-8859-1')}">${altQuery?html}</a>" instead.</h5>
+            </#if>
+        </#if>
+    </#if>
 
     <#list searchResult.codeResultList>
     <#items as result>
