@@ -87,6 +87,10 @@ public class SearchResult {
         return repoFacetResults;
     }
 
+    public List<CodeFacetOwner> getRepoOwnerResults() {
+        return repoOwnerResults;
+    }
+
     public void setRepoFacetResults(List<CodeFacetRepo> repoFacetResults) {
         this.repoFacetResults = repoFacetResults;
     }
