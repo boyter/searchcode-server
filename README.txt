@@ -9,6 +9,8 @@ and files allowing you and your developers to quickly find and reuse code across
 
 See https://searchcode.com/product/ for more details
 
+![searchcode server](https://searchcode.com/static/product/searchcode-server.gif)
+
 Support
 -------
 If you are building from source then you get no support and must work within the restrictions specified of the
