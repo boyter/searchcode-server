@@ -69,16 +69,11 @@
   <div class="col-md-9 search-results">
 
     <#if searchResult.totalHits == 0>
-        <#if repoCount == 0>
-        <b>You have no repositories indexed.</b>
-        <h5>Add some using the <a href="/admin/">admin</a> page. Read the <a href="/documentation/#repositories">documentation</a> for more details.</h5>
-        <#else>
         <h4>No results found for <i class="grey">${searchValue?html}</i></h4>
-            <#if searchValue == altQuery>
-            <h5>Try searching with fewer keywords or more general keywords.</h5>
-            <#else>
-            <h5>Try searching using for "<a href="/?q=${altQuery?url('ISO-8859-1')}">${altQuery?html}</a>" instead.</h5>
-            </#if>
+        <#if searchValue == altQuery>
+        <h5>Try clearing filters then searching with fewer keywords or more general keywords.</h5>
+        <#else>
+        <h5>Try searching using for "<a href="/?q=${altQuery?url('ISO-8859-1')}">${altQuery?html}</a>" instead.</h5>
         </#if>
     </#if>
 
