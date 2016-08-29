@@ -252,7 +252,7 @@ public class App {
                         ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
 
                         List<String> ownsQueryList = Arrays.asList(owners).stream()
-                                .map((s) -> "&lan=" + URLEncoder.encode(s))
+                                .map((s) -> "&own=" + URLEncoder.encode(s))
                                 .collect(Collectors.toList());
 
                         ownsQueryString = StringUtils.join(ownsQueryList, "");
