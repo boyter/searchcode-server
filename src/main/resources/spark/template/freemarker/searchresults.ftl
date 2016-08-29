@@ -112,7 +112,7 @@
   <div class="search-pagination">
     <ul class="pagination"><#list searchResult.pages>
       <#items as page>
-        <li <#if page == searchResult.page>class="active"</#if>> <a href="?q=${searchValue}&p=${page}${reposQueryString}${langsQueryString}">${page + 1}</a></li>
+        <li <#if page == searchResult.page>class="active"</#if>> <a href="?q=${searchValue}&p=${page}${reposQueryString}${langsQueryString}${ownsQueryString}">${page + 1}</a></li>
         </#items>
       </#list>
     </ul>
