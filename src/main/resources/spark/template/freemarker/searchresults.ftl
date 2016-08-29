@@ -71,10 +71,14 @@
 
 
     <div>
-      <!-- <h5>Owners</h5><input placeholder="Filter Owners" class="repo-filter" />
+      <#list searchResult.repoOwnerResults>
+      <h5>Owners</h5>
+      <#items as result>
       <div class="checkbox">
-        <label><input type="checkbox" /><span>unknown</span><span class="badge pull-right">5</span></label>
-      </div> -->
+        <label><input type="checkbox" name="own" value="${result.owner}" <#if result.selected >checked</#if>/><span>${result.owner}</span><span class="badge pull-right">${result.count}</span></label>
+      </div>
+      </#items>
+      </#list>
     </div>
 
     </form>

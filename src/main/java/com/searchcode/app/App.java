@@ -196,10 +196,14 @@ public class App {
 
                 String[] repos = new String[0];
                 String[] langs = new String[0];
+                String[] owners = new String[0];
                 String reposFilter = "";
                 String langsFilter = "";
+                String ownersFilter = "";
                 String reposQueryString = "";
                 String langsQueryString = "";
+                String ownsQueryString = "";
+
 
                 if(req.queryParams().contains("repo")) {
                     repos = req.queryParamsValues("repo");
@@ -237,10 +241,28 @@ public class App {
                     }
                 }
 
+                if(req.queryParams().contains("own")) {
+                    owners = req.queryParamsValues("own");
+
+                    if (owners.length != 0) {
+                        List<String> ownersList = Arrays.asList(owners).stream()
+                                .map((s) -> "codeowner:" + QueryParser.escape(s))
+                                .collect(Collectors.toList());
+
+                        ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
+
+                        List<String> ownsQueryList = Arrays.asList(owners).stream()
+                                .map((s) -> "&lan=" + URLEncoder.encode(s))
+                                .collect(Collectors.toList());
+
+                        ownsQueryString = StringUtils.join(ownsQueryList, "");
+                    }
+                }
+
                 // split the query escape it and and it together
                 String cleanQueryString = scl.formatQueryString(query);
 
-                SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter, page);
+                SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
                 searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
                 for(CodeFacetRepo f: searchResult.getRepoFacetResults()) {
@@ -255,10 +277,17 @@ public class App {
                     }
                 }
 
+                for(CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
+                    if(Arrays.asList(owners).contains(f.getOwner())) {
+                        f.setSelected(true);
+                    }
+                }
+                
                 map.put("searchValue", query);
                 map.put("searchResult", searchResult);
                 map.put("reposQueryString", reposQueryString);
                 map.put("langsQueryString", langsQueryString);
+                map.put("ownsQueryString", ownsQueryString);
 
                 map.put("altQuery", altquery);
 
