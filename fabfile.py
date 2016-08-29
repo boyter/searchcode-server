@@ -16,7 +16,7 @@ import hashlib
 import sys
 import datetime
 
-VERSION = "1.2.3"
+VERSION = "1.2.4"
 
 def run_proxy():
     local('python ./assets/javascript_proxy/webserver.py')

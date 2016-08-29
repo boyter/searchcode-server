@@ -4,7 +4,7 @@ Copyright (C) 2016 Ben Boyter
 
 Licensor: Boyter Online Services
 
-Software: searchcode server 1.2.3
+Software: searchcode server 1.2.4
 
 Use Limitation: 5 users
 
