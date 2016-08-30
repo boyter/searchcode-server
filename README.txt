@@ -100,6 +100,9 @@ under the GNU General Public License Version 3 with terms specified at https://w
 Change Log
 ==========
 
+XX XXXXXX XXXX - 1.3.0
+ - Filters now apply instantly when clicked option is toggleable
+
 30 August 2016 - 1.2.4
  - Add gzip compression to most used routes
  - Refactor repository jobs to resolve bugs and make more extensible
