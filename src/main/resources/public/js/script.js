@@ -65,10 +65,30 @@ var testing = {
             vm.currentlyloading = m.prop(false);
             vm.currentpage = m.prop(0);
 
+            if (window.localStorage) {
+                var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
+                if (tmp !== null) {
+                    vm.filterinstantly = tmp;
+                }
+                else {
+                    vm.filterinstantly = true;
+                }
+            }
+            else {
+                vm.filterinstantly = true;
+            }
+
             vm.clearfilters = function() {
                 vm.langfilters = [];
                 vm.repositoryfilters = [];
                 vm.ownfilters = [];
+            };
+
+            vm.toggleinstant = function() {
+                if (window.localStorage) {
+                    localStorage.setItem('toggleinstant', JSON.stringify(!vm.filterinstantly));
+                }
+                vm.filterinstantly = !vm.filterinstantly;
             };
 
             vm.togglefilter = function (type, name) {
@@ -207,44 +227,6 @@ var testing = {
 
                     vm.currentlyloading(false);
                     m.redraw();
-
-
-                    // // Build chart
-                    // Chart.defaults.global.animation = false;
-                    // var ctx = document.getElementById('search-chart');
-                    // var data = {
-                    //     labels: _.first(_.map(e.repoFacetResults, function(e) { return e.repoName } ), 5),
-                    //     datasets: [
-                    //         {
-                    //             label: "Repos",
-                    //             fillColor: "rgba(220,220,220,0.5)",
-                    //             strokeColor: "rgba(220,220,220,0.8)",
-                    //             highlightFill: "rgba(220,220,220,0.75)",
-                    //             highlightStroke: "rgba(220,220,220,1)",
-                    //             data: _.first(_.map(e.repoFacetResults, function(e) { return e.count } ), 5)
-                    //         }
-                    //     ]
-                    // };
-
-                    // var myBarChart = new Chart(ctx.getContext("2d")).Bar(data, {
-                    //     scaleShowVerticalLines: false,
-                    //     scaleShowHorizontalLines: false,
-                    //     scaleLabel: " <%=value%>",
-                    //     scaleIntegersOnly: true,
-                    //     //barValueSpacing : 0,
-                    //     //showScale : false,
-                    //     barShowStroke : false,
-                    //     barValueSpacing: 1,
-                    //     //showTooltips : false,
-                    // });
-
-
-                    // ctx.onclick = function(evt) {
-                    //     var activePoints = myBarChart.getBarsAtEvent(evt);
-                    //     if(activePoints.length != 0) {
-                    //         console.log(activePoints[0].label);
-                    //     }
-                    // };
                 };
 
                 if (cacheHit !== null) {
@@ -308,14 +290,23 @@ var testing = {
                             query: testing.vm.query,
                             altquery: testing.vm.altquery
                         }),
+                        m.component(ApplyFilterInstantlyComponent, {
+                            filterinstantly: testing.vm.filterinstantly
+                        }),
                         m.component(SearchRepositoriesFilterComponent, {
-                            repofilters: testing.vm.repofilters
+                            repofilters: testing.vm.repofilters,
+                            search: testing.vm.search,
+                            filterinstantly: testing.vm.filterinstantly
                         }),
                         m.component(SearchLanguagesFilterComponent, {
-                            languagefilters: testing.vm.languagefilters
+                            languagefilters: testing.vm.languagefilters,
+                            search: testing.vm.search,
+                            filterinstantly: testing.vm.filterinstantly
                         }),
                         m.component(SearchOwnersFilterComponent, {
-                           ownerfilters: testing.vm.ownerfilters 
+                           ownerfilters: testing.vm.ownerfilters,
+                           search: testing.vm.search,
+                           filterinstantly: testing.vm.filterinstantly
                         })
                     ]),
                     m('div.col-md-9.search-results', [
@@ -498,6 +489,25 @@ var SearchButtonFilterComponent = {
     }
 }
 
+var ApplyFilterInstantlyComponent = {
+    view: function(ctrl, args) {
+        var inputparams = { type: 'checkbox', onclick: function() { 
+            testing.vm.toggleinstant();
+        } };
+        
+        if (args.filterinstantly) {
+            inputparams.checked = 'checked'
+        }
+
+        return m('div.checkbox', 
+            m('label', [
+                m('input', inputparams),
+                m('span', 'Click Applies Filter')
+            ])
+        );
+    }
+}
+
 var SearchRepositoriesFilterComponent = {
     controller: function() {
         
@@ -570,7 +580,12 @@ var SearchRepositoriesFilterComponent = {
             }),
             _.map(ctrl.trimrepo(args.repofilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
-                    onclick: function() { ctrl.clickenvent(res.source()); },
+                    onclick: function() { 
+                        ctrl.clickenvent(res.source());
+                        if (args.filterinstantly) {
+                            args.search();
+                        }
+                    },
                     value: res.source(),
                     count: res.count(),
                     checked: testing.vm.filterexists('repo', res.source())
@@ -654,7 +669,12 @@ var SearchLanguagesFilterComponent = {
             }),
             _.map(ctrl.trimlanguage(args.languagefilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
-                    onclick: function() { ctrl.clickenvent(res.language()); },
+                    onclick: function() { 
+                        ctrl.clickenvent(res.language()); 
+                        if (args.filterinstantly) {
+                            args.search();
+                        }
+                    },
                     value: res.language(),
                     count: res.count(),
                     checked: testing.vm.filterexists('language', res.language())
@@ -738,7 +758,12 @@ var SearchOwnersFilterComponent = {
             }),
             _.map(ctrl.trimlanguage(args.ownerfilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
-                    onclick: function() { ctrl.clickenvent(res.owner()); },
+                    onclick: function() { 
+                        ctrl.clickenvent(res.owner()); 
+                        if (args.filterinstantly) {
+                            args.search();
+                        }
+                    },
                     value: res.owner(),
                     count: res.count(),
                     checked: testing.vm.filterexists('owner', res.owner())
