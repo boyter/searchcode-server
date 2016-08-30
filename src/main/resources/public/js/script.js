@@ -290,9 +290,6 @@ var testing = {
                             query: testing.vm.query,
                             altquery: testing.vm.altquery
                         }),
-                        m.component(ApplyFilterInstantlyComponent, {
-                            filterinstantly: testing.vm.filterinstantly
-                        }),
                         m.component(SearchRepositoriesFilterComponent, {
                             repofilters: testing.vm.repofilters,
                             search: testing.vm.search,
@@ -307,6 +304,9 @@ var testing = {
                            ownerfilters: testing.vm.ownerfilters,
                            search: testing.vm.search,
                            filterinstantly: testing.vm.filterinstantly
+                        }),
+                        m.component(FilterOptionsComponent, {
+                            filterinstantly: testing.vm.filterinstantly
                         })
                     ]),
                     m('div.col-md-9.search-results', [
@@ -489,7 +489,7 @@ var SearchButtonFilterComponent = {
     }
 }
 
-var ApplyFilterInstantlyComponent = {
+var FilterOptionsComponent = {
     view: function(ctrl, args) {
         var inputparams = { type: 'checkbox', onclick: function() { 
             testing.vm.toggleinstant();
@@ -499,12 +499,14 @@ var ApplyFilterInstantlyComponent = {
             inputparams.checked = 'checked'
         }
 
-        return m('div.checkbox', 
+        return m('div', 
+            m('h5', 'Filter Options'),
+            m('div.checkbox', 
             m('label', [
                 m('input', inputparams),
-                m('span', 'Click Applies Filter')
+                m('span', 'Apply Filters Instantly')
             ])
-        );
+        ));
     }
 }
 
