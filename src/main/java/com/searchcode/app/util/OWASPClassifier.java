@@ -21,6 +21,10 @@ public class OWASPClassifier {
         this.database = this.loadDatabase();
     }
 
+    public List<OWASPResult> classifyCode(List<String> codeLines) {
+        return null;
+    }
+
     private List<OWASPResult> loadDatabase() {
         List<OWASPResult> database = new ArrayList<>();
 
