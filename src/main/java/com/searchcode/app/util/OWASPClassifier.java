@@ -22,7 +22,7 @@ public class OWASPClassifier {
     }
 
     public List<OWASPResult> classifyCode(List<String> codeLines) {
-        return null;
+        return new ArrayList<OWASPResult>();
     }
 
     private List<OWASPResult> loadDatabase() {
