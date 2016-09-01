@@ -53,4 +53,57 @@ public class OWASPClassifierTest extends TestCase {
         codeLines.add("match");
         assertThat(oc.classifyCode(codeLines)).hasSize(1);
     }
+
+    @Test
+    public void testClassifyCodeMultipleMatch() {
+        OWASPClassifier oc = new OWASPClassifier();
+        oc.clearDatabase();
+        oc.addToDatabase(new OWASPResult("match", "", ""));
+        oc.addToDatabase(new OWASPResult("something", "", ""));
+
+        List<String> codeLines = new ArrayList<>();
+        codeLines.add("match something");
+        assertThat(oc.classifyCode(codeLines)).hasSize(2);
+    }
+
+    @Test
+    public void testClassifyCodeSingleMatchFirstLineCorrectLineNumber() {
+        OWASPClassifier oc = new OWASPClassifier();
+        oc.clearDatabase();
+        oc.addToDatabase(new OWASPResult("match", "", ""));
+
+        List<String> codeLines = new ArrayList<>();
+        codeLines.add("match");
+
+        assertThat(oc.classifyCode(codeLines).get(0).matchingLine).isEqualTo(0);
+    }
+
+    @Test
+    public void testClassifyCodeSingleMatchSecondLineCorrectLineNumber() {
+        OWASPClassifier oc = new OWASPClassifier();
+        oc.clearDatabase();
+        oc.addToDatabase(new OWASPResult("match", "", ""));
+
+        List<String> codeLines = new ArrayList<>();
+        codeLines.add("nope");
+        codeLines.add("match");
+
+        assertThat(oc.classifyCode(codeLines).get(0).matchingLine).isEqualTo(1);
+    }
+
+    @Test
+    public void testClassifyCodeMultipleMatchCorrectLineNumbers() {
+        OWASPClassifier oc = new OWASPClassifier();
+        oc.clearDatabase();
+        oc.addToDatabase(new OWASPResult("match", "", ""));
+
+        List<String> codeLines = new ArrayList<>();
+        codeLines.add("nope");
+        codeLines.add("match");
+        codeLines.add("nope");
+        codeLines.add("match");
+
+        assertThat(oc.classifyCode(codeLines).get(0).matchingLine).isEqualTo(1);
+        assertThat(oc.classifyCode(codeLines).get(1).matchingLine).isEqualTo(3);
+    }
 }

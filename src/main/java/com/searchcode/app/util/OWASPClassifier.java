@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.OWASPMatchingResult;
 import com.searchcode.app.model.OWASPResult;
 
 import java.io.FileNotFoundException;
@@ -21,17 +22,17 @@ public class OWASPClassifier {
         this.database = this.loadDatabase();
     }
 
-    public List<OWASPResult> classifyCode(List<String> codeLines) {
-        ArrayList<OWASPResult> matching = new ArrayList<>();
+    public List<OWASPMatchingResult> classifyCode(List<String> codeLines) {
+        ArrayList<OWASPMatchingResult> matching = new ArrayList<>();
 
         if (codeLines == null || codeLines.isEmpty()) {
             return matching;
         }
 
         for (OWASPResult result: this.database) {
-            for (String line: codeLines) {
-                if (line.toLowerCase().contains(result.name.toLowerCase())) {
-                    matching.add(result);
+            for (int i = 0; i < codeLines.size(); i++) {
+                if (codeLines.get(i).toLowerCase().contains(result.name.toLowerCase())) {
+                    matching.add(new OWASPMatchingResult(result.name, result.desc, result.type, i));
                 }
             }
         }
