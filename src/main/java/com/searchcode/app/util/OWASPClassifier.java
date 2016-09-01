@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) 2016 Boyter Online Services
+ *
+ * Use of this software is governed by the Fair Source License included
+ * in the LICENSE.TXT file
+ */
+
 package com.searchcode.app.util;
 
 import com.google.gson.Gson;
@@ -22,6 +29,10 @@ public class OWASPClassifier {
         this.database = this.loadDatabase();
     }
 
+    /**
+     * Matches lines of code against all the matching OWASP rules that exist in the database and returns the matching
+     * rules and the lines of code that are matched against.
+     */
     public List<OWASPMatchingResult> classifyCode(List<String> codeLines) {
         ArrayList<OWASPMatchingResult> matching = new ArrayList<>();
 
@@ -51,6 +62,9 @@ public class OWASPClassifier {
         this.database.add(result);
     }
 
+    /**
+     * Loads the OWASP database from a JSON file on disk
+     */
     private ArrayList<OWASPResult> loadDatabase() {
         ArrayList<OWASPResult> database = new ArrayList<>();
 
