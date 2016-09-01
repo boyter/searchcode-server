@@ -14,24 +14,49 @@ import java.util.List;
 
 public class OWASPClassifier {
 
-    public String DATABASEPATH = Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION);
-    public List<OWASPResult> database = new ArrayList<>();
+    private String DATABASEPATH = Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION);
+    private ArrayList<OWASPResult> database = new ArrayList<>();
 
     public OWASPClassifier() {
         this.database = this.loadDatabase();
     }
 
     public List<OWASPResult> classifyCode(List<String> codeLines) {
-        return new ArrayList<OWASPResult>();
+        ArrayList<OWASPResult> matching = new ArrayList<>();
+
+        if (codeLines == null || codeLines.isEmpty()) {
+            return matching;
+        }
+
+        for (OWASPResult result: this.database) {
+            for (String line: codeLines) {
+                if (line.toLowerCase().contains(result.name.toLowerCase())) {
+                    matching.add(result);
+                }
+            }
+        }
+        return matching;
     }
 
-    private List<OWASPResult> loadDatabase() {
-        List<OWASPResult> database = new ArrayList<>();
+    public List<OWASPResult> getDatabase() {
+        return this.database;
+    }
+
+    public void clearDatabase() {
+        this.database.clear();
+    }
+
+    public void addToDatabase(OWASPResult result) {
+        this.database.add(result);
+    }
+
+    private ArrayList<OWASPResult> loadDatabase() {
+        ArrayList<OWASPResult> database = new ArrayList<>();
 
         try {
             Gson gson = new GsonBuilder().create();
             OWASPResult[] myArray = gson.fromJson(new FileReader(this.DATABASEPATH), OWASPResult[].class);
-            database = Arrays.asList(myArray);
+            database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
             System.out.println(ex);
