@@ -7,16 +7,50 @@
 
 package com.searchcode.app.dto;
 
+import java.util.ArrayList;
+
 public class OWASPMatchingResult {
-    public String name;
-    public String desc;
-    public String type;
-    public int matchingLine;
+    private String name;
+    private String desc;
+    private String type;
+    private ArrayList<Integer> matchingLines = new ArrayList<>();
 
     public OWASPMatchingResult(String name, String desc, String type, int matchingLine) {
+        this.setName(name);
+        this.setDesc(desc);
+        this.setType(type);
+        this.matchingLines.add(matchingLine);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
         this.type = type;
-        this.matchingLine = matchingLine;
+    }
+
+    public ArrayList<Integer> getMatchingLines() {
+        return matchingLines;
+    }
+
+    public void addMatchingLine(int matchingLine) {
+        this.matchingLines.add(matchingLine);
     }
 }

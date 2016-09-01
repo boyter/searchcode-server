@@ -42,8 +42,17 @@ public class OWASPClassifier {
 
         for (OWASPResult result: this.database) {
             for (int i = 0; i < codeLines.size(); i++) {
-                if (codeLines.get(i).toLowerCase().contains(result.name.toLowerCase())) {
-                    matching.add(new OWASPMatchingResult(result.name, result.desc, result.type, i));
+                if (codeLines.get(i).contains(result.name)) {
+
+                    // If the matching result already exists, just add the line number, otherwise
+                    OWASPMatchingResult matchingResult = this.getMatchingResult(matching, result.name);
+
+                    if (matchingResult != null) {
+                        matchingResult.addMatchingLine(i + 1);
+                    }
+                    else {
+                        matching.add(new OWASPMatchingResult(result.name, result.desc, result.type, i + 1));
+                    }
                 }
             }
         }
@@ -60,6 +69,16 @@ public class OWASPClassifier {
 
     public void addToDatabase(OWASPResult result) {
         this.database.add(result);
+    }
+
+    private OWASPMatchingResult getMatchingResult(ArrayList<OWASPMatchingResult> results, String name) {
+        for (OWASPMatchingResult result: results) {
+            if (result.getName().equals(name)) {
+                return result;
+            }
+        }
+
+        return null;
     }
 
     /**

@@ -82,7 +82,7 @@ public class OWASPClassifierTest extends TestCase {
         List<String> codeLines = new ArrayList<>();
         codeLines.add("match");
 
-        assertThat(oc.classifyCode(codeLines).get(0).matchingLine).isEqualTo(0);
+        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(0)).isEqualTo(0);
     }
 
     @Test
@@ -95,11 +95,11 @@ public class OWASPClassifierTest extends TestCase {
         codeLines.add("nope");
         codeLines.add("match");
 
-        assertThat(oc.classifyCode(codeLines).get(0).matchingLine).isEqualTo(1);
+        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(0)).isEqualTo(1);
     }
 
     @Test
-    public void testClassifyCodeMultipleMatchCorrectLineNumbers() {
+    public void testClassifyCodeMultipleMatchCorrectLineNumbersSingleMatch() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
         oc.addToDatabase(new OWASPResult("match", "", ""));
@@ -110,7 +110,8 @@ public class OWASPClassifierTest extends TestCase {
         codeLines.add("nope");
         codeLines.add("match");
 
-        assertThat(oc.classifyCode(codeLines).get(0).matchingLine).isEqualTo(1);
-        assertThat(oc.classifyCode(codeLines).get(1).matchingLine).isEqualTo(3);
+        assertThat(oc.classifyCode(codeLines)).hasSize(1);
+        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(0)).isEqualTo(1);
+        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(1)).isEqualTo(3);
     }
 }

@@ -122,6 +122,9 @@ div.search-options {
     position: relative;
 }
 
+#owaspResults {
+    display: none;
+}
 
 /*Resets the padding for ol > li in firefox*/
 li a {

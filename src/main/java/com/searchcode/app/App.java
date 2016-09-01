@@ -76,6 +76,7 @@ public class App {
 
         ApiService apiService = injector.getInstance(ApiService.class);
         StatsService statsService = new StatsService();
+        OWASPClassifier owaspClassifier = new OWASPClassifier();
 
         scl = Singleton.getSearchcodeLib(data);
         js.initialJobs();
@@ -1062,6 +1063,12 @@ public class App {
                 code.append("\n");
             }
 
+
+            List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
+            if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
+                owaspResults = owaspClassifier.classifyCode(codeLines);
+            }
+
             boolean highlight = true;
             if(Integer.parseInt(codeResult.codeLines) > 1000) {
                 highlight = false;
@@ -1085,6 +1092,7 @@ public class App {
             map.put("codeValue", code.toString());
             map.put("highligher", getSyntaxHighlighter());
             map.put("codeOwner", codeResult.getCodeOwner());
+            map.put("owaspResults", owaspResults);
 
             double estimatedEffort = coco.estimateEffort(scl.countFilteredLines(codeResult.getCode()));
             int estimatedCost = (int)coco.estimateCost(estimatedEffort, getAverageSalary());
