@@ -52,7 +52,7 @@ public class Values {
     public static String MAXFILELINEDEPTH = "max_file_line_depth";
     public static String DEFAULTMAXFILELINEDEPTH = "10000";
     public static String OWASPDATABASELOCATION = "owasp_database_location";
-    public static String DEFAULTOWASPDATABASELOCATION = "./owasp/database.json";
+    public static String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
 
 
     // Lucene stored values for indexing / searching
