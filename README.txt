@@ -102,6 +102,7 @@ Change Log
 
 XX XXXXXX XXXX - 1.3.0
  - Filters now apply instantly when clicked option is toggleable
+ - OWASP checking on code result pages based on OWASP code crawler
 
 30 August 2016 - 1.2.4
  - Add gzip compression to most used routes
