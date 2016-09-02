@@ -11,6 +11,7 @@ package com.searchcode.app.dao;
 import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class Data implements IData {
 
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private IDatabaseConfig dbConfig;
 

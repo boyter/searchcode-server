@@ -24,6 +24,7 @@ import org.quartz.impl.StdSchedulerFactory;
 
 import java.io.IOException;
 import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -47,7 +48,7 @@ public final class Singleton {
     private static AbstractMap<String, ApiResult> apiCache = null;
     private static AbstractMap<String, RepoResult> repoCache = null;
     private static AbstractMap<String, Object> genericCache = null;
-    private static Logger logger = null;
+    private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
     private static Repo repo = null;
 
@@ -182,53 +183,12 @@ public final class Singleton {
         return scheduler;
     }
 
-    public static synchronized Logger getLogger() {
-        if (logger == null) {
-            try {
-                Handler handler = new FileHandler("searchcode-server-%g.log", 10 * 1024 * 1024, 1);
-
-                String logLevel = (String) Properties.getProperties().getOrDefault("log_level", "severe");
-
-                handler.setFormatter(new SimpleFormatter());
-
-                logger = Logger.getLogger(Values.EMPTYSTRING);
-                logger.addHandler(handler);
-
-                switch(logLevel.toUpperCase()) {
-                    case "INFO":
-                        handler.setLevel(Level.INFO);
-                        logger.setLevel(Level.INFO);
-                        break;
-                    case "FINE":
-                        handler.setLevel(Level.FINE);
-                        logger.setLevel(Level.FINE);
-                        break;
-                    case "WARNING":
-                        handler.setLevel(Level.WARNING);
-                        logger.setLevel(Level.WARNING);
-                        break;
-                    case "OFF":
-                        handler.setLevel(Level.OFF);
-                        logger.setLevel(Level.OFF);
-                        break;
-                    case "SEVERE":
-                    default:
-                        handler.setLevel(Level.SEVERE);
-                        logger.setLevel(Level.SEVERE);
-                        break;
-                }
-
-            } catch (IOException ex) {
-                logger = Logger.getLogger(Values.EMPTYSTRING);
-                logger.setLevel(Level.WARNING);
-
-                logger.warning("//////////////////////////////////////////////////////////////////////");
-                logger.warning("// Unable to write to logging file. Logs will be written to STDOUT. //");
-                logger.warning("//////////////////////////////////////////////////////////////////////");
-            }
+    public static synchronized LoggerWrapper getLogger() {
+        if (loggerWrapper == null) {
+            loggerWrapper = new LoggerWrapper();
         }
 
-        return logger;
+        return loggerWrapper;
     }
 
     public static synchronized SearchcodeLib getSearchCodeLib() {

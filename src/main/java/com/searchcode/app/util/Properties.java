@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class Properties {
 
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private static java.util.Properties properties = null;
 
