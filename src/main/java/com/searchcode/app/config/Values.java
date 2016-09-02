@@ -81,6 +81,7 @@ public class Values {
     public static String MATCHLINES = "match_lines";
     public static String MAXLINEDEPTH = "max_line_depth";
     public static String MINIFIEDLENGTH = "minified_length";
+    public static String OWASPENABLED = "owasp_enabled";
     public static String LOGO = "logo";
     public static String DEFAULTSYNTAXHIGHLIGHTER = "github";
     public static String DEFAULTAVERAGESALARY = "56000";

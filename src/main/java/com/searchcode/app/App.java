@@ -51,7 +51,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    private static final boolean ISCOMMUNITY = true;
+    private static final boolean ISCOMMUNITY = false;
     private static final String VERSION = "1.2.4";
     private static final Logger LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(600, TimeUnit.SECONDS).build();
@@ -678,6 +678,7 @@ public class App {
             map.put(Values.MAXDOCUMENTQUEUESIZE, Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE));
             map.put(Values.MAXDOCUMENTQUEUELINESIZE, Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE));
             map.put(Values.MAXFILELINEDEPTH, Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH));
+            map.put(Values.OWASPDATABASELOCATION, Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION));
 
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
 
@@ -812,6 +813,7 @@ public class App {
             map.put("matchLines", "" + (int)getMatchLines());
             map.put("maxLineDepth", "" + (int)getMaxLineDepth());
             map.put("minifiedLength", "" + (int)getMinifiedLength());
+            map.put("owaspenabled", owaspAdvisoriesEnabled());
             map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_settings.ftl");
@@ -877,6 +879,9 @@ public class App {
             catch(NumberFormatException ex) {
                 data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
             }
+
+            boolean owaspadvisories = Boolean.parseBoolean(request.queryParams("owaspadvisories"));
+            data.saveData(Values.OWASPENABLED, "" + owaspadvisories);
 
             data.saveData(Values.LOGO, logo);
             data.saveData(Values.SYNTAXHIGHLIGHTER, syntaxHighlighter);
@@ -1065,8 +1070,10 @@ public class App {
 
 
             List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
-            if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
-                owaspResults = owaspClassifier.classifyCode(codeLines);
+            if (owaspAdvisoriesEnabled()) {
+                if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
+                    owaspResults = owaspClassifier.classifyCode(codeLines);
+                }
             }
 
             boolean highlight = true;
@@ -1276,6 +1283,22 @@ public class App {
         }
 
         return Double.parseDouble(minifiedLength);
+    }
+
+    public static boolean owaspAdvisoriesEnabled() {
+        if(ISCOMMUNITY) {
+            return false;
+        }
+
+        Data data = injector.getInstance(Data.class);
+        Boolean owaspEnabled = Boolean.parseBoolean(data.getDataByName(Values.OWASPENABLED));
+
+        if(owaspEnabled == null) {
+            data.saveData(Values.OWASPENABLED, "false");
+            owaspEnabled = false;
+        }
+
+        return owaspEnabled;
     }
 
     public static String getSyntaxHighlighter() {

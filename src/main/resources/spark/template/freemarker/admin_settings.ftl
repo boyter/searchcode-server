@@ -54,6 +54,21 @@
         </tr>
 
         <tr>
+        <td valign="top"><b>OWASP Advisories</b></td>
+        <td valign="top">
+            <select name="owaspadvisories" id="owaspadvisories" class="form-control">
+              <option <#if owaspenabled == true>selected</#if> value="true">On</option>
+              <option <#if owaspenabled == false>selected</#if> value="false">Off</option>
+            </select>
+        </td>
+        </tr>
+        <tr>
+        <td></td>
+        <td>Should OWASP Advisories appear on the code result pages. If set to true code will be scanned using the OWASP database
+        and lines flagged for investigation. Most useful for codebases written using C# and Java.</td>
+        </tr>
+
+        <tr>
         <td valign="top"><b>Average Salary</b></td>
         <td valign="top"><input id="averagesalary" class="form-control" type="text" value="${averageSalary}" name="averagesalary"></td>
         </tr>

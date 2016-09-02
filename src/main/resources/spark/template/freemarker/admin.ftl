@@ -131,6 +131,10 @@
     <td><b>svn_binary_path</b></td>
     <td>${svn_binary_path}</td>
     </tr>
+    <tr>
+    <td><b>owasp_database_location</b></td>
+    <td>${owasp_database_location}</td>
+    </tr>
 </table>
     
 

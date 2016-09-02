@@ -47,7 +47,7 @@
           <#if owaspResults?size != 0>
           <tr>
             <td colspan="4">
-                <button id="toggleOwasp" type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> OWASP Advisories</button>
+                <button id="toggleOwasp" type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> OWASP Advisories</button>
             </td>
           </tr>
           <tr>
