@@ -751,7 +751,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/api/", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return null;
@@ -1089,7 +1089,7 @@ public class App {
             List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
             if (owaspAdvisoriesEnabled()) {
                 if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
-                    owaspResults = owaspClassifier.classifyCode(codeLines);
+                    owaspResults = owaspClassifier.classifyCode(codeLines, codeResult.languageName);
                 }
             }
 

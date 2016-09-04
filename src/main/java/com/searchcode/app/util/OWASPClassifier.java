@@ -19,6 +19,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OWASPClassifier {
 
@@ -33,14 +34,14 @@ public class OWASPClassifier {
      * Matches lines of code against all the matching OWASP rules that exist in the database and returns the matching
      * rules and the lines of code that are matched against.
      */
-    public List<OWASPMatchingResult> classifyCode(List<String> codeLines) {
+    public List<OWASPMatchingResult> classifyCode(List<String> codeLines, String languageName) {
         ArrayList<OWASPMatchingResult> matching = new ArrayList<>();
 
         if (codeLines == null || codeLines.isEmpty()) {
             return matching;
         }
 
-        for (OWASPResult result: this.database) {
+        for (OWASPResult result: this.database.stream().filter(x -> x.lang.equalsIgnoreCase(languageName) || x.lang.isEmpty()).collect(Collectors.toList())) {
             for (int i = 0; i < codeLines.size(); i++) {
                 if (codeLines.get(i).contains(result.name)) {
 

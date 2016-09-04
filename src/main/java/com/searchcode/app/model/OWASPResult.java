@@ -11,12 +11,14 @@ public class OWASPResult {
     public String name;
     public String desc;
     public String type;
+    public String lang;
 
     public OWASPResult() {}
 
-    public OWASPResult(String name, String desc, String type) {
+    public OWASPResult(String name, String desc, String type, String lang) {
         this.name = name;
         this.desc = desc;
         this.type = type;
+        this.lang = lang;
     }
 }

@@ -27,82 +27,82 @@ public class OWASPClassifierTest extends TestCase {
     @Test
     public void testClassifyCodeNullReturnsEmpty() {
         OWASPClassifier oc = new OWASPClassifier();
-        assertThat(oc.classifyCode(null)).isNotNull()
-                                         .isEmpty();
+        assertThat(oc.classifyCode(null, "")).isNotNull()
+                                             .isEmpty();
     }
 
     @Test
     public void testClassifyCodeEmptyReturnsEmpty() {
         OWASPClassifier oc = new OWASPClassifier();
         List<String> codeLines = new ArrayList<>();
-        assertThat(oc.classifyCode(codeLines)).isNotNull()
-                                              .isEmpty();
+        assertThat(oc.classifyCode(codeLines, "")).isNotNull()
+                                                  .isEmpty();
     }
 
     @Test
     public void testClassifyCodeNoMatch() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
-        oc.addToDatabase(new OWASPResult("notmatch", "", ""));
+        oc.addToDatabase(new OWASPResult("notmatch", "", "", ""));
 
         List<String> codeLines = new ArrayList<>();
         codeLines.add("something");
-        assertThat(oc.classifyCode(codeLines)).isEmpty();
+        assertThat(oc.classifyCode(codeLines, "")).isEmpty();
     }
 
     @Test
     public void testClassifyCodeSingleMatch() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
-        oc.addToDatabase(new OWASPResult("match", "", ""));
+        oc.addToDatabase(new OWASPResult("match", "", "", ""));
 
         List<String> codeLines = new ArrayList<>();
         codeLines.add("match");
-        assertThat(oc.classifyCode(codeLines)).hasSize(1);
+        assertThat(oc.classifyCode(codeLines, "")).hasSize(1);
     }
 
     @Test
     public void testClassifyCodeMultipleMatch() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
-        oc.addToDatabase(new OWASPResult("match", "", ""));
-        oc.addToDatabase(new OWASPResult("something", "", ""));
+        oc.addToDatabase(new OWASPResult("match", "", "", ""));
+        oc.addToDatabase(new OWASPResult("something", "", "", ""));
 
         List<String> codeLines = new ArrayList<>();
         codeLines.add("match something");
-        assertThat(oc.classifyCode(codeLines)).hasSize(2);
+        assertThat(oc.classifyCode(codeLines, "")).hasSize(2);
     }
 
     @Test
     public void testClassifyCodeSingleMatchFirstLineCorrectLineNumber() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
-        oc.addToDatabase(new OWASPResult("match", "", ""));
+        oc.addToDatabase(new OWASPResult("match", "", "", ""));
 
         List<String> codeLines = new ArrayList<>();
         codeLines.add("match");
 
-        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(0)).isEqualTo(0);
+        assertThat(oc.classifyCode(codeLines, "").get(0).getMatchingLines().get(0)).isEqualTo(0);
     }
 
     @Test
     public void testClassifyCodeSingleMatchSecondLineCorrectLineNumber() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
-        oc.addToDatabase(new OWASPResult("match", "", ""));
+        oc.addToDatabase(new OWASPResult("match", "", "", ""));
 
         List<String> codeLines = new ArrayList<>();
         codeLines.add("nope");
         codeLines.add("match");
 
-        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(0)).isEqualTo(1);
+        assertThat(oc.classifyCode(codeLines, "").get(0).getMatchingLines().get(0)).isEqualTo(1);
     }
 
     @Test
     public void testClassifyCodeMultipleMatchCorrectLineNumbersSingleMatch() {
         OWASPClassifier oc = new OWASPClassifier();
         oc.clearDatabase();
-        oc.addToDatabase(new OWASPResult("match", "", ""));
+        oc.addToDatabase(new OWASPResult("match", "", "", ""));
 
         List<String> codeLines = new ArrayList<>();
         codeLines.add("nope");
@@ -110,8 +110,30 @@ public class OWASPClassifierTest extends TestCase {
         codeLines.add("nope");
         codeLines.add("match");
 
-        assertThat(oc.classifyCode(codeLines)).hasSize(1);
-        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(0)).isEqualTo(1);
-        assertThat(oc.classifyCode(codeLines).get(0).getMatchingLines().get(1)).isEqualTo(3);
+        assertThat(oc.classifyCode(codeLines, "")).hasSize(1);
+        assertThat(oc.classifyCode(codeLines, "").get(0).getMatchingLines().get(0)).isEqualTo(1);
+        assertThat(oc.classifyCode(codeLines, "").get(0).getMatchingLines().get(1)).isEqualTo(3);
+    }
+
+    @Test
+    public void testClassifyCodeSingleMatchWrongLanguage() {
+        OWASPClassifier oc = new OWASPClassifier();
+        oc.clearDatabase();
+        oc.addToDatabase(new OWASPResult("match", "", "", "C#"));
+
+        List<String> codeLines = new ArrayList<>();
+        codeLines.add("match");
+        assertThat(oc.classifyCode(codeLines, "Java")).hasSize(0);
+    }
+
+    @Test
+    public void testClassifyCodeSingleMatchRightLanguage() {
+        OWASPClassifier oc = new OWASPClassifier();
+        oc.clearDatabase();
+        oc.addToDatabase(new OWASPResult("match", "", "", "java"));
+
+        List<String> codeLines = new ArrayList<>();
+        codeLines.add("match");
+        assertThat(oc.classifyCode(codeLines, "Java")).hasSize(1);
     }
 }
