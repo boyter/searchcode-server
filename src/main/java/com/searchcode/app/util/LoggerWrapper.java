@@ -4,8 +4,10 @@ import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.*;
 
@@ -68,17 +70,17 @@ public class LoggerWrapper {
     }
 
     public void info(String toLog) {
-        this.recentCache.put(System.currentTimeMillis(), toLog);
+        this.recentCache.put(System.currentTimeMillis(), "INFO: " + new Date().toString() + ": " + toLog);
         this.logger.info(toLog);
     }
 
     public void warning(String toLog) {
-        this.recentCache.put(System.currentTimeMillis(), toLog);
+        this.recentCache.put(System.currentTimeMillis(), "WARNING: " + new Date().toString() + ": " + toLog);
         this.logger.warning(toLog);
     }
 
     public void severe(String toLog) {
-        this.recentCache.put(System.currentTimeMillis(), toLog);
+        this.recentCache.put(System.currentTimeMillis(), "SEVERE: " + new Date().toString() + ": " + toLog);
         this.logger.warning(toLog);
     }
 

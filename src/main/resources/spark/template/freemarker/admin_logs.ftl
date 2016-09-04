@@ -15,11 +15,9 @@
 
 <div class="row">
 <#list logs>
-    <ul>
     <#items as result>
-          <li>${result}</ol>
+          <pre>${result}</pre>
     </#items>
-    </ul>
 </#list>
 </div>
 
