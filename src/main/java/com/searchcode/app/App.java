@@ -22,6 +22,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.io.IOUtils;
@@ -53,7 +54,7 @@ public class App {
 
     private static final boolean ISCOMMUNITY = false;
     private static final String VERSION = "1.2.4";
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(600, TimeUnit.SECONDS).build();
     public static Injector injector;
     public static SearchcodeLib scl;
@@ -831,6 +832,22 @@ public class App {
             map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_reports.ftl");
+        }, new FreeMarkerEngine());
+
+        get("/admin/logs/", (request, response) -> {
+            if(getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return null;
+            }
+
+            Map<String, Object> map = new HashMap<>();
+
+            map.put("logs", Singleton.getLogger().getLogs());
+            map.put("logoImage", getLogo());
+            map.put("isCommunity", ISCOMMUNITY);
+
+            return new ModelAndView(map, "admin_logs.ftl");
         }, new FreeMarkerEngine());
 
         post("/admin/settings/", (request, response) -> {

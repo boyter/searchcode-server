@@ -12,6 +12,7 @@ import com.searchcode.app.dao.*;
 import com.searchcode.app.service.ApiService;
 import com.searchcode.app.service.IApiService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 
 import java.util.logging.Logger;
@@ -21,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class InjectorConfig extends AbstractModule {
 
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     @Override
     protected void configure() {

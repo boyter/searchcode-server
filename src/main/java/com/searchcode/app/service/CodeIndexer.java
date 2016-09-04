@@ -162,11 +162,8 @@ public class CodeIndexer {
 
                 String indexContents = Values.EMPTYSTRING;
 
-                Singleton.getLogger().info("Splitting keywords");
                 indexContents += scl.splitKeywords(codeIndexDocument.getContents());
-                Singleton.getLogger().info("Cleaning pipeline");
                 indexContents += scl.codeCleanPipeline(codeIndexDocument.getContents());
-                Singleton.getLogger().info("Adding to spelling corrector");
                 scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
                 indexContents = indexContents.toLowerCase();

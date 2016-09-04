@@ -8,14 +8,17 @@
     <li role="presentation"><a href="/admin/bulk/">Repository Bulk Admin</a></li>
     <li role="presentation"><a href="/admin/api/">API</a></li>
     <li role="presentation"><a href="/admin/settings/">Settings</a></li>
-    <li role="presentation" class="active"><a href="/admin/reports/">Reports</a></li>
-    <li role="presentation"><a href="/admin/logs/">Logs</a></li>
+    <li role="presentation" class="active"><a href="/admin/logs/">Logs</a></li>
 </ul>
 </div>
 <br>
 
 <div class="row">
-Reports go here
+<#list logs>
+    <#items as result>
+          <pre>${result}</pre>
+    </#items>
+</#list>
 </div>
 
 </@layout.masterTemplate>

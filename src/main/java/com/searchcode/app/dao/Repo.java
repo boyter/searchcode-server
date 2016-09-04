@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,7 +31,7 @@ import java.util.logging.Logger;
  */
 public class Repo implements IRepo {
 
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
     private AbstractMap<String, RepoResult> cache = Singleton.getRepoCache();
     private IDatabaseConfig dbConfig;
     private AbstractMap<String, Object> genericCache = Singleton.getGenericCache();

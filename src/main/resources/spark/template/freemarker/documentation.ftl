@@ -693,7 +693,7 @@ print data['sucessful'], data['message']</textarea>
               <li>Number of repositories indexed</li>
               <li>Approx size of repositories when checked out</li>
               <li>Java version</li>
-              <li>Details from the console output</li>
+              <li>Details from the console output or log screen</li>
               <li>Hardware specifications</li>
             </ul>
             </p>

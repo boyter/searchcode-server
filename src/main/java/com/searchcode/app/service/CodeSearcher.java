@@ -11,6 +11,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.util.CodeAnalyzer;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
@@ -48,7 +49,7 @@ public class CodeSearcher {
     public String CODEFIELD = Values.CONTENTS;
     public int PAGELIMIT = 20;
 
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private StatsService statsService = new StatsService();
 

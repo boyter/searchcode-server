@@ -11,6 +11,7 @@ import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,7 +28,7 @@ import java.util.logging.Logger;
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
 public class Api implements IApi {
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private IDatabaseConfig dbConfig;
 

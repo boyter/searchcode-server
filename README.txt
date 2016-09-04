@@ -96,6 +96,9 @@ can be taken using the listed alternate licence on 2 July 2013. This licence, ve
 After the following date 27-August-2019 you may choose to use this software, version "1.2.3" or "1.2.4" 
 under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
+OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ and https://www.owasp.org/index.php/Category:OWASP_Code_Crawler This database was modified to JSON and with slight corrections to
+spelling and puncuation were applicable.
+
 
 Change Log
 ==========
@@ -103,6 +106,7 @@ Change Log
 XX XXXXXX XXXX - 1.3.0
  - Filters now apply instantly when clicked option is toggleable
  - OWASP checking on code result pages based on OWASP code crawler
+ - Log Tail screen added to Admin
 
 30 August 2016 - 1.2.4
  - Add gzip compression to most used routes

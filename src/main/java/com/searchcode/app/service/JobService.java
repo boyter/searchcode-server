@@ -12,6 +12,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import org.quartz.*;
 
@@ -28,7 +29,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 public class JobService implements IJobService {
 
-    private static final Logger LOGGER = Singleton.getLogger();
+    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private IRepo repo = null;
     private int UPDATETIME = 600;
