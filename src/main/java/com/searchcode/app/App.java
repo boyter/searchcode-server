@@ -681,8 +681,8 @@ public class App {
             map.put(Values.OWASPDATABASELOCATION, Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION));
 
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
-
             map.put("version", VERSION);
+            map.put("currentdatetime", new Date().toString());
 
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);

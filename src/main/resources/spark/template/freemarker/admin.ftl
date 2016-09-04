@@ -22,6 +22,11 @@
     </tr>
 
     <tr>
+    <td><b>Current Server Time</b></td>
+    <td>${currentdatetime}</td>
+    </tr>
+
+    <tr>
     <td><b>Repositories Tracked</b></td>
     <td>${repoCount}</td>
     </tr>
