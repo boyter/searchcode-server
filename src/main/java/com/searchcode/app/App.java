@@ -22,7 +22,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
 import org.apache.commons.io.IOUtils;
@@ -39,7 +38,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static spark.Spark.*;

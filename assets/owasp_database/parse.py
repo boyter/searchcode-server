@@ -41,6 +41,18 @@ keywords = '''password'''.split(',')
 desc = '''It is inadvisable to embed passwords in source code.'''
 results = addkeywords(existingnames, keywords, desc, results, '')
 
+keywords = '''HtmlEncode,URLEncode,<applet>,<frameset>,<embed>,<frame>,<iframe>,<img>,<style>,<layer>,<ilayer>,<meta>,<object>,<body>,<frame security,<iframe security '''.split(',')
+desc = '''Many of the HTML tags below can be used for client side attacks such as cross site scripting. It is important to examine the context in which these tags are used and to examine any relevant data validation associated with the display and use of such tags within a web application.'''
+results = addkeywords(existingnames, keywords, desc, results, 'HTML')
+
+keywords = '''response.write,<%=,HttpUtility,HtmlEncode,UrlEncode,innerText,innerHTML'''.split(',')
+desc = '''Responses which go unvalidated or which echo external input without data validation are key areas to examine. Many client side attacks result from poor response validation. XSS relies on this somewhat.'''
+results = addkeywords(existingnames, keywords, desc, results, '')
+
+keywords = '''exec sp_executesql,execute sp_executesql,select from,Insert,update,delete from where,delete,exec sp_,execute sp_,exec xp_,execute sp_,exec @,execute @,executestatement,executeSQL,setfilter,executeQuery,GetQueryResultInXML,adodb,sqloledb,sql server,driver,Server.CreateObject,.Provider,.Open,ADODB.recordset,New OleDbConnection,ExecuteReader,DataSource,SqlCommand,Microsoft.Jet,SqlDataReader,ExecuteReader,GetString,SqlDataAdapter,CommandType,StoredProcedure,System.Data.sql'''.split(',')
+desc = '''Locating where a database may be involved in the code is an important aspect of the code review. Looking at the database code will help determine if the application is vulnerable to SQL injection. One aspect of this is to verify that the code uses either SqlParameter, OleDbParameter, or OdbcParameter(System.Data.SqlClient). These are typed and treat parameters as the literal value and not executable code in the database.'''
+results = addkeywords(existingnames, keywords, desc, results, '')
+
 keywords = '''eval(,document.cookie,document.referrer,document.attachEvent,document.body,document.body.innerHtml,document.body.innerText,document.close,document.create,document.createElement,document.execCommand,document.forms[0].action,document.location,document.open,document.URL,document.URLUnencoded,document.write,document.writeln,location.hash,location.href,location.search,window.alert,window.attachEvent,window.createRequest,window.execScript,window.location,window.open,window.navigate,window.setInterval,window.setTimeout,XMLHTTP,request.accepttypes,request.browser,request.files,request.headers,request.httpmethod,request.item,request.querystring,request.form ,request.cookies,request.certificate,request.rawurl,request.servervariables,request.url,request.urlreferrer,request.useragent,request.userlanguages,request.IsSecureConnection,request.TotalBytes,request.BinaryRead,InputStream,HiddenField.Value,TextBox.Text,recordSet'''.split(',')
 desc = '''Ajax and JavaScript have brought functionality back to the client side, which has brought a number of old security issues back to the forefront. The following keywords relate to API calls used to manipulate user state or the control the browser. The event of AJAX and other Web 2.0 paradigms has pushed security concerns back to the client side, but not excluding traditional server side security concerns.'''
 results = addkeywords(existingnames, keywords, desc, results, 'javascript')

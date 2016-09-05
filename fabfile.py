@@ -56,6 +56,7 @@ def build_release():
         os.makedirs('./searchcode-server/')
     local('rm -rf ./searchcode-server/*')
     local('mv ./release ./searchcode-server')
+    local('cp -R include ./searchcode-server/release/')
     local('tar cvzf searchcode-server.tar.gz searchcode-server')
 
 def build_community_release():
@@ -72,6 +73,7 @@ def build_community_release():
         os.makedirs('./searchcode-server-community/')
     local('rm -rf ./searchcode-server-community/*')
     local('mv ./release ./searchcode-server-community')
+    local('cp -R include ./searchcode-server-community/release/')
     local('tar cvzf searchcode-server-community.tar.gz searchcode-server-community')
 
 def compile_js():

@@ -2954,7 +2954,7 @@
         <k_owaspguidelines>TODO</k_owaspguidelines>
     </KeyPointer>
     <KeyPointer>
-        <k_name>select</k_name>
+        <k_name>select *</k_name>
         <k_level>2</k_level>
         <k_description>Using SELECT * makes your code vulnerable to changes in underlying table(s) and as such should be avoided</k_description>
         <link>http://www.owasp.org</link>
