@@ -23,6 +23,10 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class EnqueueRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return;
+        }
+
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 

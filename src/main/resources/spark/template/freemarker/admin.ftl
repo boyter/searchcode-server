@@ -15,11 +15,24 @@
 
 <div class="row">
 
+
+
+
 <table width="100%">
 
     <tr>
-    <td width="50%"><b>Server Version</b></td>
-    <td width="50%">${version} <a id="check-version" href="#">(check if latest version)</a><span id="latest-check"></span></td>
+    <td width="50%"><b>Admin Functions</b></td>
+    <td width="50%"><a id="recrawl-reindex" href="#" class="btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a> <a id="force-queue" href="#" class="btn btn-danger btn-xs" role="button">Force Index Queue</a> <span id="admin-message"></span></td>
+    </tr>
+
+    <tr>
+    <td>&nbsp;</td>
+    <td>&nbsp;</td>
+    </tr>
+
+    <tr>
+    <td><b>Server Version</b></td>
+    <td>${version} <a id="check-version" href="#">(check if latest version)</a><span id="latest-check"></span></td>
     </tr>
 
     <tr>
@@ -165,6 +178,35 @@ $(document).ready(function(){
                 $('#latest-check').html('Was unable to check this version. Refresh the page and try again.');
           });
     });
+
+    $('#force-queue').click(function(e) {
+            e.preventDefault();
+            var thus = $(this);
+
+            $.ajax('/admin/forcequeue/')
+               .done(function(data, textStatus, jqXHR) {
+                    $('#admin-message').html('<i>Queue forced successfully.</i>');
+               }).fail(function(xhr, ajaxOptions, thrownError) {
+                    $('#admin-message').html('<i>Queue force failed. Please try again later.</i>');
+               });
+    });
+
+
+    $('#recrawl-reindex').click(function(e) {
+                e.preventDefault();
+                var thus = $(this);
+
+                $('#admin-message').html('<i>Please wait...</i>');
+
+                $.ajax('/admin/rebuild/')
+                   .done(function(data, textStatus, jqXHR) {
+                        $('#admin-message').html('<i>Rebuild reindex run successfully.</i>');
+                   }).fail(function(xhr, ajaxOptions, thrownError) {
+                        $('#admin-message').html('<i>Rebuild reindex failed. Please try again later.</i>');
+                   });
+    });
+
+
 });
 </script>
 

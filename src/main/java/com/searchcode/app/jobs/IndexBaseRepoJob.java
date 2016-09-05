@@ -79,6 +79,9 @@ public abstract class IndexBaseRepoJob implements Job {
             return;
         }
 
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return;
+        }
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
@@ -190,6 +193,10 @@ public abstract class IndexBaseRepoJob implements Job {
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
 
+            if (Singleton.getBackgroundJobsEnabled() == false) {
+                return;
+            }
+
             while(CodeIndexer.shouldPauseAdding()) {
                 Singleton.getLogger().info("Pausing parser.");
                 try {
@@ -276,6 +283,10 @@ public abstract class IndexBaseRepoJob implements Job {
             Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+                    if (Singleton.getBackgroundJobsEnabled() == false) {
+                        return FileVisitResult.TERMINATE;
+                    }
 
                     while (CodeIndexer.shouldPauseAdding()) {
                         Singleton.getLogger().info("Pausing parser.");

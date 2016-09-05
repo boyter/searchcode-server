@@ -10,7 +10,6 @@ package com.searchcode.app.service;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.searchcode.app.config.InjectorConfig;
-import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
@@ -22,13 +21,10 @@ import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
-import java.io.IOException;
 import java.util.AbstractMap;
-import java.util.LinkedHashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.*;
 
 /**
  * Lazy Singleton Implementation
@@ -52,6 +48,7 @@ public final class Singleton {
     private static Scheduler scheduler = null;
     private static Repo repo = null;
 
+    private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueDeleteRepoQueue = null; // Used to queue the next repository to be deleted
@@ -207,5 +204,13 @@ public final class Singleton {
         searchcodeLib = new SearchcodeLib(data);
 
         return searchcodeLib;
+    }
+
+    public static synchronized boolean getBackgroundJobsEnabled() {
+        return backgroundJobsEnabled;
+    }
+
+    public static synchronized void setBackgroundJobsEnabled(boolean jobsEnabled) {
+        backgroundJobsEnabled = jobsEnabled;
     }
 }

@@ -30,6 +30,10 @@ import java.util.AbstractMap;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return;
+        }
+
         UniqueRepoQueue deleteRepoQueue = Singleton.getUniqueDeleteRepoQueue();
         RepoResult rr = null;
 

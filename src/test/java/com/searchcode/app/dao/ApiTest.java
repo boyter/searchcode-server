@@ -22,7 +22,7 @@ public class ApiTest extends TestCase {
         Api api = injector.getInstance(Api.class);
 
         api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
-        //api.deleteApiByPublicKey("publicKey");
+        api.deleteApiByPublicKey("publicKey");
     }
 
     public void testSaveRetrieve() {

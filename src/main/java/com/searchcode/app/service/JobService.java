@@ -14,8 +14,13 @@ import com.searchcode.app.jobs.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.UniqueRepoQueue;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
+import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -177,6 +182,7 @@ public class JobService implements IJobService {
      * TODO fix so this can only run once
      * TODO move the indexer job start into method like the above ones
      */
+    @Override
     public void initialJobs() {
         try {
             Scheduler scheduler = Singleton.getScheduler();
@@ -218,5 +224,63 @@ public class JobService implements IJobService {
         } catch(SchedulerException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
+    }
+
+    @Override
+    public boolean rebuildAll() {
+        // Turn off everything
+        Singleton.getLogger().info("Recrawl and rebuild of index starting");
+        Singleton.setBackgroundJobsEnabled(false);
+        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        int attempt = 0;
+        boolean successful = false;
+
+        String repoLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+        String indexLocation = Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION);
+
+        while (attempt < 3) {
+            try {
+                FileUtils.deleteDirectory(new File(repoLocation));
+                FileUtils.deleteDirectory(new File(indexLocation)); // Maybe use index.deleteAll?
+                successful = true;
+                Singleton.setBackgroundJobsEnabled(true);
+                Singleton.getLogger().info("Recrawl and rebuild of index sucessful");
+                break;
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            }
+
+            try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        }
+
+        return successful;
+    }
+
+    @Override
+    public boolean forceEnqueue() {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return false;
+        }
+
+        UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
+        UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+
+        // Get all of the repositories and enqueue them
+        List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
+        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        for(RepoResult rr: repoResultList) {
+            switch (rr.getScm().toLowerCase()) {
+                case "git":
+                    Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
+                    repoGitQueue.add(rr);
+                    break;
+                case "svn":
+                    Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
+                    repoSvnQueue.add(rr);
+                    break;
+            }
+        }
+
+        return true;
     }
 }

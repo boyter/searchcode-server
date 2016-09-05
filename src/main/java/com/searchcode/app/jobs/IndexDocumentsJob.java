@@ -22,6 +22,10 @@ import java.io.IOException;
 public class IndexDocumentsJob implements Job {
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return;
+        }
+        
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY + 1);
             int codeIndexQueueSize = Singleton.getCodeIndexQueue().size();

@@ -10,4 +10,6 @@ package com.searchcode.app.service;
 
 public interface IJobService {
     void initialJobs();
+    boolean rebuildAll();
+    boolean forceEnqueue();
 }
