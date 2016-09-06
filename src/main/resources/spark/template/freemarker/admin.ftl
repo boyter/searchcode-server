@@ -15,9 +15,6 @@
 
 <div class="row">
 
-
-
-
 <table width="100%">
 
     <tr>

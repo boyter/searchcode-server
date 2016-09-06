@@ -15,14 +15,15 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.apache.commons.io.FileUtils;
-import org.quartz.*;
+import org.quartz.JobDetail;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
