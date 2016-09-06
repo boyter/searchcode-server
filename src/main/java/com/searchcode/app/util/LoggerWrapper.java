@@ -1,5 +1,6 @@
 package com.searchcode.app.util;
 
+import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 
@@ -20,7 +21,7 @@ public class LoggerWrapper {
 
     private Logger logger = null;
 
-    private RecentCache<Long, String> recentCache = null;
+    private EvictingQueue recentCache = null;
 
     public LoggerWrapper() {
         try {
@@ -66,31 +67,26 @@ public class LoggerWrapper {
             logger.warning("//////////////////////////////////////////////////////////////////////");
         }
 
-        this.recentCache = new RecentCache<>(1000);
+        this.recentCache = EvictingQueue.create(1000);
     }
 
     public void info(String toLog) {
-        this.recentCache.put(System.currentTimeMillis(), "INFO: " + new Date().toString() + ": " + toLog);
+        this.recentCache.add("INFO: " + new Date().toString() + ": " + toLog);
         this.logger.info(toLog);
     }
 
     public void warning(String toLog) {
-        this.recentCache.put(System.currentTimeMillis(), "WARNING: " + new Date().toString() + ": " + toLog);
+        this.recentCache.add("WARNING: " + new Date().toString() + ": " + toLog);
         this.logger.warning(toLog);
     }
 
     public void severe(String toLog) {
-        this.recentCache.put(System.currentTimeMillis(), "SEVERE: " + new Date().toString() + ": " + toLog);
+        this.recentCache.add("SEVERE: " + new Date().toString() + ": " + toLog);
         this.logger.warning(toLog);
     }
 
     public List<String> getLogs() {
-        List<String> values = new ArrayList<>();
-
-        for (String value: this.recentCache.values()) {
-            values.add(value);
-        }
-
+        List<String> values = new ArrayList(this.recentCache);
         return Lists.reverse(values);
     }
 }
