@@ -12,6 +12,7 @@ import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import org.apache.commons.io.FilenameUtils;
+import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -21,6 +22,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.quartz.Job;
@@ -54,6 +56,50 @@ public class IndexGitHistoryJob implements Job {
         String repoLocations = data.get("REPOLOCATIONS").toString();
 
         // Clone the repository then
+    }
+
+
+    public RepositoryChanged cloneGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
+        boolean successful = false;
+        Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
+
+        try {
+            CloneCommand cloneCommand = Git.cloneRepository();
+            cloneCommand.setURI(repoRemoteLocation);
+            cloneCommand.setDirectory(new File(repoLocations + "/" + repoName + "/"));
+            cloneCommand.setCloneAllBranches(true);
+            cloneCommand.setBranch(branch);
+
+            if(useCredentials) {
+                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+            }
+
+            cloneCommand.call();
+
+            successful = true;
+
+        } catch (GitAPIException | InvalidPathException ex) {
+            successful = false;
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+        }
+
+        RepositoryChanged repositoryChanged = new RepositoryChanged(successful);
+        repositoryChanged.setClone(true);
+
+        return repositoryChanged;
+    }
+
+
+    public void getGitChangeSets() throws IOException, GitAPIException {
+        Repository localRepository = new FileRepository(new File("./repo/.timelord/test/.git"));
+
+        Git git = new Git(localRepository);
+        Iterable<RevCommit> logs = git.log().call();
+
+        for(RevCommit rev: logs) {
+            System.out.println(rev.getName());
+            git.checkout().setName(rev.getName()).call();
+        }
     }
 
     /**
