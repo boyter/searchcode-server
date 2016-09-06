@@ -1027,18 +1027,22 @@ public class App {
             return true;
         }, new JsonTransformer());
 
-        get("/admin/rebuild/", "application/json", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+        post("/admin/rebuild/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return false;
             }
 
-            return js.rebuildAll();
+            boolean result = js.rebuildAll();
+            if (result) {
+                js.forceEnqueue();
+            }
+            return result;
         }, new JsonTransformer());
 
-        get("/admin/forcequeue/", "application/json", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+        post("/admin/forcequeue/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return false;

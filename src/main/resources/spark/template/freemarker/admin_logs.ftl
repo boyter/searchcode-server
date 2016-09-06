@@ -14,6 +14,8 @@
 <br>
 
 <div class="row">
+<p>This page will display the last 1,000 log entries for all logging levels.</p>
+
 <#list logs>
     <#items as result>
           <pre>${result}</pre>

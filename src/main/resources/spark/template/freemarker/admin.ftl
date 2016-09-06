@@ -183,7 +183,7 @@ $(document).ready(function(){
             e.preventDefault();
             var thus = $(this);
 
-            $.ajax('/admin/forcequeue/')
+            $.post('/admin/forcequeue/')
                .done(function(data, textStatus, jqXHR) {
                     $('#admin-message').html('<i>Queue forced successfully.</i>');
                }).fail(function(xhr, ajaxOptions, thrownError) {
@@ -193,17 +193,20 @@ $(document).ready(function(){
 
 
     $('#recrawl-reindex').click(function(e) {
-                e.preventDefault();
-                var thus = $(this);
+        e.preventDefault();
+        var thus = $(this);
 
-                $('#admin-message').html('<i>Please wait...</i>');
+        var result = confirm("Rebuild everything? Searches will be unreliable until finished.");
+        if (result === true) {
+            $('#admin-message').html('<i>Please wait...</i>');
 
-                $.ajax('/admin/rebuild/')
-                   .done(function(data, textStatus, jqXHR) {
-                        $('#admin-message').html('<i>Rebuild reindex run successfully.</i>');
-                   }).fail(function(xhr, ajaxOptions, thrownError) {
-                        $('#admin-message').html('<i>Rebuild reindex failed. Please try again later.</i>');
-                   });
+            $.post('/admin/rebuild/')
+               .done(function(data, textStatus, jqXHR) {
+                    $('#admin-message').html('<i>Rebuild reindex run successfully.</i>');
+               }).fail(function(xhr, ajaxOptions, thrownError) {
+                    $('#admin-message').html('<i>Rebuild reindex failed. Please try again later.</i>');
+               });
+        }
     });
 
 
