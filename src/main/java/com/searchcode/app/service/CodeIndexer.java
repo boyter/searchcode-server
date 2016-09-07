@@ -202,6 +202,114 @@ public class CodeIndexer {
     }
 
     /**
+     * Given a queue of documents to index, index them by popping the queue limited to 1000 items.
+     * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
+     * index.
+     * TODO investigate how Lucene deals with multiple writes
+     * TODO make the 1000 limit configurable
+     * TODO there appears to be something in here causing some serious slowdowns
+     */
+    public static synchronized void indexTimeDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
+        // Index all documents and commit at the end for performance gains
+        Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXLOCATION, Values.DEFAULTTIMEINDEXLOCATION)));
+        Directory facetsdir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXFACETLOCATION, Values.DEFAULTTIMEINDEXFACETLOCATION)));
+
+        Analyzer analyzer = new CodeAnalyzer();
+        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+        FacetsConfig facetsConfig = new FacetsConfig();
+        SearchcodeLib scl = new SearchcodeLib();
+
+        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+
+        IndexWriter writer = new IndexWriter(dir, iwc);
+        TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(facetsdir);
+
+
+        try {
+            CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
+            int count = 0;
+
+            while (codeIndexDocument != null) {
+                Singleton.getLogger().info("Indexing time file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
+                Singleton.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
+
+                Document doc = new Document();
+                // Path is the primary key for documents
+                // needs to include repo location, project name and then filepath including file
+                Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
+                doc.add(pathField);
+
+                // Add in facets
+                facetsConfig = new FacetsConfig();
+                facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
+                facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
+                facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
+
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
+                }
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
+                }
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
+                }
+
+                if (Helpers.isNullEmptyOrWhitespace("") == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTHDAY, ""));
+                }
+                if (Helpers.isNullEmptyOrWhitespace("") == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTH, ""));
+                }
+                if (Helpers.isNullEmptyOrWhitespace("") == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEAR, ""));
+                }
+
+                String indexContents = Values.EMPTYSTRING;
+
+                indexContents += scl.splitKeywords(codeIndexDocument.getContents());
+                indexContents += scl.codeCleanPipeline(codeIndexDocument.getContents());
+                scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
+
+                indexContents = indexContents.toLowerCase();
+
+                doc.add(new TextField(Values.REPONAME, codeIndexDocument.getRepoName(), Field.Store.YES));
+                doc.add(new TextField(Values.FILENAME, codeIndexDocument.getFileName(), Field.Store.YES));
+                doc.add(new TextField(Values.FILELOCATION, codeIndexDocument.getFileLocation(), Field.Store.YES));
+                doc.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+                doc.add(new TextField(Values.MD5HASH, codeIndexDocument.getMd5hash(), Field.Store.YES));
+                doc.add(new TextField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName(), Field.Store.YES));
+                doc.add(new IntField(Values.CODELINES, codeIndexDocument.getCodeLines(), Field.Store.YES));
+                doc.add(new TextField(Values.CONTENTS, indexContents, Field.Store.NO));
+                doc.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+                doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
+
+                doc.add(new TextField(Values.REVISION, "", Field.Store.YES));
+                doc.add(new TextField(Values.DATEYEARMONTHDAY, "", Field.Store.YES));
+
+                // Extra metadata in this case when it was last indexed
+                doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
+
+                writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxoWriter, doc));
+
+                count++;
+                if (count >= 1000) { // Only index 1000 documents at most each time
+                    codeIndexDocument = null;
+                }
+                else {
+                    codeIndexDocument = codeIndexDocumentQueue.poll();
+                }
+
+            }
+        }
+        finally {
+            Singleton.getLogger().info("Closing writers");
+            writer.close();
+            taxoWriter.close();
+        }
+    }
+
+    /**
      * Possibly better in ultra low memory environments? Reuses the above method by creating a queue with one
      * element and passes it in.
      */

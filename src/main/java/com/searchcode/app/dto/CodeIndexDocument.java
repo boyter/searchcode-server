@@ -20,6 +20,8 @@ public class CodeIndexDocument {
     private String contents;
     private String repoRemoteLocation;
     private String codeOwner;
+    private String revision;
+    private String yearMonthDay;
 
     public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner) {
         setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
@@ -121,5 +123,21 @@ public class CodeIndexDocument {
 
     public void setCodeOwner(String codeOwner) {
         this.codeOwner = codeOwner;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
+
+    public String getYearMonthDay() {
+        return yearMonthDay;
+    }
+
+    public void setYearMonthDay(String yearMonthDay) {
+        this.yearMonthDay = yearMonthDay;
     }
 }

@@ -22,7 +22,11 @@ public class Values {
     public static String INDEXLOCATION = "index_location";
     public static String DEFAULTINDEXLOCATION = "./index/";
     public static String FACETSLOCATION = "facets_location";
-    public static String DEFAULTFACETSLOCATION = "./index/facets/";
+    public static String DEFAULTFACETSLOCATION = "./index/facet/";
+    public static String TIMEINDEXLOCATION = "timeindex_location";
+    public static String DEFAULTTIMEINDEXLOCATION = "./index/time/";
+    public static String TIMEINDEXFACETLOCATION = "timeindex_facets_location";
+    public static String DEFAULTTIMEINDEXFACETLOCATION = "./index/time/facet/";
     public static String REPOSITORYLOCATION = "repository_location";
     public static String DEFAULTREPOSITORYLOCATION = "./repo/";
     public static String CHECKREPOCHANGES = "check_repo_chages";
@@ -68,6 +72,10 @@ public class Values {
     public static String REPONAME = "reponame";
     public static String MODIFIED = "modified";
     public static String CODEOWNER = "codeowner";
+    public static String REVISION = "revision";
+    public static String DATEYEARMONTHDAY = "dateyearmonthday"; // EG 20160523
+    public static String DATEYEARMONTH = "dateyearmonth"; // EG 201605
+    public static String DATEYEAR = "dateyear"; // EG 2016
 
     // Random
     public static String USERSESSIONID = "admin_user";
