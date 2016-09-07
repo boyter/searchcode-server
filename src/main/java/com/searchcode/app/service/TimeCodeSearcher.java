@@ -105,6 +105,7 @@ public class TimeCodeSearcher {
      * inside lucene itself as using raw queries to pull back the file results in no matches, and yet it does appear
      * when not limiting to the repo
      * TODO investigate the lucene issue that occurs here mentioned above
+     * TODO needs to use the revision number here as well to get the right value
      */
     public CodeResult getByRepoFileName(String repo, String fileName) {
         CodeResult codeResult = null;
