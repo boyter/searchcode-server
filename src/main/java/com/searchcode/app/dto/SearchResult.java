@@ -21,6 +21,9 @@ public class SearchResult {
     private List<CodeFacetLanguage> languageFacetResults = new ArrayList<>();
     private List<CodeFacetRepo> repoFacetResults = new ArrayList<>();
     private List<CodeFacetOwner> repoOwnerResults = new ArrayList<>();
+    private List<CodeFacetYearMonthDay> repoFacetYearMonthDay = new ArrayList<>();
+    private List<CodeFacetYearMonth> repoFacetYearMonth = new ArrayList<>();
+    private List<CodeFacetYear> repoFacetYear = new ArrayList<>();
 
     public SearchResult() {}
 
@@ -109,5 +112,29 @@ public class SearchResult {
 
     public void setOwnerFacetResults(List<CodeFacetOwner> repoOwnerResults) {
         this.repoOwnerResults = repoOwnerResults;
+    }
+
+    public List<CodeFacetYearMonthDay> getRepoFacetYearMonthDay() {
+        return repoFacetYearMonthDay;
+    }
+
+    public void setRepoFacetYearMonthDay(List<CodeFacetYearMonthDay> repoFacetYearMonthDay) {
+        this.repoFacetYearMonthDay = repoFacetYearMonthDay;
+    }
+
+    public List<CodeFacetYearMonth> getRepoFacetYearMonth() {
+        return repoFacetYearMonth;
+    }
+
+    public void setRepoFacetYearMonth(List<CodeFacetYearMonth> repoFacetYearMonth) {
+        this.repoFacetYearMonth = repoFacetYearMonth;
+    }
+
+    public List<CodeFacetYear> getRepoFacetYear() {
+        return repoFacetYear;
+    }
+
+    public void setRepoFacetYear(List<CodeFacetYear> repoFacetYear) {
+        this.repoFacetYear = repoFacetYear;
     }
 }

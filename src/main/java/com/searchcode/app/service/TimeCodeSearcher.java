@@ -294,10 +294,43 @@ public class TimeCodeSearcher {
         List<CodeFacetLanguage> codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
         List<CodeFacetRepo> repoFacetLanguages = this.getRepoFacetResults(searcher, reader, query);
         List<CodeFacetOwner> repoFacetOwner= this.getOwnerFacetResults(searcher, reader, query);
+        List<CodeFacetYearMonthDay> repoFacetYearMonthDay = this.getYearMonthDayFacetResults(searcher, reader, query);
 
         return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
     }
 
+    /**
+     * Returns the matching yearmonthday facets for a given query
+     */
+    private List<CodeFacetYearMonthDay> getYearMonthDayFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetYearMonthDay> codeFacetYearMonthDay = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.DATEYEARMONTHDAY);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(200, Values.DATEYEARMONTHDAY);
+
+            if(result != null) {
+                int stepThru = result.childCount > 200 ? 200 : result.childCount;
+
+                for (int i = 0; i < stepThru; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        codeFacetYearMonthDay.add(new CodeFacetYearMonthDay(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        }
+        catch(IOException ex) {
+        }
+        catch(Exception ex) {
+        }
+
+        return codeFacetYearMonthDay;
+    }
 
     /**
      * Returns the matching language facets for a given query
