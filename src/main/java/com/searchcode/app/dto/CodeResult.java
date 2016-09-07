@@ -26,6 +26,8 @@ public class CodeResult {
     public String repoName = "";
     public String repoLocation = "";
     public String codeOwner = "";
+    public String revision = "";
+    public String yearMonthDay = "";
 
     public CodeResult(List<String> code, List<CodeMatchResult>matchingResults) {
         this.setCode(code);
@@ -126,5 +128,21 @@ public class CodeResult {
 
     public void setCodeOwner(String codeOwner) {
         this.codeOwner = codeOwner;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
+    }
+
+    public String getYearMonthDay() {
+        return yearMonthDay;
+    }
+
+    public void setYearMonthDay(String yearMonthDay) {
+        this.yearMonthDay = yearMonthDay;
     }
 }

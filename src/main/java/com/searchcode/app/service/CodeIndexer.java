@@ -235,8 +235,8 @@ public class CodeIndexer {
 
                 Document doc = new Document();
                 // Path is the primary key for documents
-                // needs to include repo location, project name and then filepath including file
-                Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
+                // needs to include repo location, project name and then filepath including file and revision
+                Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename() + ":" + codeIndexDocument.getRevision(), Field.Store.YES);
                 doc.add(pathField);
 
                 // Add in facets
@@ -283,7 +283,6 @@ public class CodeIndexer {
                 doc.add(new TextField(Values.CONTENTS, indexContents, Field.Store.NO));
                 doc.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
-
                 doc.add(new TextField(Values.REVISION, codeIndexDocument.getRevision(), Field.Store.YES));
                 doc.add(new TextField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay(), Field.Store.YES));
 
