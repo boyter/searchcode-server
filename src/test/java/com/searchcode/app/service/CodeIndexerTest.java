@@ -45,4 +45,21 @@ public class CodeIndexerTest extends TestCase {
             assertTrue(false);
         }
     }
+
+    // TODO expand on these tests
+    public void testIndexTimeDocuments() {
+        try {
+            CodeIndexDocument cid = new CodeIndexDocument("repoLocationRepoNameLocationFilename", "", "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 0, null, "repoRemoteLocation", "codeOwner");
+            cid.setRevision("99a5a271063def87b2473be79ce6f840d42d1f95");
+            cid.setYearMonthDay("20160101");
+
+            Queue queue = new ConcurrentArrayQueue<CodeIndexDocument>();
+            queue.add(cid);
+
+            CodeIndexer.indexTimeDocuments(queue);
+        }
+        catch(Exception ex) {
+            assertTrue(false);
+        }
+    }
 }

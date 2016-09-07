@@ -255,14 +255,14 @@ public class CodeIndexer {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
 
-                if (Helpers.isNullEmptyOrWhitespace("") == false) {
-                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTHDAY, ""));
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace("") == false) {
-                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTH, ""));
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTH, codeIndexDocument.getYearMonthDay().substring(0, 6)));
                 }
-                if (Helpers.isNullEmptyOrWhitespace("") == false) {
-                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEAR, ""));
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DATEYEAR, codeIndexDocument.getYearMonthDay().substring(0, 4)));
                 }
 
                 String indexContents = Values.EMPTYSTRING;
@@ -284,8 +284,8 @@ public class CodeIndexer {
                 doc.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
 
-                doc.add(new TextField(Values.REVISION, "", Field.Store.YES));
-                doc.add(new TextField(Values.DATEYEARMONTHDAY, "", Field.Store.YES));
+                doc.add(new TextField(Values.REVISION, codeIndexDocument.getRevision(), Field.Store.YES));
+                doc.add(new TextField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay(), Field.Store.YES));
 
                 // Extra metadata in this case when it was last indexed
                 doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
