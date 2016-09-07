@@ -7,6 +7,7 @@
 
 package com.searchcode.app.jobs;
 
+import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.service.Singleton;
@@ -15,16 +16,22 @@ import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
+import org.eclipse.jgit.errors.IncorrectObjectTypeException;
+import org.eclipse.jgit.errors.MissingObjectException;
 import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevTree;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
+import org.eclipse.jgit.treewalk.TreeWalk;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -54,119 +61,90 @@ public class IndexGitHistoryJob implements Job {
 
         JobDataMap data = context.getJobDetail().getJobDataMap();
         String repoLocations = data.get("REPOLOCATIONS").toString();
-
-        // Clone the repository then
     }
-
-
-    public RepositoryChanged cloneGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
-        boolean successful = false;
-        Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
-
-        try {
-            CloneCommand cloneCommand = Git.cloneRepository();
-            cloneCommand.setURI(repoRemoteLocation);
-            cloneCommand.setDirectory(new File(repoLocations + "/" + repoName + "/"));
-            cloneCommand.setCloneAllBranches(true);
-            cloneCommand.setBranch(branch);
-
-            if(useCredentials) {
-                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
-            }
-
-            cloneCommand.call();
-
-            successful = true;
-
-        } catch (GitAPIException | InvalidPathException ex) {
-            successful = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-        }
-
-        RepositoryChanged repositoryChanged = new RepositoryChanged(successful);
-        repositoryChanged.setClone(true);
-
-        return repositoryChanged;
-    }
-
 
     public void getGitChangeSets() throws IOException, GitAPIException {
-        Repository localRepository = new FileRepository(new File("./repo/.timelord/test/.git"));
+        Repository localRepository = new FileRepository(new File("./repo/server/.git"));
 
         Git git = new Git(localRepository);
         Iterable<RevCommit> logs = git.log().call();
 
+        List<String> revisions = new ArrayList<>();
         for(RevCommit rev: logs) {
-            System.out.println(rev.getName());
-            git.checkout().setName(rev.getName()).call();
+            System.out.println(rev.getCommitTime() + " " + rev.getName());
+            revisions.add(rev.getName());
+        }
+        revisions = Lists.reverse(revisions);
+
+        for (int i = 1; i < revisions.size(); i++) {
+            System.out.println("///////////////////////////////////////////////");
+            this.getRevisionChanges(revisions.get(i - 1), revisions.get(i));
+        }
+
+    }
+
+    public void getRevisionChanges(String oldRevison, String newRevision) throws IOException, GitAPIException {
+        Repository localRepository = new FileRepository(new File("./repo/server/.git"));
+        Git git = new Git(localRepository);
+
+        ObjectId oldHead = localRepository.resolve(oldRevison + "^{tree}");
+        ObjectId newHead = localRepository.resolve(newRevision + "^{tree}");
+
+        ObjectReader reader = localRepository.newObjectReader();
+
+        CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+        oldTreeIter.reset(reader, oldHead);
+
+        CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+        newTreeIter.reset(reader, newHead);
+
+
+        List<DiffEntry> entries = git.diff()
+                .setNewTree(newTreeIter)
+                .setOldTree(oldTreeIter)
+                .call();
+
+
+        for( DiffEntry entry : entries ) {
+            if ("DELETE".equals(entry.getChangeType().name())) {
+                System.out.println("DEL " + entry.getOldPath());
+            }
+            else {
+                System.out.println("ADD " + entry.getNewPath());
+                System.out.println(fetchBlob(newRevision, entry.getNewPath()).length());
+            }
         }
     }
 
-    /**
-     * Update a git repository and return if it has changed and the differences
-     */
-    public RepositoryChanged updateGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
-        boolean changed = false;
-        List<String> changedFiles = new ArrayList<>();
-        List<String> deletedFiles = new ArrayList<>();
-        Singleton.getLogger().info("Attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
+    private String fetchBlob(String revSpec, String path) throws MissingObjectException, IncorrectObjectTypeException, IOException {
+
+        Repository localRepository = new FileRepository(new File("./repo/server/.git"));
+
+        // Resolve the revision specification
+        final ObjectId id = localRepository.resolve(revSpec);
+
+        // Makes it simpler to release the allocated resources in one go
+        ObjectReader reader = localRepository.newObjectReader();
 
         try {
-            Repository localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
+            // Get the commit object for that revision
+            RevWalk walk = new RevWalk(reader);
+            RevCommit commit = walk.parseCommit(id);
 
-            Ref head = localRepository.getRef("HEAD");
+            // Get the revision's file tree
+            RevTree tree = commit.getTree();
+            // .. and narrow it down to the single file's path
+            TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
 
-            Git git = new Git(localRepository);
-            git.reset();
-            git.clean();
-
-            PullCommand pullCmd = git.pull();
-
-            if(useCredentials) {
-                pullCmd.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+            if (treewalk != null) {
+                // use the blob id to read the file's data
+                byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
+                return new String(data, "utf-8");
+            } else {
+                return "";
             }
-
-            pullCmd.call();
-            Ref newHEAD = localRepository.getRef("HEAD");
-
-            if(!head.toString().equals(newHEAD.toString())) {
-                changed = true;
-
-                // Get the differences between the the heads which we updated at
-                // and use these to just update the differences between them
-                ObjectId oldHead = localRepository.resolve(head.getObjectId().getName() + "^{tree}");
-                ObjectId newHead = localRepository.resolve(newHEAD.getObjectId().getName() + "^{tree}");
-
-                ObjectReader reader = localRepository.newObjectReader();
-
-                CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-                oldTreeIter.reset(reader, oldHead);
-
-                CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-                newTreeIter.reset(reader, newHead);
-
-
-                List<DiffEntry> entries = git.diff()
-                        .setNewTree(newTreeIter)
-                        .setOldTree(oldTreeIter)
-                        .call();
-
-
-                for( DiffEntry entry : entries ) {
-                    if ("DELETE".equals(entry.getChangeType().name())) {
-                        deletedFiles.add(FilenameUtils.separatorsToUnix(entry.getOldPath()));
-                    }
-                    else {
-                        changedFiles.add(FilenameUtils.separatorsToUnix(entry.getNewPath()));
-                    }
-                }
-            }
-
-        } catch (IOException | GitAPIException | InvalidPathException ex) {
-            changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+        } finally {
+            reader.close();
         }
-
-        return new RepositoryChanged(changed, changedFiles, deletedFiles);
     }
 }
