@@ -244,6 +244,10 @@ public class CodeIndexer {
                 facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
                 facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                 facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
+                facetsConfig.setIndexFieldName(Values.DATEYEARMONTHDAY, Values.DATEYEARMONTHDAY);
+                facetsConfig.setIndexFieldName(Values.DATEYEARMONTH, Values.DATEYEARMONTH);
+                facetsConfig.setIndexFieldName(Values.DATEYEAR, Values.DATEYEAR);
+                facetsConfig.setIndexFieldName(Values.REVISION, Values.REVISION);
 
                 if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
@@ -263,6 +267,9 @@ public class CodeIndexer {
                 }
                 if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEAR, codeIndexDocument.getYearMonthDay().substring(0, 4)));
+                }
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRevision()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.REVISION, codeIndexDocument.getRevision()));
                 }
 
                 String indexContents = Values.EMPTYSTRING;

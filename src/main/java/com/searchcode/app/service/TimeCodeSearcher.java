@@ -297,14 +297,51 @@ public class TimeCodeSearcher {
         List<CodeFacetYearMonthDay> repoFacetYearMonthDay = this.getYearMonthDayFacetResults(searcher, reader, query);
         List<CodeFacetYearMonth> repoFacetYearMonth = this.getYearMonthFacetResults(searcher, reader, query);
         List<CodeFacetYear> repoFacetYear = this.getYearFacetResults(searcher, reader, query);
+        List<CodeFacetRevision> repoFacetRevision = this.getRevisionFacetResults(searcher, reader, query);
 
         SearchResult searchResult = new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
 
         searchResult.setRepoFacetYearMonthDay(repoFacetYearMonthDay);
         searchResult.setRepoFacetYearMonth(repoFacetYearMonth);
         searchResult.setRepoFacetYear(repoFacetYear);
+        searchResult.setRepoFacetRevision(repoFacetRevision);
 
         return searchResult;
+    }
+
+    /**
+     * Returns the matching revision facets for a given query
+     */
+    private List<CodeFacetRevision> getRevisionFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetRevision> revisionFacets = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.DATEYEAR);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(200, Values.DATEYEAR);
+
+            if(result != null) {
+                int stepThru = result.childCount > 200 ? 200 : result.childCount;
+
+                for (int i = 0; i < stepThru; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        revisionFacets.add(new CodeFacetRevision(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        }
+        catch(IOException ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        catch(Exception ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+
+        return revisionFacets;
     }
 
     /**
@@ -314,11 +351,11 @@ public class TimeCodeSearcher {
         List<CodeFacetYear> codeFacetYear = new ArrayList<>();
 
         try {
-            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.DATEYEARMONTH);
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.DATEYEAR);
             FacetsCollector fc = new FacetsCollector();
             FacetsCollector.search(searcher, query, 10, fc);
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
-            FacetResult result = facets.getTopChildren(200, Values.DATEYEARMONTH);
+            FacetResult result = facets.getTopChildren(200, Values.DATEYEAR);
 
             if(result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
@@ -333,8 +370,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetYear;
@@ -366,8 +405,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetYearMonth;
