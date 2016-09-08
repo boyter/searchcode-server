@@ -31,6 +31,11 @@ public class TimeCodeSearcherTest extends TestCase {
             assertThat(cs.search("this", 0).getRepoFacetYear()).hasAtLeastOneElementOfType(CodeFacetYear.class);
             assertThat(cs.search("this", 0).getRepoFacetYearMonth()).hasAtLeastOneElementOfType(CodeFacetYearMonth.class);
             assertThat(cs.search("this", 0).getRepoFacetYearMonthDay()).hasAtLeastOneElementOfType(CodeFacetYearMonthDay.class);
+
+            assertThat(cs.search("this", 0).getRepoFacetRevision().get(0).getRevision()).isEqualTo("99a5a271063def87b2473be79ce6f840d42d1f95");
+            assertThat(cs.search("this", 0).getRepoFacetYear().get(0).getYear()).isEqualTo("2016");
+            assertThat(cs.search("this", 0).getRepoFacetYearMonth().get(0).getYearMonth()).isEqualTo("201601");
+            assertThat(cs.search("this", 0).getRepoFacetYearMonthDay().get(0).getYearMonthDay()).isEqualTo("20160101");
         }
         catch(Exception ex) {
             assertTrue(false);
