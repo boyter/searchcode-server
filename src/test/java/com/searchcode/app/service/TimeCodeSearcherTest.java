@@ -1,7 +1,6 @@
 package com.searchcode.app.service;
 
-import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.*;
 import junit.framework.TestCase;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
 
@@ -27,8 +26,11 @@ public class TimeCodeSearcherTest extends TestCase {
             TimeCodeSearcher cs = new TimeCodeSearcher();
 
             assertThat(cs.search("this", 0).getCodeResultList()).hasAtLeastOneElementOfType(CodeResult.class);
-            assertThat(cs.search("code should", 0).getCodeResultList()).hasAtLeastOneElementOfType(CodeResult.class);
-            assertThat(cs.search("should be found", 0).getCodeResultList()).hasAtLeastOneElementOfType(CodeResult.class);
+            assertThat(cs.search("this", 0).getLanguageFacetResults()).hasAtLeastOneElementOfType(CodeFacetLanguage.class);
+            assertThat(cs.search("this", 0).getOwnerFacetResults()).hasAtLeastOneElementOfType(CodeFacetOwner.class);
+            assertThat(cs.search("this", 0).getRepoFacetYear()).hasAtLeastOneElementOfType(CodeFacetYear.class);
+            assertThat(cs.search("this", 0).getRepoFacetYearMonth()).hasAtLeastOneElementOfType(CodeFacetYearMonth.class);
+            assertThat(cs.search("this", 0).getRepoFacetYearMonthDay()).hasAtLeastOneElementOfType(CodeFacetYearMonthDay.class);
         }
         catch(Exception ex) {
             assertTrue(false);
