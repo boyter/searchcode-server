@@ -316,11 +316,11 @@ public class TimeCodeSearcher {
         List<CodeFacetRevision> revisionFacets = new ArrayList<>();
 
         try {
-            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.DATEYEAR);
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.REVISION);
             FacetsCollector fc = new FacetsCollector();
             FacetsCollector.search(searcher, query, 10, fc);
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
-            FacetResult result = facets.getTopChildren(200, Values.DATEYEAR);
+            FacetResult result = facets.getTopChildren(200, Values.REVISION);
 
             if(result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
