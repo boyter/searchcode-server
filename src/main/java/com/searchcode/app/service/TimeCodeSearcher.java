@@ -7,6 +7,7 @@
 
 package com.searchcode.app.service;
 
+import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.util.CodeAnalyzer;
@@ -36,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,6 +53,7 @@ public class TimeCodeSearcher {
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private StatsService statsService = new StatsService();
+    private GitService gitService = new GitService();
 
     /**
      * Returns the total number of documents that are present in the index at this time
@@ -261,18 +264,7 @@ public class TimeCodeSearcher {
                 // This line is occasionally useful for debugging ranking, but not useful enough to have as log info
                 //System.out.println("doc=" + hits[i].doc + " score=" + hits[i].score);
 
-                List<String> code = new ArrayList<>();
-                try {
-                    // This should probably be limited by however deep we are meant to look into the file
-                    // or the value we use here whichever is less
-                    // TODO need to change this to pull from the revision for the file
-                    code = Helpers.readFileLines(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
-                }
-                catch(Exception ex) {
-                    LOGGER.warning("Indexed file appears to binary or missing: " + filepath);
-                }
-
-                CodeResult cr = new CodeResult(code, null);
+                CodeResult cr = new CodeResult(null, null);
                 cr.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
                 cr.setFileName(doc.get(Values.FILENAME));
                 cr.setLanguageName(doc.get(Values.LANGUAGENAME));
@@ -284,6 +276,16 @@ public class TimeCodeSearcher {
                 cr.setCodeOwner(doc.get(Values.CODEOWNER));
                 cr.setRevision(doc.get(Values.REVISION));
                 cr.setYearMonthDay(doc.get(Values.DATEYEARMONTHDAY));
+
+                try {
+                    // This should probably be limited by however deep we are meant to look into the file
+                    // or the value we use here whichever is less
+                    cr.setCode(Arrays.asList(gitService.fetchFileRevision("./repo/" + cr.getRepoLocation(), cr.getRevision(), cr.getCodePath()).split("\\r?\\n")));
+                }
+                catch(Exception ex) {
+                    LOGGER.warning("Indexed file appears to binary or missing: " + filepath);
+                }
+
 
                 codeResults.add(cr);
             } else {
