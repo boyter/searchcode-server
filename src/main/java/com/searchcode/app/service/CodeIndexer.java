@@ -325,4 +325,15 @@ public class CodeIndexer {
         indexDocuments(queue);
         queue = null;
     }
+
+    /**
+     * Possibly better in ultra low memory environments? Reuses the above method by creating a queue with one
+     * element and passes it in.
+     */
+    public static synchronized void indexTimeDocument(CodeIndexDocument codeIndexDocument) throws IOException {
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
+        queue.add(codeIndexDocument);
+        indexTimeDocuments(queue);
+        queue = null;
+    }
 }

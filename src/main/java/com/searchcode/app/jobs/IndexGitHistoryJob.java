@@ -10,6 +10,7 @@ package com.searchcode.app.jobs;
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.service.GitService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import org.apache.commons.io.FilenameUtils;
@@ -61,6 +62,9 @@ public class IndexGitHistoryJob implements Job {
 
         JobDataMap data = context.getJobDetail().getJobDataMap();
         String repoLocations = data.get("REPOLOCATIONS").toString();
+
+        // Get all the current change sets for the project
+        // loop through each and get the changes and index
     }
 
     public void getGitChangeSets() throws IOException, GitAPIException {
@@ -104,6 +108,8 @@ public class IndexGitHistoryJob implements Job {
                 .setOldTree(oldTreeIter)
                 .call();
 
+        GitService gs = new GitService();
+
 
         for( DiffEntry entry : entries ) {
             if ("DELETE".equals(entry.getChangeType().name())) {
@@ -111,40 +117,9 @@ public class IndexGitHistoryJob implements Job {
             }
             else {
                 System.out.println("ADD " + entry.getNewPath());
-                System.out.println(fetchBlob(newRevision, entry.getNewPath()).length());
+                System.out.println(gs.fetchFileRevision("./repo/server/.git", newRevision, entry.getNewPath()).length());
             }
         }
     }
 
-    private String fetchBlob(String revSpec, String path) throws MissingObjectException, IncorrectObjectTypeException, IOException {
-
-        Repository localRepository = new FileRepository(new File("./repo/server/.git"));
-
-        // Resolve the revision specification
-        final ObjectId id = localRepository.resolve(revSpec);
-
-        // Makes it simpler to release the allocated resources in one go
-        ObjectReader reader = localRepository.newObjectReader();
-
-        try {
-            // Get the commit object for that revision
-            RevWalk walk = new RevWalk(reader);
-            RevCommit commit = walk.parseCommit(id);
-
-            // Get the revision's file tree
-            RevTree tree = commit.getTree();
-            // .. and narrow it down to the single file's path
-            TreeWalk treewalk = TreeWalk.forPath(reader, path, tree);
-
-            if (treewalk != null) {
-                // use the blob id to read the file's data
-                byte[] data = reader.open(treewalk.getObjectId(0)).getBytes();
-                return new String(data, "utf-8");
-            } else {
-                return "";
-            }
-        } finally {
-            reader.close();
-        }
-    }
 }
