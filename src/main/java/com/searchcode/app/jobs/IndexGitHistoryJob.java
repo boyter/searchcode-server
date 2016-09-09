@@ -9,7 +9,9 @@ package com.searchcode.app.jobs;
 
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.GitService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -65,6 +67,7 @@ public class IndexGitHistoryJob implements Job {
 
         // Get all the current change sets for the project
         // loop through each and get the changes and index
+
     }
 
     public void getGitChangeSets() throws IOException, GitAPIException {
@@ -80,6 +83,7 @@ public class IndexGitHistoryJob implements Job {
         }
         revisions = Lists.reverse(revisions);
 
+        // TODO currently this is ignoring the very first commit changes need to include those
         for (int i = 1; i < revisions.size(); i++) {
             System.out.println("///////////////////////////////////////////////");
             this.getRevisionChanges(revisions.get(i - 1), revisions.get(i));
@@ -117,7 +121,12 @@ public class IndexGitHistoryJob implements Job {
             }
             else {
                 System.out.println("ADD " + entry.getNewPath());
-                System.out.println(gs.fetchFileRevision("./repo/server/.git", newRevision, entry.getNewPath()).length());
+                String contents = gs.fetchFileRevision("./repo/server/.git", newRevision, entry.getNewPath());
+
+                CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "server", entry.getNewPath(), entry.getNewPath(), entry.getNewPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", "someone");
+                cd.setRevision(newRevision);
+                cd.setYearMonthDay("20160101");
+                CodeIndexer.indexTimeDocument(cd);
             }
         }
     }
