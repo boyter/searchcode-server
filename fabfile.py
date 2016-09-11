@@ -115,7 +115,7 @@ def _build_package():
     local('cp ./target/*.jar ./release/')
     local('cp ./searchcode.properties ./release/')
     local('cp ./searchcode.sqlite.empty ./release/searchcode.sqlite')
-    local('cp ./README.txt ./release/')
+    local('cp ./README ./release/')
     local('chmod +x ./searchcode-server.sh')
     local('cp ./searchcode-server.sh ./release/')
     local('cp ./searchcode-server.bat ./release/')
