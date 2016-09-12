@@ -28,7 +28,7 @@ public class GitService {
      * file so you MAY end up running into serious memory issues, and should be aware of this
      */
     public String fetchFileRevision(String repoLocation, String revision, String filePath) throws MissingObjectException, IncorrectObjectTypeException, IOException {
-        Repository localRepository = new FileRepository(new File(repoLocation + "/.git"));
+        Repository localRepository = new FileRepository(new File(repoLocation));
 
         ObjectId id = localRepository.resolve(revision);
         ObjectReader reader = localRepository.newObjectReader();

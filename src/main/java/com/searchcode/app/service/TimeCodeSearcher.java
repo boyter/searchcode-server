@@ -280,7 +280,7 @@ public class TimeCodeSearcher {
                 try {
                     // This should probably be limited by however deep we are meant to look into the file
                     // or the value we use here whichever is less
-                    String repoLoc = "./repo/" + cr.getRepoName();
+                    String repoLoc = "./repo/" + cr.getRepoName() + "/.git";
                     cr.setCode(Arrays.asList(gitService.fetchFileRevision(repoLoc, cr.getRevision(), cr.getCodePath()).split("\\r?\\n")));
                 }
                 catch(Exception ex) {

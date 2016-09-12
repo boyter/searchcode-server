@@ -79,9 +79,13 @@ public class IndexGitHistoryJob implements Job {
 
         List<String> revisions = new ArrayList<>();
         for(RevCommit rev: logs) {
+            String message = rev.getFullMessage();
+            String author = rev.getAuthorIdent().getName();
+
             Date expiry = new Date(new Long(rev.getCommitTime()) * 1000); // TODO need the time in here as well
             System.out.println(expiry.toString() + " " + rev.getCommitTime() + " " + rev.getName());
             revisions.add(rev.getName());
+
         }
         revisions = Lists.reverse(revisions);
 
