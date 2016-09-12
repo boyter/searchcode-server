@@ -280,8 +280,8 @@ public class TimeCodeSearcher {
                 try {
                     // This should probably be limited by however deep we are meant to look into the file
                     // or the value we use here whichever is less
-                    String[] temp = gitService.fetchFileRevision("./repo/" + cr.getRepoLocation(), cr.getRevision(), cr.getCodePath()).split("\\r?\\n");
-                    cr.setCode(Arrays.asList(temp));
+                    String repoLoc = "./repo/" + cr.getRepoName();
+                    cr.setCode(Arrays.asList(gitService.fetchFileRevision(repoLoc, cr.getRevision(), cr.getCodePath()).split("\\r?\\n")));
                 }
                 catch(Exception ex) {
                     LOGGER.warning("Indexed file appears to binary or missing: " + filepath);
