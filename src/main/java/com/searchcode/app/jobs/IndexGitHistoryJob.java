@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,7 +79,8 @@ public class IndexGitHistoryJob implements Job {
 
         List<String> revisions = new ArrayList<>();
         for(RevCommit rev: logs) {
-            System.out.println(rev.getCommitTime() + " " + rev.getName());
+            Date expiry = new Date(new Long(rev.getCommitTime()) * 1000); // TODO need the time in here as well
+            System.out.println(expiry.toString() + " " + rev.getCommitTime() + " " + rev.getName());
             revisions.add(rev.getName());
         }
         revisions = Lists.reverse(revisions);
