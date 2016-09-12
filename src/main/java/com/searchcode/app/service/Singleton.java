@@ -51,6 +51,7 @@ public final class Singleton {
     private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
     private static Repo repo = null;
+    private static ApiRouteService apiRouteService = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
@@ -198,6 +199,14 @@ public final class Singleton {
         }
 
         return searchcodeLib;
+    }
+
+    public static synchronized ApiRouteService getApiRouteService() {
+        if (apiRouteService == null) {
+            apiRouteService = new ApiRouteService();
+        }
+
+        return apiRouteService;
     }
 
     /**

@@ -86,15 +86,12 @@ public class IndexGitHistoryJob implements Job {
         // TODO currently this is ignoring the very first commit changes need to include those
         for (int i = 1; i < revisions.size(); i++) {
             System.out.println("///////////////////////////////////////////////");
-            this.getRevisionChanges(revisions.get(i - 1), revisions.get(i));
+            this.getRevisionChanges(localRepository, git, revisions.get(i - 1), revisions.get(i));
         }
 
     }
 
-    public void getRevisionChanges(String oldRevison, String newRevision) throws IOException, GitAPIException {
-        Repository localRepository = new FileRepository(new File("./repo/server/.git"));
-        Git git = new Git(localRepository);
-
+    public void getRevisionChanges(Repository localRepository, Git git, String oldRevison, String newRevision) throws IOException, GitAPIException {
         ObjectId oldHead = localRepository.resolve(oldRevison + "^{tree}");
         ObjectId newHead = localRepository.resolve(newRevision + "^{tree}");
 
@@ -121,7 +118,7 @@ public class IndexGitHistoryJob implements Job {
             }
             else {
                 System.out.println("ADD " + entry.getNewPath());
-                String contents = gs.fetchFileRevision("./repo/server/.git", newRevision, entry.getNewPath());
+                String contents = gs.fetchFileRevision(localRepository.getWorkTree().toString() + "/.git", newRevision, entry.getNewPath());
 
                 CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "server", entry.getNewPath(), entry.getNewPath(), entry.getNewPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", "someone");
                 cd.setRevision(newRevision);

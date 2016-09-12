@@ -34,6 +34,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.ModelAndView;
 import spark.Request;
+import spark.Route;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -468,6 +469,12 @@ public class App {
             }
 
             return null;
+        }, new JsonTransformer());
+
+
+        get("/api/timecodesearch/", (request, response) -> {
+            ApiRouteService ars = new ApiRouteService();
+            return ars.getTimeSearch(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/add/", "application/json", (request, response) -> {
