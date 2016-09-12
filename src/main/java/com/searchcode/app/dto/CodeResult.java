@@ -32,6 +32,8 @@ public class CodeResult {
     public String codeOwner = "";
     public String revision = "";
     public String yearMonthDay = "";
+    public String deleted = "";
+    public String message = "";
 
     public CodeResult(List<String> code, List<CodeMatchResult>matchingResults) {
         this.setCode(code);
@@ -148,5 +150,21 @@ public class CodeResult {
 
     public void setYearMonthDay(String yearMonthDay) {
         this.yearMonthDay = yearMonthDay;
+    }
+
+    public String getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(String deleted) {
+        this.deleted = deleted;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

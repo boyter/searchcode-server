@@ -27,7 +27,7 @@ public class CodeIndexDocument {
     private String revision;
     private String yearMonthDay;
     private String message;
-    private boolean deleted; // Used for time filter to know when this entry was removed
+    private String deleted; // Used for time filter to know when this entry was removed
 
     public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner) {
         setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
@@ -155,11 +155,11 @@ public class CodeIndexDocument {
         this.message = message;
     }
 
-    public boolean isDeleted() {
+    public String isDeleted() {
         return deleted;
     }
 
-    public void setDeleted(boolean deleted) {
+    public void setDeleted(String deleted) {
         this.deleted = deleted;
     }
 }

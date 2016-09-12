@@ -29,6 +29,7 @@ public class SearchResult {
     private List<CodeFacetYearMonth> repoFacetYearMonth = new ArrayList<>();
     private List<CodeFacetYear> repoFacetYear = new ArrayList<>();
     private List<CodeFacetRevision> repoFacetRevision = new ArrayList<>();
+    private List<CodeFacetDeleted> repoFacetDeleted = new ArrayList<>();
 
     public SearchResult() {}
 
@@ -149,5 +150,13 @@ public class SearchResult {
 
     public void setRepoFacetRevision(List<CodeFacetRevision> repoFacetRevision) {
         this.repoFacetRevision = repoFacetRevision;
+    }
+
+    public List<CodeFacetDeleted> getRepoFacetDeleted() {
+        return repoFacetDeleted;
+    }
+
+    public void setRepoFacetDeleted(List<CodeFacetDeleted> repoFacetDeleted) {
+        this.repoFacetDeleted = repoFacetDeleted;
     }
 }

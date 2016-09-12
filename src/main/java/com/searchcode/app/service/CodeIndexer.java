@@ -252,6 +252,7 @@ public class CodeIndexer {
                 facetsConfig.setIndexFieldName(Values.DATEYEARMONTH, Values.DATEYEARMONTH);
                 facetsConfig.setIndexFieldName(Values.DATEYEAR, Values.DATEYEAR);
                 facetsConfig.setIndexFieldName(Values.REVISION, Values.REVISION);
+                facetsConfig.setIndexFieldName(Values.DELETED, Values.DELETED);
 
                 if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
@@ -262,7 +263,6 @@ public class CodeIndexer {
                 if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
-
                 if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay()));
                 }
@@ -274,6 +274,9 @@ public class CodeIndexer {
                 }
                 if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRevision()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REVISION, codeIndexDocument.getRevision()));
+                }
+                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.isDeleted()) == false) {
+                    doc.add(new SortedSetDocValuesFacetField(Values.DELETED, codeIndexDocument.isDeleted()));
                 }
 
                 String indexContents = Values.EMPTYSTRING;
@@ -296,6 +299,8 @@ public class CodeIndexer {
                 doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
                 doc.add(new TextField(Values.REVISION, codeIndexDocument.getRevision(), Field.Store.YES));
                 doc.add(new TextField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay(), Field.Store.YES));
+                doc.add(new TextField(Values.MESSAGE, codeIndexDocument.getMessage(), Field.Store.YES));
+                doc.add(new TextField(Values.DELETED, codeIndexDocument.isDeleted(), Field.Store.YES));
 
                 // Extra metadata in this case when it was last indexed
                 doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));

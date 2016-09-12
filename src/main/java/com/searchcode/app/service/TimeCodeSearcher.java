@@ -276,6 +276,8 @@ public class TimeCodeSearcher {
                 cr.setCodeOwner(doc.get(Values.CODEOWNER));
                 cr.setRevision(doc.get(Values.REVISION));
                 cr.setYearMonthDay(doc.get(Values.DATEYEARMONTHDAY));
+                cr.setMessage(doc.get(Values.MESSAGE));
+                cr.setDeleted(doc.get(Values.DELETED));
 
                 try {
                     // This should probably be limited by however deep we are meant to look into the file
@@ -301,6 +303,7 @@ public class TimeCodeSearcher {
         List<CodeFacetYearMonth> repoFacetYearMonth = this.getYearMonthFacetResults(searcher, reader, query);
         List<CodeFacetYear> repoFacetYear = this.getYearFacetResults(searcher, reader, query);
         List<CodeFacetRevision> repoFacetRevision = this.getRevisionFacetResults(searcher, reader, query);
+        List<CodeFacetDeleted> repoFacetDeleted = this.getDeletedFacetResults(searcher, reader, query);
 
         SearchResult searchResult = new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
 
@@ -308,8 +311,44 @@ public class TimeCodeSearcher {
         searchResult.setRepoFacetYearMonth(repoFacetYearMonth);
         searchResult.setRepoFacetYear(repoFacetYear);
         searchResult.setRepoFacetRevision(repoFacetRevision);
+        searchResult.setRepoFacetDeleted(repoFacetDeleted);
 
         return searchResult;
+    }
+
+    /**
+     * Returns the matching revision facets for a given query
+     */
+    private List<CodeFacetDeleted> getDeletedFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetDeleted> deletedFacets = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.DELETED);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(200, Values.DELETED);
+
+            if(result != null) {
+                int stepThru = result.childCount > 200 ? 200 : result.childCount;
+
+                for (int i = 0; i < stepThru; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        deletedFacets.add(new CodeFacetDeleted(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        }
+        catch(IOException ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        catch(Exception ex) {
+            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+
+        return deletedFacets;
     }
 
     /**

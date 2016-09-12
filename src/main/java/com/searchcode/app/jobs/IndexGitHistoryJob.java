@@ -121,6 +121,15 @@ public class IndexGitHistoryJob implements Job {
         for( DiffEntry entry : entries ) {
             if ("DELETE".equals(entry.getChangeType().name())) {
                 System.out.println("DEL " + entry.getOldPath());
+
+                String contents = gs.fetchFileRevision(localRepository.getWorkTree().toString() + "/.git", oldRevison, entry.getOldPath());
+
+                CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "server", entry.getOldPath(), entry.getOldPath(), entry.getOldPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", "someone");
+                cd.setRevision(oldRevison);
+                cd.setYearMonthDay("20160101");
+                cd.setMessage("Something something something");
+                cd.setDeleted("TRUE");
+                CodeIndexer.indexTimeDocument(cd);
             }
             else {
                 System.out.println("ADD " + entry.getNewPath());
@@ -129,6 +138,8 @@ public class IndexGitHistoryJob implements Job {
                 CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "server", entry.getNewPath(), entry.getNewPath(), entry.getNewPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", "someone");
                 cd.setRevision(newRevision);
                 cd.setYearMonthDay("20160101");
+                cd.setMessage("Something something something");
+                cd.setDeleted("FALSE");
                 CodeIndexer.indexTimeDocument(cd);
             }
         }
