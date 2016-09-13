@@ -12,6 +12,27 @@
 // LRU cache in local storage for keeping result sets when paging back and forth
 var lruAppCache = new Cache(-1, false, new Cache.LocalStorageCacheStorage('searchcode'));
 
+// Model that perfoms the search logic and does the actual search
+var SearchModel = {
+    searchhistory: m.prop(false),
+    searchresults: m.prop([]),
+    search: function() {
+        if (SearchModel.searchtype()) {
+            m.request({
+                method: 'GET', 
+                url: '/api/timecodesearch/?q=test'
+            }).then(function(e) {
+                //processResult(e);
+                console.log(e);
+                SearchModel.searchresults(e);
+            });
+        }
+        else {
+        }
+    }
+};
+
+
 var testing = {
     CodeResultList: Array,
     RepoFilterList: Array,
@@ -490,6 +511,13 @@ var SearchButtonFilterComponent = {
 }
 
 var FilterOptionsComponent = {
+    controller: function() {
+        return {
+            togglehistory: function() {
+                SearchModel.searchhistory(!SearchModel.searchhistory());
+            }
+        }
+    },
     view: function(ctrl, args) {
         var inputparams = { type: 'checkbox', onclick: function() { 
             testing.vm.toggleinstant();
@@ -501,12 +529,21 @@ var FilterOptionsComponent = {
 
         return m('div', 
             m('h5', 'Filter Options'),
-            m('div.checkbox', 
-            m('label', [
-                m('input', inputparams),
-                m('span', 'Apply Filters Instantly')
+            m('div', [
+                m('div.checkbox', 
+                    m('label', [
+                        m('input', inputparams),
+                        m('span', 'Apply Filters Instantly')
+                    ])
+                ),
+                m('div.checkbox', 
+                    m('label', [
+                        m('input', { type: 'checkbox', onclick: function() { ctrl.togglehistory(); } }),
+                        m('span', 'Search Across History')
+                    ])
+                )
             ])
-        ));
+        );
     }
 }
 
@@ -975,7 +1012,10 @@ var SearchResultsComponent = {
 
 
 //Initialize the application
-m.mount(document.getElementsByClassName('container')[0], {controller: testing.controller, view: testing.view});
+m.mount(document.getElementsByClassName('container')[0], { 
+    controller: testing.controller, 
+    view: testing.view
+});
 
 // For when someone hits the back button in the browser
 window.onpopstate = function(event) {
