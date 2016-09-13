@@ -43,6 +43,7 @@ public class JobService implements IJobService {
 
     private IRepo repo = null;
     private int UPDATETIME = 600;
+    private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 10; // TODO allow this to be configurable
     private int NUMBERPROCESSORS = 5; // TODO allow this to be configurable
 
@@ -54,11 +55,14 @@ public class JobService implements IJobService {
     public JobService(IRepo repo) {
         this.repo = repo;
         try {
-            this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, "600"));
+            this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
         }
-        catch(NumberFormatException ex) {
-            this.UPDATETIME = 600;
+        catch(NumberFormatException ex) {}
+
+        try {
+            this.FILEINDEXUPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES));
         }
+        catch(NumberFormatException ex) {}
     }
 
     /**
@@ -76,6 +80,38 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-git-" + uniquename)
+                    .withSchedule(simpleSchedule()
+                                    .withIntervalInSeconds(this.INDEXTIME)
+                                    .repeatForever()
+                    )
+                    .build();
+
+            job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
+            job.getJobDataMap().put("LOWMEMORY", this.LOWMEMORY);
+
+            scheduler.scheduleJob(job, trigger);
+
+            scheduler.start();
+        }
+        catch(SchedulerException ex) {
+            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Creates a file repo indexer job which will pull from the file queue and index
+     */
+    public void startIndexFileRepoJobs(String uniquename) {
+        try {
+            Scheduler scheduler = Singleton.getScheduler();
+
+
+            JobDetail job = newJob(IndexFileRepoJob.class)
+                    .withIdentity("updateindex-file-" + uniquename)
+                    .build();
+
+            SimpleTrigger trigger = newTrigger()
+                    .withIdentity("updateindex-file-" + uniquename)
                     .withSchedule(simpleSchedule()
                                     .withIntervalInSeconds(this.INDEXTIME)
                                     .repeatForever()
@@ -150,6 +186,25 @@ public class JobService implements IJobService {
 
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
+
+
+            Scheduler scheduler2 = Singleton.getScheduler();
+
+            // Setup the indexer which runs forever adding documents to be indexed
+            JobDetail job2 = newJob(EnqueueFileRepositoryJob.class)
+                    .withIdentity("enqueuefilejob")
+                    .build();
+
+            SimpleTrigger trigger2 = newTrigger()
+                    .withIdentity("enqueuefilejob")
+                    .withSchedule(simpleSchedule()
+                                    .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
+                                    .repeatForever()
+                    )
+                    .build();
+
+            scheduler2.scheduleJob(job2, trigger2);
+            scheduler2.start();
         }  catch(SchedulerException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
@@ -201,6 +256,9 @@ public class JobService implements IJobService {
                     this.startIndexSvnRepoJobs("" + i);
                 }
             }
+
+            // Single file index job
+            this.startIndexFileRepoJobs("1");
 
             if(repoResults.size() == 0) {
                 LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");

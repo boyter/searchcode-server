@@ -54,6 +54,7 @@ public final class Singleton {
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
+    private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueDeleteRepoQueue = null; // Used to queue the next repository to be deleted
 
@@ -82,6 +83,13 @@ public final class Singleton {
             uniqueGitRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
         }
         return uniqueGitRepoQueue;
+    }
+
+    public static synchronized UniqueRepoQueue getUniqueFileRepoQueue() {
+        if (uniqueFileRepoQueue == null) {
+            uniqueFileRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+        }
+        return uniqueFileRepoQueue;
     }
 
     public static synchronized UniqueRepoQueue getUniqueSvnRepoQueue() {
