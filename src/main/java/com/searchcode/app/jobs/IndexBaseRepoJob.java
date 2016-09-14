@@ -239,14 +239,6 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
-            try {
-                FileInputStream fis = new FileInputStream(new File(changedFile));
-                md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                fis.close();
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
-            }
-
             if(scl.isMinified(codeLines)) {
                 Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
                 break;
@@ -257,6 +249,14 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
+            try {
+                FileInputStream fis = new FileInputStream(new File(changedFile));
+                md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+                fis.close();
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
+            }
+            
             String languageName = scl.languageGuesser(changedFile, codeLines);
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
@@ -339,14 +339,6 @@ public abstract class IndexBaseRepoJob implements Job {
                         return FileVisitResult.CONTINUE;
                     }
 
-                    try {
-                        FileInputStream fis = new FileInputStream(new File(fileToString));
-                        md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                        fis.close();
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
-                    }
-
                     if (scl.isMinified(codeLines)) {
                         Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
                         return FileVisitResult.CONTINUE;
@@ -355,6 +347,14 @@ public abstract class IndexBaseRepoJob implements Job {
                     if (scl.isBinary(codeLines)) {
                         Singleton.getLogger().info("Appears to be binary will not index  " + fileToString);
                         return FileVisitResult.CONTINUE;
+                    }
+
+                    try {
+                        FileInputStream fis = new FileInputStream(new File(fileToString));
+                        md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+                        fis.close();
+                    } catch (IOException ex) {
+                        Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
                     }
 
                     String languageName = scl.languageGuesser(fileName, codeLines);
