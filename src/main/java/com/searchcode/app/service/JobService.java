@@ -327,6 +327,7 @@ public class JobService implements IJobService {
 
         UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
         UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
 
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
@@ -340,6 +341,10 @@ public class JobService implements IJobService {
                 case "svn":
                     Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
                     repoSvnQueue.add(rr);
+                    break;
+                case "file":
+                    Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
+                    repoFileQueue.add(rr);
                     break;
             }
         }

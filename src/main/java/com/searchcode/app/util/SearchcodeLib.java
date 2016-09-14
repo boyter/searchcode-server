@@ -178,6 +178,41 @@ public class SearchcodeLib {
     }
 
     /**
+     * Determine if a List<String> which is used to represent a code file contains a code file that is
+     * suspected to be ascii or non ascii. This is for the purposes of excluding it from the index.
+     */
+    public boolean isBinary(List<String> codeLines) {
+        if (codeLines.isEmpty()) {
+            return true;
+        }
+
+        int lines = codeLines.size() < 100 ? codeLines.size() : 100;
+        double asciiCount = 0;
+        double nonAsciiCount = 0;
+
+        for (int i=0; i < lines; i++) {
+            String line = codeLines.get(i);
+            for (int j = 0; j < line.length(); j++) {
+                if (((int)line.charAt(j)) <= 128) {
+                    asciiCount++;
+                }
+                else {
+                    nonAsciiCount++;
+                }
+            }
+        }
+
+        // If 95% of characters are not ascii then its probably binary
+        double percent = asciiCount / (asciiCount + nonAsciiCount);
+
+        if (percent < 0.95) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Determines who owns a piece of code weighted by time based on current second (IE time now)
      * NB if a commit is very close to this time it will always win
      */

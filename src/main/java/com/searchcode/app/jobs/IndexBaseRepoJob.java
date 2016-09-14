@@ -85,6 +85,14 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     /**
+     * This method can be implemented by extending class but is not required
+     * as it requires project name at the front
+     */
+    public String getFileLocationFilename(String fileToString, String fileRepoLocations) {
+        return fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
+    }
+
+    /**
      * The main method used for finding jobs to index and actually doing the work
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -244,9 +252,14 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
+            if (scl.isBinary(codeLines)) {
+                Singleton.getLogger().info("Appears to be binary will not index  " + changedFile);
+                break;
+            }
+
             String languageName = scl.languageGuesser(changedFile, codeLines);
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
+            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
             String repoLocationRepoNameLocationFilename = changedFile;
 
 
@@ -309,8 +322,6 @@ public abstract class IndexBaseRepoJob implements Job {
                         }
                     }
 
-                    // TODO if one of the success files or index files then skip
-
                     // Convert Path file to unix style that way everything is easier to reason about
                     String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
                     String fileToString = FilenameUtils.separatorsToUnix(file.toString());
@@ -336,15 +347,19 @@ public abstract class IndexBaseRepoJob implements Job {
                         Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
                     }
 
-                    // is the file minified?
                     if (scl.isMinified(codeLines)) {
                         Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
                         return FileVisitResult.CONTINUE;
                     }
 
+                    if (scl.isBinary(codeLines)) {
+                        Singleton.getLogger().info("Appears to be binary will not index  " + fileToString);
+                        return FileVisitResult.CONTINUE;
+                    }
+
                     String languageName = scl.languageGuesser(fileName, codeLines);
                     String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-                    String fileLocationFilename = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
+                    String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
                     String repoLocationRepoNameLocationFilename = fileToString;
 
                     String newString = getBlameFilePath(fileLocationFilename);

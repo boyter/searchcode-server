@@ -55,6 +55,8 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexFileRepoJob extends IndexBaseRepoJob {
 
+    private String repoName;
+
     /**
      * The main method used for finding jobs to index and actually doing the work
      */
@@ -89,6 +91,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
                 String repoName = repoResult.getName();
+                this.repoName = repoName;
                 String repoRemoteLocation = repoResult.getUrl();
 
                 String repoLocations = data.get("REPOLOCATIONS").toString();
@@ -105,6 +108,10 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
         }
     }
 
+    @Override
+    public String getFileLocationFilename(String fileToString, String fileRepoLocations) {
+        return this.repoName + fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
+    }
 
     @Override
     public UniqueRepoQueue getNextQueuedRepo() {
@@ -123,6 +130,14 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public boolean ignoreFile(String fileParent) {
+        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
+            return true;
+        }
+
+        if (fileParent.endsWith("/.svn") || fileParent.contains("/.svn/")) {
+            return true;
+        }
+
         return false;
     }
 }

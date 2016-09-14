@@ -549,7 +549,7 @@ public class App {
             }
 
             repotype = repotype.trim().toLowerCase();
-            if (!"git".equals(repotype) && !"svn".equals(repotype)) {
+            if (!"git".equals(repotype) && !"svn".equals(repotype) && !"file".equals(repotype)) {
                 repotype = "git";
             }
 
@@ -712,8 +712,6 @@ public class App {
                     if (indexOffset > repoCount || indexOffset < 0) {
                         indexOffset = 0;
                     }
-
-
                 }
                 catch(NumberFormatException ex) {
                     indexOffset = 0;
