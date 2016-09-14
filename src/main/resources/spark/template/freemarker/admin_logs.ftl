@@ -1,5 +1,5 @@
 <#import "masterTemplate.ftl" as layout />
-<@layout.masterTemplate title="Admin Bulk">
+<@layout.masterTemplate title="Admin Logs">
 
 <div class="row inside-container">
 <ul class="nav nav-tabs nav-justified">
