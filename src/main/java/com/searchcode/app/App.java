@@ -49,14 +49,14 @@ import static spark.Spark.*;
  * Main entry point for the application.
  * TODO break parts of this out so things are easier to maintain
  * TODO remove the Guice injector since we don't really use it enough to justify its existance
- * TODO add config override for the cache setting of 600
+ * TODO add config override for the cache setting of 60
  */
 public class App {
 
     private static final boolean ISCOMMUNITY = false;
     private static final String VERSION = "1.3.0";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
-    public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(600, TimeUnit.SECONDS).build();
+    public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
     public static Injector injector;
     public static SearchcodeLib scl;
 

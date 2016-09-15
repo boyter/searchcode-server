@@ -242,7 +242,7 @@ var testing = {
 
                         lruAppCache.setItem(queryurl, e, {
                             expirationAbsolute: null,
-                            expirationSliding: 60, // about what refreshes take
+                            expirationSliding: 10, // Very low, just for paging back and forth
                             priority: Cache.Priority.HIGH
                         });
 
