@@ -8,7 +8,6 @@
  * Version 1.3.0
  */
 
-
 package com.searchcode.app.dto;
 
 import org.apache.commons.codec.digest.DigestUtils;

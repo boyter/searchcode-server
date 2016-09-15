@@ -8,7 +8,6 @@
  * Version 1.3.0
  */
 
-
 package com.searchcode.app.util;
 
 import com.google.gson.Gson;
