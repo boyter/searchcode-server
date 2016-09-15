@@ -80,6 +80,7 @@ To upgrade your current instance of searchcode perform the following steps.
     * Copy the directory dependancy-jars and all contents overwriting your current
     * Copy the following files searchcode-1.2.4.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 * Start your instance again
+* Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
 

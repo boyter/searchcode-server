@@ -504,7 +504,7 @@ print data['sucessful'], data['message']</textarea>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
               <dt>check_filerepo_chages</dt>
-              <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
+              <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
               <dt>only_localhost</dt>
               <dd>Boolean value true or false. Will only process connections on 127.0.0.1 (not localhost) if set to true and return 204 content not found otherwise. By default set to false.</dd>
               <dt>low_memory</dt>
@@ -553,7 +553,7 @@ print data['sucessful'], data['message']</textarea>
             <dt>Syntax Highlighter</dt>
             <dd>Change the highlight style for code result pages.</dd>
             <dt>OWASP Advisories</dt>
-            <dd>Should OWASP Advisories appear on the code result pages.</dd>
+            <dd>Should OWASP Advisories appear on the code result pages. If set to true code will be scanned using the OWASP database and lines flagged for investigation. Most useful for codebases written using C# and Java.</dd>
             <dt>Average Salary</dt>
             <dd>Used as the base salary for the code display calculation. See <a href="#estimatedcost">estimated cost</a> for more
             details about this value.</dd>
@@ -637,7 +637,7 @@ print data['sucessful'], data['message']</textarea>
           Check the console output, you should see something similar to<br />
           <pre>ERROR - caught a class org.eclipse.jgit.api.errors.TransportException with message: https://username@bitbucket.org/username/myrepo.git: not authorized</pre><br />
           This means your username or password for the repository is invalid. Try pulling a copy down locally and replacing the credentials.
-          </p>
+        </p>
         <p>
           <b>A file in a repository is not being indexed?</b><br/>
           Files with an average file line length >= 255 are considered minified and will not be indexed. You should get a message like the below on the console saying as such when trying to index the file.<br />
@@ -672,6 +672,13 @@ print data['sucessful'], data['message']</textarea>
           This issue typically occurs on Unix/Linux servers with a low ulimit.
           If you are getting errors like the above you may need to change your ulimit to a higher number as the default
           of 1024 for most systems can be too low.<br />
+        </p>
+        <p>
+          <b>Odd Results</b><br/>
+          If you have had an instance that has been running for a long time or that has stopped and started without notice
+          the index may need to rebuilt. Click the "Recrawl & Rebuild Indexes" button in the admin pages. This will clear
+          the repository and index directories and rebuild everything from scratch which should resolve the issue. Note that
+          this process may take some time if you have a lot of repositories or very large ones.
         </p>
         <p>
           <b>Help! Nothing is working!</b><br/>
