@@ -256,7 +256,7 @@ public abstract class IndexBaseRepoJob implements Job {
             } catch (IOException ex) {
                 Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
             }
-            
+
             String languageName = scl.languageGuesser(changedFile, codeLines);
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
@@ -381,6 +381,7 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
         }
 
+        // TODO investigate if a memory issue with this logic for very large folders
         if (existingRepo) {
             CodeSearcher cs = new CodeSearcher();
             List<String> indexLocations = cs.getRepoDocuments(repoName);

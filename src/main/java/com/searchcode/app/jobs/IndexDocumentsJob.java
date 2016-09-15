@@ -33,9 +33,10 @@ public class IndexDocumentsJob implements Job {
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY + 1);
             int codeIndexQueueSize = Singleton.getCodeIndexQueue().size();
-            Singleton.getLogger().info("Documents to index: " + codeIndexQueueSize);
-            Singleton.getLogger().info("Lines to index: " + Singleton.getCodeIndexLinesCount());
+
             if (codeIndexQueueSize != 0) {
+                Singleton.getLogger().info("Documents to index: " + codeIndexQueueSize);
+                Singleton.getLogger().info("Lines to index: " + Singleton.getCodeIndexLinesCount());
                 CodeIndexer.indexDocuments(Singleton.getCodeIndexQueue());
             }
         } catch (Exception ex) {

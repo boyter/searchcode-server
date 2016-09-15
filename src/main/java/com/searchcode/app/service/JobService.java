@@ -44,7 +44,7 @@ public class JobService implements IJobService {
     private IRepo repo = null;
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
-    private int INDEXTIME = 10; // TODO allow this to be configurable
+    private int INDEXTIME = 1; // TODO allow this to be configurable
     private int NUMBERPROCESSORS = 5; // TODO allow this to be configurable
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);

@@ -106,6 +106,8 @@ XX XXXXXX XXXX - 1.3.0
  - Add server date time output to admin page
  - Add rebuild all button to Admin page
  - Fix bug where clicking deep links on HTML page would break
+ - Improve indexing performance by intelligently calculating MD5
+ - Add ability to index arbitary file system locations
 
 30 August 2016 - 1.2.4
  - Add gzip compression to most used routes

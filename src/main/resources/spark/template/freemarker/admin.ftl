@@ -100,6 +100,10 @@
     <td>${check_repo_chages}</td>
     </tr>
     <tr>
+    <td><b>check_filerepo_chages</b></td>
+    <td>${check_filerepo_chages}</td>
+    </tr>
+    <tr>
     <td><b>spelling_corrector_size</b></td>
     <td>${spelling_corrector_size}</td>
     </tr>

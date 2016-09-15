@@ -503,6 +503,8 @@ print data['sucessful'], data['message']</textarea>
               <dd>Path to where the index facets will be built. This must not be the same value as index_location.</dd>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
+              <dt>check_filerepo_chages</dt>
+              <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
               <dt>only_localhost</dt>
               <dd>Boolean value true or false. Will only process connections on 127.0.0.1 (not localhost) if set to true and return 204 content not found otherwise. By default set to false.</dd>
               <dt>low_memory</dt>
@@ -550,6 +552,8 @@ print data['sucessful'], data['message']</textarea>
             <dd>The logo that appears on the top left of all searchcode server pages. Should be added as a Base64 encoded image string.</dd>
             <dt>Syntax Highlighter</dt>
             <dd>Change the highlight style for code result pages.</dd>
+            <dt>OWASP Advisories</dt>
+            <dd>Should OWASP Advisories appear on the code result pages.</dd>
             <dt>Average Salary</dt>
             <dd>Used as the base salary for the code display calculation. See <a href="#estimatedcost">estimated cost</a> for more
             details about this value.</dd>
