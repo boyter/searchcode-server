@@ -30,6 +30,7 @@ public class CodeResult {
     public String repoName = "";
     public String repoLocation = "";
     public String codeOwner = "";
+    public String codeId = "";
 
     public CodeResult(List<String> code, List<CodeMatchResult>matchingResults) {
         this.setCode(code);
@@ -130,5 +131,13 @@ public class CodeResult {
 
     public void setCodeOwner(String codeOwner) {
         this.codeOwner = codeOwner;
+    }
+
+    public String getCodeId() {
+        return codeId;
+    }
+
+    public void setCodeId(String codeId) {
+        this.codeId = codeId;
     }
 }

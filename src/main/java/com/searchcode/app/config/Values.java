@@ -74,6 +74,7 @@ public class Values {
     public static String REPONAME = "reponame";
     public static String MODIFIED = "modified";
     public static String CODEOWNER = "codeowner";
+    public static String CODEID = "codeid";
 
     // Random
     public static String USERSESSIONID = "admin_user";

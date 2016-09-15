@@ -150,10 +150,67 @@ public class CodeSearcher {
                 codeResult.setRepoName(doc.get(Values.REPONAME));
                 codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
                 codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
+                codeResult.setCodeId(doc.get(Values.CODEID));
+
             }
 
             reader.close();
 
+        }
+        catch(Exception ex) {
+            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+
+        return codeResult;
+    }
+
+    /**
+     * Only used as fallback if getByRepoFileName fails for some reason due to what appears to be a lucene index bug
+     * this should always work as the path used is sha1 and sould be unique for anything the current codebase can
+     * deal with
+     */
+    public CodeResult getByCodeId(String codeId) {
+        CodeResult codeResult = null;
+
+        try {
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(CODEFIELD, analyzer);
+
+            Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
+            Singleton.getLogger().info("Query to get by " + Values.CODEID + ":" + QueryParser.escape(codeId));
+
+            TopDocs results = searcher.search(query, 1);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            if (hits.length != 0) {
+                Document doc = searcher.doc(hits[0].doc);
+
+                String filepath = doc.get(Values.PATH);
+
+                List<String> code = new ArrayList<>();
+                try {
+                    code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
+                    code = Helpers.readFileLines(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                } catch (Exception ex) {
+                    Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
+                }
+
+                codeResult = new CodeResult(code, null);
+                codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
+                codeResult.setFileName(doc.get(Values.FILENAME));
+                codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
+                codeResult.setMd5hash(doc.get(Values.MD5HASH));
+                codeResult.setCodeLines(doc.get(Values.CODELINES));
+                codeResult.setDocumentId(hits[0].doc);
+                codeResult.setRepoName(doc.get(Values.REPONAME));
+                codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
+                codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
+                codeResult.setCodeId(doc.get(Values.CODEID));
+            }
+
+            reader.close();
         }
         catch(Exception ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
@@ -285,6 +342,7 @@ public class CodeSearcher {
                 cr.setRepoLocation(doc.get(Values.REPOLOCATION));
                 cr.setRepoName(doc.get(Values.REPONAME));
                 cr.setCodeOwner(doc.get(Values.CODEOWNER));
+                cr.setCodeId(doc.get(Values.CODEID));
 
                 codeResults.add(cr);
             } else {

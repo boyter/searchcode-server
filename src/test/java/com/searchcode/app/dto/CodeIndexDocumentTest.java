@@ -19,13 +19,13 @@ public class CodeIndexDocumentTest extends TestCase {
         CodeIndexDocument cd = new CodeIndexDocument();
         cd.setRepoLocationRepoNameLocationFilename("a");
         String result = cd.getHash();
-        assertThat(result).isEqualTo("0cc175b9c0f1b6a831c399e269772661");
+        assertThat(result).isEqualTo("86f7e437faa5a7fce15d1ddcb9eaeaea377667b8");
     }
 
     public void testMd5CalcB() {
         CodeIndexDocument cd = new CodeIndexDocument();
         cd.setRepoLocationRepoNameLocationFilename("b");
         String result = cd.getHash();
-        assertThat(result).isEqualTo("92eb5ffee6ae2fec3ad71c777531578f");
+        assertThat(result).isEqualTo("e9d71f5ee7c92d6dc9e92ffdad17b8bd49418f98");
     }
 }

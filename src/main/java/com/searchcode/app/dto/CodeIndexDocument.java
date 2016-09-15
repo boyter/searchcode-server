@@ -46,7 +46,7 @@ public class CodeIndexDocument {
      * Used for identification for this specific file in the index
      */
     public String getHash() {
-        return DigestUtils.md5Hex(this.repoLocationRepoNameLocationFilename);
+        return DigestUtils.sha1Hex(this.repoLocationRepoNameLocationFilename);
     }
 
     public String getRepoLocationRepoNameLocationFilename() {

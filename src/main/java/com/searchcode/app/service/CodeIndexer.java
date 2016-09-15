@@ -182,6 +182,7 @@ public class CodeIndexer {
                 doc.add(new TextField(Values.CONTENTS, indexContents, Field.Store.NO));
                 doc.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
+                doc.add(new TextField(Values.CODEID, codeIndexDocument.getHash(), Field.Store.YES));
 
                 // Extra metadata in this case when it was last indexed
                 doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));

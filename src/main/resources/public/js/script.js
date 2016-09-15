@@ -24,6 +24,7 @@ var testing = {
         this.matchingresults = m.prop(data.matchingResults);
         this.repolocation = m.prop(data.repoLocation);
         this.documentid = m.prop(data.documentId);
+        this.codeid = m.prop(data.codeId);
         this.filelocation = m.prop(data.fileLocation);
         this.codepath = m.prop(data.codePath);
         this.languagename = m.prop(data.languageName);
@@ -953,14 +954,14 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-                                m('a', { href: '/file/' + res.documentid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
+                                m('a', { href: '/file/' + res.codeid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
                                 m('small', ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename())  
                             ])
                         ),
                         m('ol.code-result', [
                             _.map(res.matchingresults(), function(line) {
                                 return m('li', { value: line.lineNumber }, 
-                                    m('a', { 'href': '/file/' + res.documentid() + '/' + res.codepath() + '#' + line.lineNumber },
+                                    m('a', { 'href': '/file/' + res.codeid() + '/' + res.codepath() + '#' + line.lineNumber },
                                         m('pre', m.trust(line.line))
                                     )
                                 );

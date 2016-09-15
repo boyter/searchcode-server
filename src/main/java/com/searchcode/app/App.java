@@ -1094,8 +1094,15 @@ public class App {
             CodeResult codeResult = cs.getByRepoFileName(request.params(":reponame"), fileName);
 
             if (codeResult == null) {
-                int codeid = Integer.parseInt(request.params(":codeid"));
-                codeResult = cs.getById(codeid);
+                String codeId = request.params(":codeid");
+                codeResult = cs.getByCodeId(codeId);
+            }
+            if (codeResult == null) {
+                try {
+                    int codeid = Integer.parseInt(request.params(":codeid"));
+                    codeResult = cs.getById(codeid);
+                }
+                catch(NumberFormatException ex) {}
             }
 
             if (codeResult == null) {
@@ -1130,7 +1137,9 @@ public class App {
             }
 
             map.put("fileName", codeResult.fileName);
-            map.put("codePath", codeResult.codePath);
+
+            // TODO fix this properly code path includes the repo name and should be removed
+            map.put("codePath", codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length()));
             map.put("codeLength", codeResult.codeLines);
             map.put("languageName", codeResult.languageName);
             map.put("md5Hash", codeResult.md5hash);
