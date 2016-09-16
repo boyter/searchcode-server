@@ -1,4 +1,7 @@
-searchcode server
+# searchcode server
+
+
+[![Video](https://searchcode.com/static/product/searchcode-server.gif)](https://searchcode.com/static/product/searchcode-server.gif)
 
 What is it?
 -----------
