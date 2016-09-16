@@ -232,6 +232,20 @@ data = urllib2.urlopen(url)
 data = data.read()
 
 data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/reindex/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
 print data['sucessful'], data['message']</textarea>
           <br><br>
           To achive the same result in Java use <a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/HmacUtils.html">HmacUtils</a> as follows,
@@ -386,6 +400,38 @@ print data['sucessful'], data['message']</textarea>
           <h5>Sample Response</h5>
           <pre>{
     "message": "deleted repository sucessfully",
+    "sucessful": true
+}</pre>
+
+        <h5>Endpoint Rebuild & Reindex Repository</h5>
+          <pre>/api/repo/reindex/</pre>
+          <p>Successful calls to this endpoint will cause the index and repository directories to be deleted and schedule all repositories to be reindexed. Note that queries to the system while the reindex is running may not return expected results.<p>
+          <h5>Params</h5>
+            <ul>
+              <li>sig: signed value (optional if unsecured)</li>
+              <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
+            </ul>
+        
+          <h5>Signing</h5>
+          To sign requests to this endpoint you need to HMAC as follows<br>
+          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY")</pre>
+
+          <h5>Examples</h5>
+          <pre>http://localhost/api/repo/reindex/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
+          <pre>http://localhost/api/repo/delete/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
+        
+          <h5>Return Field Definitions</h5>
+
+          <dl class="dl-horizontal">
+            <dt>message</dt>
+            <dd>A message containing debug information if the request fails.</dd>
+            <dt>sucessful</dt>
+            <dd>True or false value if the request was processed.</dd>
+          </dl>
+
+          <h5>Sample Response</h5>
+          <pre>{
+    "message": "reindex forced",
     "sucessful": true
 }</pre>
 
@@ -599,20 +645,28 @@ print data['sucessful'], data['message']</textarea>
         with a hyphen character.
         </p>
         <p>
-        Both GIT and SVN repositories are able to be indexed. To enable indexing of SVN repositories set the property value
+        GIT and SVN repositories are able to be indexed. To enable indexing of SVN repositories set the property value
         svn_enabled to true and svn_binary_path to the path of your SVN executable.
         </p>
         <p>
-        To delete a repository click the delete button at the end of the repository list. This will remove all copies of code
-        from disk and the index. This action is not reversible. To undo the operation add the repository again. Note that
-        all delete operations are queued and it may take several minutes for the repository to be removed.
+        File locations on the machine searchcode server is running on are also able to be indexed. This allows you to index code that is not in a repository or is in a SCM that searchcode server currently does not support. To do so select the file option from the drop down and replace the repository URL with the path on the local machine such as  /opt/projects Note that searchcode server needs permission to read the directory, subdirectories and contents of all files otherwise it will crash out with a AccessDeniedException in the logs. There are a few things to note
+        <ul>
+          <li>You can index any directory on the machine that searchcode server has permissions to read from.</li>
+          <li>It is inadvisable to store the file repository in the same location as the property repository_location as it will be removed if a full rebuild operation is triggered.</li>
+          <li>For very large directories you will need a lot of RAM to index, so consider breaking them up if possible to multiple directories to index.</li>
+          <li>If you index the same file in the same path twice only a single result will appear in the results, however deleting may remove the "wrong" file from the index. Try to avoid indexing the same path where possible (this saves on resources).</li>
+        </ul> 
         </p>
         <p>
-        Updating the details of a repository will require you to delete the repository and add it again with the new details.
+        To delete a repository click the delete button at the end of the repository list. This will remove all copies of code
+        from disk (not for file repositories however) and the index. This action is not reversible. To undo the operation add the repository again. Note that all delete operations are queued and it may take several minutes for the repository to be removed.
+        </p>
+        <p>
+        Updating the details of a repository will require you to delete the repository, wait for the delete operation to finish and add it again with the new details.
         </p>
 
         <p>To quickly add a large amount of repositories use the <a href="/admin/bulk/">bulk admin</a> page. This page will only
-        allow the adding of repositories using a CSV format with one repository per line.
+        allow the adding of repositories using a CSV format with one repository per line. Use the values git, svn or file for the choice of repository.
         </p>
         <p>
         The format for adding follows.<br><br>
@@ -640,8 +694,9 @@ print data['sucessful'], data['message']</textarea>
         </p>
         <p>
           <b>A file in a repository is not being indexed?</b><br/>
-          Files with an average file line length >= 255 are considered minified and will not be indexed. You should get a message like the below on the console saying as such when trying to index the file.<br />
+          Files with an average file line length >= 255 are considered minified and will not be indexed. Files that are considered binary will also not be index. You should get a message like the ones below on the console saying as such when trying to index the file.<br />
           <pre>Appears to be minified will not index FILENAME</pre>
+          <pre>Appears to be binary will not index FILENAME</pre>
         </p>
         <p>
           <b>A repository is not being indexed on Windows</b><br/>
@@ -672,6 +727,10 @@ print data['sucessful'], data['message']</textarea>
           This issue typically occurs on Unix/Linux servers with a low ulimit.
           If you are getting errors like the above you may need to change your ulimit to a higher number as the default
           of 1024 for most systems can be too low.<br />
+        </p>
+        <p>
+          <b>java.nio.file.AccessDeniedException</b><br/>
+          This is usually caused when using the filepath indexing. Usually it means that the user running searchcode server does not have the required permissions to read from the path selection. You will need to set the permissions so that searchcode server has full read rights on the directory. Otherwise it can be cause if the index or repo directories have been denied to searchcode server which requires full read write delete permissions for these directories.
         </p>
         <p>
           <b>Odd Results</b><br/>

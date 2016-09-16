@@ -644,6 +644,44 @@ public class App {
             return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
         }, new JsonTransformer());
 
+        get("/api/repo/reindex/", "application/json", (request, response) -> {
+            boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
+            boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
+
+            if (!apiEnabled) {
+                return new ApiResponse(false, "API not enabled");
+            }
+
+            String publicKey = request.queryParams("pub");
+            String signedKey = request.queryParams("sig");
+
+            if (apiAuth) {
+                if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
+                    return new ApiResponse(false, "pub is a required parameter");
+                }
+
+                if (signedKey == null || signedKey.trim().equals(Values.EMPTYSTRING)) {
+                    return new ApiResponse(false, "sig is a required parameter");
+                }
+
+                String toValidate = String.format("pub=%s",
+                        URLEncoder.encode(publicKey));
+
+                boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
+
+                if (!validRequest) {
+                    return new ApiResponse(false, "invalid signed url");
+                }
+            }
+
+            boolean result = js.rebuildAll();
+            if (result) {
+                js.forceEnqueue();
+            }
+            
+            return new ApiResponse(result, "reindex forced");
+        }, new JsonTransformer());
+
         get("/admin/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");

@@ -7,8 +7,8 @@ import pprint
 
 '''Simple usage of the signed key API endpoints.'''
 
-publickey = "APIK-Qzc3M1TBaypWgEmcS7ps7A2Oomh"
-privatekey = "gI7u6EM91hBSqFVxdWHDi1rZS7AUON4a"
+publickey = "APIK-HLIcHhiynvevA9Y3IYenyrkGIx7"
+privatekey = "Rnwx2snsXLeUipe5uQouvRVYNeWGcM1V"
 
 reponame = "myrepo"
 repourl = "myrepourl"
@@ -63,6 +63,20 @@ message = "pub=%s&reponame=%s" % (
 sig = hmac(privatekey, message, sha1).hexdigest()
 
 url = "http://localhost:8080/api/repo/delete/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/reindex/?sig=%s&%s" % (urllib.quote_plus(sig), message)
 
 data = urllib2.urlopen(url)
 data = data.read()
