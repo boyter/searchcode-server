@@ -1,6 +1,5 @@
 # searchcode server
 
-
 [![Video](https://searchcode.com/static/product/searchcode-server.gif)](https://searchcode.com/static/product/searchcode-server.gif)
 
 What is it?
@@ -113,6 +112,7 @@ XX XXXXXX XXXX - 1.3.0
  - Modify file links to use unique codeid to avoid click through issues
  - Improve indexing performance by intelligently calculating MD5
  - Add ability to index arbitary file system locations
+ - Add API endpoint to force reindex
 
 30 August 2016 - 1.2.4
  - Add gzip compression to most used routes
