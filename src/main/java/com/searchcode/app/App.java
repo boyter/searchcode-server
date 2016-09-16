@@ -1129,12 +1129,9 @@ public class App {
                 fileName = request.splat()[0];
             }
 
-            CodeResult codeResult = cs.getByRepoFileName(request.params(":reponame"), fileName);
+            String codeId = request.params(":codeid");
+            CodeResult codeResult = cs.getByCodeId(codeId);
 
-            if (codeResult == null) {
-                String codeId = request.params(":codeid");
-                codeResult = cs.getByCodeId(codeId);
-            }
             if (codeResult == null) {
                 try {
                     int codeid = Integer.parseInt(request.params(":codeid"));
