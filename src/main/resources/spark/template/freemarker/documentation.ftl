@@ -35,6 +35,7 @@
               <li><a href="#backups">Backups</a></li>
               <li><a href="#recovery">Recovery</a></li>
               <li><a href="#repositories">Repositories</a></li>
+              <li><a href="#filerepositories">File Repositories</a></li>
               <li><a href="#troubleshooting">Troubleshooting</a></li>
               <li><a href="#support">Support</a></li>
             </ol>
@@ -162,8 +163,7 @@
           <br><br>
           To sign a request see the below example in Python demonstrating how to perform all repository API calls.
           The most important thing to note is that parameter order is important. All API endpoints will list the order
-          that parameters should have passed in.
-          <br><br>
+          that parameters should have passed in. The below code is has no license and is released as public domain. <br /><br />
 <textarea style="font-family: monospace,serif; width:100%; height:150px;" disabled="true">from hashlib import sha1
 from hmac import new as hmac
 import urllib2
@@ -648,13 +648,13 @@ print data['sucessful'], data['message']</textarea>
         GIT and SVN repositories are able to be indexed. To enable indexing of SVN repositories set the property value
         svn_enabled to true and svn_binary_path to the path of your SVN executable.
         </p>
-        <p>
-        File locations on the machine searchcode server is running on are also able to be indexed. This allows you to index code that is not in a repository or is in a SCM that searchcode server currently does not support. To do so select the file option from the drop down and replace the repository URL with the path on the local machine such as  /opt/projects Note that searchcode server needs permission to read the directory, subdirectories and contents of all files otherwise it will crash out with a AccessDeniedException in the logs. There are a few things to note
+        <p id="filerepositories">
+        File locations on the machine searchcode server is running on are also able to be indexed. This allows you to index code that is not in a repository or is in a SCM that searchcode server currently does not support. To do so select the file option from the drop down and replace the repository URL with the path on the local machine such as <code>/opt/projects</code> Note that searchcode server needs permission to read the directory, subdirectories and contents of all files otherwise it will crash out with a AccessDeniedException in the logs. There are a few things to note
         <ul>
           <li>You can index any directory on the machine that searchcode server has permissions to read from.</li>
           <li>It is inadvisable to store the file repository in the same location as the property repository_location as it will be removed if a full rebuild operation is triggered.</li>
-          <li>For very large directories you will need a lot of RAM to index, so consider breaking them up if possible to multiple directories to index.</li>
-          <li>If you index the same file in the same path twice only a single result will appear in the results, however deleting may remove the "wrong" file from the index. Try to avoid indexing the same path where possible (this saves on resources).</li>
+          <li>Very large directories will need a lot of RAM to index, so consider breaking them up if possible to multiple sub-directories to index.</li>
+          <li>If you index the same file in the same path twice only a single result will appear in the results, however deleting may remove the "wrong" file from the index. Try to avoid indexing the same path where possible.</li>
         </ul> 
         </p>
         <p>
@@ -694,7 +694,7 @@ print data['sucessful'], data['message']</textarea>
         </p>
         <p>
           <b>A file in a repository is not being indexed?</b><br/>
-          Files with an average file line length >= 255 are considered minified and will not be indexed. Files that are considered binary will also not be index. You should get a message like the ones below on the console saying as such when trying to index the file.<br />
+          Files with an average file line length >= 255 are considered minified and will not be indexed. Files that are considered binary will also not be indexed. You should get a message like the ones below on the console saying as such when trying to index the file.<br />
           <pre>Appears to be minified will not index FILENAME</pre>
           <pre>Appears to be binary will not index FILENAME</pre>
         </p>
@@ -731,6 +731,10 @@ print data['sucessful'], data['message']</textarea>
         <p>
           <b>java.nio.file.AccessDeniedException</b><br/>
           This is usually caused when using the filepath indexing. Usually it means that the user running searchcode server does not have the required permissions to read from the path selection. You will need to set the permissions so that searchcode server has full read rights on the directory. Otherwise it can be cause if the index or repo directories have been denied to searchcode server which requires full read write delete permissions for these directories.
+        </p>
+        <p>
+          <b>How do I index code in Perforce/BitKeeper/Fossil</b><br/>
+          You can index code in unsupported repositories by checking out a copy of the repository on disk and adding a <a href="#filerepositories">file repository</a> which is pointed at this location. Suggested methods to keep it in sync would be setting up a cron job or scheduled task to constantly update the repositories.
         </p>
         <p>
           <b>Odd Results</b><br/>
