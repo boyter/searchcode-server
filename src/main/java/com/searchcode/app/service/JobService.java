@@ -2,11 +2,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
  *
- * After the following date 27 August 2019 this software version '1.2.3' or '1.2.4' is dual licenced under the
- * Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms
- * specified at https://www.gnu.org/licenses/gpl-3.0.txt
+ * Version 1.3.0
  */
 
 package com.searchcode.app.service;
@@ -43,7 +42,8 @@ public class JobService implements IJobService {
 
     private IRepo repo = null;
     private int UPDATETIME = 600;
-    private int INDEXTIME = 10; // TODO allow this to be configurable
+    private int FILEINDEXUPDATETIME = 3600;
+    private int INDEXTIME = 1; // TODO allow this to be configurable
     private int NUMBERPROCESSORS = 5; // TODO allow this to be configurable
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
@@ -54,11 +54,14 @@ public class JobService implements IJobService {
     public JobService(IRepo repo) {
         this.repo = repo;
         try {
-            this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, "600"));
+            this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
         }
-        catch(NumberFormatException ex) {
-            this.UPDATETIME = 600;
+        catch(NumberFormatException ex) {}
+
+        try {
+            this.FILEINDEXUPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES));
         }
+        catch(NumberFormatException ex) {}
     }
 
     /**
@@ -76,6 +79,38 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-git-" + uniquename)
+                    .withSchedule(simpleSchedule()
+                                    .withIntervalInSeconds(this.INDEXTIME)
+                                    .repeatForever()
+                    )
+                    .build();
+
+            job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
+            job.getJobDataMap().put("LOWMEMORY", this.LOWMEMORY);
+
+            scheduler.scheduleJob(job, trigger);
+
+            scheduler.start();
+        }
+        catch(SchedulerException ex) {
+            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Creates a file repo indexer job which will pull from the file queue and index
+     */
+    public void startIndexFileRepoJobs(String uniquename) {
+        try {
+            Scheduler scheduler = Singleton.getScheduler();
+
+
+            JobDetail job = newJob(IndexFileRepoJob.class)
+                    .withIdentity("updateindex-file-" + uniquename)
+                    .build();
+
+            SimpleTrigger trigger = newTrigger()
+                    .withIdentity("updateindex-file-" + uniquename)
                     .withSchedule(simpleSchedule()
                                     .withIntervalInSeconds(this.INDEXTIME)
                                     .repeatForever()
@@ -150,6 +185,25 @@ public class JobService implements IJobService {
 
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
+
+
+            Scheduler scheduler2 = Singleton.getScheduler();
+
+            // Setup the indexer which runs forever adding documents to be indexed
+            JobDetail job2 = newJob(EnqueueFileRepositoryJob.class)
+                    .withIdentity("enqueuefilejob")
+                    .build();
+
+            SimpleTrigger trigger2 = newTrigger()
+                    .withIdentity("enqueuefilejob")
+                    .withSchedule(simpleSchedule()
+                                    .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
+                                    .repeatForever()
+                    )
+                    .build();
+
+            scheduler2.scheduleJob(job2, trigger2);
+            scheduler2.start();
         }  catch(SchedulerException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
@@ -201,6 +255,9 @@ public class JobService implements IJobService {
                     this.startIndexSvnRepoJobs("" + i);
                 }
             }
+
+            // Single file index job
+            this.startIndexFileRepoJobs("1");
 
             if(repoResults.size() == 0) {
                 LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
@@ -269,6 +326,7 @@ public class JobService implements IJobService {
 
         UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
         UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
 
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
@@ -282,6 +340,10 @@ public class JobService implements IJobService {
                 case "svn":
                     Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
                     repoSvnQueue.add(rr);
+                    break;
+                case "file":
+                    Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
+                    repoFileQueue.add(rr);
                     break;
             }
         }

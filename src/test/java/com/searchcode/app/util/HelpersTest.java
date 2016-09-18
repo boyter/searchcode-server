@@ -11,10 +11,10 @@ import java.util.Random;
 public class HelpersTest extends TestCase {
 
     public void testOtherThing() throws FileNotFoundException {
-        List<String> result = Helpers.readFileLines("./README.txt", 10);
+        List<String> result = Helpers.readFileLines("./README.md", 10);
         assertEquals(10, result.size());
 
-        result = Helpers.readFileLines("./README.txt", 5);
+        result = Helpers.readFileLines("./README.md", 5);
         assertEquals(5, result.size());
     }
 

@@ -2,11 +2,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
  *
- * After the following date 27 August 2019 this software version '1.2.3' or '1.2.4' is dual licenced under the
- * Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms
- * specified at https://www.gnu.org/licenses/gpl-3.0.txt
+ * Version 1.3.0
  */
 
 package com.searchcode.app.service;
@@ -55,6 +54,7 @@ public final class Singleton {
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
+    private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueDeleteRepoQueue = null; // Used to queue the next repository to be deleted
 
@@ -83,6 +83,13 @@ public final class Singleton {
             uniqueGitRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
         }
         return uniqueGitRepoQueue;
+    }
+
+    public static synchronized UniqueRepoQueue getUniqueFileRepoQueue() {
+        if (uniqueFileRepoQueue == null) {
+            uniqueFileRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+        }
+        return uniqueFileRepoQueue;
     }
 
     public static synchronized UniqueRepoQueue getUniqueSvnRepoQueue() {

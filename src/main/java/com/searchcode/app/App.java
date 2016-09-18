@@ -2,11 +2,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
  *
- * After the following date 27 August 2019 this software version '1.2.3' or '1.2.4' is dual licenced under the
- * Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms
- * specified at https://www.gnu.org/licenses/gpl-3.0.txt
+ * Version 1.3.0
  */
 
 package com.searchcode.app;
@@ -51,14 +50,14 @@ import static spark.Spark.*;
  * Main entry point for the application.
  * TODO break parts of this out so things are easier to maintain
  * TODO remove the Guice injector since we don't really use it enough to justify its existance
- * TODO add config override for the cache setting of 600
+ * TODO add config override for the cache setting of 60
  */
 public class App {
 
-    private static final boolean ISCOMMUNITY = false;
-    private static final String VERSION = "1.2.4";
+    private static final boolean ISCOMMUNITY = true;
+    private static final String VERSION = "1.3.0";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
-    public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(600, TimeUnit.SECONDS).build();
+    public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
     public static Injector injector;
     public static SearchcodeLib scl;
 
@@ -556,7 +555,7 @@ public class App {
             }
 
             repotype = repotype.trim().toLowerCase();
-            if (!"git".equals(repotype) && !"svn".equals(repotype)) {
+            if (!"git".equals(repotype) && !"svn".equals(repotype) && !"file".equals(repotype)) {
                 repotype = "git";
             }
 
@@ -652,6 +651,44 @@ public class App {
             return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
         }, new JsonTransformer());
 
+        get("/api/repo/reindex/", "application/json", (request, response) -> {
+            boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
+            boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
+
+            if (!apiEnabled) {
+                return new ApiResponse(false, "API not enabled");
+            }
+
+            String publicKey = request.queryParams("pub");
+            String signedKey = request.queryParams("sig");
+
+            if (apiAuth) {
+                if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
+                    return new ApiResponse(false, "pub is a required parameter");
+                }
+
+                if (signedKey == null || signedKey.trim().equals(Values.EMPTYSTRING)) {
+                    return new ApiResponse(false, "sig is a required parameter");
+                }
+
+                String toValidate = String.format("pub=%s",
+                        URLEncoder.encode(publicKey));
+
+                boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
+
+                if (!validRequest) {
+                    return new ApiResponse(false, "invalid signed url");
+                }
+            }
+
+            boolean result = js.rebuildAll();
+            if (result) {
+                js.forceEnqueue();
+            }
+
+            return new ApiResponse(result, "reindex forced");
+        }, new JsonTransformer());
+
         get("/admin/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
@@ -676,6 +713,7 @@ public class App {
             map.put(Values.INDEXLOCATION, Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
             map.put(Values.FACETSLOCATION, Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
             map.put(Values.CHECKREPOCHANGES, Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
+            map.put(Values.CHECKFILEREPOCHANGES, Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES));
             map.put(Values.ONLYLOCALHOST, Properties.getProperties().getProperty(Values.ONLYLOCALHOST, Values.DEFAULTONLYLOCALHOST));
             map.put(Values.LOWMEMORY, Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
             map.put(Values.SPELLINGCORRECTORSIZE, Properties.getProperties().getProperty(Values.SPELLINGCORRECTORSIZE, Values.DEFAULTSPELLINGCORRECTORSIZE));
@@ -689,6 +727,7 @@ public class App {
             map.put(Values.MAXDOCUMENTQUEUELINESIZE, Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE));
             map.put(Values.MAXFILELINEDEPTH, Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH));
             map.put(Values.OWASPDATABASELOCATION, Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION));
+
 
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
@@ -719,8 +758,6 @@ public class App {
                     if (indexOffset > repoCount || indexOffset < 0) {
                         indexOffset = 0;
                     }
-
-
                 }
                 catch(NumberFormatException ex) {
                     indexOffset = 0;
@@ -1099,11 +1136,15 @@ public class App {
                 fileName = request.splat()[0];
             }
 
-            CodeResult codeResult = cs.getByRepoFileName(request.params(":reponame"), fileName);
+            String codeId = request.params(":codeid");
+            CodeResult codeResult = cs.getByCodeId(codeId);
 
             if (codeResult == null) {
-                int codeid = Integer.parseInt(request.params(":codeid"));
-                codeResult = cs.getById(codeid);
+                try {
+                    int codeid = Integer.parseInt(request.params(":codeid"));
+                    codeResult = cs.getById(codeid);
+                }
+                catch(NumberFormatException ex) {}
             }
 
             if (codeResult == null) {
@@ -1138,7 +1179,9 @@ public class App {
             }
 
             map.put("fileName", codeResult.fileName);
-            map.put("codePath", codeResult.codePath);
+
+            // TODO fix this properly code path includes the repo name and should be removed
+            map.put("codePath", codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length()));
             map.put("codeLength", codeResult.codeLines);
             map.put("languageName", codeResult.languageName);
             map.put("md5Hash", codeResult.md5hash);

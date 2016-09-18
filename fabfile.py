@@ -3,11 +3,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
  *
- * After the following date 27 August 2019 this software version '1.2.3' or '1.2.4' is dual licenced under the
- * Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms
- * specified at https://www.gnu.org/licenses/gpl-3.0.txt
+ * Version 1.3.0
  */
 '''
 
@@ -29,7 +28,7 @@ import hashlib
 import sys
 import datetime
 
-VERSION = "1.2.4"
+VERSION = "1.3.0"
 
 def run_proxy():
     local('python ./assets/javascript_proxy/webserver.py')
@@ -128,7 +127,7 @@ def _build_package():
     local('cp ./target/*.jar ./release/')
     local('cp ./searchcode.properties ./release/')
     local('cp ./searchcode.sqlite.empty ./release/searchcode.sqlite')
-    local('cp ./README ./release/')
+    local('cp ./README.md ./release/')
     local('chmod +x ./searchcode-server.sh')
     local('cp ./searchcode-server.sh ./release/')
     local('cp ./searchcode-server.bat ./release/')

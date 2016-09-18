@@ -25,8 +25,9 @@
         <select name="reposcm">
             <option value="git">GIT</option>
             <option value="svn">SVN</option>
+            <option value="file">File</option>
         </select>
-        <input type="text" value="" name="repourl" placeholder="Repo URL" />
+        <input type="text" value="" name="repourl" placeholder="Repo URL or File Path" />
         <input type="text" value="" name="repousername" placeholder="Repo Username" />
         <input type="password" value="" name="repopassword" placeholder="Repo Password" />
         <input type="text" value="" name="reposource" placeholder="Repo Source" />

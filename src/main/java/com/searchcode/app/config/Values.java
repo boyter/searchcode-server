@@ -2,11 +2,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
  *
- * After the following date 27 August 2019 this software version '1.2.3' or '1.2.4' is dual licenced under the
- * Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms
- * specified at https://www.gnu.org/licenses/gpl-3.0.txt
+ * Version 1.3.0
  */
 
 package com.searchcode.app.config;
@@ -35,6 +34,8 @@ public class Values {
     public static String DEFAULTREPOSITORYLOCATION = "./repo/";
     public static String CHECKREPOCHANGES = "check_repo_chages";
     public static String DEFAULTCHECKREPOCHANGES = "600";
+    public static String CHECKFILEREPOCHANGES = "check_filerepo_chages";
+    public static String DEFAULTCHECKFILEREPOCHANGES = "3600";
     public static String SPELLINGCORRECTORSIZE = "spelling_corrector_size";
     public static String DEFAULTSPELLINGCORRECTORSIZE = "10000";
     public static String ONLYLOCALHOST = "only_localhost";
@@ -82,6 +83,7 @@ public class Values {
     public static String DATEYEAR = "dateyear"; // EG 2016
     public static String MESSAGE = "message"; // Contains git commit message
     public static String DELETED = "deleted";
+    public static String CODEID = "codeid";
 
     // Random
     public static String USERSESSIONID = "admin_user";

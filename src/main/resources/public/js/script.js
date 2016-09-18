@@ -2,7 +2,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
+ *
+ * Version 1.3.0
  */
 
 /**
@@ -213,6 +216,7 @@ var testing = {
         this.matchingresults = m.prop(data.matchingResults);
         this.repolocation = m.prop(data.repoLocation);
         this.documentid = m.prop(data.documentId);
+        this.codeid = m.prop(data.codeId);
         this.filelocation = m.prop(data.fileLocation);
         this.codepath = m.prop(data.codePath);
         this.languagename = m.prop(data.languageName);
@@ -427,7 +431,7 @@ var testing = {
 
                         lruAppCache.setItem(queryurl, e, {
                             expirationAbsolute: null,
-                            expirationSliding: 60, // about what refreshes take
+                            expirationSliding: 10, // Very low, just for paging back and forth
                             priority: Cache.Priority.HIGH
                         });
 
@@ -1158,14 +1162,14 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-                                m('a', { href: '/file/' + res.documentid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
+                                m('a', { href: '/file/' + res.codeid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
                                 m('small', ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename())  
                             ])
                         ),
                         m('ol.code-result', [
                             _.map(res.matchingresults(), function(line) {
                                 return m('li', { value: line.lineNumber }, 
-                                    m('a', { 'href': '/file/' + res.documentid() + '/' + res.codepath() + '#' + line.lineNumber },
+                                    m('a', { 'href': '/file/' + res.codeid() + '/' + res.codepath() + '#' + line.lineNumber },
                                         m('pre', m.trust(line.line))
                                     )
                                 );

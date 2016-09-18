@@ -2,11 +2,10 @@
  * Copyright (c) 2016 Boyter Online Services
  *
  * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
  *
- * After the following date 27 August 2019 this software version '1.2.3' or '1.2.4' is dual licenced under the
- * Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms
- * specified at https://www.gnu.org/licenses/gpl-3.0.txt
+ * Version 1.3.0
  */
 
 package com.searchcode.app.jobs;
@@ -80,6 +79,14 @@ public abstract class IndexBaseRepoJob implements Job {
 
     public boolean ignoreFile(String fileParent) {
         return true;
+    }
+
+    /**
+     * This method can be implemented by extending class but is not required
+     * as it requires project name at the front
+     */
+    public String getFileLocationFilename(String fileToString, String fileRepoLocations) {
+        return fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
     }
 
     /**
@@ -229,6 +236,16 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
+            if(scl.isMinified(codeLines)) {
+                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
+                break;
+            }
+
+            if (scl.isBinary(codeLines)) {
+                Singleton.getLogger().info("Appears to be binary will not index  " + changedFile);
+                break;
+            }
+
             try {
                 FileInputStream fis = new FileInputStream(new File(changedFile));
                 md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
@@ -237,14 +254,9 @@ public abstract class IndexBaseRepoJob implements Job {
                 Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
             }
 
-            if(scl.isMinified(codeLines)) {
-                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
-                break;
-            }
-
             String languageName = scl.languageGuesser(changedFile, codeLines);
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
+            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
             String repoLocationRepoNameLocationFilename = changedFile;
 
 
@@ -324,6 +336,16 @@ public abstract class IndexBaseRepoJob implements Job {
                         return FileVisitResult.CONTINUE;
                     }
 
+                    if (scl.isMinified(codeLines)) {
+                        Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    if (scl.isBinary(codeLines)) {
+                        Singleton.getLogger().info("Appears to be binary will not index  " + fileToString);
+                        return FileVisitResult.CONTINUE;
+                    }
+
                     try {
                         FileInputStream fis = new FileInputStream(new File(fileToString));
                         md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
@@ -332,17 +354,10 @@ public abstract class IndexBaseRepoJob implements Job {
                         Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
                     }
 
-                    // is the file minified?
-                    if (scl.isMinified(codeLines)) {
-                        Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
-                        return FileVisitResult.CONTINUE;
-                    }
-
                     String languageName = scl.languageGuesser(fileName, codeLines);
                     String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-                    String fileLocationFilename = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
+                    String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
                     String repoLocationRepoNameLocationFilename = fileToString;
-
 
                     String newString = getBlameFilePath(fileLocationFilename);
                     String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
@@ -363,6 +378,7 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
         }
 
+        // TODO investigate if a memory issue with this logic for very large folders
         if (existingRepo) {
             CodeSearcher cs = new CodeSearcher();
             List<String> indexLocations = cs.getRepoDocuments(repoName);

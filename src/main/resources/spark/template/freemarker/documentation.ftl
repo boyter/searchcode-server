@@ -35,6 +35,7 @@
               <li><a href="#backups">Backups</a></li>
               <li><a href="#recovery">Recovery</a></li>
               <li><a href="#repositories">Repositories</a></li>
+              <li><a href="#filerepositories">File Repositories</a></li>
               <li><a href="#troubleshooting">Troubleshooting</a></li>
               <li><a href="#support">Support</a></li>
             </ol>
@@ -162,8 +163,7 @@
           <br><br>
           To sign a request see the below example in Python demonstrating how to perform all repository API calls.
           The most important thing to note is that parameter order is important. All API endpoints will list the order
-          that parameters should have passed in.
-          <br><br>
+          that parameters should have passed in. The below code is has no license and is released as public domain. <br /><br />
 <textarea style="font-family: monospace,serif; width:100%; height:150px;" disabled="true">from hashlib import sha1
 from hmac import new as hmac
 import urllib2
@@ -227,6 +227,20 @@ message = "pub=%s&reponame=%s" % (
 sig = hmac(privatekey, message, sha1).hexdigest()
 
 url = "http://localhost:8080/api/repo/delete/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/reindex/?sig=%s&%s" % (urllib.quote_plus(sig), message)
 
 data = urllib2.urlopen(url)
 data = data.read()
@@ -389,6 +403,38 @@ print data['sucessful'], data['message']</textarea>
     "sucessful": true
 }</pre>
 
+        <h5>Endpoint Rebuild & Reindex Repository</h5>
+          <pre>/api/repo/reindex/</pre>
+          <p>Successful calls to this endpoint will cause the index and repository directories to be deleted and schedule all repositories to be reindexed. Note that queries to the system while the reindex is running may not return expected results.<p>
+          <h5>Params</h5>
+            <ul>
+              <li>sig: signed value (optional if unsecured)</li>
+              <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
+            </ul>
+        
+          <h5>Signing</h5>
+          To sign requests to this endpoint you need to HMAC as follows<br>
+          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY")</pre>
+
+          <h5>Examples</h5>
+          <pre>http://localhost/api/repo/reindex/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
+          <pre>http://localhost/api/repo/delete/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
+        
+          <h5>Return Field Definitions</h5>
+
+          <dl class="dl-horizontal">
+            <dt>message</dt>
+            <dd>A message containing debug information if the request fails.</dd>
+            <dt>sucessful</dt>
+            <dd>True or false value if the request was processed.</dd>
+          </dl>
+
+          <h5>Sample Response</h5>
+          <pre>{
+    "message": "reindex forced",
+    "sucessful": true
+}</pre>
+
 
         <!--<p>
 
@@ -503,6 +549,8 @@ print data['sucessful'], data['message']</textarea>
               <dd>Path to where the index facets will be built. This must not be the same value as index_location.</dd>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
+              <dt>check_filerepo_chages</dt>
+              <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
               <dt>only_localhost</dt>
               <dd>Boolean value true or false. Will only process connections on 127.0.0.1 (not localhost) if set to true and return 204 content not found otherwise. By default set to false.</dd>
               <dt>low_memory</dt>
@@ -550,6 +598,8 @@ print data['sucessful'], data['message']</textarea>
             <dd>The logo that appears on the top left of all searchcode server pages. Should be added as a Base64 encoded image string.</dd>
             <dt>Syntax Highlighter</dt>
             <dd>Change the highlight style for code result pages.</dd>
+            <dt>OWASP Advisories</dt>
+            <dd>Should OWASP Advisories appear on the code result pages. If set to true code will be scanned using the OWASP database and lines flagged for investigation. Most useful for codebases written using C# and Java.</dd>
             <dt>Average Salary</dt>
             <dd>Used as the base salary for the code display calculation. See <a href="#estimatedcost">estimated cost</a> for more
             details about this value.</dd>
@@ -595,20 +645,28 @@ print data['sucessful'], data['message']</textarea>
         with a hyphen character.
         </p>
         <p>
-        Both GIT and SVN repositories are able to be indexed. To enable indexing of SVN repositories set the property value
+        GIT and SVN repositories are able to be indexed. To enable indexing of SVN repositories set the property value
         svn_enabled to true and svn_binary_path to the path of your SVN executable.
+        </p>
+        <p id="filerepositories">
+        File locations on the machine searchcode server is running on are also able to be indexed. This allows you to index code that is not in a repository or is in a SCM that searchcode server currently does not support. To do so select the file option from the drop down and replace the repository URL with the path on the local machine such as <code>/opt/projects</code> Note that searchcode server needs permission to read the directory, subdirectories and contents of all files otherwise it will crash out with a AccessDeniedException in the logs. There are a few things to note
+        <ul>
+          <li>You can index any directory on the machine that searchcode server has permissions to read from.</li>
+          <li>It is inadvisable to store the file repository in the same location as the property repository_location as it will be removed if a full rebuild operation is triggered.</li>
+          <li>Very large directories will need a lot of RAM to index, so consider breaking them up if possible to multiple sub-directories to index.</li>
+          <li>If you index the same file in the same path twice only a single result will appear in the results, however deleting may remove the "wrong" file from the index. Try to avoid indexing the same path where possible.</li>
+        </ul> 
         </p>
         <p>
         To delete a repository click the delete button at the end of the repository list. This will remove all copies of code
-        from disk and the index. This action is not reversible. To undo the operation add the repository again. Note that
-        all delete operations are queued and it may take several minutes for the repository to be removed.
+        from disk (not for file repositories however) and the index. This action is not reversible. To undo the operation add the repository again. Note that all delete operations are queued and it may take several minutes for the repository to be removed.
         </p>
         <p>
-        Updating the details of a repository will require you to delete the repository and add it again with the new details.
+        Updating the details of a repository will require you to delete the repository, wait for the delete operation to finish and add it again with the new details.
         </p>
 
         <p>To quickly add a large amount of repositories use the <a href="/admin/bulk/">bulk admin</a> page. This page will only
-        allow the adding of repositories using a CSV format with one repository per line.
+        allow the adding of repositories using a CSV format with one repository per line. Use the values git, svn or file for the choice of repository.
         </p>
         <p>
         The format for adding follows.<br><br>
@@ -633,11 +691,12 @@ print data['sucessful'], data['message']</textarea>
           Check the console output, you should see something similar to<br />
           <pre>ERROR - caught a class org.eclipse.jgit.api.errors.TransportException with message: https://username@bitbucket.org/username/myrepo.git: not authorized</pre><br />
           This means your username or password for the repository is invalid. Try pulling a copy down locally and replacing the credentials.
-          </p>
+        </p>
         <p>
           <b>A file in a repository is not being indexed?</b><br/>
-          Files with an average file line length >= 255 are considered minified and will not be indexed. You should get a message like the below on the console saying as such when trying to index the file.<br />
+          Files with an average file line length >= 255 are considered minified and will not be indexed. Files that are considered binary will also not be indexed. You should get a message like the ones below on the console saying as such when trying to index the file.<br />
           <pre>Appears to be minified will not index FILENAME</pre>
+          <pre>Appears to be binary will not index FILENAME</pre>
         </p>
         <p>
           <b>A repository is not being indexed on Windows</b><br/>
@@ -668,6 +727,21 @@ print data['sucessful'], data['message']</textarea>
           This issue typically occurs on Unix/Linux servers with a low ulimit.
           If you are getting errors like the above you may need to change your ulimit to a higher number as the default
           of 1024 for most systems can be too low.<br />
+        </p>
+        <p>
+          <b>java.nio.file.AccessDeniedException</b><br/>
+          This is usually caused when using the filepath indexing. Usually it means that the user running searchcode server does not have the required permissions to read from the path selection. You will need to set the permissions so that searchcode server has full read rights on the directory. Otherwise it can be cause if the index or repo directories have been denied to searchcode server which requires full read write delete permissions for these directories.
+        </p>
+        <p>
+          <b>How do I index code in Perforce/BitKeeper/Fossil</b><br/>
+          You can index code in unsupported repositories by checking out a copy of the repository on disk and adding a <a href="#filerepositories">file repository</a> which is pointed at this location. Suggested methods to keep it in sync would be setting up a cron job or scheduled task to constantly update the repositories.
+        </p>
+        <p>
+          <b>Odd Results</b><br/>
+          If you have had an instance that has been running for a long time or that has stopped and started without notice
+          the index may need to rebuilt. Click the "Recrawl & Rebuild Indexes" button in the admin pages. This will clear
+          the repository and index directories and rebuild everything from scratch which should resolve the issue. Note that
+          this process may take some time if you have a lot of repositories or very large ones.
         </p>
         <p>
           <b>Help! Nothing is working!</b><br/>

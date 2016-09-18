@@ -33,6 +33,84 @@ public class SearchcodeLibTest extends TestCase {
         assertTrue(actual.indexOf(" 'shop_order_log' ") != -1);
     }
 
+    public void testIsBinaryFalse() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        String minified = "";
+        for (int i=0; i < 256; i++) {
+            minified += "a";
+        }
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add(minified);
+
+        assertFalse(sl.isBinary(codeLines));
+    }
+
+    public void testIsBinaryTrue() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        String minified = "";
+        for (int i=0; i < 256; i++) {
+            minified += "你";
+        }
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add(minified);
+
+        assertTrue(sl.isBinary(codeLines));
+    }
+
+    public void testIsBinaryEmptyTrue() {
+        SearchcodeLib sl = new SearchcodeLib();
+        ArrayList<String> codeLines = new ArrayList<>();
+        assertTrue(sl.isBinary(codeLines));
+    }
+
+    public void testIsBinaryEdge1() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        String minified = "";
+        for (int i=0; i < 95; i++) {
+            minified += "a";
+        }
+        minified += "你你你你你";
+
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add(minified);
+
+        assertFalse(sl.isBinary(codeLines));
+    }
+
+    public void testIsBinaryEdge2() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        String minified = "";
+        for (int i=0; i < 94; i++) {
+            minified += "a";
+        }
+        minified += "你你你你你你";
+
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add(minified);
+
+        assertTrue(sl.isBinary(codeLines));
+    }
+
+    public void testIsBinaryEdge3() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        String minified = "";
+        for (int i=0; i < 200; i++) {
+            minified += "a";
+        }
+        ArrayList<String> codeLines = new ArrayList<>();
+
+        for (int i=0; i < 200; i++) {
+            codeLines.add(minified);
+        }
+
+        assertFalse(sl.isBinary(codeLines));
+    }
+
     public void testIsMinifiedTrue() {
         SearchcodeLib sl = new SearchcodeLib();
 
