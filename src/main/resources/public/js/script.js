@@ -289,6 +289,7 @@ var testing = {
                             languagefilters: testing.vm.langfilters,
                             repofilters: testing.vm.repositoryfilters,
                             ownfilters: testing.vm.ownfilters,
+                            filterinstantly: testing.vm.filterinstantly
                         }),
                         m.component(SearchAlternateFilterComponent, {
                             query: testing.vm.query,
@@ -484,7 +485,8 @@ var SearchButtonFilterComponent = {
                 ),
                 m('span', m.trust('&nbsp;')),
                 m('input.btn.btn-xs.btn-success.filter-button', { 
-                    type: 'submit', 
+                    type: 'submit',
+                    disabled: args.filterinstantly,
                     onclick: function() { args.search() }, 
                     value: 'Apply' }
                 )
