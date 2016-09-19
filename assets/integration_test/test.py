@@ -45,10 +45,6 @@ class TestIntegration(unittest.TestCase):
         data = self.getData("http://%s/admin/settings/" % (host))
         self.assertTrue('Enter Password' in data)
 
-    def testMinified(self):
-        data = self.getData("http://%s/?q=test" % (host))
-        self.assertTrue('<script src="/js/script.min.js"></script>' in data)
-
     def testJsonLoads(self):
         data = self.getData("http://%s/api/codesearch/?q=test&p=0" % (host))
         data = json.loads(data)
@@ -60,13 +56,7 @@ class TestIntegration(unittest.TestCase):
 
     def testSearch(self):
         data = self.getData("http://%s/html/?q=test" % (host))
-        self.assertTrue('refine search' in data)
-
-    def testDepracatedCodeResults(self):
-        for x in xrange(10):
-            url = "http://%s/codesearch/view/%s" % (host, x)
-            data = self.getData(url)
-            self.assertTrue('MD5 Hash' in data)
+        self.assertTrue('Filter Results' in data)
 
     def testCodeResults(self):
         url = "http://%s/file/zeroclickinfo-fathead/lib/fathead/java/test_parse.py" % (host)
@@ -90,7 +80,7 @@ class TestIntegration(unittest.TestCase):
         for x in xrange(1000):
             url = "http://%s/html/?q=%s" % (host, self.getRandomLetters(10))
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found' in data)
 
     def testFuzzyBadData(self):
         self.getData("http://%s/html/?q=test&p=100" % (host))
@@ -114,47 +104,6 @@ class TestIntegration(unittest.TestCase):
                 self.getRandomLetters(10), 
                 self.getRandomLetters(10),
                 self.getRandomLetters(10)))
-
-    def testRepoPaths(self):
-        '''
-        This needs a reasonable amount of data to work correctly
-        it is also slow, so disabled it most of the time
-        borked if looking up binary file
-        '''
-
-        binary = 'jpg|jpeg|gif|jar|png|.gitignore|webp'.split('|')
-
-        fileschecked = 0
-        filesbad = 0
-
-        for dirName, subdirList, fileList in os.walk('../../repo/'):
-            if '/.git/' not in dirName and dirName.endswith('/.git') == False:
-
-                for f in fileList:
-                    
-                    found = [x for x in binary if x in f]
-
-                    if len(found) == 0:
-                        searchcodepath = '%s/%s' % (dirName.replace('../../repo/', ''), f)
-
-                        url = "http://%s/file/%s" % (host, searchcodepath)
-                        
-                        fileschecked = fileschecked + 1
-
-                        try:    
-                            data = urllib2.urlopen(url)
-                        except:
-                            print url
-                        
-                        self.assertEqual(200, data.getcode())
-                        data = data.read()
-
-                        if 'Was not able to find this code file' in data:
-                            print url
-                            filesbad = filesbad + 1
-
-        # Less than 1% should fail
-        self.assertTrue( filesbad < (fileschecked / 100))
 
 
 

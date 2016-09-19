@@ -35,7 +35,7 @@ class TestIntegration(unittest.TestCase):
             
             url = "http://%s/html/?%s&%s" % (host, one, two)
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found for' in data)
 
     def testFuzzSearchLettersTilde(self):
         for x in xrange(1000):
@@ -44,7 +44,7 @@ class TestIntegration(unittest.TestCase):
             
             url = "http://%s/html/?%s&%s" % (host, one, two)
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found for' in data)
 
     def testFuzzSearchLettersTildeSlash(self):
         for x in xrange(1000):
@@ -53,7 +53,7 @@ class TestIntegration(unittest.TestCase):
             
             url = "http://%s/html/?%s&%s" % (host, one, two)
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found for' in data)
 
     def testFuzzSearchCharacters(self):
         for x in xrange(1000):
@@ -62,7 +62,7 @@ class TestIntegration(unittest.TestCase):
             
             url = "http://%s/html/?%s&%s" % (host, one, two)
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found for' in data)
 
     def testFuzzSearchCharactersTilde(self):
         for x in xrange(1000):
@@ -71,7 +71,7 @@ class TestIntegration(unittest.TestCase):
             
             url = "http://%s/html/?%s&%s" % (host, one, two)
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found for' in data)
 
     def testFuzzSearchCharactersTildeSlash(self):
         for x in xrange(1000):
@@ -80,7 +80,7 @@ class TestIntegration(unittest.TestCase):
             
             url = "http://%s/html/?%s&%s" % (host, one, two)
             data = self.getData(url)
-            self.assertTrue('refine search' in data)
+            self.assertTrue('No results found for' in data)
 
 if __name__ == "__main__":
     host = "localhost:8080"
