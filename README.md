@@ -80,7 +80,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.2.4.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.0.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
 
@@ -102,7 +102,7 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXX XXXX - 1.3.0
+20 September 2016 - 1.3.0
  - Filters now apply instantly when clicked option is toggleable
  - OWASP checking on code result pages based on OWASP code crawler
  - Log Tail screen added to Admin
