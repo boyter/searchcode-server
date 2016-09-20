@@ -1,3 +1,3 @@
 #!/bin/bash
 echo "Launching searchcode server..."
-java -jar searchcode-1.2.4.jar
+java -jar searchcode-1.3.0.jar

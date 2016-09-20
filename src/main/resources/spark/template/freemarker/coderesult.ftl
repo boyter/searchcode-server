@@ -17,15 +17,20 @@
           <tr>
             <td><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Repository</td>
             <td>
-            <#if source?? >
+            <#if source?? && codeOwner != "File System">
                 <a href="${source}">${repoLocation}</a>
             <#else>
                 ${repoLocation}
             </#if>
             </td>
-            <td><span class="glyphicon glyphicon-user" aria-hidden="true"></span> Owner</td>
-            <td>${codeOwner}</td>
-            <!-- <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-indent-left" aria-hidden="true"></span> Blame</button> -->
+            <#if codeOwner == "File System">
+                <td></td><td></td>
+            <#else>
+                <td>
+                <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Owner
+                </td>
+                <td>${codeOwner}</td>
+            </#if>
           </tr>
           <tr>
             <td><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> Language</td>
@@ -47,7 +52,6 @@
           <#if owaspResults?size != 0>
           <tr>
             <td colspan="4">
-                <!--<button id="toggleOwasp" type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> OWASP Advisories</button>-->
                 <a id="toggleOwasp" href="#"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> OWASP Advisories</a>
             </td>
           </tr>

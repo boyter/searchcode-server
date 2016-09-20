@@ -889,7 +889,8 @@ public class App {
 
             Map<String, Object> map = new HashMap<>();
 
-            map.put("logs", Singleton.getLogger().getLogs());
+            List<String> logs = Singleton.getLogger().getLogs();
+            map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
 
@@ -1181,7 +1182,11 @@ public class App {
             map.put("fileName", codeResult.fileName);
 
             // TODO fix this properly code path includes the repo name and should be removed
-            map.put("codePath", codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length()));
+            String codePath = codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length());
+            if (!codePath.startsWith("/")) {
+                codePath = "/" + codePath;
+            }
+            map.put("codePath", codePath);
             map.put("codeLength", codeResult.codeLines);
             map.put("languageName", codeResult.languageName);
             map.put("md5Hash", codeResult.md5hash);
