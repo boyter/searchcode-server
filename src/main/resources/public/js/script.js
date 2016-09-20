@@ -95,110 +95,108 @@ var SearchModel = {
 
         return true;
     },
-    search: function() {
-        if (SearchModel.searchhistory()) {
-            m.request({
-                method: 'GET', 
-                url: '/api/timecodesearch/?q=test'
-            }).then( function(e) {
-                //processResult(e);
-                SearchModel.searchresults(e);
+    search: function(page, isstatechange) {
+        if (SearchModel.currentlyloading()) {
+            return;
+        }
+
+        // Start loading indicator
+        SearchModel.currentlyloading(true);
+        m.redraw();
+
+        // If we have filters append them on
+        var lang = '';
+        var repo = '';
+        var own = '';
+
+        if (vm.langfilters.length != 0) {
+            lang = '&lan=' + _.map(vm.langfilters, function(e) { return encodeURIComponent(e); } ).join('&lan=');
+        }
+        if (vm.repositoryfilters.length != 0) {
+            repo = '&repo=' + _.map(vm.repositoryfilters, function(e) { return encodeURIComponent(e); } ).join('&repo=');
+        }
+        if (vm.ownfilters.length != 0) {
+            own = '&own=' + _.map(vm.ownfilters, function(e) { return encodeURIComponent(e); } ).join('&own=');
+        }
+
+        var searchpage = 0;
+        var pagequery = ''
+        if(page !== undefined) {
+            searchpage = page
+            SearchModel.currentpage(page);
+            if (searchpage !== 0) {
+                pagequery = '&p=' + searchpage;
+            }
+        }
+
+        // Stringify and parse to create a copy not a reference
+        SearchModel.activelangfilters(JSON.parse(JSON.stringify(vm.langfilters)));
+        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(vm.repositoryfilters)));
+        SearchModel.activeownfilters(JSON.parse(JSON.stringify(vm.ownfilters)));
+
+        // set the state
+        if (isstatechange === undefined) {
+            history.pushState({
+                searchvalue: SearchModel.searchvalue(),
+                langfilters: SearchModel.activelangfilters(),
+                repofilters: SearchModel.activerepositoryfilters(),
+                ownfilters: SearchModel.activeownfilters(),
+                currentpage: SearchModel.currentpage()
+            }, 'search', '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + pagequery);
+        }
+
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+        var cacheHit = lruAppCache.getItem(queryurl);
+
+        var processResult = function(e) {
+            vm.coderesults = new testing.CodeResultList();
+            
+            // Facets/Filters
+            vm.repofilters = new testing.RepoFilterList();
+            vm.languagefilters = new testing.LanguageFilterList();
+            vm.ownerfilters = new testing.OwnerFilterList();
+
+            vm.totalhits = e.totalHits;
+            vm.altquery = e.altQuery;
+            vm.query = e.query;
+            vm.pages = e.pages;
+            vm.currentpage(e.page);
+
+            _.each(e.codeResultList, function(res) {
+                vm.coderesults.push(new testing.CodeResult(res));
             });
+
+            _.each(e.repoFacetResults, function(res) {
+                vm.repofilters.push(new testing.RepoFilter(res));
+            });
+
+            _.each(e.languageFacetResults, function(res) {
+                vm.languagefilters.push(new testing.LanguageFilter(res));
+            });
+
+            _.each(e.repoOwnerResults, function(res) {
+                vm.ownerfilters.push(new testing.OwnerFilter(res));
+            });
+
+            vm.currentlyloading(false);
+            m.redraw();
+        };
+
+        if (cacheHit !== null) {
+            processResult(cacheHit);
         }
         else {
-            // do regular search here
-            //search = function(page, isstatechange) {
+            m.request({method: 'GET', background: true, url: queryurl })
+            .then(function(e) {
 
-                if (vm.currentlyloading()) {
-                    return;
-                }
-
-                // Start loading indicator
-                vm.currentlyloading(true);
-                m.redraw();
-
-                // If we have filters append them on
-                var lang = '';
-                var repo = '';
-                var own = '';
-                if (vm.langfilters.length != 0) {
-                    lang = '&lan=' + _.map(vm.langfilters, function(e) { return encodeURIComponent(e); } ).join('&lan=');
-                }
-                if (vm.repositoryfilters.length != 0) {
-                    repo = '&repo=' + _.map(vm.repositoryfilters, function(e) { return encodeURIComponent(e); } ).join('&repo=');
-                }
-                if (vm.ownfilters.length != 0) {
-                    own = '&own=' + _.map(vm.ownfilters, function(e) { return encodeURIComponent(e); } ).join('&own=');
-                }
-
-                var searchpage = 0;
-                var pagequery = ''
-                if(page !== undefined) {
-                    searchpage = page
-                    vm.currentpage(page);
-                    if (searchpage !== 0) {
-                        pagequery = '&p=' + searchpage;
-                    }
-                }
-
-                vm.activelangfilters = JSON.parse(JSON.stringify(vm.langfilters));
-                vm.activerepositoryfilters = JSON.parse(JSON.stringify(vm.repositoryfilters));
-                vm.activeownfilters = JSON.parse(JSON.stringify(vm.ownfilters));
-
-                // set the state
-                if (isstatechange === undefined) {
-                    history.pushState({
-                        searchvalue: vm.searchvalue(),
-                        langfilters: vm.activelangfilters,
-                        repofilters: vm.activerepositoryfilters,
-                        ownfilters: vm.activeownfilters,
-                        currentpage: vm.currentpage()
-                    }, 'search', '?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + pagequery);
-                }
-
-                var queryurl = '/api/codesearch/?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-                var cacheHit = lruAppCache.getItem(queryurl);
-
-                var processResult = function(e) {
-                    vm.coderesults = new testing.CodeResultList();
-                    
-                    // Facets/Filters
-                    vm.repofilters = new testing.RepoFilterList();
-                    vm.languagefilters = new testing.LanguageFilterList();
-                    vm.ownerfilters = new testing.OwnerFilterList();
-
-                    vm.totalhits = e.totalHits;
-                    vm.altquery = e.altQuery;
-                    vm.query = e.query;
-                    vm.pages = e.pages;
-                    vm.currentpage(e.page);
-
-                    _.each(e.codeResultList, function(res) {
-                        vm.coderesults.push(new testing.CodeResult(res));
-                    });
-
-                    _.each(e.repoFacetResults, function(res) {
-                        vm.repofilters.push(new testing.RepoFilter(res));
-                    });
-
-                    _.each(e.languageFacetResults, function(res) {
-                        vm.languagefilters.push(new testing.LanguageFilter(res));
-                    });
-
-                    _.each(e.repoOwnerResults, function(res) {
-                        vm.ownerfilters.push(new testing.OwnerFilter(res));
-                    });
-
-                    vm.currentlyloading(false);
-                    m.redraw();
-                };
-
-                
-                m.request({method: 'GET', background: true, url: queryurl })
-                .then(function(e) {
-                    processResult(e);
+                lruAppCache.setItem(queryurl, e, {
+                    expirationAbsolute: null,
+                    expirationSliding: 10, // Very low, just for paging back and forth
+                    priority: Cache.Priority.HIGH
                 });
-            }
+
+                processResult(e);
+            });
         }
     }
 };
