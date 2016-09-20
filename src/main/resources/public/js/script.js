@@ -35,6 +35,12 @@ var SearchModel = {
 
     filterinstantly: m.prop(true),
 
+    // From the response
+    totalhits: m.prop(0),
+    altquery: m.prop([]),
+    query: m.prop(''),
+
+
     clearfilters: function() {
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
@@ -95,6 +101,50 @@ var SearchModel = {
 
         return true;
     },
+    getlangfilters: function() {
+        var lang = '';
+
+        if (SearchModel.langfilters().length != 0) {
+            lang = '&lan=' + _.map(SearchModel.langfilters(), function(e) { return encodeURIComponent(e); } ).join('&lan=');
+        }
+
+        return lang;
+    },
+    getrepofilters: function() {
+        var repo = '';
+
+        if (SearchModel.repositoryfilters().length != 0) {
+            repo = '&repo=' + _.map(SearchModel.repositoryfilters(), function(e) { return encodeURIComponent(e); } ).join('&repo=');
+        }
+
+        return repo;
+    },
+    getownfilters: function() {
+        var own = '';
+
+        if (SearchModel.ownfilters().length != 0) {
+            own = '&own=' + _.map(SearchModel.ownfilters(), function(e) { return encodeURIComponent(e); } ).join('&own=');
+        }
+
+        return own;
+    },
+    setstatechange: function(isstatechange) {
+        // set the state
+        if (isstatechange === undefined) {
+            history.pushState({
+                searchvalue: SearchModel.searchvalue(),
+                langfilters: SearchModel.activelangfilters(),
+                repofilters: SearchModel.activerepositoryfilters(),
+                ownfilters: SearchModel.activeownfilters(),
+                currentpage: SearchModel.currentpage()
+            }, 'search', '?q=' + 
+                        encodeURIComponent(SearchModel.searchvalue()) + 
+                        SearchModel.getlangfilters() + 
+                        SearchModel.getrepofilters() + 
+                        SearchModel.getownfilters() + 
+                        pagequery);
+        }
+    },
     search: function(page, isstatechange) {
         if (SearchModel.currentlyloading()) {
             return;
@@ -105,19 +155,9 @@ var SearchModel = {
         m.redraw();
 
         // If we have filters append them on
-        var lang = '';
-        var repo = '';
-        var own = '';
-
-        if (vm.langfilters.length != 0) {
-            lang = '&lan=' + _.map(vm.langfilters, function(e) { return encodeURIComponent(e); } ).join('&lan=');
-        }
-        if (vm.repositoryfilters.length != 0) {
-            repo = '&repo=' + _.map(vm.repositoryfilters, function(e) { return encodeURIComponent(e); } ).join('&repo=');
-        }
-        if (vm.ownfilters.length != 0) {
-            own = '&own=' + _.map(vm.ownfilters, function(e) { return encodeURIComponent(e); } ).join('&own=');
-        }
+        var lang = SearchModel.getlangfilters();
+        var repo = SearchModel.getrepofilters();
+        var own = SearchModel.getownfilters();
 
         var searchpage = 0;
         var pagequery = ''
@@ -134,33 +174,23 @@ var SearchModel = {
         SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(vm.repositoryfilters)));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(vm.ownfilters)));
 
-        // set the state
-        if (isstatechange === undefined) {
-            history.pushState({
-                searchvalue: SearchModel.searchvalue(),
-                langfilters: SearchModel.activelangfilters(),
-                repofilters: SearchModel.activerepositoryfilters(),
-                ownfilters: SearchModel.activeownfilters(),
-                currentpage: SearchModel.currentpage()
-            }, 'search', '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + pagequery);
-        }
-
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-        var cacheHit = lruAppCache.getItem(queryurl);
+        SearchModel.setstatechange(isstatechange);
 
         var processResult = function(e) {
+            // TODO remove this definition
             vm.coderesults = new testing.CodeResultList();
             
+            // TODO remove these facet definitions
             // Facets/Filters
             vm.repofilters = new testing.RepoFilterList();
             vm.languagefilters = new testing.LanguageFilterList();
             vm.ownerfilters = new testing.OwnerFilterList();
 
-            vm.totalhits = e.totalHits;
-            vm.altquery = e.altQuery;
-            vm.query = e.query;
-            vm.pages = e.pages;
-            vm.currentpage(e.page);
+            SearchModel.totalhits = e.totalHits;
+            SearchModel.altquery = e.altQuery;
+            SearchModel.query = e.query;
+            SearchModel.pages = e.pages;
+            SearchModel.currentpage(e.page);
 
             _.each(e.codeResultList, function(res) {
                 vm.coderesults.push(new testing.CodeResult(res));
@@ -178,26 +208,13 @@ var SearchModel = {
                 vm.ownerfilters.push(new testing.OwnerFilter(res));
             });
 
-            vm.currentlyloading(false);
+            SearchModel.currentlyloading(false);
             m.redraw();
         };
 
-        if (cacheHit !== null) {
-            processResult(cacheHit);
-        }
-        else {
-            m.request({method: 'GET', background: true, url: queryurl })
-            .then(function(e) {
-
-                lruAppCache.setItem(queryurl, e, {
-                    expirationAbsolute: null,
-                    expirationSliding: 10, // Very low, just for paging back and forth
-                    priority: Cache.Priority.HIGH
-                });
-
-                processResult(e);
-            });
-        }
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+        
+        m.request( { method: 'GET', background: true, url: queryurl } ).then( function(e) { processResult(e); } );
     }
 };
 
