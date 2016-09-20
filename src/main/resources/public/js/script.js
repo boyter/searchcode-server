@@ -128,7 +128,7 @@ var SearchModel = {
 
         return own;
     },
-    setstatechange: function(isstatechange) {
+    setstatechange: function(pagequery, isstatechange) {
         // set the state
         if (isstatechange === undefined) {
             history.pushState({
@@ -170,11 +170,11 @@ var SearchModel = {
         }
 
         // Stringify and parse to create a copy not a reference
-        SearchModel.activelangfilters(JSON.parse(JSON.stringify(vm.langfilters)));
-        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(vm.repositoryfilters)));
-        SearchModel.activeownfilters(JSON.parse(JSON.stringify(vm.ownfilters)));
+        SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
+        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
+        SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
 
-        SearchModel.setstatechange(isstatechange);
+        SearchModel.setstatechange(pagequery, isstatechange);
 
         var processResult = function(e) {
             // TODO remove this definition
