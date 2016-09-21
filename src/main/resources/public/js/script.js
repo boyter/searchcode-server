@@ -212,36 +212,16 @@ var SearchModel = {
         SearchModel.setstatechange(pagequery, isstatechange);
 
         var processResult = function(e) {
-            // TODO remove this definition
-            SearchModel.coderesults([]);
-            
-            // TODO remove these facet definitions
-            // Facets/Filters
-            SearchModel.repofilters([]);
-            SearchModel.languagefilters([]);
-            SearchModel.ownerfilters([]);
-
             SearchModel.totalhits(e.totalHits);
             SearchModel.altquery(e.altQuery);
             SearchModel.query(e.query);
             SearchModel.pages(e.pages);
             SearchModel.currentpage(e.page);
 
-            _.each(e.codeResultList, function(res) {
-                SearchModel.coderesults().push(new SearchModel.CodeResult(res));
-            });
-
-            _.each(e.repoFacetResults, function(res) {
-                SearchModel.repofilters().push(new SearchModel.RepoFilter(res));
-            });
-
-            _.each(e.languageFacetResults, function(res) {
-                SearchModel.languagefilters().push(new SearchModel.LanguageFilter(res));
-            });
-
-            _.each(e.repoOwnerResults, function(res) {
-                SearchModel.ownerfilters().push(new SearchModel.OwnerFilter(res));
-            });
+            SearchModel.coderesults(e.codeResultList);
+            SearchModel.repofilters(e.repoFacetResults);
+            SearchModel.languagefilters(e.languageFacetResults);
+            SearchModel.ownerfilters(e.repoOwnerResults);
 
             SearchModel.currentlyloading(false);
             m.redraw();
