@@ -25,6 +25,8 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
     // How many terms to keep in the LRUCACHE
     private int LRUCOUNT = Integer.parseInt(Values.DEFAULTSPELLINGCORRECTORSIZE);
 
+    private int VARIATIONSCOUNT = 10000;
+
     // word to count map - how may times a word is present - or a weight attached to a word
     private Map<String, Integer> dictionary = null;
 
@@ -70,6 +72,10 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
             }
         }
 
+        if (closeEdits.size() > VARIATIONSCOUNT) {
+            closeEdits = closeEdits.subList(0, VARIATIONSCOUNT);
+        }
+
         if (!possibleMatches.isEmpty()) {
             // Sorted least likely first
             Object[] matches = Helpers.sortByValue(possibleMatches).keySet().toArray();
@@ -95,6 +101,10 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
         List<String> furtherEdits = new ArrayList<>();
         for(String closeEdit: closeEdits) {
             furtherEdits.addAll(this.wordEdits(closeEdit));
+
+            if (furtherEdits.size() > this.VARIATIONSCOUNT) {
+                break;
+            }
         }
 
         for (String futherEdit: furtherEdits) {
@@ -153,6 +163,10 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
                 sb.insert(i, character);
                 closeWords.add(sb.toString());
             }
+
+            if (closeWords.size() > this.VARIATIONSCOUNT) {
+                return closeWords;
+            }
         }
 
         for (int i = 1; i < word.length(); i++) {
@@ -166,6 +180,10 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
                 sb = new StringBuilder(word);
                 sb.deleteCharAt(i);
                 closeWords.add(sb.toString());
+            }
+
+            if (closeWords.size() > this.VARIATIONSCOUNT) {
+                return closeWords;
             }
         }
 
