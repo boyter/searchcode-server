@@ -25,7 +25,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
     // How many terms to keep in the LRUCACHE
     private int LRUCOUNT = Integer.parseInt(Values.DEFAULTSPELLINGCORRECTORSIZE);
 
-    private int VARIATIONSCOUNT = 10000;
+    private int VARIATIONSCOUNT = 200000;
 
     // word to count map - how may times a word is present - or a weight attached to a word
     private Map<String, Integer> dictionary = null;
