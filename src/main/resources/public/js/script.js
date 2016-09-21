@@ -39,7 +39,42 @@ var SearchModel = {
     totalhits: m.prop(0),
     altquery: m.prop([]),
     query: m.prop(''),
+    coderesults: m.prop([]),
+    repofilters: m.prop([]),
+    languagefilters: m.prop([]),
+    ownerfilters: m.prop([]),
 
+    // DTO objects
+    CodeResult: function (data) {
+        this.filename = m.prop(data.fileName);
+        this.reponame = m.prop(data.repoName);
+        this.matchingresults = m.prop(data.matchingResults);
+        this.repolocation = m.prop(data.repoLocation);
+        this.documentid = m.prop(data.documentId);
+        this.codeid = m.prop(data.codeId);
+        this.filelocation = m.prop(data.fileLocation);
+        this.codepath = m.prop(data.codePath);
+        this.languagename = m.prop(data.languageName);
+        this.codelines = m.prop(data.codeLines);
+    },
+
+    RepoFilter: function (data) {
+        this.count = m.prop(data.count);
+        this.source = m.prop(data.repoName);
+        this.selected = m.prop(data.selected);
+    },
+
+    LanguageFilter: function (data) {
+        this.count = m.prop(data.count);
+        this.language = m.prop(data.languageName);
+        this.selected = m.prop(data.selected);
+    },
+
+    OwnerFilter: function (data) {
+        this.count = m.prop(data.count);
+        this.owner = m.prop(data.owner);
+        this.selected = m.prop(data.selected);
+    },
 
     clearfilters: function() {
         SearchModel.langfilters([]);
@@ -178,34 +213,34 @@ var SearchModel = {
 
         var processResult = function(e) {
             // TODO remove this definition
-            vm.coderesults = new testing.CodeResultList();
+            SearchModel.coderesults([]);
             
             // TODO remove these facet definitions
             // Facets/Filters
-            vm.repofilters = new testing.RepoFilterList();
-            vm.languagefilters = new testing.LanguageFilterList();
-            vm.ownerfilters = new testing.OwnerFilterList();
+            SearchModel.repofilters([]);
+            SearchModel.languagefilters([]);
+            SearchModel.ownerfilters([]);
 
-            SearchModel.totalhits = e.totalHits;
-            SearchModel.altquery = e.altQuery;
-            SearchModel.query = e.query;
-            SearchModel.pages = e.pages;
+            SearchModel.totalhits(e.totalHits);
+            SearchModel.altquery(e.altQuery);
+            SearchModel.query(e.query);
+            SearchModel.pages(e.pages);
             SearchModel.currentpage(e.page);
 
             _.each(e.codeResultList, function(res) {
-                vm.coderesults.push(new testing.CodeResult(res));
+                SearchModel.coderesults().push(new SearchModel.CodeResult(res));
             });
 
             _.each(e.repoFacetResults, function(res) {
-                vm.repofilters.push(new testing.RepoFilter(res));
+                SearchModel.repofilters().push(new SearchModel.RepoFilter(res));
             });
 
             _.each(e.languageFacetResults, function(res) {
-                vm.languagefilters.push(new testing.LanguageFilter(res));
+                SearchModel.languagefilters().push(new SearchModel.LanguageFilter(res));
             });
 
             _.each(e.repoOwnerResults, function(res) {
-                vm.ownerfilters.push(new testing.OwnerFilter(res));
+                SearchModel.ownerfilters().push(new SearchModel.OwnerFilter(res));
             });
 
             SearchModel.currentlyloading(false);
@@ -213,7 +248,6 @@ var SearchModel = {
         };
 
         var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-        
         m.request( { method: 'GET', background: true, url: queryurl } ).then( function(e) { processResult(e); } );
     }
 };
