@@ -104,7 +104,7 @@ Change Log
 
 XX XXXXXXXXX XXXX - 1.3.1
  - Fix potential performance issue in spelling corrector with long strings
- - 
+ - Fix potential XSS issue with HTML page
 
 20 September 2016 - 1.3.0
  - Filters now apply instantly when clicked option is toggleable
