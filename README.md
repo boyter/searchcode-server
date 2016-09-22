@@ -102,8 +102,12 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXX XXXX - 1.4.0
+XX XXXXXXXXX XXXX - 1.4.0
  - Can index historical data for git repositories
+
+XX XXXXXXXXX XXXX - 1.3.1
+ - Fix potential performance issue in spelling corrector with long strings
+ - Fix potential XSS issue with HTML page
 
 20 September 2016 - 1.3.0
  - Filters now apply instantly when clicked option is toggleable

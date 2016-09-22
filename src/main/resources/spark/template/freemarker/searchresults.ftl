@@ -12,20 +12,20 @@
   <div class="col-md-3 search-filters-container search-filters">
 
     <form <#if isHtml??>action="/html/"<#else>action="/"</#if>>
-    <input name="q" value="${searchValue}" type="hidden">
+    <input name="q" value="${searchValue?html}" type="hidden">
 
     <div>
       <h5>Page ${searchResult.page + 1} of ${totalPages + 1}</h5>
 
       <div class="center">
-        <a class="btn btn-xs btn-success filter-button" href="?q=${searchValue}&p=${searchResult.page - 1}${reposQueryString}${langsQueryString}${ownsQueryString}" <#if searchResult.page == 0 >disabled="disabled"</#if>>&#9664; Previous</a><span>&nbsp;</span><a class="btn btn-xs btn-success filter-button" href="?q=${searchValue}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}" <#if searchResult.page == totalPages >disabled="disabled"</#if>>Next &#9654;</a>
+        <a class="btn btn-xs btn-success filter-button" href="?q=${searchValue?html}&p=${searchResult.page - 1}${reposQueryString}${langsQueryString}${ownsQueryString}" <#if searchResult.page == 0 >disabled="disabled"</#if>>&#9664; Previous</a><span>&nbsp;</span><a class="btn btn-xs btn-success filter-button" href="?q=${searchValue?html}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}" <#if searchResult.page == totalPages >disabled="disabled"</#if>>Next &#9654;</a>
       </div>
     </div>
 
     <div>
       <h5>Filter Results</h5>
       <div class="center">
-        <a href="?q=${searchValue}" class="btn btn-xs btn-success filter-button">Remove</a><span>&nbsp;</span><input type="submit" value="Apply" class="btn btn-xs btn-success filter-button" />
+        <a href="?q=${searchValue?html}" class="btn btn-xs btn-success filter-button">Remove</a><span>&nbsp;</span><input type="submit" value="Apply" class="btn btn-xs btn-success filter-button" />
       </div>
     </div>
 
@@ -103,7 +103,7 @@
   <div class="search-pagination">
     <ul class="pagination"><#list searchResult.pages>
       <#items as page>
-        <li <#if page == searchResult.page>class="active"</#if>> <a href="?q=${searchValue}&p=${page}${reposQueryString}${langsQueryString}${ownsQueryString}">${page + 1}</a></li>
+        <li <#if page == searchResult.page>class="active"</#if>> <a href="?q=${searchValue?html}&p=${page}${reposQueryString}${langsQueryString}${ownsQueryString}">${page + 1}</a></li>
         </#items>
       </#list>
     </ul>

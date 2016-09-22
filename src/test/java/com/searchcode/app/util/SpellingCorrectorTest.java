@@ -99,6 +99,14 @@ public class SpellingCorrectorTest extends TestCase {
         assertEquals("test", test);
     }
 
+    /**
+     * If there is a performance issue this takes forever to run
+     */
+    public void testLongStringPerformance() {
+        ISpellingCorrector sc = getSpellingCorrector();
+        sc.correct("thisisareallylongstringthatshouldcalusethingstorunreallyslow");
+    }
+
     public void testFuzzSpellingCorrector() {
         Random rand = new Random();
         ISpellingCorrector sc = getSpellingCorrector();
