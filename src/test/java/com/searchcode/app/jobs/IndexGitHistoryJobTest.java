@@ -11,7 +11,7 @@ public class IndexGitHistoryJobTest extends TestCase {
 
         //String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials
         //gitRepoJob.cloneGitRepository("test", "/Users/boyter/Desktop/searchcode-server", "", "", "./repo/.timelord/", "master", false);
-        gitRepoJob.getGitChangeSets();
+        //gitRepoJob.getGitChangeSets(); // does the indexing currently
         //gitRepoJob.getRevisionChanges();
     }
 }

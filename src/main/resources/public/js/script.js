@@ -12,9 +12,6 @@
  * The implementation of the front end for searchcode server using Mithril.js
  */
 
-// LRU cache in local storage for keeping result sets when paging back and forth
-var lruAppCache = new Cache(-1, false, new Cache.LocalStorageCacheStorage('searchcode'));
-
 // Model that perfoms the search logic and does the actual search
 var SearchModel = {
     searchvalue: m.prop(''),
@@ -43,38 +40,6 @@ var SearchModel = {
     repofilters: m.prop([]),
     languagefilters: m.prop([]),
     ownerfilters: m.prop([]),
-
-    // DTO objects
-    CodeResult: function (data) {
-        this.filename = m.prop(data.fileName);
-        this.reponame = m.prop(data.repoName);
-        this.matchingresults = m.prop(data.matchingResults);
-        this.repolocation = m.prop(data.repoLocation);
-        this.documentid = m.prop(data.documentId);
-        this.codeid = m.prop(data.codeId);
-        this.filelocation = m.prop(data.fileLocation);
-        this.codepath = m.prop(data.codePath);
-        this.languagename = m.prop(data.languageName);
-        this.codelines = m.prop(data.codeLines);
-    },
-
-    RepoFilter: function (data) {
-        this.count = m.prop(data.count);
-        this.source = m.prop(data.repoName);
-        this.selected = m.prop(data.selected);
-    },
-
-    LanguageFilter: function (data) {
-        this.count = m.prop(data.count);
-        this.language = m.prop(data.languageName);
-        this.selected = m.prop(data.selected);
-    },
-
-    OwnerFilter: function (data) {
-        this.count = m.prop(data.count);
-        this.owner = m.prop(data.owner);
-        this.selected = m.prop(data.selected);
-    },
 
     clearfilters: function() {
         SearchModel.langfilters([]);
@@ -211,7 +176,8 @@ var SearchModel = {
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var processResult = function(e) {
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+        m.request( { method: 'GET', background: true, url: queryurl } ).then( function(e) {
             SearchModel.totalhits(e.totalHits);
             SearchModel.altquery(e.altQuery);
             SearchModel.query(e.query);
@@ -225,333 +191,415 @@ var SearchModel = {
 
             SearchModel.currentlyloading(false);
             m.redraw();
-        };
-
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-        m.request( { method: 'GET', background: true, url: queryurl } ).then( function(e) { processResult(e); } );
+        } );
     }
 };
 
 
 var testing = {
-    CodeResultList: Array,
-    RepoFilterList: Array,
-    LanguageFilterList: Array,
-    OwnerFilterList: Array,
+    // CodeResultList: Array,
+    // RepoFilterList: Array,
+    // LanguageFilterList: Array,
+    // OwnerFilterList: Array,
 
-    CodeResult: function(data) {
-        this.filename = m.prop(data.fileName);
-        this.reponame = m.prop(data.repoName);
-        this.matchingresults = m.prop(data.matchingResults);
-        this.repolocation = m.prop(data.repoLocation);
-        this.documentid = m.prop(data.documentId);
-        this.codeid = m.prop(data.codeId);
-        this.filelocation = m.prop(data.fileLocation);
-        this.codepath = m.prop(data.codePath);
-        this.languagename = m.prop(data.languageName);
-        this.codelines = m.prop(data.codeLines);
-    },
+    // CodeResult: function(data) {
+    //     this.filename = m.prop(data.fileName);
+    //     this.reponame = m.prop(data.repoName);
+    //     this.matchingresults = m.prop(data.matchingResults);
+    //     this.repolocation = m.prop(data.repoLocation);
+    //     this.documentid = m.prop(data.documentId);
+    //     this.codeid = m.prop(data.codeId);
+    //     this.filelocation = m.prop(data.fileLocation);
+    //     this.codepath = m.prop(data.codePath);
+    //     this.languagename = m.prop(data.languageName);
+    //     this.codelines = m.prop(data.codeLines);
+    // },
 
-    RepoFilter: function(data) {
-        this.count = m.prop(data.count);
-        this.source = m.prop(data.repoName);
-        this.selected = m.prop(data.selected);
-    },
+    // RepoFilter: function(data) {
+    //     this.count = m.prop(data.count);
+    //     this.source = m.prop(data.repoName);
+    //     this.selected = m.prop(data.selected);
+    // },
 
-    LanguageFilter: function(data) {
-        this.count = m.prop(data.count);
-        this.language = m.prop(data.languageName);
-        this.selected = m.prop(data.selected);
-    },
+    // LanguageFilter: function(data) {
+    //     this.count = m.prop(data.count);
+    //     this.language = m.prop(data.languageName);
+    //     this.selected = m.prop(data.selected);
+    // },
 
-    OwnerFilter: function(data) {
-        this.count = m.prop(data.count);
-        this.owner = m.prop(data.owner);
-        this.selected = m.prop(data.selected);
-    },
+    // OwnerFilter: function(data) {
+    //     this.count = m.prop(data.count);
+    //     this.owner = m.prop(data.owner);
+    //     this.selected = m.prop(data.selected);
+    // },
 
-    vm: (function() {
-        var vm = {}
-        vm.init = function() {
-            vm.searchvalue = m.prop(''); // set search to nothing initally 
+    // vm: (function() {
+    //     var vm = {}
+    //     vm.init = function() {
+    //         vm.searchvalue = m.prop(''); // set search to nothing initally 
             
-            vm.langfilters = [];
-            vm.repositoryfilters = [];
-            vm.ownfilters = [];
+    //         vm.langfilters = [];
+    //         vm.repositoryfilters = [];
+    //         vm.ownfilters = [];
 
-            vm.activelangfilters = [];
-            vm.activerepositoryfilters = [];
-            vm.activeownfilters = [];
+    //         vm.activelangfilters = [];
+    //         vm.activerepositoryfilters = [];
+    //         vm.activeownfilters = [];
 
-            vm.pages = [];
-            vm.currentlyloading = m.prop(false);
-            vm.currentpage = m.prop(0);
+    //         vm.pages = [];
+    //         vm.currentlyloading = m.prop(false);
+    //         vm.currentpage = m.prop(0);
 
-            if (window.localStorage) {
-                var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
-                if (tmp !== null) {
-                    vm.filterinstantly = tmp;
-                }
-                else {
-                    vm.filterinstantly = true;
-                }
-            }
-            else {
-                vm.filterinstantly = true;
-            }
+    //         if (window.localStorage) {
+    //             var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
+    //             if (tmp !== null) {
+    //                 vm.filterinstantly = tmp;
+    //             }
+    //             else {
+    //                 vm.filterinstantly = true;
+    //             }
+    //         }
+    //         else {
+    //             vm.filterinstantly = true;
+    //         }
 
-            vm.clearfilters = function() {
-                vm.langfilters = [];
-                vm.repositoryfilters = [];
-                vm.ownfilters = [];
-            };
+    //         vm.clearfilters = function() {
+    //             vm.langfilters = [];
+    //             vm.repositoryfilters = [];
+    //             vm.ownfilters = [];
+    //         };
 
-            vm.toggleinstant = function() {
-                if (window.localStorage) {
-                    localStorage.setItem('toggleinstant', JSON.stringify(!vm.filterinstantly));
-                }
-                vm.filterinstantly = !vm.filterinstantly;
-            };
+    //         vm.toggleinstant = function() {
+    //             if (window.localStorage) {
+    //                 localStorage.setItem('toggleinstant', JSON.stringify(!vm.filterinstantly));
+    //             }
+    //             vm.filterinstantly = !vm.filterinstantly;
+    //         };
 
-            vm.togglefilter = function (type, name) {
-                switch(type) {
-                    case 'language':
-                        if (_.indexOf(vm.langfilters, name) === -1) {
-                            vm.langfilters.push(name);
-                        }
-                        else {
-                            vm.langfilters = _.without(vm.langfilters, name)
-                        }
-                        break;
-                    case 'repo':
-                        if (_.indexOf(vm.repositoryfilters, name) === -1) {
-                            vm.repositoryfilters.push(name);
-                        }
-                        else {
-                            vm.repositoryfilters = _.without(vm.repositoryfilters, name)
-                        }
-                        break;
-                    case 'owner':
-                        if (_.indexOf(vm.ownfilters, name) === -1) {
-                            vm.ownfilters.push(name);
-                        }
-                        else {
-                            vm.ownfilters = _.without(vm.ownfilters, name)
-                        }
-                        break;
-                }
+    //         vm.togglefilter = function (type, name) {
+    //             switch(type) {
+    //                 case 'language':
+    //                     if (_.indexOf(vm.langfilters, name) === -1) {
+    //                         vm.langfilters.push(name);
+    //                     }
+    //                     else {
+    //                         vm.langfilters = _.without(vm.langfilters, name)
+    //                     }
+    //                     break;
+    //                 case 'repo':
+    //                     if (_.indexOf(vm.repositoryfilters, name) === -1) {
+    //                         vm.repositoryfilters.push(name);
+    //                     }
+    //                     else {
+    //                         vm.repositoryfilters = _.without(vm.repositoryfilters, name)
+    //                     }
+    //                     break;
+    //                 case 'owner':
+    //                     if (_.indexOf(vm.ownfilters, name) === -1) {
+    //                         vm.ownfilters.push(name);
+    //                     }
+    //                     else {
+    //                         vm.ownfilters = _.without(vm.ownfilters, name)
+    //                     }
+    //                     break;
+    //             }
 
-            };
+    //         };
 
-            vm.filterexists = function (type, name) {
-                switch(type) {
-                    case 'language':
-                        if (_.indexOf(vm.langfilters, name) === -1) {
-                            return false;
-                        }
-                        break;
-                    case 'repo':
-                        if (_.indexOf(vm.repositoryfilters, name) === -1) {
-                            return false;
-                        }
-                        break;
-                    case 'owner':
-                        if (_.indexOf(vm.ownfilters, name) === -1) {
-                            return false;
-                        }
-                        break;
-                }
+    //         vm.filterexists = function (type, name) {
+    //             switch(type) {
+    //                 case 'language':
+    //                     if (_.indexOf(vm.langfilters, name) === -1) {
+    //                         return false;
+    //                     }
+    //                     break;
+    //                 case 'repo':
+    //                     if (_.indexOf(vm.repositoryfilters, name) === -1) {
+    //                         return false;
+    //                     }
+    //                     break;
+    //                 case 'owner':
+    //                     if (_.indexOf(vm.ownfilters, name) === -1) {
+    //                         return false;
+    //                     }
+    //                     break;
+    //             }
 
-                return true;
-            };
+    //             return true;
+    //         };
 
-            vm.search = function(page, isstatechange) {
+    //         vm.search = function(page, isstatechange) {
 
-                if (vm.currentlyloading()) {
-                    return;
-                }
+    //             if (vm.currentlyloading()) {
+    //                 return;
+    //             }
 
-                // Start loading indicator
-                vm.currentlyloading(true);
-                m.redraw();
+    //             // Start loading indicator
+    //             vm.currentlyloading(true);
+    //             m.redraw();
 
-                // If we have filters append them on
-                var lang = '';
-                var repo = '';
-                var own = '';
-                if (vm.langfilters.length != 0) {
-                    lang = '&lan=' + _.map(vm.langfilters, function(e) { return encodeURIComponent(e); } ).join('&lan=');
-                }
-                if (vm.repositoryfilters.length != 0) {
-                    repo = '&repo=' + _.map(vm.repositoryfilters, function(e) { return encodeURIComponent(e); } ).join('&repo=');
-                }
-                if (vm.ownfilters.length != 0) {
-                    own = '&own=' + _.map(vm.ownfilters, function(e) { return encodeURIComponent(e); } ).join('&own=');
-                }
+    //             // If we have filters append them on
+    //             var lang = '';
+    //             var repo = '';
+    //             var own = '';
+    //             if (vm.langfilters.length != 0) {
+    //                 lang = '&lan=' + _.map(vm.langfilters, function(e) { return encodeURIComponent(e); } ).join('&lan=');
+    //             }
+    //             if (vm.repositoryfilters.length != 0) {
+    //                 repo = '&repo=' + _.map(vm.repositoryfilters, function(e) { return encodeURIComponent(e); } ).join('&repo=');
+    //             }
+    //             if (vm.ownfilters.length != 0) {
+    //                 own = '&own=' + _.map(vm.ownfilters, function(e) { return encodeURIComponent(e); } ).join('&own=');
+    //             }
 
-                var searchpage = 0;
-                var pagequery = ''
-                if(page !== undefined) {
-                    searchpage = page
-                    vm.currentpage(page);
-                    if (searchpage !== 0) {
-                        pagequery = '&p=' + searchpage;
-                    }
-                }
+    //             var searchpage = 0;
+    //             var pagequery = ''
+    //             if(page !== undefined) {
+    //                 searchpage = page
+    //                 vm.currentpage(page);
+    //                 if (searchpage !== 0) {
+    //                     pagequery = '&p=' + searchpage;
+    //                 }
+    //             }
 
-                vm.activelangfilters = JSON.parse(JSON.stringify(vm.langfilters));
-                vm.activerepositoryfilters = JSON.parse(JSON.stringify(vm.repositoryfilters));
-                vm.activeownfilters = JSON.parse(JSON.stringify(vm.ownfilters));
+    //             vm.activelangfilters = JSON.parse(JSON.stringify(vm.langfilters));
+    //             vm.activerepositoryfilters = JSON.parse(JSON.stringify(vm.repositoryfilters));
+    //             vm.activeownfilters = JSON.parse(JSON.stringify(vm.ownfilters));
 
-                // set the state
-                if (isstatechange === undefined) {
-                    history.pushState({
-                        searchvalue: vm.searchvalue(),
-                        langfilters: vm.activelangfilters,
-                        repofilters: vm.activerepositoryfilters,
-                        ownfilters: vm.activeownfilters,
-                        currentpage: vm.currentpage()
-                    }, 'search', '?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + pagequery);
-                }
+    //             // set the state
+    //             if (isstatechange === undefined) {
+    //                 history.pushState({
+    //                     searchvalue: vm.searchvalue(),
+    //                     langfilters: vm.activelangfilters,
+    //                     repofilters: vm.activerepositoryfilters,
+    //                     ownfilters: vm.activeownfilters,
+    //                     currentpage: vm.currentpage()
+    //                 }, 'search', '?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + pagequery);
+    //             }
 
-                var queryurl = '/api/codesearch/?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-                var cacheHit = lruAppCache.getItem(queryurl);
+    //             var queryurl = '/api/codesearch/?q=' + encodeURIComponent(vm.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+    //             var cacheHit = lruAppCache.getItem(queryurl);
 
-                var processResult = function(e) {
-                    vm.coderesults = new testing.CodeResultList();
+    //             var processResult = function(e) {
+    //                 vm.coderesults = new testing.CodeResultList();
                     
-                    // Facets/Filters
-                    vm.repofilters = new testing.RepoFilterList();
-                    vm.languagefilters = new testing.LanguageFilterList();
-                    vm.ownerfilters = new testing.OwnerFilterList();
+    //                 // Facets/Filters
+    //                 vm.repofilters = new testing.RepoFilterList();
+    //                 vm.languagefilters = new testing.LanguageFilterList();
+    //                 vm.ownerfilters = new testing.OwnerFilterList();
 
-                    vm.totalhits = e.totalHits;
-                    vm.altquery = e.altQuery;
-                    vm.query = e.query;
-                    vm.pages = e.pages;
-                    vm.currentpage(e.page);
+    //                 vm.totalhits = e.totalHits;
+    //                 vm.altquery = e.altQuery;
+    //                 vm.query = e.query;
+    //                 vm.pages = e.pages;
+    //                 vm.currentpage(e.page);
 
-                    _.each(e.codeResultList, function(res) {
-                        vm.coderesults.push(new testing.CodeResult(res));
-                    });
+    //                 _.each(e.codeResultList, function(res) {
+    //                     vm.coderesults.push(new testing.CodeResult(res));
+    //                 });
 
-                    _.each(e.repoFacetResults, function(res) {
-                        vm.repofilters.push(new testing.RepoFilter(res));
-                    });
+    //                 _.each(e.repoFacetResults, function(res) {
+    //                     vm.repofilters.push(new testing.RepoFilter(res));
+    //                 });
 
-                    _.each(e.languageFacetResults, function(res) {
-                        vm.languagefilters.push(new testing.LanguageFilter(res));
-                    });
+    //                 _.each(e.languageFacetResults, function(res) {
+    //                     vm.languagefilters.push(new testing.LanguageFilter(res));
+    //                 });
 
-                    _.each(e.repoOwnerResults, function(res) {
-                        vm.ownerfilters.push(new testing.OwnerFilter(res));
-                    });
+    //                 _.each(e.repoOwnerResults, function(res) {
+    //                     vm.ownerfilters.push(new testing.OwnerFilter(res));
+    //                 });
 
-                    vm.currentlyloading(false);
-                    m.redraw();
-                };
+    //                 vm.currentlyloading(false);
+    //                 m.redraw();
+    //             };
 
-                if (cacheHit !== null) {
-                    processResult(cacheHit);
-                }
-                else {
-                    m.request({method: 'GET', background: true, url: queryurl })
-                    .then(function(e) {
+    //             if (cacheHit !== null) {
+    //                 processResult(cacheHit);
+    //             }
+    //             else {
+    //                 m.request({method: 'GET', background: true, url: queryurl })
+    //                 .then(function(e) {
 
-                        lruAppCache.setItem(queryurl, e, {
-                            expirationAbsolute: null,
-                            expirationSliding: 10, // Very low, just for paging back and forth
-                            priority: Cache.Priority.HIGH
-                        });
+    //                     lruAppCache.setItem(queryurl, e, {
+    //                         expirationAbsolute: null,
+    //                         expirationSliding: 10, // Very low, just for paging back and forth
+    //                         priority: Cache.Priority.HIGH
+    //                     });
 
-                        processResult(e);
-                    });
-                }
-            };
-        }
-        return vm;
-    }()),
+    //                     processResult(e);
+    //                 });
+    //             }
+    //         };
+    //     }
+    //     return vm;
+    // }()),
+    // controller: function() {
+    //     testing.vm.init()
+    // },
+    // view: function() {
+    //     return m("div", [
+    //             m.component(SearchOptionsComponent),
+    //             m.component(SearchCountComponent, { 
+    //                 totalhits: testing.vm.totalhits, 
+    //                 query: testing.vm.query,
+    //                 repofilters: testing.vm.activerepositoryfilters,
+    //                 languagefilters: testing.vm.activelangfilters,
+    //                 ownerfilters: testing.vm.activeownfilters
+    //             }),
+    //             m.component(SearchChartComponent, {
+    //                 languagefilters: testing.vm.langfilters,
+    //                 repofilters: testing.vm.repofilters
+    //             }),
+    //             m.component(SearchLoadingComponent, {
+    //                 currentlyloading: testing.vm.currentlyloading
+    //             }),
+    //             m('div.row', [
+    //                 m('div.col-md-3.search-filters-container.search-filters', [
+    //                     m.component(SearchNextPreviousComponent, {
+    //                         currentpage: testing.vm.currentpage, 
+    //                         pages: testing.vm.pages,
+    //                         setpage: testing.vm.setpage,
+    //                         search: testing.vm.search,
+    //                         totalhits: testing.vm.totalhits,
+    //                     }),
+    //                     m.component(SearchButtonFilterComponent, {
+    //                         totalhits: testing.vm.totalhits,
+    //                         clearfilters: testing.vm.clearfilters,
+    //                         search: testing.vm.search,
+    //                         languagefilters: testing.vm.langfilters,
+    //                         repofilters: testing.vm.repositoryfilters,
+    //                         ownfilters: testing.vm.ownfilters,
+    //                         filterinstantly: testing.vm.filterinstantly
+    //                     }),
+    //                     m.component(SearchAlternateFilterComponent, {
+    //                         query: testing.vm.query,
+    //                         altquery: testing.vm.altquery
+    //                     }),
+    //                     m.component(SearchRepositoriesFilterComponent, {
+    //                         repofilters: testing.vm.repofilters,
+    //                         search: testing.vm.search,
+    //                         filterinstantly: testing.vm.filterinstantly
+    //                     }),
+    //                     m.component(SearchLanguagesFilterComponent, {
+    //                         languagefilters: testing.vm.languagefilters,
+    //                         search: testing.vm.search,
+    //                         filterinstantly: testing.vm.filterinstantly
+    //                     }),
+    //                     m.component(SearchOwnersFilterComponent, {
+    //                        ownerfilters: testing.vm.ownerfilters,
+    //                        search: testing.vm.search,
+    //                        filterinstantly: testing.vm.filterinstantly
+    //                     }),
+    //                     m.component(FilterOptionsComponent, {
+    //                         filterinstantly: testing.vm.filterinstantly
+    //                     })
+    //                 ]),
+    //                 m('div.col-md-9.search-results', [
+    //                     m.component(SearchNoResultsComponent, {
+    //                         totalhits: testing.vm.totalhits,
+    //                         query: testing.vm.query,
+    //                         altquery: testing.vm.altquery,
+    //                         query: testing.vm.query
+    //                     }),
+    //                     m.component(SearchResultsComponent, { 
+    //                         coderesults: testing.vm.coderesults 
+    //                     })
+    //                 ]),
+    //                 m.component(SearchPagesComponent, { 
+    //                     currentpage: testing.vm.currentpage, 
+    //                     pages: testing.vm.pages,
+    //                     search: testing.vm.search
+    //                 })
+    //             ])
+    //         ]);
+    // }
+};
+
+
+var SearchComponent = {
     controller: function() {
-        testing.vm.init()
+        return {
+        }
     },
-    view: function() {
+    view: function(ctrl) {
         return m("div", [
                 m.component(SearchOptionsComponent),
                 m.component(SearchCountComponent, { 
-                    totalhits: testing.vm.totalhits, 
-                    query: testing.vm.query,
-                    repofilters: testing.vm.activerepositoryfilters,
-                    languagefilters: testing.vm.activelangfilters,
-                    ownerfilters: testing.vm.activeownfilters
+                    totalhits: SearchModel.totalhits(), 
+                    query: SearchModel.query(),
+                    repofilters: SearchModel.activerepositoryfilters(),
+                    languagefilters: SearchModel.activelangfilters(),
+                    ownerfilters: SearchModel.activeownfilters()
                 }),
                 m.component(SearchChartComponent, {
-                    languagefilters: testing.vm.langfilters,
-                    repofilters: testing.vm.repofilters
+                    languagefilters: SearchModel.langfilters(),
+                    repofilters: SearchModel.repofilters()
                 }),
                 m.component(SearchLoadingComponent, {
-                    currentlyloading: testing.vm.currentlyloading
+                    currentlyloading: SearchModel.currentlyloading()
                 }),
                 m('div.row', [
                     m('div.col-md-3.search-filters-container.search-filters', [
                         m.component(SearchNextPreviousComponent, {
-                            currentpage: testing.vm.currentpage, 
-                            pages: testing.vm.pages,
-                            setpage: testing.vm.setpage,
-                            search: testing.vm.search,
-                            totalhits: testing.vm.totalhits,
+                            currentpage: SearchModel.currentpage(), 
+                            pages: SearchModel.pages(),
+                            setpage: SearchModel.setpage,
+                            search: SearchModel.search,
+                            totalhits: SearchModel.totalhits(),
                         }),
                         m.component(SearchButtonFilterComponent, {
-                            totalhits: testing.vm.totalhits,
-                            clearfilters: testing.vm.clearfilters,
-                            search: testing.vm.search,
-                            languagefilters: testing.vm.langfilters,
-                            repofilters: testing.vm.repositoryfilters,
-                            ownfilters: testing.vm.ownfilters,
-                            filterinstantly: testing.vm.filterinstantly
+                            totalhits: SearchModel.totalhits(),
+                            clearfilters: SearchModel.clearfilters,
+                            search: SearchModel.search,
+                            languagefilters: SearchModel.langfilters(),
+                            repofilters: SearchModel.repositoryfilters(),
+                            ownfilters: SearchModel.ownfilters(),
+                            filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(SearchAlternateFilterComponent, {
-                            query: testing.vm.query,
-                            altquery: testing.vm.altquery
+                            query: SearchModel.query(),
+                            altquery: SearchModel.altquery()
                         }),
                         m.component(SearchRepositoriesFilterComponent, {
-                            repofilters: testing.vm.repofilters,
-                            search: testing.vm.search,
-                            filterinstantly: testing.vm.filterinstantly
+                            repofilters: SearchModel.repofilters(),
+                            search: SearchModel.search,
+                            filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(SearchLanguagesFilterComponent, {
-                            languagefilters: testing.vm.languagefilters,
-                            search: testing.vm.search,
-                            filterinstantly: testing.vm.filterinstantly
+                            languagefilters: SearchModel.languagefilters(),
+                            search: SearchModel.search,
+                            filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(SearchOwnersFilterComponent, {
-                           ownerfilters: testing.vm.ownerfilters,
-                           search: testing.vm.search,
-                           filterinstantly: testing.vm.filterinstantly
+                           ownerfilters: SearchModel.ownerfilters(),
+                           search: SearchModel.search,
+                           filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(FilterOptionsComponent, {
-                            filterinstantly: testing.vm.filterinstantly
+                            filterinstantly: SearchModel.filterinstantly
                         })
                     ]),
                     m('div.col-md-9.search-results', [
                         m.component(SearchNoResultsComponent, {
-                            totalhits: testing.vm.totalhits,
-                            query: testing.vm.query,
-                            altquery: testing.vm.altquery,
-                            query: testing.vm.query
+                            totalhits: SearchModel.totalhits(),
+                            query: SearchModel.query(),
+                            altquery: SearchModel.altquery(),
                         }),
                         m.component(SearchResultsComponent, { 
-                            coderesults: testing.vm.coderesults 
+                            coderesults: SearchModel.coderesults()
                         })
                     ]),
                     m.component(SearchPagesComponent, { 
-                        currentpage: testing.vm.currentpage, 
-                        pages: testing.vm.pages,
-                        search: testing.vm.search
+                        currentpage: SearchModel.currentpage(),
+                        pages: SearchModel.pages(),
+                        search: SearchModel.search()
                     })
                 ])
             ]);
     }
-};
+}
+
 
 var SearchNoResultsComponent = {
     controller: function() {
@@ -1062,13 +1110,6 @@ var SearchOptionsComponent = {
                             type: 'search',
                             id: 'searchbox'})
                     ),
-                    // m('div.form-group', 
-                    //     m('select.form-control', [
-                    //         m('option', 'Smart'),
-                    //         m('option', 'Lucene'),
-                    //         m('option', 'Regex'),
-                    //     ])
-                    // ),
                     m('input.btn.btn-success', { value: 'search', type: 'submit', onclick: ctrl.dosearch.bind(this) })
                 ])
             )
@@ -1078,7 +1119,6 @@ var SearchOptionsComponent = {
 
 var SearchCountComponent = {
     controller: function() {
-        // helper functions would go here
         return {}
     },
     view: function(ctrl, args) {
@@ -1185,7 +1225,17 @@ var SearchAlternateFilterComponent = {
 
 var SearchResultsComponent = {
     controller: function() {
-        return {}
+        return {
+            gethref: function(result) {
+                return '/file/' + result.codeid() + '/' + result.codepath();
+            },
+            getatag: function(result) {
+                return result.filename() + ' in ' + result.reponame();
+            },
+            getsmallvalue: function(result){
+                return ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename();
+            }
+        }
     },
     view: function(ctrl, args) {
         return m('div', [
@@ -1193,8 +1243,8 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-                                m('a', { href: '/file/' + res.codeid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
-                                m('small', ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename())  
+                                m('a', { href: crtl.gethref(res) }, ctrl.getatag(res)),
+                                m('small', ctrl.getsmallvalue(res))  
                             ])
                         ),
                         m('ol.code-result', [
@@ -1215,10 +1265,11 @@ var SearchResultsComponent = {
 
 
 //Initialize the application
-m.mount(document.getElementsByClassName('container')[0], { 
-    controller: testing.controller, 
-    view: testing.view
-});
+// m.mount(document.getElementsByClassName('container')[0], { 
+//     controller: testing.controller, 
+//     view: testing.view
+// });
+m.mount(document.getElementsByClassName('container')[0], m.component(SearchComponent));
 
 // For when someone hits the back button in the browser
 window.onpopstate = function(event) {
