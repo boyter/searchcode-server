@@ -951,7 +951,11 @@ var SearchAlternateFilterComponent = {
 
 var SearchResultsComponent = {
     controller: function() {
-        return {}
+        return {
+            fixcodepath: function(codepath) {
+                return '/' + codepath.split('/').slice(1,100000).join('/');
+            }
+        }
     },
     view: function(ctrl, args) {
         return m('div', [
@@ -960,7 +964,7 @@ var SearchResultsComponent = {
                         m('div', 
                             m('h5', [
                                 m('a', { href: '/file/' + res.codeid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
-                                m('small', ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename())  
+                                m('small', ' | ' + ctrl.fixcodepath(res.codepath()) +' | ' + res.codelines() + ' lines | ' + res.languagename())  
                             ])
                         ),
                         m('ol.code-result', [

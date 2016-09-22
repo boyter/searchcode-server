@@ -80,7 +80,7 @@
     <#list searchResult.codeResultList>
     <#items as result>
       <div>
-        <h5><a href="/file/${result.documentId}/${result.codePath}">${result.fileName} in ${result.repoName}</a> <small>| ${result.repoLocation?html} | ${result.codeLines} lines | ${result.languageName?html}</small></h5>
+        <h5><a href="/file/${result.documentId}/${result.codePath}">${result.fileName} in ${result.repoName}</a> <small>| ${result.codePath?html} | ${result.codeLines} lines | ${result.languageName?html}</small></h5>
       </div>
       <ol class="code-result">
           <#list result.matchingResults>
