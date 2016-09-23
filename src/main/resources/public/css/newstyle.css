@@ -66,11 +66,17 @@ input.repo-filter {
 
 pre {
     background-color:transparent;
-    border: none;
+    border-radius: 0px;
     width:100%;
     padding:0px;
     margin:0px;
+    border: 0px !important;
 }
+
+.hljs {
+    white-space: pre;
+}
+
 
 div.search-filters h5 {
     border-bottom: 1px solid #eee;

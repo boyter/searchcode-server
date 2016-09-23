@@ -84,7 +84,22 @@
 </div>
 
 
-<pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
+<div style="width:100%; overflow-x:auto; border: 1px solid lightgray; border-radius:4px;">
+    <table style="width:100%;">
+        <tr>
+        <td valign="top" style="border-right: 1px solid lightgray; padding:0px;">
+            <#list linenos>
+            <pre><code <#if !highlight>class="hljs"</#if> style="text-align: right;"><#items as lineno><span><a href="#${lineno}">${lineno}</a></span>
+</#items></code></pre>
+            </#list>
+        </td>
+        <td valign="top" style="padding:0px;">
+            <pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
+        </td>
+        </tr>
+    </table>
+</div>
+
 
 <script>
 $('#toggleOwasp').click(function(e) {

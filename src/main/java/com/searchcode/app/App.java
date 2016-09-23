@@ -53,7 +53,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    private static final boolean ISCOMMUNITY = true;
+    private static final boolean ISCOMMUNITY = false;
     private static final String VERSION = "1.3.1";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
@@ -1181,6 +1181,13 @@ public class App {
             }
             map.put("codePath", codePath);
             map.put("codeLength", codeResult.codeLines);
+
+            List<String> lineNos = new ArrayList<>();
+            for(int i=1; i < Integer.parseInt(codeResult.codeLines) + 1; i++) {
+                lineNos.add("" + i);
+            }
+            map.put("linenos", lineNos);
+
             map.put("languageName", codeResult.languageName);
             map.put("md5Hash", codeResult.md5hash);
             map.put("repoName", codeResult.repoName);
