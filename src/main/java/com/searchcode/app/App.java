@@ -720,7 +720,7 @@ public class App {
             map.put(Values.MAXDOCUMENTQUEUELINESIZE, Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE));
             map.put(Values.MAXFILELINEDEPTH, Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH));
             map.put(Values.OWASPDATABASELOCATION, Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION));
-
+            map.put(Values.HIGHLIGHT_LINE_LIMIT, Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
 
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
@@ -1161,10 +1161,10 @@ public class App {
                 }
             }
 
-            boolean highlight = true;
-            if(Integer.parseInt(codeResult.codeLines) > 1000) {
-                highlight = false;
-            }
+            int limit = Integer.parseInt(
+                    Properties.getProperties().getProperty(
+                            Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
+            boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
 
             RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 
@@ -1239,10 +1239,10 @@ public class App {
                 code.append("\n");
             }
 
-            boolean highlight = true;
-            if (Integer.parseInt(codeResult.codeLines) > 1000) {
-                highlight = false;
-            }
+            int limit = Integer.parseInt(
+                    Properties.getProperties().getProperty(
+                            Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
+            boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
 
             RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 
