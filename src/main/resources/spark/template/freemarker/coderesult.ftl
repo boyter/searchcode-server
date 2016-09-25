@@ -4,12 +4,8 @@
 <div class="row">
 
 <link rel="stylesheet" href="/css/highlight/default.css">
-<link class="codestyle" rel="stylesheet" href="/css/highlight/${highligher}.css">
 <script src="/js/jquery-1.11.1.min.js"></script>
-<#if highlight>
-<script src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-</#if>
+
     <h4 class="codepath">${repoName} ${codePath}</h4>
 
     <table class="table">
@@ -104,4 +100,11 @@ $('#toggleOwasp').click(function(e) {
   $('#owaspResults').toggle();
 });
 </script>
+
+<#if highlight>
+<link class="codestyle" rel="stylesheet" href="/css/highlight/${highligher}.css">
+<script src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</#if>
+
 </@layout.masterTemplate>
