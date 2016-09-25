@@ -67,7 +67,7 @@
                                 <#list result.matchingLines>
                                 <div style="margin-top:5px; margin-bottom:5px;">Line(s)
                                 <#items as line>
-                                    <a href="#${line}">${line}</a>
+                                    <a href="#${line?c}">${line}</a>
                                 </#items>
                                 </div>
                                 </#list>
