@@ -1,3 +1,5 @@
+.gitignore
+
 # Intellij
 .idea/
 *.iml
@@ -19,3 +21,8 @@ release/
 *.tar.gz
 *.log
 *.log.*
+
+#ruzzz
+lib/
+searchcode.sqlite
+searchcode.properties
