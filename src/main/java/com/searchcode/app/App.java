@@ -1043,6 +1043,11 @@ public class App {
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+
+            if (req.queryParams().contains("password")) {
+                map.put("passwordInvalid", true);
+            }
+
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
 
