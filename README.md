@@ -105,6 +105,13 @@ Change Log
 XX XXXXXXXXX XXXX - 1.3.1
  - Fix potential performance issue in spelling corrector with long strings
  - Fix potential XSS issue with HTML page
+ - Line numbers now appear on code result pages
+ - Logging directory not configurable via properties
+ - Symlinks path traversal issue resolved
+ - Highlight.js now lazy loads
+ - Highlight limit now configrable through properties
+ - OWASP line number display correction
+ - Header links resolved in some cases
 
 20 September 2016 - 1.3.0
  - Filters now apply instantly when clicked option is toggleable
