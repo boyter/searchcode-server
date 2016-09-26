@@ -34,8 +34,13 @@ public class LoggerWrapper {
     private EvictingQueue recentCache = null;
 
     public LoggerWrapper() {
+        String path = "";
         try {
-            Handler handler = new FileHandler("searchcode-server-%g.log", 10 * 1024 * 1024, 1);
+            path = (String) Properties.getProperties().getOrDefault("log_path", "./");
+            if (!(path.endsWith("/") || path.endsWith("\\")))
+                path = path + "/";
+            path += "searchcode-server-%g.log";
+            Handler handler = new FileHandler(path, 10 * 1024 * 1024, 1);
 
             String logLevel = (String) Properties.getProperties().getOrDefault("log_level", "severe");
 
@@ -44,7 +49,7 @@ public class LoggerWrapper {
             logger = Logger.getLogger(Values.EMPTYSTRING);
             logger.addHandler(handler);
 
-            switch(logLevel.toUpperCase()) {
+            switch (logLevel.toUpperCase()) {
                 case "INFO":
                     handler.setLevel(Level.INFO);
                     logger.setLevel(Level.INFO);
@@ -72,9 +77,10 @@ public class LoggerWrapper {
             logger = Logger.getLogger(Values.EMPTYSTRING);
             logger.setLevel(Level.WARNING);
 
-            logger.warning("//////////////////////////////////////////////////////////////////////");
-            logger.warning("// Unable to write to logging file. Logs will be written to STDOUT. //");
-            logger.warning("//////////////////////////////////////////////////////////////////////");
+            logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
+                    "// Unable to write to logging file" + (!path.isEmpty() ? ": " + path : ".") + "\n" +
+                    "// Logs will be written to STDOUT.\n" +
+                    "//////////////////////////////////////////////////////////////////////\n");
         }
 
         this.recentCache = EvictingQueue.create(1000);
