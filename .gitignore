@@ -22,7 +22,7 @@ release/
 *.log
 *.log.*
 
-#ruzzz
 lib/
+logs/
 searchcode.sqlite
 searchcode.properties

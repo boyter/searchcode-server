@@ -10,6 +10,7 @@ check_filerepo_chages=3600
 only_localhost=false
 low_memory=false
 log_level=SEVERE
+log_path=./logs
 spelling_corrector_size=10000
 max_document_queue_size=1000
 max_document_queue_line_size=100000
@@ -24,3 +25,6 @@ owasp_database_location=./include/owasp/database.json
 # The below will probably be moved into the settings page at some point in the
 # future.
 password=Adm1n234
+
+highlight_lines_limit=5000
+log_path=./logs
