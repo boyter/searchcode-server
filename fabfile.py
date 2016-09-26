@@ -125,7 +125,7 @@ def _build_package():
 
     local('cp -R ./target/dependency-jars ./release/')
     local('cp ./target/*.jar ./release/')
-    local('cp ./searchcode.properties ./release/')
+    local('cp ./searchcode.properties.example ./release/searchcode.properties')
     local('cp ./searchcode.sqlite.empty ./release/searchcode.sqlite')
     local('cp ./README.md ./release/')
     local('chmod +x ./searchcode-server.sh')
