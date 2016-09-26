@@ -139,6 +139,18 @@ li a {
   width:100%;
 }
 
+div.coderesult-code {
+    width:100%; 
+    overflow-x:auto; 
+    border: 1px solid lightgray; 
+    border-radius:4px;
+}
+
+.coderesult-linenos {
+    border-right: 1px solid lightgray; 
+    text-align: right;
+}
+
 ol.code-result {
     color: #888;
 }
