@@ -400,14 +400,14 @@ public class SearchcodeLib {
      * that file type. Used to identify files.
      */
 
-    private static CodeLangDetector codeLangDetector = new CodeLangDetector();
+    private static SourceLangClassifier sourceLangClassifier = new SourceLangClassifier();
 
     /**
      * Given a filename and the lines inside the file attempts to guess the type of the file.
      * TODO When no match attempt to identify using the file keywords
      */
     public String languageGuesser(String fileName, List<String> codeLines) {
-        return codeLangDetector.detect(fileName, String.join("\n", codeLines));
+        return sourceLangClassifier.detect(fileName, String.join("\n", codeLines));
     }
 }
 

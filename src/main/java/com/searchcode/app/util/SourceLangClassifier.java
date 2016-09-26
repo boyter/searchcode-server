@@ -10,11 +10,13 @@ import java.util.Map;
 /**
  * Created by Ruzzz on 26.09.2016.
  */
-public class CodeLangDetector {
+// TODO Use Bayesian classifier?
+public class SourceLangClassifier {
 
     static public String UNKNOWN = "Unknown";
 
     private Map<String, List<LangVO>> langsDictByExt = null; // [ext] = LangVO[]
+    // For filenames with extension
     private Map<String, List<LangVO>> langsDictByFileName = null; // [fileName] = LangVO[]
 
     static public String detectByKeywords(Iterable<LangVO> langs, String source) {
@@ -100,7 +102,7 @@ public class CodeLangDetector {
             return detectByKeywords(langList, source);
     }
 
-    public CodeLangDetector() {
+    public SourceLangClassifier() {
 
         this.langsDictByExt = new HashMap<>();
         this.langsDictByFileName = new HashMap<>();
