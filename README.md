@@ -17,6 +17,9 @@ If you are building from source then you get no support and must work within the
 fair source licence (see LICENSE.txt for details). To purchase support see 
 https://searchcode.com/product/#downloadlinks
 
+Submissions/Pull Requests
+-------------------------
+If you would like to submit code to be integrated into searchcode server please specifyc that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
 To Build
 --------
