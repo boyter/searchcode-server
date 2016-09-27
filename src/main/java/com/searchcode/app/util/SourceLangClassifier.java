@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * Created by Ruzzz on 26.09.2016.
  */
-// TODO Use Bayesian classifier?
+// TODO Ruzzz Use Bayesian classifier?
 public class SourceLangClassifier {
 
     static public String UNKNOWN = "Unknown";
