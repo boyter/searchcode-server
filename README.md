@@ -17,6 +17,9 @@ If you are building from source then you get no support and must work within the
 fair source licence (see LICENSE.txt for details). To purchase support see 
 https://searchcode.com/product/#downloadlinks
 
+Submissions/Pull Requests
+-------------------------
+If you would like to submit code to be integrated into searchcode server please specifyc that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
 To Build
 --------
@@ -94,7 +97,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED this software version '1.3.1' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date 27 September 2019 this software version '1.3.1' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -102,9 +105,16 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXXXX XXXX - 1.3.1
+27 September 2016 - 1.3.1
  - Fix potential performance issue in spelling corrector with long strings
  - Fix potential XSS issue with HTML page
+ - Line numbers now appear on code result pages
+ - Logging directory not configurable via properties
+ - Symlinks path traversal issue resolved
+ - Highlight.js now lazy loads
+ - Highlight limit now configrable through properties
+ - OWASP line number display correction
+ - Header links resolved in some cases
 
 20 September 2016 - 1.3.0
  - Filters now apply instantly when clicked option is toggleable

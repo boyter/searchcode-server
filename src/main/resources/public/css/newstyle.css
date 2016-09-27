@@ -139,6 +139,23 @@ li a {
   width:100%;
 }
 
+div.coderesult-code {
+    width:100%; 
+    overflow-x:auto; 
+    border: 1px solid lightgray; 
+    border-radius:4px;
+}
+
+td.coderesult-code {
+    padding:0px;
+}
+
+.coderesult-linenos {
+    border-right: 1px solid lightgray; 
+    text-align: right;
+    padding:0px;
+}
+
 ol.code-result {
     color: #888;
 }
@@ -160,8 +177,6 @@ ol.code-result pre strong{
 }
 
 nav.navbar-default {
-/*    background-color: transparent;
-    border:none;*/
     margin-bottom:0px;
     border-radius: 0px;
 }

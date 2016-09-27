@@ -80,13 +80,13 @@
 </div>
 
 
-<div style="width:100%; overflow-x:auto; border: 1px solid lightgray; border-radius:4px;">
+<div class="coderesult-code">
     <table style="width:100%;">
         <tr>
-        <td valign="top" style="border-right: 1px solid lightgray; padding:0px; text-align: right;">
+        <td class="coderesult-linenos" valign="top">
             <pre><code <#if !highlight>class="hljs"</#if> >${linenos}</code></pre>
         </td>
-        <td valign="top" style="padding:0px;">
+        <td class="coderesult-code" valign="top">
             <pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
         </td>
         </tr>

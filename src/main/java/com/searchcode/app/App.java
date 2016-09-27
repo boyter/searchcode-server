@@ -53,7 +53,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    private static final boolean ISCOMMUNITY = false;
+    private static final boolean ISCOMMUNITY = true;
     private static final String VERSION = "1.3.1";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
@@ -1063,6 +1063,9 @@ public class App {
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             map.put("redirect", request.queryParams().contains("redirect") ? request.queryParams("redirect") : "");
+            if (request.queryParams().contains("password")) {
+                map.put("passwordInvalid", true);
+            }
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
 
