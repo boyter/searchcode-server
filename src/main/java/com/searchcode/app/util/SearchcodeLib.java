@@ -61,7 +61,7 @@ public class SearchcodeLib {
 
         StringBuilder indexContents = new StringBuilder();
 
-        contents = contents.replaceAll("[^a-zA-Z]", " ");
+        contents = contents.replaceAll("[^a-zA-Z0-9]", " ");
 
         // Performance improvement hack
         if (contents.length() > this.MAXSPLITLENGTH) {
@@ -81,6 +81,15 @@ public class SearchcodeLib {
                         indexContents.append(" ");
                         indexContents.append(StringUtils.join(splitStrings, " "));
                     }
+                }
+            }
+
+            if (splitContents.length() >= 5) {
+                String[] splitStrings = splitContents.split("\\D+");
+
+                if (splitStrings.length > 1) {
+                    indexContents.append(" ");
+                    indexContents.append(StringUtils.join(splitStrings, " "));
                 }
             }
         }
