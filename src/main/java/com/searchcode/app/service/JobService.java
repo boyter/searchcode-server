@@ -260,7 +260,7 @@ public class JobService implements IJobService {
             this.startIndexFileRepoJobs("1");
 
             if(repoResults.size() == 0) {
-                LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
+                LOGGER.info("      \n///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
             }
 
             // Setup the job which queues things to be downloaded and then indexed
@@ -293,7 +293,7 @@ public class JobService implements IJobService {
         // Turn off everything
         Singleton.getLogger().info("Recrawl and rebuild of index starting");
         Singleton.setBackgroundJobsEnabled(false);
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
+        try { Thread.sleep(2000); } catch (InterruptedException e) {} // TODO Ruzzz Fix this hack. Check flag ex. allJobsStopped
         int attempt = 0;
         boolean successful = false;
 

@@ -27,4 +27,3 @@ owasp_database_location=./include/owasp/database.json
 password=Adm1n234
 
 highlight_lines_limit=5000
-log_path=./logs

@@ -189,7 +189,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
     /**
      * Uses the inbuilt git
-     * TODO this method appears to leak memory like crazy... need to investigate
+     * TODO this method appears to leak memory like crazy... need to investigate. Ruzzz UPD.: Use method .close() of JGit objects?
      * TODO lots of hairy bits in here need tests to capture issues
      */
     public List<CodeOwner> getBlameInfo(int codeLinesSize, String repoName, String repoLocations, String fileName) {
@@ -296,54 +296,55 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         Singleton.getLogger().info("Attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
 
         try {
-            Repository localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
+            Git git = null;
+            try {
+                Repository localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
+                Ref head = localRepository.getRef("HEAD");
 
-            Ref head = localRepository.getRef("HEAD");
+                git = new Git(localRepository);
+                git.reset();
+                git.clean();
+                PullCommand pullCmd = git.pull();
+                if (useCredentials) {
+                    pullCmd.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+                }
 
-            Git git = new Git(localRepository);
-            git.reset();
-            git.clean();
+                pullCmd.call();
+                Ref newHEAD = localRepository.getRef("HEAD");
 
-            PullCommand pullCmd = git.pull();
+                if (!head.toString().equals(newHEAD.toString())) {
+                    changed = true;
 
-            if(useCredentials) {
-                pullCmd.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
-            }
+                    // Get the differences between the the heads which we updated at
+                    // and use these to just update the differences between them
+                    ObjectId oldHead = localRepository.resolve(head.getObjectId().getName() + "^{tree}");
+                    ObjectId newHead = localRepository.resolve(newHEAD.getObjectId().getName() + "^{tree}");
 
-            pullCmd.call();
-            Ref newHEAD = localRepository.getRef("HEAD");
+                    ObjectReader reader = localRepository.newObjectReader();
 
-            if(!head.toString().equals(newHEAD.toString())) {
-                changed = true;
+                    CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
+                    oldTreeIter.reset(reader, oldHead);
 
-                // Get the differences between the the heads which we updated at
-                // and use these to just update the differences between them
-                ObjectId oldHead = localRepository.resolve(head.getObjectId().getName() + "^{tree}");
-                ObjectId newHead = localRepository.resolve(newHEAD.getObjectId().getName() + "^{tree}");
+                    CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
+                    newTreeIter.reset(reader, newHead);
 
-                ObjectReader reader = localRepository.newObjectReader();
-
-                CanonicalTreeParser oldTreeIter = new CanonicalTreeParser();
-                oldTreeIter.reset(reader, oldHead);
-
-                CanonicalTreeParser newTreeIter = new CanonicalTreeParser();
-                newTreeIter.reset(reader, newHead);
-
-
-                List<DiffEntry> entries = git.diff()
-                                            .setNewTree(newTreeIter)
-                                            .setOldTree(oldTreeIter)
-                                            .call();
+                    List<DiffEntry> entries = git.diff()
+                            .setNewTree(newTreeIter)
+                            .setOldTree(oldTreeIter)
+                            .call();
 
 
-                for( DiffEntry entry : entries ) {
-                    if ("DELETE".equals(entry.getChangeType().name())) {
-                        deletedFiles.add(FilenameUtils.separatorsToUnix(entry.getOldPath()));
-                    }
-                    else {
-                        changedFiles.add(FilenameUtils.separatorsToUnix(entry.getNewPath()));
+                    for (DiffEntry entry : entries) {
+                        if ("DELETE".equals(entry.getChangeType().name())) {
+                            deletedFiles.add(FilenameUtils.separatorsToUnix(entry.getOldPath()));
+                        } else {
+                            changedFiles.add(FilenameUtils.separatorsToUnix(entry.getNewPath()));
+                        }
                     }
                 }
+            } finally {
+                git.getRepository().close();
+                git.close();
             }
 
         } catch (IOException | GitAPIException | InvalidPathException ex) {
@@ -363,18 +364,21 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
 
         try {
-            CloneCommand cloneCommand = Git.cloneRepository();
-            cloneCommand.setURI(repoRemoteLocation);
-            cloneCommand.setDirectory(new File(repoLocations + "/" + repoName + "/"));
-            cloneCommand.setCloneAllBranches(true);
-            cloneCommand.setBranch(branch);
-
-            if(useCredentials) {
-                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+            Git g = null;
+            try
+            {
+                CloneCommand cloneCommand = Git.cloneRepository();
+                cloneCommand.setURI(repoRemoteLocation);
+                cloneCommand.setDirectory(new File(repoLocations + "/" + repoName + "/"));
+                cloneCommand.setCloneAllBranches(true);
+                cloneCommand.setBranch(branch);
+                if(useCredentials)
+                    cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+                g = cloneCommand.call();
+            } finally {
+                g.getRepository().close();
+                g.close();
             }
-
-            cloneCommand.call();
-
             successful = true;
 
         } catch (GitAPIException | InvalidPathException ex) {

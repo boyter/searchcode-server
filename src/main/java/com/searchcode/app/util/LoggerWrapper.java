@@ -13,7 +13,9 @@ package com.searchcode.app.util;
 import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +39,8 @@ public class LoggerWrapper {
         String path = "";
         try {
             path = (String) Properties.getProperties().getOrDefault("log_path", "./");
-            if (!(path.endsWith("/") || path.endsWith("\\")))
+            path = FilenameUtils.separatorsToUnix(path);
+            if (path.charAt(path.length() - 1) != '/')
                 path = path + "/";
             path += "searchcode-server-%g.log";
             Handler handler = new FileHandler(path, 10 * 1024 * 1024, 1);

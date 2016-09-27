@@ -33,20 +33,20 @@ public class UniqueRepoQueue {
             return;
         }
 
-        if (!repoIndexQueue.contains(repoResult)) {
-            repoIndexQueue.add(repoResult);
+        if (!this.repoIndexQueue.contains(repoResult)) {
+            this.repoIndexQueue.add(repoResult);
         }
     }
 
     public synchronized void delete(RepoResult repoResult) {
-        repoIndexQueue.remove(repoResult);
+        this.repoIndexQueue.remove(repoResult);
     }
 
     public synchronized RepoResult poll() {
-        return repoIndexQueue.poll();
+        return this.repoIndexQueue.poll();
     }
 
     public synchronized int size() {
-        return repoIndexQueue.size();
+        return this.repoIndexQueue.size();
     }
 }
