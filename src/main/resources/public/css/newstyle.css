@@ -146,9 +146,14 @@ div.coderesult-code {
     border-radius:4px;
 }
 
+td.coderesult-code {
+    padding:0px;
+}
+
 .coderesult-linenos {
     border-right: 1px solid lightgray; 
     text-align: right;
+    padding:0px;
 }
 
 ol.code-result {
@@ -172,8 +177,6 @@ ol.code-result pre strong{
 }
 
 nav.navbar-default {
-/*    background-color: transparent;
-    border:none;*/
     margin-bottom:0px;
     border-radius: 0px;
 }

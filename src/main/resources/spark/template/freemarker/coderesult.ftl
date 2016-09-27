@@ -86,7 +86,7 @@
         <td class="coderesult-linenos" valign="top">
             <pre><code <#if !highlight>class="hljs"</#if> >${linenos}</code></pre>
         </td>
-        <td valign="top">
+        <td class="coderesult-code" valign="top">
             <pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
         </td>
         </tr>
