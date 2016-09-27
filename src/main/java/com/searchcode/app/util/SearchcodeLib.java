@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.1
+ * Version 1.3.2
  */
 
 package com.searchcode.app.util;
@@ -81,15 +81,6 @@ public class SearchcodeLib {
                         indexContents.append(" ");
                         indexContents.append(StringUtils.join(splitStrings, " "));
                     }
-                }
-            }
-
-            if (splitContents.length() >= 5) {
-                String[] splitStrings = splitContents.split("\\D+");
-
-                if (splitStrings.length > 1) {
-                    indexContents.append(" ");
-                    indexContents.append(StringUtils.join(splitStrings, " "));
                 }
             }
         }

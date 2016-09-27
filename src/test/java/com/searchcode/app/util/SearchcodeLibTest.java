@@ -237,12 +237,6 @@ public class SearchcodeLibTest extends TestCase {
         assertEquals(" Test Split Keywords", actual);
     }
 
-    public void testSplitKeywordsLetters() {
-        SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("linux2.7.4");
-        assertEquals("  2", actual);
-    }
-
     public void testLanguageGuesserText() {
         SearchcodeLib sl = new SearchcodeLib();
         String language = sl.languageGuesser("test.txt", new ArrayList<>());
