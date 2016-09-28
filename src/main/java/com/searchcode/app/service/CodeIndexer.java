@@ -167,6 +167,7 @@ public class CodeIndexer {
 
                 indexContents += scl.splitKeywords(codeIndexDocument.getContents());
                 indexContents += scl.codeCleanPipeline(codeIndexDocument.getContents());
+                indexContents += scl.findInterestingKeywords(codeIndexDocument.getContents());
                 scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
                 indexContents = indexContents.toLowerCase();
