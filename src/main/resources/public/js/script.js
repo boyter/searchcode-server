@@ -653,28 +653,28 @@ var SearchNextPreviousComponent = {
         var previouspageoptions = '';
         var nextpageoptions = '';
 
-        if (args.currentpage() == 0) {
+        if (SearchModel.currentpage() == 0) {
             previouspageoptions = 'disabled';
         }
 
-        if ((args.currentpage() + 1) >= args.pages.length) {
+        if ((SearchModel.currentpage() + 1) >= args.pages.length) {
             nextpageoptions = 'disabled';
         }
 
         return m('div', [
-            m('h5', 'Page ' +  (args.currentpage() + 1) + ' of ' + (args.pages.length == 0 ? 1 : args.pages.length)),
+            m('h5', 'Page ' +  (SearchModel.currentpage() + 1) + ' of ' + (args.pages.length == 0 ? 1 : args.pages.length)),
             m('div.center',
                 m('input.btn.btn-xs.btn-success.filter-button', { 
                     type: 'submit', 
                     disabled: previouspageoptions,
-                    onclick: function() { args.search((args.currentpage() - 1)); }, 
+                    onclick: function() { args.search((SearchModel.currentpage() - 1)); }, 
                     value: '◀ Previous' }
                 ),
                 m('span', m.trust('&nbsp;')),
                 m('input.btn.btn-xs.btn-success.filter-button', { 
                     type: 'submit', 
                     disabled: nextpageoptions,
-                    onclick: function() { args.search((args.currentpage() + 1)); }, 
+                    onclick: function() { args.search((SearchModel.currentpage() + 1)); }, 
                     value: 'Next ▶' }
                 )
             )
@@ -688,7 +688,7 @@ var SearchLoadingComponent = {
     view: function(ctrl, args) {
 
         var style = {}
-        if (args.currentlyloading() === false) {
+        if (SearchModel.currentlyloading() === false) {
             style = { style: { display: 'none' } }
         }
 
@@ -707,7 +707,7 @@ var SearchPagesComponent = {
         return m('div.search-pagination', 
             m('ul.pagination', [
                 _.map(args.pages, function (res) {
-                    return m('li', { class: res == args.currentpage() ? 'active' : '' },
+                    return m('li', { class: res == SearchModel.currentpage() ? 'active' : '' },
                         m('a', { onclick: function() { 
                             args.search(res); 
                             window.scrollTo(0, 0);
@@ -871,14 +871,14 @@ var SearchRepositoriesFilterComponent = {
             _.map(ctrl.trimrepo(args.repofilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
-                        ctrl.clickenvent(res.source());
+                        ctrl.clickenvent(res.source);
                         if (args.filterinstantly) {
                             args.search();
                         }
                     },
-                    value: res.source(),
-                    count: res.count(),
-                    checked: testing.vm.filterexists('repo', res.source())
+                    value: res.source,
+                    count: res.count,
+                    checked: SearchModel.filterexists('repo', res.source)
                 });
             }),
             showmoreless
@@ -960,14 +960,14 @@ var SearchLanguagesFilterComponent = {
             _.map(ctrl.trimlanguage(args.languagefilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
-                        ctrl.clickenvent(res.language()); 
+                        ctrl.clickenvent(res.language); 
                         if (args.filterinstantly) {
                             args.search();
                         }
                     },
-                    value: res.language(),
-                    count: res.count(),
-                    checked: testing.vm.filterexists('language', res.language())
+                    value: res.language,
+                    count: res.count,
+                    checked: SearchModel.filterexists('language', res.language
                 });
             }),
             showmoreless
@@ -1055,8 +1055,8 @@ var SearchOwnersFilterComponent = {
                         }
                     },
                     value: res.owner(),
-                    count: res.count(),
-                    checked: testing.vm.filterexists('owner', res.owner())
+                    count: res.count,
+                    checked: SearchModel.filterexists('owner', res.owner())
                 });
             }),
             showmoreless
@@ -1105,8 +1105,8 @@ var SearchOptionsComponent = {
                             spellcheck: 'false',
                             size:'50', 
                             placeholder: 'Search Expression',
-                            onkeyup: m.withAttr('value', testing.vm.searchvalue),
-                            value: testing.vm.searchvalue(),
+                            onkeyup: m.withAttr('value', SearchModel.searchvalue),
+                            value: SearchModel.searchvalue(),
                             type: 'search',
                             id: 'searchbox'})
                     ),
@@ -1226,7 +1226,6 @@ var SearchAlternateFilterComponent = {
 var SearchResultsComponent = {
     controller: function() {
         return {
-<<<<<<< HEAD
             gethref: function(result) {
                 return '/file/' + result.codeid() + '/' + result.codepath();
             },
@@ -1234,12 +1233,9 @@ var SearchResultsComponent = {
                 return result.filename() + ' in ' + result.reponame();
             },
             getsmallvalue: function(result){
-                return ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename();
-=======
-            fixcodepath: function(codepath) {
-                return '/' + codepath.split('/').slice(1,100000).join('/');
->>>>>>> master
-            }
+                var fixedCodePath = '/' + res.codepath().split('/').slice(1,100000).join('/');
+                return ' | ' + fixedCodePath +' | ' + res.codelines() + ' lines | ' + res.languagename();
+            },
         }
     },
     view: function(ctrl, args) {
@@ -1248,13 +1244,8 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-<<<<<<< HEAD
                                 m('a', { href: crtl.gethref(res) }, ctrl.getatag(res)),
                                 m('small', ctrl.getsmallvalue(res))  
-=======
-                                m('a', { href: '/file/' + res.codeid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
-                                m('small', ' | ' + ctrl.fixcodepath(res.codepath()) +' | ' + res.codelines() + ' lines | ' + res.languagename())  
->>>>>>> master
                             ])
                         ),
                         m('ol.code-result', [
@@ -1279,35 +1270,36 @@ var SearchResultsComponent = {
 //     controller: testing.controller, 
 //     view: testing.view
 // });
+
 m.mount(document.getElementsByClassName('container')[0], m.component(SearchComponent));
 
 // For when someone hits the back button in the browser
 window.onpopstate = function(event) {
-    testing.vm.searchvalue(event.state.searchvalue);
-    testing.vm.currentpage(event.state.currentpage);
-    testing.vm.activelangfilters = event.state.langfilters;
-    testing.vm.langfilters = event.state.langfilters;
-    testing.vm.activerepositoryfilters = event.state.repofilters;
-    testing.vm.repositoryfilters = event.state.repofilters;
-    testing.vm.ownfilters = event.state.ownfilters;
-    testing.vm.activeownfilters = event.state.ownfilters;
+    SearchModel.searchvalue(event.state.searchvalue);
+    SearchModel.currentpage(event.state.currentpage);
+    SearchModel.activelangfilters = event.state.langfilters;
+    SearchModel.langfilters = event.state.langfilters;
+    SearchModel.activerepositoryfilters = event.state.repofilters;
+    SearchModel.repositoryfilters = event.state.repofilters;
+    SearchModel.ownfilters = event.state.ownfilters;
+    SearchModel.activeownfilters = event.state.ownfilters;
 
-    testing.vm.search(event.state.currentpage, true);
+    SearchModel.search(event.state.currentpage, true);
     popstate = true;
 };
 
 if (preload !== undefined) {
-    testing.vm.searchvalue(preload.query);
-    testing.vm.currentpage(preload.page);
+    SearchModel.searchvalue(preload.query);
+    SearchModel.currentpage(preload.page);
 
-    testing.vm.activelangfilters = preload.languageFacets;
-    testing.vm.langfilters = preload.languageFacets;
+    SearchModel.activelangfilters(preload.languageFacets);
+    SearchModel.langfilters(preload.languageFacets);
 
-    testing.vm.activerepositoryfilters = preload.repositoryFacets;
-    testing.vm.repositoryfilters = preload.repositoryFacets;
+    SearchModel.activerepositoryfilters(preload.repositoryFacets);
+    SearchModel.repositoryfilters(preload.repositoryFacets);
 
-    testing.vm.ownfilters = preload.ownerFacets;
-    testing.vm.activeownfilters = preload.ownerFacets;
+    SearchModel.ownfilters(preload.ownerFacets);
+    SearchModel.activeownfilters(preload.ownerFacets);
 
-    testing.vm.search(preload.page, true);
+    SearchModel.search(preload.page, true);
 }
