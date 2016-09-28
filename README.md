@@ -106,7 +106,7 @@ Change Log
 ==========
 
 XX XXXXXXXXX XXXX - 1.3.2
- - 
+ - Improve matching of certain strings such as E.G. linux2.7.4 or i386
 
 27 September 2016 - 1.3.1
  - Fix potential performance issue in spelling corrector with long strings
