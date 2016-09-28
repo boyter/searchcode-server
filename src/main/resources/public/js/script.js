@@ -967,7 +967,7 @@ var SearchLanguagesFilterComponent = {
                     },
                     value: res.language,
                     count: res.count,
-                    checked: SearchModel.filterexists('language', res.language
+                    checked: SearchModel.filterexists('language', res.language)
                 });
             }),
             showmoreless
@@ -1049,14 +1049,14 @@ var SearchOwnersFilterComponent = {
             _.map(ctrl.trimlanguage(args.ownerfilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
-                        ctrl.clickenvent(res.owner()); 
+                        ctrl.clickenvent(res.owner); 
                         if (args.filterinstantly) {
                             args.search();
                         }
                     },
-                    value: res.owner(),
+                    value: res.owner,
                     count: res.count,
-                    checked: SearchModel.filterexists('owner', res.owner())
+                    checked: SearchModel.filterexists('owner', res.owner)
                 });
             }),
             showmoreless
@@ -1227,14 +1227,14 @@ var SearchResultsComponent = {
     controller: function() {
         return {
             gethref: function(result) {
-                return '/file/' + result.codeid() + '/' + result.codepath();
+                return '/file/' + result.codeId + '/' + result.codePath;
             },
             getatag: function(result) {
-                return result.filename() + ' in ' + result.reponame();
+                return result.fileName + ' in ' + result.repoName;
             },
             getsmallvalue: function(result){
-                var fixedCodePath = '/' + res.codepath().split('/').slice(1,100000).join('/');
-                return ' | ' + fixedCodePath +' | ' + res.codelines() + ' lines | ' + res.languagename();
+                var fixedCodePath = '/' + result.codePath.split('/').slice(1,100000).join('/');
+                return ' | ' + fixedCodePath +' | ' + result.codeLines + ' lines | ' + result.languageName;
             },
         }
     },
@@ -1244,14 +1244,14 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-                                m('a', { href: crtl.gethref(res) }, ctrl.getatag(res)),
+                                m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
                                 m('small', ctrl.getsmallvalue(res))  
                             ])
                         ),
                         m('ol.code-result', [
-                            _.map(res.matchingresults(), function(line) {
+                            _.map(res.matchingResults, function(line) {
                                 return m('li', { value: line.lineNumber }, 
-                                    m('a', { 'href': '/file/' + res.codeid() + '/' + res.codepath() + '#' + line.lineNumber },
+                                    m('a', { 'href': '/file/' + res.codeId + '/' + res.codePath + '#' + line.lineNumber },
                                         m('pre', m.trust(line.line))
                                     )
                                 );
