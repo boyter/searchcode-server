@@ -4,12 +4,8 @@
 <div class="row">
 
 <link rel="stylesheet" href="/css/highlight/default.css">
-<link class="codestyle" rel="stylesheet" href="/css/highlight/${highligher}.css">
 <script src="/js/jquery-1.11.1.min.js"></script>
-<#if highlight>
-<script src="/js/highlight.pack.js"></script>
-<script>hljs.initHighlightingOnLoad();</script>
-</#if>
+
     <h4 class="codepath">${repoName} ${codePath}</h4>
 
     <table class="table">
@@ -67,7 +63,7 @@
                                 <#list result.matchingLines>
                                 <div style="margin-top:5px; margin-bottom:5px;">Line(s)
                                 <#items as line>
-                                    <a href="#${line}">${line}</a>
+                                    <a href="#${line?c}">${line}</a>
                                 </#items>
                                 </div>
                                 </#list>
@@ -84,7 +80,19 @@
 </div>
 
 
-<pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
+<div class="coderesult-code">
+    <table style="width:100%;">
+        <tr>
+        <td class="coderesult-linenos" valign="top">
+            <pre><code <#if !highlight>class="hljs"</#if> >${linenos}</code></pre>
+        </td>
+        <td class="coderesult-code" valign="top">
+            <pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
+        </td>
+        </tr>
+    </table>
+</div>
+
 
 <script>
 $('#toggleOwasp').click(function(e) {
@@ -92,4 +100,11 @@ $('#toggleOwasp').click(function(e) {
   $('#owaspResults').toggle();
 });
 </script>
+
+<#if highlight>
+<link class="codestyle" rel="stylesheet" href="/css/highlight/${highligher}.css">
+<script src="/js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</#if>
+
 </@layout.masterTemplate>

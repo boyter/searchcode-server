@@ -155,6 +155,10 @@
     <td><b>owasp_database_location</b></td>
     <td>${owasp_database_location}</td>
     </tr>
+    <tr>
+        <td><b>highlight_lines_limit</b></td>
+        <td>${highlight_lines_limit}</td>
+    </tr>
 </table>
     
 

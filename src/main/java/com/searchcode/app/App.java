@@ -727,7 +727,7 @@ public class App {
             map.put(Values.MAXDOCUMENTQUEUELINESIZE, Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE));
             map.put(Values.MAXFILELINEDEPTH, Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH));
             map.put(Values.OWASPDATABASELOCATION, Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION));
-
+            map.put(Values.HIGHLIGHT_LINE_LIMIT, Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
 
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
@@ -1050,6 +1050,11 @@ public class App {
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+
+            if (req.queryParams().contains("password")) {
+                map.put("passwordInvalid", true);
+            }
+
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
 
@@ -1130,8 +1135,6 @@ public class App {
             CodeSearcher cs = new CodeSearcher();
             Cocomo2 coco = new Cocomo2();
 
-            StringBuilder code = new StringBuilder();
-
             String fileName = Values.EMPTYSTRING;
             if(request.splat().length != 0) {
                 fileName = request.splat()[0];
@@ -1154,12 +1157,31 @@ public class App {
             }
 
             List<String> codeLines = codeResult.code;
-            for (int i=0; i<codeLines.size(); i++) {
-                code.append("<span id=\"" + (i + 1) + "\"></span>");
-                code.append(StringEscapeUtils.escapeHtml4(codeLines.get(i)));
-                code.append("\n");
+            StringBuilder code = new StringBuilder();
+            StringBuilder lineNos = new StringBuilder();
+            String padStr = "";
+            for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
+                padStr += " ";
             }
-
+            for (int i=1, d=10, len=codeLines.size(); i<=len; i++) {
+                if (i/d > 0)
+                {
+                    d *= 10;
+                    padStr = padStr.substring(0, padStr.length()-1);  // Del last char
+                }
+                code.append("<span id=\"")
+                        .append(i)
+                        .append("\"></span>")
+                        .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
+                        .append("\n");
+                lineNos.append(padStr)
+                        .append("<a href=\"#")
+                        .append(i)
+                        .append("\">")
+                        .append(i)
+                        .append("</a>")
+                        .append("\n");
+            }
 
             List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
             if (owaspAdvisoriesEnabled()) {
@@ -1168,10 +1190,10 @@ public class App {
                 }
             }
 
-            boolean highlight = true;
-            if(Integer.parseInt(codeResult.codeLines) > 1000) {
-                highlight = false;
-            }
+            int limit = Integer.parseInt(
+                    Properties.getProperties().getProperty(
+                            Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
+            boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
 
             RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 
@@ -1188,6 +1210,9 @@ public class App {
             }
             map.put("codePath", codePath);
             map.put("codeLength", codeResult.codeLines);
+
+            map.put("linenos", lineNos.toString());
+
             map.put("languageName", codeResult.languageName);
             map.put("md5Hash", codeResult.md5hash);
             map.put("repoName", codeResult.repoName);
@@ -1239,10 +1264,10 @@ public class App {
                 code.append("\n");
             }
 
-            boolean highlight = true;
-            if (Integer.parseInt(codeResult.codeLines) > 1000) {
-                highlight = false;
-            }
+            int limit = Integer.parseInt(
+                    Properties.getProperties().getProperty(
+                            Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
+            boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
 
             RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 

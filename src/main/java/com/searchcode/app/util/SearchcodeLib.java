@@ -61,7 +61,7 @@ public class SearchcodeLib {
 
         StringBuilder indexContents = new StringBuilder();
 
-        contents = contents.replaceAll("[^a-zA-Z]", " ");
+        contents = contents.replaceAll("[^a-zA-Z0-9]", " ");
 
         // Performance improvement hack
         if (contents.length() > this.MAXSPLITLENGTH) {
@@ -83,6 +83,31 @@ public class SearchcodeLib {
                     }
                 }
             }
+        }
+
+        return indexContents.toString();
+    }
+
+    public String findInterestingKeywords(String contents) {
+        if (contents == null) {
+            return Values.EMPTYSTRING;
+        }
+
+        StringBuilder indexContents = new StringBuilder();
+
+        // Performance improvement hack
+        if (contents.length() > this.MAXSPLITLENGTH) {
+
+            // Add AAA to ensure we dont split the last word if it was cut off
+            contents = contents.substring(0, MAXSPLITLENGTH) + "AAA";
+        }
+
+        // Finds versions with words at the front, eg linux2.7.4
+        Matcher m = Pattern.compile("[a-z]+(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)").matcher(contents);
+
+        while (m.find()) {
+            indexContents.append(" ");
+            indexContents.append(m.group());
         }
 
         return indexContents.toString();

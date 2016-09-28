@@ -17,6 +17,9 @@ If you are building from source then you get no support and must work within the
 fair source licence (see LICENSE.txt for details). To purchase support see 
 https://searchcode.com/product/#downloadlinks
 
+Submissions/Pull Requests
+-------------------------
+If you would like to submit code to be integrated into searchcode server please specifyc that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
 To Build
 --------
@@ -105,9 +108,19 @@ Change Log
 XX XXXXXXXXX XXXX - 1.4.0
  - Can index historical data for git repositories
 
-XX XXXXXXXXX XXXX - 1.3.1
+XX XXXXXXXXX XXXX - 1.3.2
+ - Improve matching of certain strings such as E.G. linux2.7.4 or i386
+
+27 September 2016 - 1.3.1
  - Fix potential performance issue in spelling corrector with long strings
  - Fix potential XSS issue with HTML page
+ - Line numbers now appear on code result pages
+ - Logging directory not configurable via properties
+ - Symlinks path traversal issue resolved
+ - Highlight.js now lazy loads
+ - Highlight limit now configrable through properties
+ - OWASP line number display correction
+ - Header links resolved in some cases
 
 20 September 2016 - 1.3.0
  - Filters now apply instantly when clicked option is toggleable

@@ -237,6 +237,12 @@ public class SearchcodeLibTest extends TestCase {
         assertEquals(" Test Split Keywords", actual);
     }
 
+    public void testInterestingKeywords() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.findInterestingKeywords("PURIFY_EXE=/depot/pure/purify.i386_linux2.7.4.14/purify");
+        assertEquals(" i386 linux2.7.4", actual);
+    }
+
     public void testLanguageGuesserText() {
         SearchcodeLib sl = new SearchcodeLib();
         String language = sl.languageGuesser("test.txt", new ArrayList<>());

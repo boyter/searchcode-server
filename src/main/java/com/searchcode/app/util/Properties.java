@@ -22,8 +22,6 @@ import java.util.logging.Logger;
  */
 public class Properties {
 
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
-
     private static java.util.Properties properties = null;
 
     public static java.util.Properties getProperties() {
@@ -32,7 +30,8 @@ public class Properties {
             try {
                 properties.load(new FileInputStream("searchcode.properties"));
             } catch (IOException e) {
-                LOGGER.severe("Unable to load 'searchcode.properties' file. Will resort to defaults for all values.");
+                // TODO Use second 'stdout' logger here, because ctor LoggerWrapper call this method
+                Singleton.getLogger().severe("Unable to load 'searchcode.properties' file. Will resort to defaults for all values.");
             }
         }
 

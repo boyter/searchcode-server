@@ -1226,6 +1226,7 @@ var SearchAlternateFilterComponent = {
 var SearchResultsComponent = {
     controller: function() {
         return {
+<<<<<<< HEAD
             gethref: function(result) {
                 return '/file/' + result.codeid() + '/' + result.codepath();
             },
@@ -1234,6 +1235,10 @@ var SearchResultsComponent = {
             },
             getsmallvalue: function(result){
                 return ' | ' + res.repolocation() +' | ' + res.codelines() + ' lines | ' + res.languagename();
+=======
+            fixcodepath: function(codepath) {
+                return '/' + codepath.split('/').slice(1,100000).join('/');
+>>>>>>> master
             }
         }
     },
@@ -1243,8 +1248,13 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
+<<<<<<< HEAD
                                 m('a', { href: crtl.gethref(res) }, ctrl.getatag(res)),
                                 m('small', ctrl.getsmallvalue(res))  
+=======
+                                m('a', { href: '/file/' + res.codeid() + '/' + res.codepath() }, res.filename() + ' in ' + res.reponame()),
+                                m('small', ' | ' + ctrl.fixcodepath(res.codepath()) +' | ' + res.codelines() + ' lines | ' + res.languagename())  
+>>>>>>> master
                             ])
                         ),
                         m('ol.code-result', [
