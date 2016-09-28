@@ -200,9 +200,9 @@ public class CodeIndexer {
             }
         }
         finally {
-            Singleton.getLogger().info("Closing writers");
             writer.close();
             taxoWriter.close();
+            Singleton.getLogger().info("Closing writers");
         }
     }
 
