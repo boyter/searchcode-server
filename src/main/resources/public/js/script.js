@@ -280,8 +280,8 @@ var SearchNoResultsComponent = {
     controller: function() {
         return {
             doaltquery: function(altquery) {
-                testing.vm.searchvalue(altquery);
-                testing.vm.search();
+                SearchModel.searchvalue(altquery);
+                SearchModel.search();
             }
         }
     },
@@ -446,7 +446,7 @@ var FilterOptionsComponent = {
     },
     view: function(ctrl, args) {
         var inputparams = { type: 'checkbox', onclick: function() { 
-            testing.vm.toggleinstant();
+            SearchModel.toggleinstant();
         } };
         
         if (args.filterinstantly) {
@@ -506,7 +506,7 @@ var SearchRepositoriesFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(repo) {
-                testing.vm.togglefilter('repo', repo);
+                SearchModel.togglefilter('repo', repo);
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -594,7 +594,7 @@ var SearchLanguagesFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(language) {
-                testing.vm.togglefilter('language', language);
+                SearchModel.togglefilter('language', language);
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -683,7 +683,7 @@ var SearchOwnersFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(owner) {
-                testing.vm.togglefilter('owner', owner);
+                SearchModel.togglefilter('owner', owner);
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -759,10 +759,9 @@ var FilterCheckboxComponent = {
 
 var SearchOptionsComponent = {
     controller: function() {
-        // helper functions would go here
         return {
             dosearch: function() {
-                testing.vm.search();
+                SearchModel.search();
             }
         }
     },
@@ -872,8 +871,8 @@ var SearchAlternateFilterComponent = {
         // helper functions would go here
         return {
             doaltquery: function(altquery) {
-                testing.vm.searchvalue(altquery);
-                testing.vm.search();
+                SearchModel.searchvalue(altquery);
+                SearchModel.search();
             }
         }
     },
