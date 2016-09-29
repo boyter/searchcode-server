@@ -24,7 +24,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Provides access to all methods required to get Repo details from the database.
@@ -55,7 +54,7 @@ public class Repo implements IRepo {
 
         try {
             Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc;");
+            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,masks from repo order by rowid desc;");
 
             ResultSet rs = stmt.executeQuery();
 
@@ -68,8 +67,10 @@ public class Repo implements IRepo {
                 String repoPassword = rs.getString("password");
                 String repoSource = rs.getString("source");
                 String repoBranch = rs.getString("branch");
+                String repoMasks = rs.getString("masks");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource,
+                        repoBranch, repoMasks));
             }
 
             stmt.close();
@@ -119,7 +120,7 @@ public class Repo implements IRepo {
 
         try {
             Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc limit ?, ?;");
+            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,masks from repo order by rowid desc limit ?, ?;");
 
             stmt.setInt(1, offset);
             stmt.setInt(2, pageSize);
@@ -135,8 +136,10 @@ public class Repo implements IRepo {
                 String repoPassword = rs.getString("password");
                 String repoSource = rs.getString("source");
                 String repoBranch = rs.getString("branch");
+                String repoMasks = rs.getString("masks");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource,
+                        repoBranch, repoMasks));
             }
 
             stmt.close();
@@ -186,7 +189,7 @@ public class Repo implements IRepo {
 
         try {
             Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where name=?;");
+            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,masks from repo where name=?;");
 
             stmt.setString(1, repositoryName);
 
@@ -201,8 +204,10 @@ public class Repo implements IRepo {
                 String repoPassword = rs.getString("password");
                 String repoSource = rs.getString("source");
                 String repoBranch = rs.getString("branch");
+                String repoMasks = rs.getString("masks");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource,
+                        repoBranch, repoMasks);
             }
 
             stmt.close();
@@ -254,7 +259,7 @@ public class Repo implements IRepo {
             // Update with new details
             try {
                 Connection conn = this.dbConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
+                PreparedStatement stmt = conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"masks\" = ? WHERE  \"name\" = ?");
 
                 stmt.setString(1, repoResult.getName());
                 stmt.setString(2, repoResult.getScm());
@@ -263,6 +268,7 @@ public class Repo implements IRepo {
                 stmt.setString(5, repoResult.getPassword());
                 stmt.setString(6, repoResult.getSource());
                 stmt.setString(7, repoResult.getBranch());
+                stmt.setString(8, repoResult.getMasks());
 
                 // Target the row
                 stmt.setString(8, repoResult.getName());
@@ -280,7 +286,7 @@ public class Repo implements IRepo {
             isNew = true;
             try {
                 Connection conn = this.dbConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
+                PreparedStatement stmt = conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"masks\") VALUES (?,?,?,?,?,?,?,?)");
 
                 stmt.setString(1, repoResult.getName());
                 stmt.setString(2, repoResult.getScm());
@@ -289,6 +295,7 @@ public class Repo implements IRepo {
                 stmt.setString(5, repoResult.getPassword());
                 stmt.setString(6, repoResult.getSource());
                 stmt.setString(7, repoResult.getBranch());
+                stmt.setString(8, repoResult.getMasks());
 
                 stmt.execute();
 
@@ -326,7 +333,7 @@ public class Repo implements IRepo {
             if(shouldAlter) {
                 List<String> commands = Arrays.asList(
                         "ALTER TABLE \"repo\" RENAME TO \"oXHFcGcd04oXHFcGcd04_repo\"",
-                        "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\" VARCHAR)",
+                        "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\" VARCHAR, \"masks\" VARCHAR)",
                         "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\" FROM \"main\".\"oXHFcGcd04oXHFcGcd04_repo\"",
                         "DROP TABLE \"oXHFcGcd04oXHFcGcd04_repo\"");
 
@@ -366,7 +373,7 @@ public class Repo implements IRepo {
             if(shouldAlter) {
                 List<String> commands = Arrays.asList(
                         "ALTER TABLE \"repo\" RENAME TO \"y6L0VN5j9eQSg65hWtJJ_repo\"",
-                        "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)",
+                        "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, \"masks\" VARCHAR)",
                         "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\", \"master\" FROM \"main\".\"y6L0VN5j9eQSg65hWtJJ_repo\"",
                         "DROP TABLE \"y6L0VN5j9eQSg65hWtJJ_repo\"");
 

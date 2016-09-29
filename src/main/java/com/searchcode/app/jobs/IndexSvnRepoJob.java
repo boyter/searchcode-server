@@ -100,7 +100,13 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         return false;
     }
 
-    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+    public void updateIndex(String repoName,
+                            String repoLocations,
+                            String repoRemoteLocation,
+                            boolean existingRepo,
+                            RepositoryChanged repositoryChanged,
+                            String[] repoFileMasks) {
+
         String repoSvnLocation = repoLocations + repoName;
         Path docDir = Paths.get(repoSvnLocation);
 
@@ -114,11 +120,11 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         if (repositoryChanged.isClone() || indexsucess == false) {
             Singleton.getLogger().info("Doing full index of files for " + repoName);
-            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
+            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo, repoFileMasks);
         }
         else {
             Singleton.getLogger().info("Doing delta index of files " + repoName);
-            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged);
+            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged, repoFileMasks);
         }
 
         // Write file indicating that the index was sucessful

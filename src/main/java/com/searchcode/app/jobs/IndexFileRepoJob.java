@@ -12,36 +12,15 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.CodeOwner;
-import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.api.BlameCommand;
-import org.eclipse.jgit.api.CloneCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.blame.BlameResult;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.lib.*;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.quartz.*;
 
-import java.io.*;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -96,7 +75,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 Path docDir = Paths.get(repoRemoteLocation);
 
-                this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
+                this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true, repoResult.getMasksAsArray());
             }
             finally {
                 // Clean up the job

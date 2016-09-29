@@ -11,8 +11,15 @@
 package com.searchcode.app.model;
 
 import com.searchcode.app.config.Values;
+import org.apache.commons.io.FilenameUtils;
+
+import java.util.Arrays;
 
 public class RepoResult {
+
+    static private String DEFAULT_MASK = "*";
+    static private String[] DEFAULT_MASKS = {DEFAULT_MASK};
+
     private int rowId;
     private String name = "";
     private String scm = "";
@@ -21,8 +28,22 @@ public class RepoResult {
     private String password = "";
     private String source = "";
     private String branch = "";
+    private String masks = DEFAULT_MASK;
+    private String[] arrMasks = DEFAULT_MASKS;
 
-    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch) {
+    public RepoResult(int rowId,
+                      String name,
+                      String scm,
+                      String url,
+                      String username,
+                      String password,
+                      String source,
+                      String branch,
+                      String masks) {
+
+        if (name == null || name.isEmpty())
+            name = FilenameUtils.getBaseName(url);
+
         this.setRowId(rowId);
         this.setName(name);
         this.setScm(scm);
@@ -31,6 +52,7 @@ public class RepoResult {
         this.setPassword(password);
         this.setSource(source);
         this.setBranch(branch);
+        this.setMasks(masks);
     }
 
     /**
@@ -83,7 +105,7 @@ public class RepoResult {
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.url = FilenameUtils.separatorsToUnix(url);
     }
 
     public String getUsername() {
@@ -127,8 +149,21 @@ public class RepoResult {
         this.branch = branch;
     }
 
+    public String[] getMasksAsArray() { return arrMasks; }
+
+    public String getMasks() {
+        return masks;
+    }
+
+    public void setMasks(String masks) {
+        this.arrMasks = masks == null ? DEFAULT_MASKS : masks.split(";");
+        if (this.arrMasks.length == 0)
+        this.arrMasks = DEFAULT_MASKS;
+        this.masks = String.join(";", Arrays.asList(masks));;
+    }
+
     @Override
     public String toString() {
-        return String.format("%s %s %s %s %s %s %s", this.getName(), this.getScm(), this.getUrl(), this.getUsername(), this.getPassword(), this.getSource(), this.getBranch());
+        return String.format("%s %s %s %s %s %s %s %s", this.getName(), this.getScm(), this.getUrl(), this.getUsername(), this.getPassword(), this.getSource(), this.getBranch(), this.getMasks());
     }
 }

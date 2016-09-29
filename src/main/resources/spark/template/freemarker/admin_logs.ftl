@@ -16,11 +16,10 @@
 <div class="row">
 <p>This page will display the last 1,000 log entries for all logging levels.</p>
 
-<#list logs>
-    <#items as result>
-          <pre>${result}</pre>
-    </#items>
-</#list>
+    <pre>
+    <textarea style="width: 100%; height: 100%;" rows="20" disabled="true"><#list logs><#items as result>${result}
+</#items></#list></textarea>
+    </pre>
 </div>
 
 </@layout.masterTemplate>

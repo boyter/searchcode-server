@@ -23,6 +23,8 @@ import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOCase;
+import org.apache.commons.io.filefilter.WildcardFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -114,7 +116,8 @@ public abstract class IndexBaseRepoJob implements Job {
         RepoResult repoResult = repoQueue.poll();
         AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
 
-        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
+        if (!(repoResult == null || runningIndexRepoJobs.containsKey(repoResult.getName()))) {
+
             Singleton.getLogger().info("Indexing " + repoResult.getName());
             try {
                 runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
@@ -163,7 +166,8 @@ public abstract class IndexBaseRepoJob implements Job {
 
                 if (repositoryChanged.isChanged() || indexsuccess == false) {
                     Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-                    this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
+                    this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged,
+                            repoResult.getMasksAsArray());
                 }
             }
             finally {
@@ -173,7 +177,13 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+    public void updateIndex(String repoName,
+                            String repoLocations,
+                            String repoRemoteLocation,
+                            boolean existingRepo,
+                            RepositoryChanged repositoryChanged,
+                            String[] repoFileMasks) {
+
         String repoGitLocation = repoLocations + "/" + repoName;
         Path docDir = Paths.get(repoGitLocation);
 
@@ -187,11 +197,11 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (repositoryChanged.isClone() || indexsucess == false) {
             Singleton.getLogger().info("Doing full index of files for " + repoName);
-            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
+            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo, repoFileMasks);
         }
         else {
             Singleton.getLogger().info("Doing delta index of files " + repoName);
-            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged);
+            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged, repoFileMasks);
         }
 
         // Write file indicating that the index was sucessful
@@ -204,15 +214,36 @@ public abstract class IndexBaseRepoJob implements Job {
      * Should only be called when there is a genuine update IE something was indexed previously and
      * has has a new commit.
      */
-    public void indexDocsByDelta(Path path, String repoName, String repoLocations, String repoRemoteLocation, RepositoryChanged repositoryChanged) {
+    public void indexDocsByDelta(Path path,
+                                 String repoName,
+                                 String repoLocations,
+                                 String repoRemoteLocation,
+                                 RepositoryChanged repositoryChanged,
+                                 String[] repoFileMasks) {
+
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return;
+        }
+
         SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
         Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
+        WildcardFileFilter filter = new WildcardFileFilter(repoFileMasks, IOCase.SYSTEM);
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
 
             if (Singleton.getBackgroundJobsEnabled() == false) {
                 return;
+            }
+
+            String[] split = changedFile.split("/");
+            String fileName = split[split.length - 1];
+            changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
+
+            File file = new File(changedFile);
+            if (!filter.accept(file)) {
+                Singleton.getLogger().info("Skip by mask  " + changedFile);
+                continue;
             }
 
             while(CodeIndexer.shouldPauseAdding()) {
@@ -221,10 +252,6 @@ public abstract class IndexBaseRepoJob implements Job {
                     Thread.sleep(this.SLEEPTIME);
                 } catch (InterruptedException ex) {}
             }
-
-            String[] split = changedFile.split("/");
-            String fileName = split[split.length - 1];
-            changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
 
             String md5Hash = Values.EMPTYSTRING;
             List<String> codeLines = null;
@@ -293,7 +320,17 @@ public abstract class IndexBaseRepoJob implements Job {
      * Generally this is a slow update used only for the inital clone of a repository
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
-    public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
+    public void indexDocsByPath(Path path,
+                                String repoName,
+                                String repoLocations,
+                                String repoRemoteLocation,
+                                boolean existingRepo,
+                                String[] repoFileMasks) {
+
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return;
+        }
+
         SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
         List<String> fileLocations = new ArrayList<>();
         Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
@@ -301,15 +338,26 @@ public abstract class IndexBaseRepoJob implements Job {
         // Convert once outside the main loop
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
         boolean lowMemory = this.LOWMEMORY;
+        WildcardFileFilter filter = new WildcardFileFilter(repoFileMasks, IOCase.SYSTEM);
 
         try {
-            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-                    new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
                     if (Singleton.getBackgroundJobsEnabled() == false) {
                         return FileVisitResult.TERMINATE;
+                    }
+
+                    // Convert Path file to unix style that way everything is easier to reason about
+                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
+                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
+                    String fileName = file.getFileName().toString();
+                    String md5Hash = Values.EMPTYSTRING;
+
+                    if (!filter.accept(file.toFile())) {
+                        Singleton.getLogger().info("Skip by mask  " + fileToString);
+                        return FileVisitResult.CONTINUE;
                     }
 
                     while (CodeIndexer.shouldPauseAdding()) {
@@ -319,12 +367,6 @@ public abstract class IndexBaseRepoJob implements Job {
                         } catch (InterruptedException ex) {
                         }
                     }
-
-                    // Convert Path file to unix style that way everything is easier to reason about
-                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                    String fileName = file.getFileName().toString();
-                    String md5Hash = Values.EMPTYSTRING;
 
                     if (ignoreFile(fileParent)) {
                         return FileVisitResult.CONTINUE;

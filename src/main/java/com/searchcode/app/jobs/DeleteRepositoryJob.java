@@ -32,25 +32,30 @@ import java.util.AbstractMap;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
+
         if (Singleton.getBackgroundJobsEnabled() == false) {
             return;
         }
 
         UniqueRepoQueue deleteRepoQueue = Singleton.getUniqueDeleteRepoQueue();
-        RepoResult rr = null;
+        RepoResult rr = deleteRepoQueue.poll();
+        if (rr == null) {
+            return;
+        }
+        // TODO Ruzzz Needed?
+        try {
+            Singleton.getUniqueGitRepoQueue().delete(rr);
+        } catch (Exception ex) {}
+        try {
+            Singleton.getUniqueSvnRepoQueue().delete(rr);
+        } catch (Exception ex) {}
+        try {
+            Singleton.getUniqueFileRepoQueue().delete(rr);
+        } catch (Exception ex) {}
 
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
             AbstractMap<String, Integer> runningProcesses = Singleton.getRunningIndexRepoJobs();
-            Repo repo = Singleton.getRepo();
-
-            rr = deleteRepoQueue.poll();
-            if (rr == null) {
-                return;
-            }
-
-            Singleton.getUniqueGitRepoQueue().delete(rr);
 
             if (runningProcesses.containsKey(rr.getName())) {
                 // Put back into delete queue and quit
@@ -66,6 +71,7 @@ public class DeleteRepositoryJob implements Job {
             FileUtils.deleteDirectory(new File(repoLocations + rr.getName() + "/"));
 
             // Remove from the database
+            Repo repo = Singleton.getRepo();
             repo.deleteRepoByName(rr.getName());
         }
         catch (Exception ex) {

@@ -486,6 +486,7 @@ public class App {
             String repopassword = request.queryParams("repopassword");
             String reposource = request.queryParams("reposource");
             String repobranch = request.queryParams("repobranch");
+            String repomasks = request.queryParams("repomasks");
 
             if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
                 return new ApiResponse(false, "reponame is a required parameter");
@@ -515,6 +516,10 @@ public class App {
                 return new ApiResponse(false, "repobranch is a required parameter");
             }
 
+            if (repomasks == null) {
+                return new ApiResponse(false, "repomasks is a required parameter");
+            }
+
             if (apiAuth) {
                 if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
                     return new ApiResponse(false, "pub is a required parameter");
@@ -524,7 +529,7 @@ public class App {
                     return new ApiResponse(false, "sig is a required parameter");
                 }
 
-                String toValidate = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s",
+                String toValidate = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s&repomasks=%s",
                         URLEncoder.encode(publicKey),
                         URLEncoder.encode(reponames),
                         URLEncoder.encode(repourls),
@@ -532,7 +537,8 @@ public class App {
                         URLEncoder.encode(repousername),
                         URLEncoder.encode(repopassword),
                         URLEncoder.encode(reposource),
-                        URLEncoder.encode(repobranch));
+                        URLEncoder.encode(repobranch),
+                        URLEncoder.encode(repomasks));
 
                 boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
 
@@ -558,7 +564,8 @@ public class App {
                 return new ApiResponse(false, "repository name already exists");
             }
 
-            repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch));
+            repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource,
+                    repobranch, repomasks));
 
             return new ApiResponse(true, "added repository successfully");
         }, new JsonTransformer());
@@ -684,7 +691,7 @@ public class App {
 
         get("/admin/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -733,7 +740,7 @@ public class App {
 
         get("/admin/repo/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -777,7 +784,7 @@ public class App {
 
         get("/admin/bulk/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -791,7 +798,7 @@ public class App {
 
         get("/admin/api/", (request, response) -> {
             if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -825,7 +832,7 @@ public class App {
 
         get("/admin/api/delete/", "application/json", (request, response) -> {
             if(getAuthenticatedUser(request) == null || !request.queryParams().contains("publicKey")) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return false;
             }
@@ -838,7 +845,7 @@ public class App {
 
         get("/admin/settings/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -861,7 +868,7 @@ public class App {
 
         get("/admin/reports/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -875,7 +882,7 @@ public class App {
 
         get("/admin/logs/", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return null;
             }
@@ -964,7 +971,7 @@ public class App {
             for(String line: repolines) {
                 String[] repoparams = line.split(",", -1);
 
-                if(repoparams.length == 7) {
+                if(repoparams.length == 8) {
 
                     String branch = repoparams[6].trim();
                     if (branch.equals(Values.EMPTYSTRING)) {
@@ -979,7 +986,8 @@ public class App {
                     RepoResult rr = repo.getRepoByName(repoparams[0]);
 
                     if (rr == null) {
-                        repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch));
+                        repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4]
+                                , repoparams[5], branch, repoparams[7]));
                     }
                 }
             }
@@ -1003,6 +1011,7 @@ public class App {
             String[] repopassword = request.queryParamsValues("repopassword");
             String[] reposource = request.queryParamsValues("reposource");
             String[] repobranch = request.queryParamsValues("repobranch");
+            String[] repomasks = request.queryParamsValues("repomasks");
 
 
             for(int i=0;i<reponames.length; i++) {
@@ -1013,7 +1022,8 @@ public class App {
                         branch = "master";
                     }
 
-                    repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch));
+                    repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i],
+                            repopassword[i], reposource[i], branch, repomasks[i]));
                 }
             }
 
@@ -1031,23 +1041,31 @@ public class App {
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+            map.put("redirect", request.queryParams().contains("redirect") ? request.queryParams("redirect") : "");
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
 
-        post("/login/", (req, res) -> {
-            if(req.queryParams().contains("password") && req.queryParams("password").equals(com.searchcode.app.util.Properties.getProperties().getProperty("password"))) {
-                addAuthenticatedUser(req);
-                res.redirect("/admin/");
+        post("/login/", (request, response) -> {
+            if(request.queryParams().contains("password") && request.queryParams("password").equals(com.searchcode.app.util.Properties.getProperties().getProperty("password"))) {
+                addAuthenticatedUser(request);
+                String redirect = "";
+                if (request.queryParams().contains("redirect")) {
+                    redirect = request.queryParams("redirect").trim();
+                    if (redirect.codePointAt(0) != '/')
+                        redirect = "";
+                }
+                if (redirect.isEmpty())
+                    redirect = "/admin/";
+                response.redirect(redirect);
                 halt();
             }
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
-
-            if (req.queryParams().contains("password")) {
+            map.put("redirect", request.queryParams().contains("redirect") ? request.queryParams("redirect") : "");
+            if (request.queryParams().contains("password")) {
                 map.put("passwordInvalid", true);
             }
-
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
 
@@ -1059,7 +1077,7 @@ public class App {
 
         get("/admin/delete/", "application/json", (request, response) -> {
             if(getAuthenticatedUser(request) == null || !request.queryParams().contains("repoName")) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return false;
             }
@@ -1100,7 +1118,7 @@ public class App {
 
         get("/admin/checkversion/", "application/json", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
+                response.redirect("/login/?redirect=" + request.pathInfo());
                 halt();
                 return false;
             }
