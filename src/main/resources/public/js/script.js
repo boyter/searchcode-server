@@ -487,7 +487,7 @@ var SearchRepositoriesFilterComponent = {
 
                 if (filtervalue.length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.source().toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.repoName.toLowerCase().indexOf(filtervalue) !== -1; 
                     } );
                 }
 
@@ -575,7 +575,7 @@ var SearchLanguagesFilterComponent = {
 
                 if (filtervalue.length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.language().toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.languageName.toLowerCase().indexOf(filtervalue) !== -1; 
                     });
                 }
 
@@ -664,7 +664,7 @@ var SearchOwnersFilterComponent = {
 
                 if (filtervalue.length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner().toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
                     });
                 }
 
@@ -946,12 +946,12 @@ m.mount(document.getElementsByClassName('container')[0], m.component(SearchCompo
 window.onpopstate = function(event) {
     SearchModel.searchvalue(event.state.searchvalue);
     SearchModel.currentpage(event.state.currentpage);
-    SearchModel.activelangfilters = event.state.langfilters;
-    SearchModel.langfilters = event.state.langfilters;
-    SearchModel.activerepositoryfilters = event.state.repofilters;
-    SearchModel.repositoryfilters = event.state.repofilters;
-    SearchModel.ownfilters = event.state.ownfilters;
-    SearchModel.activeownfilters = event.state.ownfilters;
+    SearchModel.activelangfilters(event.state.langfilters);
+    SearchModel.langfilters(event.state.langfilters);
+    SearchModel.activerepositoryfilters(event.state.repofilters);
+    SearchModel.repositoryfilters(event.state.repofilters);
+    SearchModel.ownfilters(event.state.ownfilters);
+    SearchModel.activeownfilters(event.state.ownfilters);
 
     SearchModel.search(event.state.currentpage, true);
     popstate = true;
