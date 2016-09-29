@@ -176,7 +176,11 @@ var SearchModel = {
         SearchModel.setstatechange(pagequery, isstatechange);
 
         var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-        m.request( { method: 'GET', url: queryurl, background: true } ).then( function(e) {
+        if (SearchModel.searchhistory() === true ) { 
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+        }
+
+        m.request( { method: 'GET', url: queryurl } ).then( function(e) {
             // console.log(queryurl);
             SearchModel.totalhits(e.totalHits);
             SearchModel.altquery(e.altQuery);
@@ -190,7 +194,6 @@ var SearchModel = {
             SearchModel.ownerfilters(e.repoOwnerResults);
 
             SearchModel.currentlyloading(false);
-            m.redraw();
         });
     }
 };
