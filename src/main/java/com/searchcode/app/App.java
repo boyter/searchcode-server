@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.ModelAndView;
 import spark.Request;
-import spark.Route;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 

@@ -41,6 +41,8 @@ var SearchModel = {
     languagefilters: m.prop([]),
     ownerfilters: m.prop([]),
 
+    repoFacetYearMonth: m.prop([]),
+
     clearfilters: function() {
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
@@ -192,6 +194,8 @@ var SearchModel = {
             SearchModel.repofilters(e.repoFacetResults);
             SearchModel.languagefilters(e.languageFacetResults);
             SearchModel.ownerfilters(e.repoOwnerResults);
+
+            SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
 
             SearchModel.currentlyloading(false);
         });
@@ -719,6 +723,95 @@ var SearchOwnersFilterComponent = {
             m('input.repo-filter', {
                 onkeyup: m.withAttr('value', ctrl.filtervalue),
                 placeholder: 'Filter Owners',
+                value: ctrl.getfiltervalue()
+            }),
+            _.map(ctrl.trimlanguage(args.ownerfilters), function(res, ind) {
+                return m.component(FilterCheckboxComponent, {
+                    onclick: function() { 
+                        ctrl.clickenvent(res.owner); 
+                        if (args.filterinstantly) {
+                            args.search();
+                        }
+                    },
+                    value: res.owner,
+                    count: res.count,
+                    checked: SearchModel.filterexists('owner', res.owner)
+                });
+            }),
+            showmoreless
+        ]);
+    }
+}
+
+var SearchYearMonthFilterComponent = {
+    controller: function() {
+
+        var showall = false;
+        var trimlength = 5;
+        var filtervalue = '';
+        
+        return {
+            trimlanguage: function (ownerfilters) {
+                var toreturn = ownerfilters;
+
+                if (filtervalue.length === 0 && !showall) {
+                    toreturn = _.first(toreturn, trimlength);
+                }
+
+                if (filtervalue.length !== 0) {
+                    toreturn = _.filter(toreturn, function (e) { 
+                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                    });
+                }
+
+                return toreturn;
+            },
+            toggleshowall: function() {
+                showall = !showall;
+            },
+            showall: function () {
+                return showall;
+            },
+            trimlength: function () {
+                return trimlength;
+            },
+            clickenvent: function(owner) {
+                SearchModel.togglefilter('owner', owner);
+            },
+            filtervalue: function(value) {
+                filtervalue = value;
+            },
+            hasfilter: function() {
+                return filtervalue.length !== 0;
+            },
+            getfiltervalue: function() {
+                return filtervalue;
+            }
+        }
+    },
+    view: function(ctrl, args) {
+
+        var showmoreless = m('div');
+
+        if (args.ownerfilters === undefined || args.ownerfilters.length == 0) {
+            return showmoreless;
+        }
+
+        if (!ctrl.hasfilter() && ctrl.trimlength() < args.ownerfilters.length) {
+            var morecount = args.ownerfilters.length - ctrl.trimlength();
+
+            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
+
+            if (ctrl.showall()) {
+                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
+            }
+        }
+
+        return m('div', [
+            m('h5', 'Year/Month'),
+            m('input.repo-filter', {
+                onkeyup: m.withAttr('value', ctrl.filtervalue),
+                placeholder: 'Filter Dates',
                 value: ctrl.getfiltervalue()
             }),
             _.map(ctrl.trimlanguage(args.ownerfilters), function(res, ind) {
