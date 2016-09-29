@@ -67,7 +67,7 @@ var SearchModel = {
                     SearchModel.repositoryfilters().push(name);
                 }
                 else {
-                    SearchModel.repositoryfilters(_.without(vm.repositoryfilters, name));
+                    SearchModel.repositoryfilters(_.without(SearchModel.repositoryfilters(), name));
                 }
                 break;
             case 'owner':
@@ -75,7 +75,7 @@ var SearchModel = {
                     SearchModel.ownfilters().push(name);
                 }
                 else {
-                    SearchModel.ownfilters(_.without(vm.ownfilters, name));
+                    SearchModel.ownfilters(_.without(SearchModel.ownfilters(), name));
                 }
                 break;
         }
@@ -150,7 +150,6 @@ var SearchModel = {
             return;
         }
 
-        // Start loading indicator
         SearchModel.currentlyloading(true);
         m.redraw();
 
@@ -177,7 +176,8 @@ var SearchModel = {
         SearchModel.setstatechange(pagequery, isstatechange);
 
         var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
-        m.request( { method: 'GET', background: true, url: queryurl } ).then( function(e) {
+        m.request( { method: 'GET', url: queryurl, background: true } ).then( function(e) {
+            // console.log(queryurl);
             SearchModel.totalhits(e.totalHits);
             SearchModel.altquery(e.altQuery);
             SearchModel.query(e.query);
@@ -191,7 +191,7 @@ var SearchModel = {
 
             SearchModel.currentlyloading(false);
             m.redraw();
-        } );
+        });
     }
 };
 
@@ -268,7 +268,7 @@ var SearchComponent = {
                     m.component(SearchPagesComponent, { 
                         currentpage: SearchModel.currentpage(),
                         pages: SearchModel.pages(),
-                        search: SearchModel.search()
+                        search: SearchModel.search
                     })
                 ])
             ]);
@@ -358,15 +358,12 @@ var SearchNextPreviousComponent = {
 }
 
 var SearchLoadingComponent = {
-    controller: function() {
-    },
     view: function(ctrl, args) {
+        var style = {};
 
-        var style = {}
         if (SearchModel.currentlyloading() === false) {
-            style = { style: { display: 'none' } }
+            style = { style: { display: 'none' } };
         }
-
 
         return m('div.search-loading', style, [
             m('img', { src: '/img/loading.gif' }),
@@ -546,14 +543,14 @@ var SearchRepositoriesFilterComponent = {
             _.map(ctrl.trimrepo(args.repofilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
-                        ctrl.clickenvent(res.source);
+                        ctrl.clickenvent(res.repoName);
                         if (args.filterinstantly) {
                             args.search();
                         }
                     },
-                    value: res.source,
+                    value: res.repoName,
                     count: res.count,
-                    checked: SearchModel.filterexists('repo', res.source)
+                    checked: SearchModel.filterexists('repo', res.repoName)
                 });
             }),
             showmoreless
@@ -635,14 +632,14 @@ var SearchLanguagesFilterComponent = {
             _.map(ctrl.trimlanguage(args.languagefilters), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
-                        ctrl.clickenvent(res.language); 
+                        ctrl.clickenvent(res.languageName); 
                         if (args.filterinstantly) {
                             args.search();
                         }
                     },
-                    value: res.language,
+                    value: res.languageName,
                     count: res.count,
-                    checked: SearchModel.filterexists('language', res.language)
+                    checked: SearchModel.filterexists('language', res.languageName)
                 });
             }),
             showmoreless
@@ -903,13 +900,16 @@ var SearchResultsComponent = {
             gethref: function(result) {
                 return '/file/' + result.codeId + '/' + result.codePath;
             },
+            gethreflineno: function(result, lineNumber) {
+                return '/file/' + result.codeId + '/' + result.codePath + '#' + lineNumber;
+            },
             getatag: function(result) {
                 return result.fileName + ' in ' + result.repoName;
             },
             getsmallvalue: function(result){
                 var fixedCodePath = '/' + result.codePath.split('/').slice(1,100000).join('/');
                 return ' | ' + fixedCodePath +' | ' + result.codeLines + ' lines | ' + result.languageName;
-            },
+            }
         }
     },
     view: function(ctrl, args) {
@@ -925,7 +925,7 @@ var SearchResultsComponent = {
                         m('ol.code-result', [
                             _.map(res.matchingResults, function(line) {
                                 return m('li', { value: line.lineNumber }, 
-                                    m('a', { 'href': '/file/' + res.codeId + '/' + res.codePath + '#' + line.lineNumber },
+                                    m('a', { 'href':  ctrl.gethreflineno(res, line.lineNumber) },
                                         m('pre', m.trust(line.line))
                                     )
                                 );
@@ -940,11 +940,6 @@ var SearchResultsComponent = {
 
 
 //Initialize the application
-// m.mount(document.getElementsByClassName('container')[0], { 
-//     controller: testing.controller, 
-//     view: testing.view
-// });
-
 m.mount(document.getElementsByClassName('container')[0], m.component(SearchComponent));
 
 // For when someone hits the back button in the browser
@@ -962,6 +957,7 @@ window.onpopstate = function(event) {
     popstate = true;
 };
 
+// For direct links to search results 
 if (preload !== undefined) {
     SearchModel.searchvalue(preload.query);
     SearchModel.currentpage(preload.page);
