@@ -471,6 +471,7 @@ var FilterOptionsComponent = {
         return {
             togglehistory: function() {
                 SearchModel.searchhistory(!SearchModel.searchhistory());
+                SearchModel.search();
             }
         }
     },
@@ -875,7 +876,7 @@ var SearchYearMonthFilterComponent = {
 
                 if (filtervalue.length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.yearMonth.toLowerCase().indexOf(filtervalue) !== -1; 
                     });
                 }
 
@@ -912,15 +913,15 @@ var SearchYearMonthFilterComponent = {
             return showmoreless;
         }
 
-        // if (!ctrl.hasfilter() && ctrl.trimlength() < args.ownerfilters.length) {
-        //     var morecount = args.ownerfilters.length - ctrl.trimlength();
+        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYearMonth().length) {
+            var morecount = args.ownerfilters.length - ctrl.trimlength();
 
-        //     showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
+            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
 
-        //     if (ctrl.showall()) {
-        //         showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
-        //     }
-        // }
+            if (ctrl.showall()) {
+                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
+            }
+        }
 
         return m('div', [
             m('h5', 'Year/Month'),
@@ -964,7 +965,7 @@ var SearchYearMonthDayFilterComponent = {
 
                 if (filtervalue.length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.yearMonthDay.toLowerCase().indexOf(filtervalue) !== -1; 
                     });
                 }
 
@@ -1001,15 +1002,15 @@ var SearchYearMonthDayFilterComponent = {
             return showmoreless;
         }
 
-        // if (!ctrl.hasfilter() && ctrl.trimlength() < args.ownerfilters.length) {
-        //     var morecount = args.ownerfilters.length - ctrl.trimlength();
+        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYearMonthDay().length) {
+            var morecount = SearchModel.repoFacetYearMonthDay().length - ctrl.trimlength();
 
-        //     showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
+            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
 
-        //     if (ctrl.showall()) {
-        //         showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
-        //     }
-        // }
+            if (ctrl.showall()) {
+                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
+            }
+        }
 
         return m('div', [
             m('h5', 'Year/Month/Day'),
@@ -1022,8 +1023,8 @@ var SearchYearMonthDayFilterComponent = {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
                         ctrl.clickenvent(res.yearMonthDay); 
-                        if (args.filterinstantly) {
-                            args.search();
+                        if (SearchModel.filterinstantly()) {
+                            SearchModel.search();
                         }
                     },
                     value: res.yearMonthDay,
