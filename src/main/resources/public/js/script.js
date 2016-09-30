@@ -41,8 +41,11 @@ var SearchModel = {
     languagefilters: m.prop([]),
     ownerfilters: m.prop([]),
 
+    repoFacetYear: m.prop([]),
     repoFacetYearMonth: m.prop([]),
     repoFacetYearMonthDay: m.prop([]),
+    repoFacetRevision: m.prop([]),
+    repoFacetDeleted: m.prop([]),
 
     clearfilters: function() {
         SearchModel.langfilters([]);
@@ -99,6 +102,11 @@ var SearchModel = {
                 if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
                     return false;
                 }
+            case 'year':
+                if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
+                    return false;
+                }
+                break;
             case 'yearmonth':
                 if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
                     return false;
@@ -193,7 +201,7 @@ var SearchModel = {
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
-            // console.log(queryurl);
+
             SearchModel.totalhits(e.totalHits);
             SearchModel.altquery(e.altQuery);
             SearchModel.query(e.query);
@@ -205,8 +213,12 @@ var SearchModel = {
             SearchModel.languagefilters(e.languageFacetResults);
             SearchModel.ownerfilters(e.repoOwnerResults);
 
+            // History fields
+            SearchModel.repoFacetYear(e.repoFacetYear);
             SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
             SearchModel.repoFacetYearMonthDay(e.repoFacetYearMonthDay);
+            SearchModel.repoFacetRevision(e.repoFacetRevision);
+            SearchModel.repoFacetDeleted(e.repoFacetDeleted);
 
             SearchModel.currentlyloading(false);
         });
@@ -269,6 +281,7 @@ var SearchComponent = {
                            search: SearchModel.search,
                            filterinstantly: SearchModel.filterinstantly
                         }),
+                        m.component(SearchYearFilterComponent),
                         m.component(SearchYearMonthFilterComponent),
                         m.component(SearchYearMonthDayFilterComponent),
                         m.component(FilterOptionsComponent, {
@@ -756,6 +769,95 @@ var SearchOwnersFilterComponent = {
     }
 }
 
+var SearchYearFilterComponent = {
+    controller: function() {
+
+        var showall = false;
+        var trimlength = 5;
+        var filtervalue = '';
+        
+        return {
+            trimlanguage: function (ownerfilters) {
+                var toreturn = ownerfilters;
+
+                if (filtervalue.length === 0 && !showall) {
+                    toreturn = _.first(toreturn, trimlength);
+                }
+
+                if (filtervalue.length !== 0) {
+                    toreturn = _.filter(toreturn, function (e) { 
+                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                    });
+                }
+
+                return toreturn;
+            },
+            toggleshowall: function() {
+                showall = !showall;
+            },
+            showall: function () {
+                return showall;
+            },
+            trimlength: function () {
+                return trimlength;
+            },
+            clickenvent: function(owner) {
+                SearchModel.togglefilter('owner', owner);
+            },
+            filtervalue: function(value) {
+                filtervalue = value;
+            },
+            hasfilter: function() {
+                return filtervalue.length !== 0;
+            },
+            getfiltervalue: function() {
+                return filtervalue;
+            }
+        }
+    },
+    view: function(ctrl, args) {
+
+        var showmoreless = m('div');
+
+        if (SearchModel.repoFacetYear() === undefined || SearchModel.repoFacetYear().length == 0) {
+            return showmoreless;
+        }
+
+        // if (!ctrl.hasfilter() && ctrl.trimlength() < args.ownerfilters.length) {
+        //     var morecount = args.ownerfilters.length - ctrl.trimlength();
+
+        //     showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
+
+        //     if (ctrl.showall()) {
+        //         showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
+        //     }
+        // }
+
+        return m('div', [
+            m('h5', 'Year'),
+            m('input.repo-filter', {
+                onkeyup: m.withAttr('value', ctrl.filtervalue),
+                placeholder: 'Filter Dates',
+                value: ctrl.getfiltervalue()
+            }),
+            _.map(ctrl.trimlanguage(SearchModel.repoFacetYear()), function(res, ind) {
+                return m.component(FilterCheckboxComponent, {
+                    onclick: function() { 
+                        ctrl.clickenvent(res.yearMonthDay); 
+                        if (args.filterinstantly) {
+                            args.search();
+                        }
+                    },
+                    value: res.year,
+                    count: res.count,
+                    checked: SearchModel.filterexists('year', res.year)
+                });
+            }),
+            showmoreless
+        ]);
+    }
+}
+
 var SearchYearMonthFilterComponent = {
     controller: function() {
 
@@ -910,7 +1012,7 @@ var SearchYearMonthDayFilterComponent = {
         // }
 
         return m('div', [
-            m('h5', 'Year/Month'),
+            m('h5', 'Year/Month/Day'),
             m('input.repo-filter', {
                 onkeyup: m.withAttr('value', ctrl.filtervalue),
                 placeholder: 'Filter Dates',
@@ -933,6 +1035,8 @@ var SearchYearMonthDayFilterComponent = {
         ]);
     }
 }
+
+
 
 var FilterCheckboxComponent = {
     view: function(ctrl, args) {
