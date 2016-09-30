@@ -11,7 +11,7 @@ package com.searchcode.app.dto;
 import com.searchcode.app.config.Values;
 
 public class CodeFacetYearMonth {
-    public String languageName = Values.EMPTYSTRING;
+    public String yearMonth = Values.EMPTYSTRING;
     public int count = 0;
     public boolean selected = false;
 
@@ -21,11 +21,11 @@ public class CodeFacetYearMonth {
     }
 
     public String getYearMonth() {
-        return languageName;
+        return yearMonth;
     }
 
     public void setYearMonth(String languageName) {
-        this.languageName = languageName;
+        this.yearMonth = languageName;
     }
 
     public int getCount() {
