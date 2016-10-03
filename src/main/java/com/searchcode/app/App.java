@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.2
+ * Version 1.3.3
  */
 
 package com.searchcode.app;
@@ -54,7 +54,7 @@ import static spark.Spark.*;
 public class App {
 
     private static final boolean ISCOMMUNITY = true;
-    private static final String VERSION = "1.3.2";
+    private static final String VERSION = "1.3.3";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
     public static Injector injector;
