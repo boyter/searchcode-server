@@ -42,6 +42,15 @@ public class SearchcodeLibTest extends TestCase {
         assertFalse(sl.isBinary(codeLines));
     }
 
+    public void testIsBinaryAllNonAscii() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("你");
+
+        assertTrue(sl.isBinary(codeLines));
+    }
+
     public void testIsBinaryFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
