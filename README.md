@@ -97,7 +97,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED YET this software version '1.3.2' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date 04 October 2019 this software version '1.3.2' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -105,7 +105,7 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXXXX XXXX - 1.3.2
+04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
  - Fix bug with binary file checking
 
@@ -220,7 +220,7 @@ XX XXXXXXXXX XXXX - 1.3.2
  - Additional configuration of properties file allowing reverting to pure HTML page if required
  - Various bug fixes
 
-8 March 2016 - 0.9.9
+08 March 2016 - 0.9.9
  - Inital release
 
 Join the chat at https://gitter.im/searchcode-server/Lobby
