@@ -33,6 +33,15 @@ public class SearchcodeLibTest extends TestCase {
         assertTrue(actual.indexOf(" 'shop_order_log' ") != -1);
     }
 
+    public void testIsBinary() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("a");
+
+        assertFalse(sl.isBinary(codeLines));
+    }
+
     public void testIsBinaryFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
@@ -70,9 +79,9 @@ public class SearchcodeLibTest extends TestCase {
 
         String minified = "";
         for (int i=0; i < 95; i++) {
-            minified += "a";
+            minified += "你";
         }
-        minified += "你你你你你";
+        minified += "aaaaa";
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
@@ -84,10 +93,10 @@ public class SearchcodeLibTest extends TestCase {
         SearchcodeLib sl = new SearchcodeLib();
 
         String minified = "";
-        for (int i=0; i < 94; i++) {
-            minified += "a";
+        for (int i=0; i < 96; i++) {
+            minified += "你";
         }
-        minified += "你你你你你你";
+        minified += "aaaa";
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);

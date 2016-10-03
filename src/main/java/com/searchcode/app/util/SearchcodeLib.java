@@ -226,10 +226,18 @@ public class SearchcodeLib {
             }
         }
 
+        if (nonAsciiCount == 0) {
+            return false;
+        }
+
+        if (asciiCount == 0) {
+            return true;
+        }
+
         // If 95% of characters are not ascii then its probably binary
         double percent = asciiCount / (asciiCount + nonAsciiCount);
 
-        if (percent < 0.95) {
+        if (percent < 0.05) {
             return true;
         }
 
