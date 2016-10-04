@@ -15,9 +15,7 @@ import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.*;
@@ -31,14 +29,23 @@ public class LoggerWrapper {
 
     private Logger logger = null;
 
-    private EvictingQueue recentCache = null;
+    private EvictingQueue allCache = null;
+
+    private EvictingQueue infoRecentCache = null;
+
+    private EvictingQueue warningRecentCache = null;
+
+    private EvictingQueue severeRecentCache = null;
 
     public LoggerWrapper() {
-        String path = "";
+        String path = Values.EMPTYSTRING;
         try {
             path = (String) Properties.getProperties().getOrDefault("log_path", "./");
-            if (!(path.endsWith("/") || path.endsWith("\\")))
+
+            if (!(path.endsWith("/") || path.endsWith("\\"))) {
                 path = path + "/";
+            }
+
             path += "searchcode-server-%g.log";
             Handler handler = new FileHandler(path, 10 * 1024 * 1024, 1);
 
@@ -83,26 +90,50 @@ public class LoggerWrapper {
                     "//////////////////////////////////////////////////////////////////////\n");
         }
 
-        this.recentCache = EvictingQueue.create(1000);
+        this.allCache = EvictingQueue.create(1000);
+        this.infoRecentCache = EvictingQueue.create(1000);
+        this.warningRecentCache = EvictingQueue.create(1000);
+        this.severeRecentCache = EvictingQueue.create(1000);
     }
 
     public void info(String toLog) {
-        this.recentCache.add("INFO: " + new Date().toString() + ": " + toLog);
+        String message = "INFO: " + new Date().toString() + ": " + toLog;
+        this.allCache.add(message);
+        this.infoRecentCache.add(message);
         this.logger.info(toLog);
     }
 
     public void warning(String toLog) {
-        this.recentCache.add("WARNING: " + new Date().toString() + ": " + toLog);
+        String message = "WARNING: " + new Date().toString() + ": " + toLog;
+        this.allCache.add(message);
+        this.warningRecentCache.add(message);
         this.logger.warning(toLog);
     }
 
     public void severe(String toLog) {
-        this.recentCache.add("SEVERE: " + new Date().toString() + ": " + toLog);
+        String message = "SEVERE: " + new Date().toString() + ": " + toLog;
+        this.allCache.add(message);
+        this.severeRecentCache.add(message);
         this.logger.warning(toLog);
     }
 
-    public List<String> getLogs() {
-        List<String> values = new ArrayList(this.recentCache);
+    public List<String> getAllLogs() {
+        List<String> values = new ArrayList(this.allCache);
+        return Lists.reverse(values);
+    }
+
+    public List<String> getInfoLogs() {
+        List<String> values = new ArrayList(this.infoRecentCache);
+        return Lists.reverse(values);
+    }
+
+    public List<String> getWarningLogs() {
+        List<String> values = new ArrayList(this.warningRecentCache);
+        return Lists.reverse(values);
+    }
+
+    public List<String> getSevereLogs() {
+        List<String> values = new ArrayList(this.severeRecentCache);
         return Lists.reverse(values);
     }
 }
