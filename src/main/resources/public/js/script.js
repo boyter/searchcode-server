@@ -18,9 +18,14 @@ var SearchModel = {
     searchhistory: m.prop(false),
     searchresults: m.prop([]),
 
+    // Used for knowing which filters have been currently selected
     langfilters: m.prop([]),
     repositoryfilters: m.prop([]),
     ownfilters: m.prop([]),
+    yearfilters: m.prop([]),
+    yearmonthfilters: m.prop([]),
+    yearmonthdayfilters: m.prop([]),
+    deletedfilters: m.prop([]),
 
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
@@ -103,17 +108,22 @@ var SearchModel = {
                     return false;
                 }
             case 'year':
-                if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
+                if (_.indexOf(SearchModel.yearfilters(), name) === -1) {
                     return false;
                 }
                 break;
             case 'yearmonth':
-                if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
+                if (_.indexOf(SearchModel.yearmonthfilters(), name) === -1) {
                     return false;
                 }
                 break;
             case 'yearmonthday':
-                if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
+                if (_.indexOf(SearchModel.yearmonthdayfilters(), name) === -1) {
+                    return false;
+                }
+                break;
+            case 'deleted':
+                if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
                     return false;
                 }
                 break;
@@ -284,6 +294,7 @@ var SearchComponent = {
                         m.component(SearchYearFilterComponent),
                         m.component(SearchYearMonthFilterComponent),
                         m.component(SearchYearMonthDayFilterComponent),
+                        m.component(SearchDeletedComponent),
                         m.component(FilterOptionsComponent, {
                             filterinstantly: SearchModel.filterinstantly
                         })
@@ -787,7 +798,7 @@ var SearchYearFilterComponent = {
 
                 if (filtervalue.length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.year.toLowerCase().indexOf(filtervalue) !== -1; 
                     });
                 }
 
@@ -824,15 +835,15 @@ var SearchYearFilterComponent = {
             return showmoreless;
         }
 
-        // if (!ctrl.hasfilter() && ctrl.trimlength() < args.ownerfilters.length) {
-        //     var morecount = args.ownerfilters.length - ctrl.trimlength();
+        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYear.length) {
+            var morecount = args.ownerfilters.length - ctrl.trimlength();
 
-        //     showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
+            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
 
-        //     if (ctrl.showall()) {
-        //         showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
-        //     }
-        // }
+            if (ctrl.showall()) {
+                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
+            }
+        }
 
         return m('div', [
             m('h5', 'Year'),
@@ -1033,6 +1044,38 @@ var SearchYearMonthDayFilterComponent = {
                 });
             }),
             showmoreless
+        ]);
+    }
+}
+
+var SearchDeletedComponent = {
+    controller: function() {
+        return {
+            clickenvent: function(owner) {
+                SearchModel.togglefilter('deleted', owner);
+            }
+        }
+    },
+    view: function(ctrl, args) {
+        if (SearchModel.repoFacetDeleted() === undefined || SearchModel.repoFacetDeleted().length == 0) {
+            return m('div');
+        }
+
+        return m('div', [
+            m('h5', 'Added/Removed'),
+            _.map(SearchModel.repoFacetDeleted(), function(res, ind) {
+                return m.component(FilterCheckboxComponent, {
+                    onclick: function() { 
+                        ctrl.clickenvent(res.deleted); 
+                        if (SearchModel.filterinstantly()) {
+                            SearchModel.search();
+                        }
+                    },
+                    value: res.deleted,
+                    count: res.count,
+                    checked: SearchModel.filterexists('deleted', res.deleted)
+                });
+            })
         ]);
     }
 }
