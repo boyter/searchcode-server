@@ -106,7 +106,9 @@ Change Log
 ==========
 
 XX XXXXXXX XXXX - 1.3.3
- -
+ - Add log level selection to admin logs page
+ - Can now search across filenames and paths
+ - Slight performance improvements for indexing
 
 04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
