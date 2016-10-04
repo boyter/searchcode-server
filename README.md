@@ -105,7 +105,7 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXX XXXX - 1.3.2
+XX XXXXXXX XXXX - 1.3.3
  -
 
 04 October 2016 - 1.3.2
