@@ -882,7 +882,7 @@ public class App {
 
             Map<String, Object> map = new HashMap<>();
 
-            List<String> logs = Singleton.getLogger().getLogs();
+            List<String> logs = Singleton.getLogger().getAllLogs();
             map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
