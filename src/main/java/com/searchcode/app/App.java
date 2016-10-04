@@ -881,8 +881,30 @@ public class App {
             }
 
             Map<String, Object> map = new HashMap<>();
+            String level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
 
-            List<String> logs = Singleton.getLogger().getAllLogs();
+            if(request.queryParams().contains("level") && !request.queryParams("level").trim().equals("")) {
+                level = request.queryParams("level").trim().toUpperCase();
+            }
+
+            List<String> logs = new ArrayList<>();
+            switch(level) {
+                case "INFO":
+                    logs = Singleton.getLogger().getInfoLogs();
+                    break;
+                case "WARNING":
+                    logs = Singleton.getLogger().getWarningLogs();
+                    break;
+                case "ALL":
+                    logs = Singleton.getLogger().getAllLogs();
+                    break;
+                case "SEVERE":
+                default:
+                    logs = Singleton.getLogger().getSevereLogs();
+                    break;
+            }
+
+            map.put("level", level);
             map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);

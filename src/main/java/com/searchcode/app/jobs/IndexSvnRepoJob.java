@@ -139,7 +139,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);
             String line;
-            StringBuffer bf = new StringBuffer();
+            StringBuilder bf = new StringBuilder();
 
 
             while ((line = br.readLine()) != null) {

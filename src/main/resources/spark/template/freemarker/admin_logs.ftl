@@ -14,8 +14,11 @@
 <br>
 
 <div class="row">
-<p>This page will display the last 1,000 log entries for all logging levels.</p>
-
+<p>This page will display the last 1,000 log entries for different logging levels, defaulting to the value in your properties file.</p>
+<p>
+<a href="?level=all">All</a> | <a href="?level=info">Info</a> | <a href="?level=warning">Warning</a> | <a href="?level=severe">Severe</a>
+</p>
+<p>Displaying <strong>${level}</strong> logs</p>
 <#list logs>
     <#items as result>
           <pre>${result}</pre>
