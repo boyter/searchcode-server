@@ -240,6 +240,7 @@ var SearchComponent = {
     view: function(ctrl) {
         return m("div", [
                 m.component(SearchOptionsComponent),
+                m.component(SearchChartComponent),
                 m.component(SearchCountComponent, { 
                     totalhits: SearchModel.totalhits(), 
                     query: SearchModel.query(),
@@ -247,10 +248,7 @@ var SearchComponent = {
                     languagefilters: SearchModel.activelangfilters(),
                     ownerfilters: SearchModel.activeownfilters()
                 }),
-                m.component(SearchChartComponent, {
-                    languagefilters: SearchModel.langfilters(),
-                    repofilters: SearchModel.repofilters()
-                }),
+                
                 m.component(SearchLoadingComponent, {
                     currentlyloading: SearchModel.currentlyloading()
                 }),
@@ -1203,9 +1201,11 @@ var SearchChartComponent = {
         return {}
     },
     view: function(ctrl, args) {
-        return m('div.row.search-chart',
-            m('canvas', {id: 'search-chart'})
-        );
+        return m('div.row.search-chart', [
+            _.map(SearchModel.repoFacetYearMonthDay(), function(res) {
+                m('div', 'test' + res.count);
+            })
+        ]);
     }
 }
 
