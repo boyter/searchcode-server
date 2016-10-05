@@ -283,7 +283,7 @@ public abstract class IndexBaseRepoJob implements Job {
             try {
                 CodeIndexer.deleteByFileLocationFilename(deletedFile);
             } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
         }
     }
@@ -390,7 +390,7 @@ public abstract class IndexBaseRepoJob implements Job {
                     try {
                         CodeIndexer.deleteByFileLocationFilename(file);
                     } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }
                 }
             }
