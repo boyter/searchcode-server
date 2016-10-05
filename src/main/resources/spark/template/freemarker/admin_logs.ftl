@@ -19,11 +19,9 @@
 <a href="?level=all">All</a> | <a href="?level=info">Info</a> | <a href="?level=warning">Warning</a> | <a href="?level=severe">Severe</a>
 </p>
 <p>Displaying <strong>${level}</strong> logs</p>
-<#list logs>
-    <#items as result>
-          <pre>${result}</pre>
-    </#items>
-</#list>
+
+<textarea style="width: 100%; height: 100%; font-family: monospace;" rows="20" disabled="true"><#list logs><#items as result>${result}
+</#items></#list></textarea>
 </div>
 
 </@layout.masterTemplate>
