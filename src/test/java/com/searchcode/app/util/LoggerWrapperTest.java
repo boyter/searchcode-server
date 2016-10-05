@@ -37,4 +37,22 @@ public class LoggerWrapperTest extends TestCase {
         logger.warning("test");
         assertThat(logger.getAllLogs()).hasSize(3);
     }
+
+    public void testLoggerWrapperStress() {
+        LoggerWrapper logger = new LoggerWrapper();
+
+        for (int i = 0; i < 40000; i++) {
+            logger.getAllLogs();
+            logger.getInfoLogs();
+            logger.getSevereLogs();
+            logger.getWarningLogs();
+            logger.severe("test");
+            logger.info("test");
+            logger.warning("test");
+
+            if (i % 100 == 0) {
+                logger = new LoggerWrapper();
+            }
+        }
+    }
 }

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class HelpersTest extends TestCase {
 
     public void testOtherThing() throws FileNotFoundException {
@@ -43,5 +45,10 @@ public class HelpersTest extends TestCase {
             }
             previous = entry.getValue();
         }
+    }
+
+    public void testReadFileLines() throws FileNotFoundException {
+        List<String> strings = Helpers.readFileLines("/Users/boyter/test4/config.ini.example", 10000);
+        assertThat(strings).isNotEmpty();
     }
 }
