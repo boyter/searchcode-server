@@ -181,7 +181,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         } catch (IOException | StringIndexOutOfBoundsException ex) {
             Singleton.getLogger().info("getBlameInfoExternal repoloc: " + repoLocations + "/" + repoName);
             Singleton.getLogger().info("getBlameInfoExternal fileName: " + fileName);
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getBlameInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
 
         return codeOwners;
@@ -267,7 +267,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 }
                 catch(IndexOutOfBoundsException ex) {
                     // Ignore this as its not really a problem or is it?
-                    Singleton.getLogger().info("IndexOutOfBoundsException when trying to get blame for " + repoName + fileName);
+                    Singleton.getLogger().info("IndexOutOfBoundsException when trying to get blame for " + repoName + " " + fileName);
                 }
 
                 codeOwners = new ArrayList<>(owners.values());
@@ -348,7 +348,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException | GitAPIException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
@@ -379,7 +379,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);

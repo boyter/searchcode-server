@@ -167,7 +167,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
 
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
 
         return owner;
@@ -212,7 +212,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
         } catch (IOException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
@@ -273,7 +273,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
         }
         catch(IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
         }
 
         return new RepositoryChanged(true, changedFiles, deletedFiles);
@@ -316,7 +316,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
                 }
             }
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
         }
 
         return currentRevision;
@@ -360,7 +360,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             successful = true;
 
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);
