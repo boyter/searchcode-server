@@ -11,11 +11,14 @@
 package com.searchcode.app.util;
 
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import com.glaforge.i18n.io.CharsetToolkit;
+import com.sun.tools.javac.util.*;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -79,6 +82,30 @@ public class Helpers {
         }
 
         return lines;
+    }
+
+    public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
+        BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream(filePath), guessCharset(new File(filePath))));
+
+        List<String> fileLines = new ArrayList<>();
+        String line = "";
+
+        int lineCount = 0;
+        while ((line = reader.readLine()) != null) {
+            lineCount++;
+
+            fileLines.add(line);
+
+            if (lineCount == maxFileLineDepth) {
+                return fileLines;
+            }
+        }
+
+        return fileLines;
+    }
+
+    public static Charset guessCharset(File file) throws IOException {
+        return CharsetToolkit.guessEncoding(file, 4096, StandardCharsets.UTF_8);
     }
 
     /**

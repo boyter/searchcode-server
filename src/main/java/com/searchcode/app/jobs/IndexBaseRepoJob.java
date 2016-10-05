@@ -230,7 +230,7 @@ public abstract class IndexBaseRepoJob implements Job {
             List<String> codeLines = null;
 
             try {
-                codeLines = Helpers.readFileLines(changedFile, this.MAXFILELINEDEPTH);
+                codeLines = Helpers.readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 break;
@@ -332,7 +332,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
                     List<String> codeLines;
                     try {
-                        codeLines = Helpers.readFileLines(fileToString, MAXFILELINEDEPTH);
+                        codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                     } catch (IOException ex) {
                         return FileVisitResult.CONTINUE;
                     }
@@ -342,7 +342,7 @@ public abstract class IndexBaseRepoJob implements Job {
                         return FileVisitResult.CONTINUE;
                     }
 
-                    if (scl.isBinary(codeLines)) {
+                    if (scl.isBinary(codeLines, fileName)) {
                         Singleton.getLogger().info("Appears to be binary will not index  " + fileToString);
                         return FileVisitResult.CONTINUE;
                     }

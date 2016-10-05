@@ -205,12 +205,12 @@ public class SearchcodeLib {
      * Determine if a List<String> which is used to represent a code file contains a code file that is
      * suspected to be ascii or non ascii. This is for the purposes of excluding it from the index.
      */
-    public boolean isBinary(List<String> codeLines) {
+    public boolean isBinary(List<String> codeLines, String fileName) {
         if (codeLines.isEmpty()) {
             return true;
         }
 
-        int lines = codeLines.size() < 100 ? codeLines.size() : 100;
+        int lines = codeLines.size() < 10000 ? codeLines.size() : 10000;
         double asciiCount = 0;
         double nonAsciiCount = 0;
 
@@ -234,10 +234,10 @@ public class SearchcodeLib {
             return true;
         }
 
-        // If 95% of characters are not ascii then its probably binary
+        // If only 30% of characters are ascii then its probably binary
         double percent = asciiCount / (asciiCount + nonAsciiCount);
 
-        if (percent < 0.05) {
+        if (percent < 0.30) {
             return true;
         }
 

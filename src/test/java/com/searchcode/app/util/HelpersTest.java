@@ -3,6 +3,7 @@ package com.searchcode.app.util;
 import junit.framework.TestCase;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +50,11 @@ public class HelpersTest extends TestCase {
 
     public void testReadFileLines() throws FileNotFoundException {
         List<String> strings = Helpers.readFileLines("/Users/boyter/test4/config.ini.example", 10000);
+        assertThat(strings).isNotEmpty();
+    }
+
+    public void testReadFileLinesGuessEncoding() throws IOException {
+        List<String> strings = Helpers.readFileLinesGuessEncoding("/Users/boyter/test4/config.ini.example", 10000);
         assertThat(strings).isNotEmpty();
     }
 }
