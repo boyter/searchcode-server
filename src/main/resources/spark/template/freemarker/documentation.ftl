@@ -577,6 +577,16 @@ print data['sucessful'], data['message']</textarea>
               <dd>Boolean value true or false. Will SVN repositories added be crawled and indexed. If you set this value be sure to set svn_binary_path as well. By default set to false.</dd>
               <dt>svn_binary_path</dt>
               <dd>If svn_enabled is set to true you need to ensure that this equals the path to your svn executable for your system. By default set to /usr/bin/svn</dd>
+              <dt>owasp_database_location</dt>
+              <dd>The location of the JSON owasp database. By default set to ./include/owasp/database.json</dd>
+              <dt>highlight_lines_limit</dt>
+              <dd>The maximum number of lines that will be highlighted by the JavaScript highlighter. Defaults to 3000.</dd>
+              <dt>binary_guess</dt>
+              <dd>Should searchcode attempt to guess if a file is binary and if so exclude it from the index. Defaults to true.</dd>
+              <dt>binary_extension_white_list</dt>
+              <dd>A white list of file extensions that if match will always be added to the index. The white list has a higher priority then the blacklist and so if an extension appears in both it will be indexed.</dd>
+              <dt>binary_extension_black_list</dt>
+              <dd>A black list of file extensions that if match will never be added to the index. The black list has a lower priority then the whitelist and so if an extension appears in both it will be indexed.</dd>
             </dl>
 
         </p>

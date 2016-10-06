@@ -86,7 +86,8 @@ public class SearchcodeLibTest extends TestCase {
 
         for(SearchcodeLib.Classifier classifier: sl.classifier) {
             for(String extension: classifier.extensions) {
-                assertThat(sl.isBinary(codeLines, "myfile." + extension)).isFalse();
+                boolean isBinary = sl.isBinary(codeLines, "myfile." + extension);
+                assertThat(isBinary).isFalse();
             }
         }
     }

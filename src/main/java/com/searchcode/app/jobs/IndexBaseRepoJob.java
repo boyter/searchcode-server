@@ -241,6 +241,11 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
+            if (codeLines.isEmpty()) {
+                Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
+                break;
+            }
+
             if (scl.isBinary(codeLines, fileName)) {
                 Singleton.getLogger().info("Appears to be binary will not index  " + changedFile);
                 break;
@@ -338,12 +343,17 @@ public abstract class IndexBaseRepoJob implements Job {
                     }
 
                     if (scl.isMinified(codeLines)) {
-                        Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
+                        Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    if (codeLines.isEmpty()) {
+                        Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
                         return FileVisitResult.CONTINUE;
                     }
 
                     if (scl.isBinary(codeLines, fileName)) {
-                        Singleton.getLogger().info("Appears to be binary will not index  " + fileToString);
+                        Singleton.getLogger().info("Appears to be binary will not index " + fileToString);
                         return FileVisitResult.CONTINUE;
                     }
 

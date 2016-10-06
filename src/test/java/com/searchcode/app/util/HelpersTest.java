@@ -47,14 +47,4 @@ public class HelpersTest extends TestCase {
             previous = entry.getValue();
         }
     }
-
-    public void testReadFileLines() throws FileNotFoundException {
-        List<String> strings = Helpers.readFileLines("/Users/boyter/test4/config.ini.example", 10000);
-        assertThat(strings).isNotEmpty();
-    }
-
-    public void testReadFileLinesGuessEncoding() throws IOException {
-        List<String> strings = Helpers.readFileLinesGuessEncoding("/Users/boyter/test4/config.ini.example", 10000);
-        assertThat(strings).isNotEmpty();
-    }
 }
