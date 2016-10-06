@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class SearchcodeLibTest extends TestCase {
 
     public void testCleanPipeline() {
@@ -39,7 +41,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("a");
 
-        assertFalse(sl.isBinary(codeLines));
+        assertFalse(sl.isBinary(codeLines, ""));
     }
 
     public void testIsBinaryAllNonAscii() {
@@ -48,7 +50,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你");
 
-        assertTrue(sl.isBinary(codeLines));
+        assertTrue(sl.isBinary(codeLines, ""));
     }
 
     public void testIsBinaryFalse() {
@@ -61,7 +63,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
 
-        assertFalse(sl.isBinary(codeLines));
+        assertFalse(sl.isBinary(codeLines, ""));
     }
 
     public void testIsBinaryTrue() {
@@ -74,13 +76,45 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
 
-        assertTrue(sl.isBinary(codeLines));
+        assertTrue(sl.isBinary(codeLines, ""));
+    }
+
+    public void testIsBinaryWhiteListedExtension() {
+        SearchcodeLib sl = new SearchcodeLib();
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
+
+        for(SearchcodeLib.Classifier classifier: sl.classifier) {
+            for(String extension: classifier.extensions) {
+                assertThat(sl.isBinary(codeLines, "myfile." + extension)).isFalse();
+            }
+        }
+    }
+
+    public void testIsBinaryWhiteListedPropertyExtension() {
+        // Assumes that java is in the properties whitelist
+        SearchcodeLib sl = new SearchcodeLib();
+        sl.classifier = new ArrayList<>();
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
+
+        assertThat(sl.isBinary(codeLines, "myfile.JAVA")).isFalse();
+    }
+
+    public void testIsBinaryBlackListedPropertyExtension() {
+        // Assumes that java is in the properties whitelist
+        SearchcodeLib sl = new SearchcodeLib();
+        sl.classifier = new ArrayList<>();
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("this file is not binary");
+
+        assertThat(sl.isBinary(codeLines, "myfile.PNG")).isTrue();
     }
 
     public void testIsBinaryEmptyTrue() {
         SearchcodeLib sl = new SearchcodeLib();
         ArrayList<String> codeLines = new ArrayList<>();
-        assertTrue(sl.isBinary(codeLines));
+        assertTrue(sl.isBinary(codeLines, ""));
     }
 
     public void testIsBinaryEdge1() {
@@ -95,7 +129,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
 
-        assertFalse(sl.isBinary(codeLines));
+        assertThat(sl.isBinary(codeLines, "")).isTrue();
     }
 
     public void testIsBinaryEdge2() {
@@ -110,7 +144,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
 
-        assertTrue(sl.isBinary(codeLines));
+        assertTrue(sl.isBinary(codeLines, ""));
     }
 
     public void testIsBinaryEdge3() {
@@ -126,7 +160,7 @@ public class SearchcodeLibTest extends TestCase {
             codeLines.add(minified);
         }
 
-        assertFalse(sl.isBinary(codeLines));
+        assertFalse(sl.isBinary(codeLines, ""));
     }
 
     public void testIsMinifiedTrue() {

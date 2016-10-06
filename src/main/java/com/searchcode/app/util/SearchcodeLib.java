@@ -33,8 +33,10 @@ public class SearchcodeLib {
     private int MAXSPLITLENGTH = 100000;
     private Pattern MULTIPLEUPPERCASE = Pattern.compile("[A-Z]{2,}");
     private int MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
+    private String[] WHITELIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
+    private String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
 
-    public SearchcodeLib(){}
+    public SearchcodeLib() {}
 
     public SearchcodeLib(Data data) {
         this.MINIFIEDLENGTH = Integer.parseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH));
@@ -208,6 +210,30 @@ public class SearchcodeLib {
     public boolean isBinary(List<String> codeLines, String fileName) {
         if (codeLines.isEmpty()) {
             return true;
+        }
+
+        String lowerFileName = fileName.toLowerCase();
+        // Check against user set whitelist
+        for (String extention: this.WHITELIST) {
+            if (lowerFileName.endsWith("." + extention)) {
+                return false;
+            }
+        }
+
+        // Check against user set blacklist
+        for (String extention: this.BLACKLIST) {
+            if (lowerFileName.endsWith("." + extention)) {
+                return true;
+            }
+        }
+
+        // Check if whitelisted extention IE what we know about
+        for (Classifier classifier: this.classifier) {
+            for (String extention: classifier.extensions) {
+                if (lowerFileName.endsWith("." + extention)) {
+                    return false;
+                }
+            }
         }
 
         int lines = codeLines.size() < 10000 ? codeLines.size() : 10000;
@@ -633,7 +659,7 @@ public class SearchcodeLib {
     /**
      * Internal class used only for holding the various file types that can be identified
      */
-    class Classifier {
+    public class Classifier {
         public String language = null;
         public String[] extensions = {};
         public String[] keywords = {};

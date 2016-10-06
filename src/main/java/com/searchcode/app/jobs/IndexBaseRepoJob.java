@@ -241,7 +241,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
-            if (scl.isBinary(codeLines)) {
+            if (scl.isBinary(codeLines, fileName)) {
                 Singleton.getLogger().info("Appears to be binary will not index  " + changedFile);
                 break;
             }

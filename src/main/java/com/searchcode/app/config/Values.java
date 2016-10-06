@@ -60,6 +60,10 @@ public class Values {
     public static String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
     public static String HIGHLIGHT_LINE_LIMIT = "highlight_lines_limit";
     public static String DEFAULT_HIGHLIGHT_LINE_LIMIT = "3000";
+    public static String BINARY_WHITE_LIST = "binary_white_list";
+    public static String DEFAULT_BINARY_WHITE_LIST = "";
+    public static String BINARY_BLACK_LIST = "binary_black_list";
+    public static String DEFAULT_BINARY_BLACK_LIST = "";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";
