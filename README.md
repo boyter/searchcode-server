@@ -110,6 +110,8 @@ XX XXXXXXX XXXX - 1.3.3
  - Can now search across filenames and paths
  - Slight performance improvements for indexing
  - Better error reporting for repository errors
+ - Better guessing of file encoding type
+ - White/Black list of file extensions
 
 04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
