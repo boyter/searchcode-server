@@ -12,13 +12,11 @@ package com.searchcode.app.util;
 
 
 import com.glaforge.i18n.io.CharsetToolkit;
-import com.sun.tools.javac.util.*;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.List;
 import java.util.stream.Stream;
 
 /**
