@@ -230,7 +230,7 @@ public class CodeMatcherTest extends TestCase {
                 matchTerms.add(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1) + "*");
             }
 
-            StringBuffer bf = new StringBuffer();
+            StringBuilder bf = new StringBuilder();
             for(int j=0; j < rand.nextInt(1000) + 1; j++) {
                 bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1) + " ");
             }

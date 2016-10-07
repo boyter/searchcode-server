@@ -107,6 +107,13 @@
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
+        <!-- Charset guesser -->
+        <dependency>
+            <groupId>org.codehaus.guessencoding</groupId>
+            <artifactId>guessencoding</artifactId>
+            <version>1.4</version>
+            <type>jar</type>
+        </dependency>
         <!-- LRU Cache https://github.com/jhalterman/expiringmap -->
         <dependency>
             <groupId>net.jodah</groupId>

@@ -727,6 +727,8 @@ public class App {
             map.put(Values.MAXFILELINEDEPTH, Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH));
             map.put(Values.OWASPDATABASELOCATION, Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION));
             map.put(Values.HIGHLIGHT_LINE_LIMIT, Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
+            map.put(Values.BINARY_WHITE_LIST, Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST));
+            map.put(Values.BINARY_BLACK_LIST, Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST));
 
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
@@ -887,8 +889,30 @@ public class App {
             }
 
             Map<String, Object> map = new HashMap<>();
+            String level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
 
-            List<String> logs = Singleton.getLogger().getLogs();
+            if(request.queryParams().contains("level") && !request.queryParams("level").trim().equals("")) {
+                level = request.queryParams("level").trim().toUpperCase();
+            }
+
+            List<String> logs = new ArrayList<>();
+            switch(level) {
+                case "INFO":
+                    logs = Singleton.getLogger().getInfoLogs();
+                    break;
+                case "WARNING":
+                    logs = Singleton.getLogger().getWarningLogs();
+                    break;
+                case "ALL":
+                    logs = Singleton.getLogger().getAllLogs();
+                    break;
+                case "SEVERE":
+                default:
+                    logs = Singleton.getLogger().getSevereLogs();
+                    break;
+            }
+
+            map.put("level", level);
             map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);

@@ -30,6 +30,7 @@ import datetime
 
 VERSION = "1.4.0"
 
+
 def run_proxy():
     local('python ./assets/javascript_proxy/webserver.py')
 
@@ -131,6 +132,7 @@ def _build_package():
     local('chmod +x ./searchcode-server.sh')
     local('cp ./searchcode-server.sh ./release/')
     local('cp ./searchcode-server.bat ./release/')
+    local('mkdir ./release/logs')
 
 def _python_sed(fileloc, replacements):
     import fileinput

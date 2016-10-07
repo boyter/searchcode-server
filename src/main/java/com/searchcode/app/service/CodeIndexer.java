@@ -115,7 +115,6 @@ public class CodeIndexer {
      * index.
      * TODO investigate how Lucene deals with multiple writes
      * TODO make the 1000 limit configurable
-     * TODO there appears to be something in here causing some serious slowdowns
      */
     public static synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
@@ -163,14 +162,19 @@ public class CodeIndexer {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
 
-                String indexContents = Values.EMPTYSTRING;
-
-                indexContents += scl.splitKeywords(codeIndexDocument.getContents());
-                indexContents += scl.codeCleanPipeline(codeIndexDocument.getContents());
-                indexContents += scl.findInterestingKeywords(codeIndexDocument.getContents());
                 scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
-                indexContents = indexContents.toLowerCase();
+                StringBuilder indexContents = new StringBuilder();
+
+                indexContents.append(codeIndexDocument.getFileName());
+                indexContents.append(" ");
+                indexContents.append(codeIndexDocument.getFileLocationFilename());
+                indexContents.append(" ");
+                indexContents.append(codeIndexDocument.getFileLocation());
+                indexContents.append(scl.splitKeywords(codeIndexDocument.getContents()));
+                indexContents.append(scl.codeCleanPipeline(codeIndexDocument.getContents()));
+                indexContents.append(scl.findInterestingKeywords(codeIndexDocument.getContents()));
+                String toIndex = indexContents.toString().toLowerCase();
 
                 doc.add(new TextField(Values.REPONAME, codeIndexDocument.getRepoName(), Field.Store.YES));
                 doc.add(new TextField(Values.FILENAME, codeIndexDocument.getFileName(), Field.Store.YES));
@@ -179,7 +183,7 @@ public class CodeIndexer {
                 doc.add(new TextField(Values.MD5HASH, codeIndexDocument.getMd5hash(), Field.Store.YES));
                 doc.add(new TextField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName(), Field.Store.YES));
                 doc.add(new IntField(Values.CODELINES, codeIndexDocument.getCodeLines(), Field.Store.YES));
-                doc.add(new TextField(Values.CONTENTS, indexContents, Field.Store.NO));
+                doc.add(new TextField(Values.CONTENTS, toIndex, Field.Store.NO));
                 doc.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
                 doc.add(new TextField(Values.CODEID, codeIndexDocument.getHash(), Field.Store.YES));
@@ -200,9 +204,13 @@ public class CodeIndexer {
             }
         }
         finally {
+            try {
+                writer.close();
+            }
+            finally {
+                taxoWriter.close();
+            }
             Singleton.getLogger().info("Closing writers");
-            writer.close();
-            taxoWriter.close();
         }
     }
 
@@ -330,7 +338,7 @@ public class CodeIndexer {
      * element and passes it in.
      */
     public static synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
-        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(codeIndexDocument);
         indexDocuments(queue);
         queue = null;

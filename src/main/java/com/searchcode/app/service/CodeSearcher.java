@@ -133,8 +133,7 @@ public class CodeSearcher {
 
                 List<String> code = new ArrayList<>();
                 try {
-                    code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
-                    code = Helpers.readFileLines(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 } catch (Exception ex) {
                     Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
                 }
@@ -190,8 +189,7 @@ public class CodeSearcher {
 
                 List<String> code = new ArrayList<>();
                 try {
-                    code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
-                    code = Helpers.readFileLines(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 } catch (Exception ex) {
                     Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
                 }
@@ -235,7 +233,7 @@ public class CodeSearcher {
 
             List<String> code = new ArrayList<>();
             try {
-                code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
+                code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
             }
             catch(Exception ex) {
                 LOGGER.warning("Indexed file appears to binary: " + filepath);
@@ -325,7 +323,7 @@ public class CodeSearcher {
                 try {
                     // This should probably be limited by however deep we are meant to look into the file
                     // or the value we use here whichever is less
-                    code = Helpers.readFileLines(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch(Exception ex) {
                     LOGGER.warning("Indexed file appears to binary or missing: " + filepath);

@@ -9,6 +9,7 @@
     <li role="presentation"><a href="/admin/api/">API</a></li>
     <li role="presentation"><a href="/admin/settings/">Settings</a></li>
     <li role="presentation"><a href="/admin/logs/">Logs</a></li>
+    <li role="presentation"><a href="/logout/">Logout</a></li>
 </ul>
 </div>
 <br>
@@ -148,16 +149,24 @@
     <td>${svn_enabled}</td>
     </tr>
     <tr>
-    <td><b>svn_binary_path</b></td>
-    <td>${svn_binary_path}</td>
+        <td><b>svn_binary_path</b></td>
+        <td>${svn_binary_path}</td>
     </tr>
     <tr>
-    <td><b>owasp_database_location</b></td>
-    <td>${owasp_database_location}</td>
+        <td><b>owasp_database_location</b></td>
+        <td>${owasp_database_location}</td>
     </tr>
     <tr>
         <td><b>highlight_lines_limit</b></td>
         <td>${highlight_lines_limit}</td>
+    </tr>
+    <tr>
+        <td><b>binary_extension_white_list</b></td>
+        <td>${binary_extension_white_list}</td>
+    </tr>
+    <tr>
+        <td><b>binary_extension_black_list</b></td>
+        <td>${binary_extension_black_list}</td>
     </tr>
 </table>
     
@@ -166,7 +175,12 @@
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 
-
+<style>
+td {
+    word-break: break-all;
+    vertical-align: top;
+}
+</style>
 
 <script>
 $(document).ready(function(){

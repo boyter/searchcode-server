@@ -230,7 +230,7 @@ public abstract class IndexBaseRepoJob implements Job {
             List<String> codeLines = null;
 
             try {
-                codeLines = Helpers.readFileLines(changedFile, this.MAXFILELINEDEPTH);
+                codeLines = Helpers.readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 break;
@@ -241,7 +241,12 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
-            if (scl.isBinary(codeLines)) {
+            if (codeLines.isEmpty()) {
+                Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
+                break;
+            }
+
+            if (scl.isBinary(codeLines, fileName)) {
                 Singleton.getLogger().info("Appears to be binary will not index  " + changedFile);
                 break;
             }
@@ -283,7 +288,7 @@ public abstract class IndexBaseRepoJob implements Job {
             try {
                 CodeIndexer.deleteByFileLocationFilename(deletedFile);
             } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
         }
     }
@@ -332,18 +337,23 @@ public abstract class IndexBaseRepoJob implements Job {
 
                     List<String> codeLines;
                     try {
-                        codeLines = Helpers.readFileLines(fileToString, MAXFILELINEDEPTH);
+                        codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                     } catch (IOException ex) {
                         return FileVisitResult.CONTINUE;
                     }
 
                     if (scl.isMinified(codeLines)) {
-                        Singleton.getLogger().info("Appears to be minified will not index  " + fileToString);
+                        Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
                         return FileVisitResult.CONTINUE;
                     }
 
-                    if (scl.isBinary(codeLines)) {
-                        Singleton.getLogger().info("Appears to be binary will not index  " + fileToString);
+                    if (codeLines.isEmpty()) {
+                        Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    if (scl.isBinary(codeLines, fileName)) {
+                        Singleton.getLogger().info("Appears to be binary will not index " + fileToString);
                         return FileVisitResult.CONTINUE;
                     }
 
@@ -390,7 +400,7 @@ public abstract class IndexBaseRepoJob implements Job {
                     try {
                         CodeIndexer.deleteByFileLocationFilename(file);
                     } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }
                 }
             }

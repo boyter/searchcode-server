@@ -84,6 +84,7 @@ To upgrade your current instance of searchcode perform the following steps.
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
     * Copy the following files searchcode-1.4.0.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
 
@@ -105,11 +106,22 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXXXX XXXX - 1.4.0
+XX XXXXXXX XXXX - 1.4.0
  - Can index historical data for git repositories
 
-XX XXXXXXXXX XXXX - 1.3.2
+XX XXXXXXX XXXX - 1.3.3
+ - Add log level selection to admin logs page
+ - Can now search across filenames and paths
+ - Slight performance improvements for indexing
+ - Better error reporting for repository errors
+ - Better guessing of file encoding type
+ - White/Black list of file extensions
+ - Fix bug where OWASP results not escaped
+ - Add logout button to admin sections
+
+04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
+ - Fix bug with binary file checking
 
 27 September 2016 - 1.3.1
  - Fix potential performance issue in spelling corrector with long strings
@@ -222,7 +234,7 @@ XX XXXXXXXXX XXXX - 1.3.2
  - Additional configuration of properties file allowing reverting to pure HTML page if required
  - Various bug fixes
 
-8 March 2016 - 0.9.9
+08 March 2016 - 0.9.9
  - Inital release
 
 Join the chat at https://gitter.im/searchcode-server/Lobby
