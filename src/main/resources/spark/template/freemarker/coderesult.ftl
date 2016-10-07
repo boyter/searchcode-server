@@ -57,7 +57,7 @@
                     <#list owaspResults>
                         <dl class="dl-horizontal">
                         <#items as result>
-                              <dt>${result.name}</dt>
+                              <dt>${result.name?html}</dt>
                               <dd>
                                 ${result.desc}
                                 <#list result.matchingLines>

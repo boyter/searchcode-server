@@ -53,7 +53,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    private static final boolean ISCOMMUNITY = true;
+    private static final boolean ISCOMMUNITY = false;
     private static final String VERSION = "1.3.3";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
