@@ -113,6 +113,7 @@ XX XXXXXXX XXXX - 1.3.3
  - Better guessing of file encoding type
  - White/Black list of file extensions
  - Fix bug where OWASP results not escaped
+ - Add logout button to admin sections
 
 04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
