@@ -231,6 +231,50 @@ var SearchModel = {
             SearchModel.repoFacetDeleted(e.repoFacetDeleted);
 
             SearchModel.currentlyloading(false);
+        }).then( function(e) {
+            // Render the chart
+            var ctx = document.getElementById("timeChart");
+
+
+            var facet = SearchModel.repoFacetYearMonthDay();
+
+            var data = {
+                labels: _.map(facet, function(e) { return e.yearMonthDay; } ),
+                datasets: [
+                    {
+                        label: "My First dataset",
+                        fill: true,
+                        lineTension: 0.1,
+                        backgroundColor: "rgba(75,192,192,0.4)",
+                        borderColor: "rgba(75,192,192,1)",
+                        borderCapStyle: 'butt',
+                        borderDash: [],
+                        borderDashOffset: 0.0,
+                        borderJoinStyle: 'miter',
+                        pointBorderColor: "rgba(75,192,192,1)",
+                        pointBackgroundColor: "#fff",
+                        pointBorderWidth: 1,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                        pointHoverBorderColor: "rgba(220,220,220,1)",
+                        pointHoverBorderWidth: 2,
+                        pointRadius: 1,
+                        pointHitRadius: 10,
+                        data: _.map(facet, function(e) { return e.count; } ),
+                        spanGaps: false,
+                    }
+                ]
+            };
+
+            var myLineChart = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    legend: {
+                        display: false
+                     }
+                }
+            });
         });
     }
 };
@@ -1201,11 +1245,15 @@ var SearchChartComponent = {
         return {}
     },
     view: function(ctrl, args) {
-        return m('div.row.search-chart', [
-            _.map(SearchModel.repoFacetYearMonthDay(), function(res) {
-                m('div', 'test' + res.count);
-            })
-        ]);
+        // return m('div.row.search-chart', [
+        //     _.map(SearchModel.repoFacetYearMonthDay(), function(res) {
+        //         return m('span', res.yearMonthDay + ' ' + res.count);
+        //     })
+        // ]);
+
+        return m('div.row.search-chart', 
+            m('canvas', {id: 'timeChart', width: '500', height: '50'})
+        );  
     }
 }
 
