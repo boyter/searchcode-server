@@ -52,6 +52,8 @@ var SearchModel = {
     repoFacetRevision: m.prop([]),
     repoFacetDeleted: m.prop([]),
 
+    chart: m.prop(undefined),
+
     clearfilters: function() {
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
@@ -232,17 +234,32 @@ var SearchModel = {
 
             SearchModel.currentlyloading(false);
         }).then( function(e) {
-            // Render the chart
+            
+            if (SearchModel.chart() !== undefined) {
+                SearchModel.chart().destroy();
+            }
+
             var ctx = document.getElementById("timeChart");
 
 
+            //var facet = SearchModel.repoFacetYearMonthDay();
             var facet = SearchModel.repoFacetYearMonthDay();
 
+            var facets = {};
+            var labels = [];
+            _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
+                facets[e.yearMonthDay] = e.count; 
+                labels.push(e.yearMonthDay);
+            });
+
+            labels.sort();
+
+
             var data = {
-                labels: _.map(facet, function(e) { return e.yearMonthDay; } ),
+                labels: labels,
                 datasets: [
                     {
-                        label: "My First dataset",
+                        label: "",
                         fill: true,
                         lineTension: 0.1,
                         backgroundColor: "rgba(75,192,192,0.4)",
@@ -260,7 +277,7 @@ var SearchModel = {
                         pointHoverBorderWidth: 2,
                         pointRadius: 1,
                         pointHitRadius: 10,
-                        data: _.map(facet, function(e) { return e.count; } ),
+                        data: _.map(labels, function(e) { return facets[e]; } ),
                         spanGaps: false,
                     }
                 ]
@@ -272,9 +289,13 @@ var SearchModel = {
                 options: {
                     legend: {
                         display: false
-                     }
+                     },
+                     responsiveAnimationDuration: 0
                 }
             });
+
+            SearchModel.chart(myLineChart);
+            
         });
     }
 };
