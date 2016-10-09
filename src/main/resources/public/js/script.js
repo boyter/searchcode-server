@@ -30,11 +30,18 @@ var HelperModel = {
     },
     yearMonthDayToDate: function (yearMonthDay) {
         var year = yearMonthDay.substring(0, 4);
-        var month = yearMonthDay.substring(4, 6) - 1; // Months are index so 0 = Jan
-        var day = yearMonthDay.substring(6, 8);
+        var month = yearMonthDay.substring(5, 7) - 1; // Months are index so 0 = Jan
+        var day = yearMonthDay.substring(8, 10);
 
         var date = new Date(year, month, day);
         return date;
+    },
+    yearMonthDayDelimit: function(yearMonthDay) {
+        var year = yearMonthDay.substring(0, 4);
+        var month = yearMonthDay.substring(4, 6);
+        var day = yearMonthDay.substring(6, 8);
+
+        return year + '/' + month + '/' + day;
     }
 }
 
@@ -266,19 +273,18 @@ var SearchModel = {
                 SearchModel.chart().destroy();
             }
 
-            var ctx = document.getElementById("timeChart");
+            var ctx = document.getElementById('timeChart');
 
 
             var facets = {};
             var labels = [];
             _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
-                facets[e.yearMonthDay] = e.count; 
-                labels.push(e.yearMonthDay);
+                var fac = HelperModel.yearMonthDayDelimit(e.yearMonthDay);
+                facets[fac] = e.count; 
+                labels.push(fac);
             });
 
-
             labels.sort();
-
 
             if (labels.length != 0) {
                 var startDate = HelperModel.yearMonthDayToDate(labels[0]);
@@ -291,37 +297,36 @@ var SearchModel = {
                     month = month < 10 ? '0' + month : month;
                     var day = e.getDate() < 10 ? '0' + e.getDate() : e.getDate();
 
-                    return year + '' + month + '' + day;
+                    return year + '/' + month + '/' + day;
                 });
-            }
 
+                labels = labels.splice(labels.length - 31, labels.length);
+            }
 
             var data = {
                 labels: labels,
-                datasets: [
-                    {
-                        label: "Something something something",
-                        fill: false,
-                        lineTension: 0.1,
-                        backgroundColor: "rgba(75,192,192,0.4)",
-                        borderColor: "#428bca", // Line colour
-                        borderCapStyle: 'butt',
-                        borderDash: [],
-                        borderDashOffset: 0.0,
-                        borderJoinStyle: 'miter',
-                        pointBorderColor: "rgba(75,192,192,1)",
-                        pointBackgroundColor: "#fff",
-                        pointBorderWidth: 5,
-                        pointHoverRadius: 5,
-                        pointHoverBackgroundColor: "rgba(75,192,192,1)",
-                        pointHoverBorderColor: "rgba(220,220,220,1)",
-                        pointHoverBorderWidth: 1,
-                        pointRadius: 1,
-                        pointHitRadius: 10,
-                        data: _.map(labels, function(e) { return facets[e]; } ),
-                        spanGaps: true
-                    }
-                ]
+                datasets: [{
+                    label: SearchModel.query(),
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: 'rgba(75,192,192,0.4)',
+                    borderColor: '#428bca', // Line colour
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: 'rgba(75,192,192,1)',
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 5,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                    pointHoverBorderColor: 'rgba(220,220,220,1)',
+                    pointHoverBorderWidth: 1,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: _.map(labels, function(e) { return facets[e]; } ),
+                    spanGaps: false
+                }]
             };
 
             var myLineChart = new Chart(ctx, {
@@ -1029,7 +1034,7 @@ var SearchYearMonthFilterComponent = {
         }
 
         if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYearMonth().length) {
-            var morecount = args.ownerfilters.length - ctrl.trimlength();
+            var morecount = SearchModel.repoFacetYearMonth().length - ctrl.trimlength();
 
             showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
 
@@ -1304,18 +1309,32 @@ var SearchCountComponent = {
 
 var SearchChartComponent = {
     controller: function() {
-        return {}
-    },
-    view: function(ctrl, args) {
-        // return m('div.row.search-chart', [
-        //     _.map(SearchModel.repoFacetYearMonthDay(), function(res) {
-        //         return m('span', res.yearMonthDay + ' ' + res.count);
-        //     })
-        // ]);
+        var display = true;
 
-        return m('div.row.search-chart', 
-            m('canvas', {id: 'timeChart', width: '500', height: '50'})
-        );  
+        return {
+            shoulddisplay: function() {
+                if (display === false) {
+                    return false;
+                }
+
+                if (SearchModel.searchhistory() === false) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+    },
+    view: function(ctrl) {
+        if (ctrl.shoulddisplay() === false) {
+            return m('div');
+        }
+
+        // TODO need to have logic to display the hide show if there is data to show it
+        return m('div.row.search-chart', [
+            m('div', 'Hide Chart ▼'),
+            m('canvas', {id: 'timeChart', width: '500', height: '65'})
+        ]);  
     }
 }
 
