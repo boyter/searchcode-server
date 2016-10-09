@@ -301,25 +301,25 @@ var SearchModel = {
                 datasets: [
                     {
                         label: "Something something something",
-                        fill: true,
+                        fill: false,
                         lineTension: 0.1,
                         backgroundColor: "rgba(75,192,192,0.4)",
-                        borderColor: "rgba(75,192,192,1)",
+                        borderColor: "#428bca", // Line colour
                         borderCapStyle: 'butt',
                         borderDash: [],
                         borderDashOffset: 0.0,
                         borderJoinStyle: 'miter',
                         pointBorderColor: "rgba(75,192,192,1)",
                         pointBackgroundColor: "#fff",
-                        pointBorderWidth: 1,
+                        pointBorderWidth: 5,
                         pointHoverRadius: 5,
                         pointHoverBackgroundColor: "rgba(75,192,192,1)",
                         pointHoverBorderColor: "rgba(220,220,220,1)",
-                        pointHoverBorderWidth: 2,
+                        pointHoverBorderWidth: 1,
                         pointRadius: 1,
                         pointHitRadius: 10,
                         data: _.map(labels, function(e) { return facets[e]; } ),
-                        spanGaps: false,
+                        spanGaps: true
                     }
                 ]
             };
