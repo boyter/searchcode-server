@@ -12,6 +12,33 @@
  * The implementation of the front end for searchcode server using Mithril.js
  */
 
+Date.prototype.addDays = function (days) {
+    var dat = new Date(this.valueOf())
+    dat.setDate(dat.getDate() + days);
+    return dat;
+}
+
+var HelperModel = {
+    getDateSpan: function(startDate, stopDate) {
+        var dateArray = new Array();
+        var currentDate = startDate;
+        while (currentDate <= stopDate) {
+            dateArray.push( new Date (currentDate) )
+            currentDate = currentDate.addDays(1);
+        }
+        return dateArray;
+    },
+    yearMonthDayToDate: function (yearMonthDay) {
+        var year = yearMonthDay.substring(0, 4);
+        var month = yearMonthDay.substring(4, 6) - 1; // Months are index so 0 = Jan
+        var day = yearMonthDay.substring(6, 8);
+
+        var date = new Date(year, month, day);
+        return date;
+    }
+}
+
+
 // Model that perfoms the search logic and does the actual search
 var SearchModel = {
     searchvalue: m.prop(''),
@@ -242,9 +269,6 @@ var SearchModel = {
             var ctx = document.getElementById("timeChart");
 
 
-            //var facet = SearchModel.repoFacetYearMonthDay();
-            var facet = SearchModel.repoFacetYearMonthDay();
-
             var facets = {};
             var labels = [];
             _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
@@ -252,14 +276,31 @@ var SearchModel = {
                 labels.push(e.yearMonthDay);
             });
 
+
             labels.sort();
+
+
+            if (labels.length != 0) {
+                var startDate = HelperModel.yearMonthDayToDate(labels[0]);
+                var endDate = HelperModel.yearMonthDayToDate(labels[labels.length - 1]);
+
+
+                labels = _.map(HelperModel.getDateSpan(startDate, endDate), function(e) {
+                    var year = e.getFullYear();
+                    var month = e.getMonth() + 1;
+                    month = month < 10 ? '0' + month : month;
+                    var day = e.getDate() < 10 ? '0' + e.getDate() : e.getDate();
+
+                    return year + '' + month + '' + day;
+                });
+            }
 
 
             var data = {
                 labels: labels,
                 datasets: [
                     {
-                        label: "",
+                        label: "Something something something",
                         fill: true,
                         lineTension: 0.1,
                         backgroundColor: "rgba(75,192,192,0.4)",
