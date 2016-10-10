@@ -400,6 +400,7 @@ public class App {
                 String langsFilter = "";
                 String ownersFilter = "";
 
+
                 if(req.queryParams().contains("repo")) {
                     repos = req.queryParamsValues("repo");
 
@@ -435,8 +436,6 @@ public class App {
                         ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
                     }
                 }
-
-
 
                 // Need to pass in the filters into this query
                 String cacheKey = query + page + reposFilter + langsFilter + ownersFilter;

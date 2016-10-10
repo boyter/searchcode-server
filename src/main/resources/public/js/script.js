@@ -64,6 +64,7 @@ var SearchModel = {
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
+    activeyearmonthdayfilters: m.prop([]),
 
     pages: m.prop([]),
     currentlyloading: m.prop(false),
@@ -125,6 +126,14 @@ var SearchModel = {
                     SearchModel.ownfilters(_.without(SearchModel.ownfilters(), name));
                 }
                 break;
+            case 'yearmonthday':
+                if (_.indexOf(SearchModel.yearmonthdayfilters(), name) === -1) {
+                    SearchModel.yearmonthdayfilters().push(name);
+                }
+                else {
+                    SearchModel.yearmonthdayfilters(_.without(SearchModel.yearmonthdayfilters(), name));
+                }
+                break;
         }
     },
     filterexists: function (type, name) {
@@ -143,6 +152,7 @@ var SearchModel = {
                 if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
                     return false;
                 }
+                break;
             case 'year':
                 if (_.indexOf(SearchModel.yearfilters(), name) === -1) {
                     return false;
@@ -194,6 +204,15 @@ var SearchModel = {
 
         return own;
     },
+    getyearmonthdayfilters: function() {
+        var ymd = '';
+
+        if (SearchModel.yearmonthdayfilters().length != 0) {
+            ymd = '&ymd=' + _.map(SearchModel.yearmonthdayfilters(), function(e) { return encodeURIComponent(e); } ).join('&ymd=');
+        }
+
+        return ymd;
+    },
     setstatechange: function(pagequery, isstatechange) {
         // set the state
         if (isstatechange === undefined) {
@@ -208,6 +227,7 @@ var SearchModel = {
                         SearchModel.getlangfilters() + 
                         SearchModel.getrepofilters() + 
                         SearchModel.getownfilters() + 
+                        SearchModel.getyearmonthdayfilters() + 
                         pagequery);
         }
     },
@@ -223,6 +243,7 @@ var SearchModel = {
         var lang = SearchModel.getlangfilters();
         var repo = SearchModel.getrepofilters();
         var own = SearchModel.getownfilters();
+        var ymd = SearchModel.getyearmonthdayfilters();
 
         var searchpage = 0;
         var pagequery = ''
@@ -238,12 +259,13 @@ var SearchModel = {
         SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
         SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
+        SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + ymd + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + ymd + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
@@ -271,6 +293,10 @@ var SearchModel = {
             
             if (SearchModel.chart() !== undefined) {
                 SearchModel.chart().destroy();
+            }
+
+            if (SearchModel.repoFacetYearMonthDay().length == 0) {
+                return;
             }
 
             var ctx = document.getElementById('timeChart');
@@ -336,7 +362,10 @@ var SearchModel = {
                     legend: {
                         display: false
                      },
-                     responsiveAnimationDuration: 0
+                     responsiveAnimationDuration: 0,
+                     scales: {
+                       autoSkip: true
+                    }
                 }
             });
 
@@ -395,11 +424,7 @@ var SearchComponent = {
                             search: SearchModel.search,
                             filterinstantly: SearchModel.filterinstantly
                         }),
-                        m.component(SearchOwnersFilterComponent, {
-                           ownerfilters: SearchModel.ownerfilters(),
-                           search: SearchModel.search,
-                           filterinstantly: SearchModel.filterinstantly
-                        }),
+                        m.component(SearchOwnersFilterComponent),
                         m.component(SearchYearFilterComponent),
                         m.component(SearchYearMonthFilterComponent),
                         m.component(SearchYearMonthDayFilterComponent),
@@ -835,6 +860,9 @@ var SearchOwnersFilterComponent = {
             },
             clickenvent: function(owner) {
                 SearchModel.togglefilter('owner', owner);
+                if (SearchModel.filterinstantly()) {
+                    SearchModel.search();
+                }
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -847,16 +875,16 @@ var SearchOwnersFilterComponent = {
             }
         }
     },
-    view: function(ctrl, args) {
+    view: function(ctrl) {
 
         var showmoreless = m('div');
 
-        if (args.ownerfilters === undefined || args.ownerfilters.length == 0) {
+        if (SearchModel.ownerfilters() === undefined || SearchModel.ownerfilters().length == 0) {
             return showmoreless;
         }
 
-        if (!ctrl.hasfilter() && ctrl.trimlength() < args.ownerfilters.length) {
-            var morecount = args.ownerfilters.length - ctrl.trimlength();
+        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.ownerfilters().length) {
+            var morecount = SearchModel.ownerfilters().length - ctrl.trimlength();
 
             showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more owners ', m('span.glyphicon.glyphicon-chevron-down'))
 
@@ -872,13 +900,10 @@ var SearchOwnersFilterComponent = {
                 placeholder: 'Filter Owners',
                 value: ctrl.getfiltervalue()
             }),
-            _.map(ctrl.trimlanguage(args.ownerfilters), function(res, ind) {
+            _.map(ctrl.trimlanguage(SearchModel.ownerfilters()), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
                         ctrl.clickenvent(res.owner); 
-                        if (args.filterinstantly) {
-                            args.search();
-                        }
                     },
                     value: res.owner,
                     count: res.count,
@@ -1101,7 +1126,7 @@ var SearchYearMonthDayFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(owner) {
-                SearchModel.togglefilter('owner', owner);
+                SearchModel.togglefilter('yearmonthday', owner);
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -1149,7 +1174,7 @@ var SearchYearMonthDayFilterComponent = {
                     },
                     value: res.yearMonthDay,
                     count: res.count,
-                    checked: SearchModel.filterexists('yearmonth', res.yearMonthDay)
+                    checked: SearchModel.filterexists('yearmonthday', res.yearMonthDay)
                 });
             }),
             showmoreless
@@ -1332,7 +1357,7 @@ var SearchChartComponent = {
 
         // TODO need to have logic to display the hide show if there is data to show it
         return m('div.row.search-chart', [
-            m('div', 'Hide Chart ▼'),
+            //m('div', 'Hide Chart ▼'),
             m('canvas', {id: 'timeChart', width: '500', height: '65'})
         ]);  
     }

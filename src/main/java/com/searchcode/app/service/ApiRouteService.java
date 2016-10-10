@@ -58,9 +58,12 @@ public class ApiRouteService {
         String[] repos;
         String[] langs;
         String[] owners;
-        String reposFilter = "";
-        String langsFilter = "";
-        String ownersFilter = "";
+        String[] yearmonthday;
+
+        String reposFilter = Values.EMPTYSTRING;
+        String langsFilter = Values.EMPTYSTRING;
+        String ownersFilter = Values.EMPTYSTRING;
+        String yearMonthDayFilter = Values.EMPTYSTRING;
 
         if(request.queryParams().contains("repo")) {
             repos = request.queryParamsValues("repo");
@@ -77,10 +80,15 @@ public class ApiRouteService {
             ownersFilter = getOwners(owners, ownersFilter);
         }
 
+        if(request.queryParams().contains("ymd")) {
+            yearmonthday = request.queryParamsValues("ymd");
+            yearMonthDayFilter = this.getYearMonthDays(yearmonthday, yearMonthDayFilter);
+        }
+
         // split the query escape it and and it together
         String cleanQueryString = scl.formatQueryString(query);
 
-        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
+        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearMonthDayFilter, page);
         searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
         searchResult.setQuery(query);
@@ -147,5 +155,16 @@ public class ApiRouteService {
             reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
         }
         return reposFilter;
+    }
+
+    private String getYearMonthDays(String[] yearmonthday, String yearMonthDayFilter) {
+        if (yearmonthday.length != 0) {
+            List<String> reposList = Arrays.asList(yearmonthday).stream()
+                    .map((s) -> "dateyearmonthday:" + QueryParser.escape(s))
+                    .collect(Collectors.toList());
+
+            yearMonthDayFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
+        }
+        return yearMonthDayFilter;
     }
 }
