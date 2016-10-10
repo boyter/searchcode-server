@@ -65,6 +65,7 @@ var SearchModel = {
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
     activeyearfilters: m.prop([]),
+    activeyearmonthfilters: m.prop([]),
     activeyearmonthdayfilters: m.prop([]),
 
     pages: m.prop([]),
@@ -133,6 +134,14 @@ var SearchModel = {
                 }
                 else {
                     SearchModel.yearfilters(_.without(SearchModel.yearfilters(), name));
+                }
+                break;
+            case 'yearmonth':
+                if (_.indexOf(SearchModel.yearmonthfilters(), name) === -1) {
+                    SearchModel.yearmonthfilters().push(name);
+                }
+                else {
+                    SearchModel.yearmonthfilters(_.without(SearchModel.yearmonthfilters(), name));
                 }
                 break;
             case 'yearmonthday':
@@ -222,6 +231,15 @@ var SearchModel = {
 
         return year;
     },
+    getyearmonthfilters: function() {
+        var ym = '';
+
+        if (SearchModel.yearmonthfilters().length != 0) {
+            ym = '&ym=' + _.map(SearchModel.yearmonthfilters(), function(e) { return encodeURIComponent(e); } ).join('&ym=');
+        }
+
+        return ym;
+    },
     getyearmonthdayfilters: function() {
         var ymd = '';
 
@@ -262,6 +280,7 @@ var SearchModel = {
         var repo = SearchModel.getrepofilters();
         var own = SearchModel.getownfilters();
         var year = SearchModel.getyearfilters();
+        var ym = SearchModel.getyearmonthfilters();
         var ymd = SearchModel.getyearmonthdayfilters();
 
         var searchpage = 0;
@@ -279,13 +298,14 @@ var SearchModel = {
         SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
         SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
+        SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
         SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ymd + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ymd + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
@@ -1060,7 +1080,7 @@ var SearchYearMonthFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(owner) {
-                SearchModel.togglefilter('owner', owner);
+                SearchModel.togglefilter('yearmonth', owner);
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -1073,7 +1093,7 @@ var SearchYearMonthFilterComponent = {
             }
         }
     },
-    view: function(ctrl, args) {
+    view: function(ctrl) {
 
         var showmoreless = m('div');
 
@@ -1102,8 +1122,8 @@ var SearchYearMonthFilterComponent = {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
                         ctrl.clickenvent(res.yearMonth); 
-                        if (args.filterinstantly) {
-                            args.search();
+                        if (SearchModel.filterinstantly()) {
+                            SearchModel.search();
                         }
                     },
                     value: res.yearMonth,
