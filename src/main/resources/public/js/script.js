@@ -64,6 +64,7 @@ var SearchModel = {
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
+    activeyearfilters: m.prop([]),
     activeyearmonthdayfilters: m.prop([]),
 
     pages: m.prop([]),
@@ -124,6 +125,14 @@ var SearchModel = {
                 }
                 else {
                     SearchModel.ownfilters(_.without(SearchModel.ownfilters(), name));
+                }
+                break;
+            case 'year':
+                if (_.indexOf(SearchModel.yearfilters(), name) === -1) {
+                    SearchModel.yearfilters().push(name);
+                }
+                else {
+                    SearchModel.yearfilters(_.without(SearchModel.yearfilters(), name));
                 }
                 break;
             case 'yearmonthday':
@@ -204,6 +213,15 @@ var SearchModel = {
 
         return own;
     },
+    getyearfilters: function() {
+        var year = '';
+
+        if (SearchModel.yearfilters().length != 0) {
+            year = '&year=' + _.map(SearchModel.yearfilters(), function(e) { return encodeURIComponent(e); } ).join('&year=');
+        }
+
+        return year;
+    },
     getyearmonthdayfilters: function() {
         var ymd = '';
 
@@ -243,6 +261,7 @@ var SearchModel = {
         var lang = SearchModel.getlangfilters();
         var repo = SearchModel.getrepofilters();
         var own = SearchModel.getownfilters();
+        var year = SearchModel.getyearfilters();
         var ymd = SearchModel.getyearmonthdayfilters();
 
         var searchpage = 0;
@@ -259,13 +278,14 @@ var SearchModel = {
         SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
         SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
+        SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
         SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + ymd + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ymd + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + ymd + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ymd + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
@@ -365,6 +385,9 @@ var SearchModel = {
                      responsiveAnimationDuration: 0,
                      scales: {
                        autoSkip: true
+                    },
+                    animation: {
+                        duration: 0
                     }
                 }
             });
@@ -948,7 +971,7 @@ var SearchYearFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(owner) {
-                SearchModel.togglefilter('owner', owner);
+                SearchModel.togglefilter('year', owner);
             },
             filtervalue: function(value) {
                 filtervalue = value;
@@ -961,7 +984,7 @@ var SearchYearFilterComponent = {
             }
         }
     },
-    view: function(ctrl, args) {
+    view: function(ctrl) {
 
         var showmoreless = m('div');
 
@@ -970,7 +993,7 @@ var SearchYearFilterComponent = {
         }
 
         if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYear.length) {
-            var morecount = args.ownerfilters.length - ctrl.trimlength();
+            var morecount = SearchModel.yearfilters().length - ctrl.trimlength();
 
             showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
 
@@ -989,9 +1012,9 @@ var SearchYearFilterComponent = {
             _.map(ctrl.trimlanguage(SearchModel.repoFacetYear()), function(res, ind) {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
-                        ctrl.clickenvent(res.yearMonthDay); 
-                        if (args.filterinstantly) {
-                            args.search();
+                        ctrl.clickenvent(res.year); 
+                        if (SearchModel.filterinstantly()) {
+                            SearchModel.search();
                         }
                     },
                     value: res.year,

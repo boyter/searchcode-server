@@ -56,7 +56,10 @@ public class TimeCodeSearcherTest extends TestCase {
         try {
             TimeCodeSearcher cs = new TimeCodeSearcher();
 
-            cs.search("public", 0);
+            SearchResult searchResult = cs.search("import && (datemonthyear:201201)", 0);
+            //SearchResult searchResult = cs.search("import && (dateyearmonthday:20120106)", 0);
+
+            assertThat(searchResult.getTotalHits()).isNotZero();
         }
         catch(Exception ex) {
             assertTrue(false);

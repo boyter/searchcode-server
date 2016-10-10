@@ -85,8 +85,8 @@ public class Values {
     public static String MODIFIED = "modified";
     public static String CODEOWNER = "codeowner";
     public static String REVISION = "revision";
-    public static String DATEYEARMONTHDAY = "dateyearmonthday"; // EG 20160523
-    public static String DATEYEARMONTH = "dateyearmonth"; // EG 201605
+    public static String DATEYEARMONTHDAY = "datedaymonthyear"; // EG 20160523 reversed as test
+    public static String DATEYEARMONTH = "datemonthyear"; // EG 201605
     public static String DATEYEAR = "dateyear"; // EG 2016
     public static String MESSAGE = "message"; // Contains git commit message
     public static String DELETED = "deleted";

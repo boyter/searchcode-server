@@ -308,6 +308,8 @@ public class CodeIndexer {
                 doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
                 doc.add(new TextField(Values.REVISION, codeIndexDocument.getRevision(), Field.Store.YES));
                 doc.add(new TextField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay(), Field.Store.YES));
+                doc.add(new TextField(Values.DATEYEARMONTH, codeIndexDocument.getYearMonth(), Field.Store.YES));
+                doc.add(new TextField(Values.DATEYEAR, codeIndexDocument.getYear(), Field.Store.YES));
                 doc.add(new TextField(Values.MESSAGE, codeIndexDocument.getMessage(), Field.Store.YES));
                 doc.add(new TextField(Values.DELETED, codeIndexDocument.isDeleted(), Field.Store.YES));
 

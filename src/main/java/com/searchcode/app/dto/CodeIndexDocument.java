@@ -26,6 +26,8 @@ public class CodeIndexDocument {
     private String codeOwner;
     private String revision;
     private String yearMonthDay;
+    private String yearMonth;
+    private String year;
     private String message;
     private String deleted; // Used for time filter to know when this entry was removed
 
@@ -170,5 +172,21 @@ public class CodeIndexDocument {
 
     public void setDeleted(String deleted) {
         this.deleted = deleted;
+    }
+
+    public String getYearMonth() {
+        return yearMonth;
+    }
+
+    public void setYearMonth(String yearMonth) {
+        this.yearMonth = yearMonth;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 }

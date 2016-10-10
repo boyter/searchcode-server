@@ -58,11 +58,15 @@ public class ApiRouteService {
         String[] repos;
         String[] langs;
         String[] owners;
+        String[] year;
+        String[] yearmonth;
         String[] yearmonthday;
 
         String reposFilter = Values.EMPTYSTRING;
         String langsFilter = Values.EMPTYSTRING;
         String ownersFilter = Values.EMPTYSTRING;
+        String yearFilter = Values.EMPTYSTRING;
+        String yearMonthFilter = Values.EMPTYSTRING;
         String yearMonthDayFilter = Values.EMPTYSTRING;
 
         if(request.queryParams().contains("repo")) {
@@ -80,6 +84,16 @@ public class ApiRouteService {
             ownersFilter = getOwners(owners, ownersFilter);
         }
 
+        if(request.queryParams().contains("year")) {
+            year = request.queryParamsValues("year");
+            yearFilter = this.getYears(year, yearFilter);
+        }
+
+        if(request.queryParams().contains("ym")) {
+            yearmonth = request.queryParamsValues("ym");
+            yearMonthFilter = this.getYearMonths(yearmonth, yearMonthFilter);
+        }
+
         if(request.queryParams().contains("ymd")) {
             yearmonthday = request.queryParamsValues("ymd");
             yearMonthDayFilter = this.getYearMonthDays(yearmonthday, yearMonthDayFilter);
@@ -88,7 +102,7 @@ public class ApiRouteService {
         // split the query escape it and and it together
         String cleanQueryString = scl.formatQueryString(query);
 
-        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearMonthDayFilter, page);
+        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearFilter + yearMonthFilter + yearMonthDayFilter, page);
         searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
         searchResult.setQuery(query);
@@ -127,7 +141,7 @@ public class ApiRouteService {
     private String getOwners(String[] owners, String ownersFilter) {
         if (owners.length != 0) {
             List<String> ownersList = Arrays.asList(owners).stream()
-                    .map((s) -> "codeowner:" + QueryParser.escape(s))
+                    .map((s) -> Values.CODEOWNER + ":" + QueryParser.escape(s))
                     .collect(Collectors.toList());
 
             ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
@@ -138,7 +152,7 @@ public class ApiRouteService {
     private String getLanguages(String[] langs, String langsFilter) {
         if (langs.length != 0) {
             List<String> langsList = Arrays.asList(langs).stream()
-                    .map((s) -> "languagename:" + QueryParser.escape(s))
+                    .map((s) -> Values.LANGUAGENAME + ":" + QueryParser.escape(s))
                     .collect(Collectors.toList());
 
             langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
@@ -149,7 +163,7 @@ public class ApiRouteService {
     private String getRepos(String[] repos, String reposFilter) {
         if (repos.length != 0) {
             List<String> reposList = Arrays.asList(repos).stream()
-                    .map((s) -> "reponame:" + QueryParser.escape(s))
+                    .map((s) -> Values.REPONAME + ":" + QueryParser.escape(s))
                     .collect(Collectors.toList());
 
             reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
@@ -160,11 +174,33 @@ public class ApiRouteService {
     private String getYearMonthDays(String[] yearmonthday, String yearMonthDayFilter) {
         if (yearmonthday.length != 0) {
             List<String> reposList = Arrays.asList(yearmonthday).stream()
-                    .map((s) -> "dateyearmonthday:" + QueryParser.escape(s))
+                    .map((s) -> Values.DATEYEARMONTHDAY + ":" + QueryParser.escape(s))
                     .collect(Collectors.toList());
 
             yearMonthDayFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
         }
         return yearMonthDayFilter;
+    }
+
+    private String getYearMonths(String[] yearMonth, String yearMonthFilter) {
+        if (yearMonth.length != 0) {
+            List<String> reposList = Arrays.asList(yearMonth).stream()
+                    .map((s) -> Values.DATEYEARMONTH + ":" + QueryParser.escape(s))
+                    .collect(Collectors.toList());
+
+            yearMonthFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
+        }
+        return yearMonthFilter;
+    }
+
+    private String getYears(String[] year, String yearFilter) {
+        if (year.length != 0) {
+            List<String> reposList = Arrays.asList(year).stream()
+                    .map((s) -> Values.DATEYEAR + ":" + QueryParser.escape(s))
+                    .collect(Collectors.toList());
+
+            yearFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
+        }
+        return yearFilter;
     }
 }

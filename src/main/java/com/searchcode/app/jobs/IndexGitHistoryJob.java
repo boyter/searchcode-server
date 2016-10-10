@@ -117,6 +117,8 @@ public class IndexGitHistoryJob implements Job {
                 CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "thumbor", entry.getOldPath(), entry.getOldPath(), entry.getOldPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", oldRevison.getAuthor());
                 cd.setRevision(oldRevison.getRevision());
                 cd.setYearMonthDay(sdf.format(oldRevison.getExpiry()));
+                cd.setYearMonth(cd.getYearMonthDay().substring(0, 6));
+                cd.setYear(cd.getYearMonthDay().substring(0, 4));
                 cd.setMessage(oldRevison.getMessage());
                 cd.setDeleted("TRUE");
                 CodeIndexer.indexTimeDocument(cd);
@@ -128,6 +130,8 @@ public class IndexGitHistoryJob implements Job {
                 CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "thumbor", entry.getNewPath(), entry.getNewPath(), entry.getNewPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", newRevision.getAuthor());
                 cd.setRevision(newRevision.getRevision());
                 cd.setYearMonthDay(sdf.format(oldRevison.getExpiry()));
+                cd.setYearMonth(cd.getYearMonthDay().substring(0, 6));
+                cd.setYear(cd.getYearMonthDay().substring(0, 4));
                 cd.setMessage(newRevision.getMessage());
                 cd.setDeleted("FALSE");
                 CodeIndexer.indexTimeDocument(cd);
