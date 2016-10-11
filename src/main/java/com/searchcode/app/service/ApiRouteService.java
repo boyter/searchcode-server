@@ -61,6 +61,7 @@ public class ApiRouteService {
         String[] year;
         String[] yearmonth;
         String[] yearmonthday;
+        String[] revisions;
 
         String reposFilter = Values.EMPTYSTRING;
         String langsFilter = Values.EMPTYSTRING;
@@ -68,6 +69,7 @@ public class ApiRouteService {
         String yearFilter = Values.EMPTYSTRING;
         String yearMonthFilter = Values.EMPTYSTRING;
         String yearMonthDayFilter = Values.EMPTYSTRING;
+        String revisionsFilter = Values.EMPTYSTRING;
 
         if(request.queryParams().contains("repo")) {
             repos = request.queryParamsValues("repo");
@@ -99,10 +101,15 @@ public class ApiRouteService {
             yearMonthDayFilter = this.getYearMonthDays(yearmonthday, yearMonthDayFilter);
         }
 
+        if(request.queryParams().contains("rev")) {
+            revisions = request.queryParamsValues("rev");
+            revisionsFilter = this.getRevisions(revisions, revisionsFilter);
+        }
+
         // split the query escape it and and it together
         String cleanQueryString = scl.formatQueryString(query);
 
-        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearFilter + yearMonthFilter + yearMonthDayFilter, page);
+        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearFilter + yearMonthFilter + yearMonthDayFilter + revisionsFilter, page);
         searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
         searchResult.setQuery(query);
@@ -202,5 +209,16 @@ public class ApiRouteService {
             yearFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
         }
         return yearFilter;
+    }
+
+    private String getRevisions(String[] revisions, String revisionsFilter) {
+        if (revisions.length != 0) {
+            List<String> reposList = Arrays.asList(revisions).stream()
+                    .map((s) -> Values.REVISION + ":" + QueryParser.escape(s))
+                    .collect(Collectors.toList());
+
+            revisionsFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
+        }
+        return revisionsFilter;
     }
 }

@@ -59,6 +59,7 @@ var SearchModel = {
     yearfilters: m.prop([]),
     yearmonthfilters: m.prop([]),
     yearmonthdayfilters: m.prop([]),
+    revisionfilters: m.prop([]),
     deletedfilters: m.prop([]),
 
     activelangfilters: m.prop([]),
@@ -67,6 +68,8 @@ var SearchModel = {
     activeyearfilters: m.prop([]),
     activeyearmonthfilters: m.prop([]),
     activeyearmonthdayfilters: m.prop([]),
+    activerevisionfilters: m.prop([]),
+    activedeletedfilters: m.prop([]),
 
     pages: m.prop([]),
     currentlyloading: m.prop(false),
@@ -98,6 +101,7 @@ var SearchModel = {
         SearchModel.yearfilters([]);
         SearchModel.yearmonthfilters([]);
         SearchModel.yearmonthdayfilters([]);
+        SearchModel.revisionfilters([]);
         SearchModel.deletedfilters([]);
     },
     toggleinstant: function() {
@@ -156,6 +160,22 @@ var SearchModel = {
                     SearchModel.yearmonthdayfilters(_.without(SearchModel.yearmonthdayfilters(), name));
                 }
                 break;
+            case 'deleted':
+                if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
+                    SearchModel.deletedfilters().push(name);
+                }
+                else {
+                    SearchModel.deletedfilters(_.without(SearchModel.deletedfilters(), name));
+                }
+                break;
+            case 'revision':
+                if (_.indexOf(SearchModel.revisionfilters(), name) === -1) {
+                    SearchModel.revisionfilters().push(name);
+                }
+                else {
+                    SearchModel.revisionfilters(_.without(SearchModel.revisionfilters(), name));
+                }
+                break;
         }
     },
     filterexists: function (type, name) {
@@ -192,6 +212,11 @@ var SearchModel = {
                 break;
             case 'deleted':
                 if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
+                    return false;
+                }
+                break;
+            case 'revision':
+                if (_.indexOf(SearchModel.revisionfilters(), name) === -1) {
                     return false;
                 }
                 break;
@@ -253,6 +278,15 @@ var SearchModel = {
 
         return ymd;
     },
+    getrevisionfilters: function() {
+        var rev = '';
+
+        if (SearchModel.revisionfilters().length != 0) {
+            rev = '&rev=' + _.map(SearchModel.revisionfilters(), function(e) { return encodeURIComponent(e); } ).join('&rev=');
+        }
+
+        return rev;
+    },
     setstatechange: function(pagequery, isstatechange) {
         // set the state
         if (isstatechange === undefined) {
@@ -288,6 +322,7 @@ var SearchModel = {
         var year = SearchModel.getyearfilters();
         var ym = SearchModel.getyearmonthfilters();
         var ymd = SearchModel.getyearmonthdayfilters();
+        var rev = SearchModel.getrevisionfilters();
 
         var searchpage = 0;
         var pagequery = ''
@@ -306,12 +341,13 @@ var SearchModel = {
         SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
         SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
         SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
+        SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
@@ -372,7 +408,7 @@ var SearchModel = {
                     return year + '/' + month + '/' + day;
                 });
 
-                labels = labels.splice(labels.length - 31, labels.length);
+                labels = labels.splice(labels.length - 366, labels.length);
             }
 
             var data = {
@@ -402,7 +438,7 @@ var SearchModel = {
             };
 
             var myLineChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: data,
                 options: {
                     legend: {
@@ -410,11 +446,15 @@ var SearchModel = {
                      },
                      responsiveAnimationDuration: 0,
                      scales: {
-                       autoSkip: true
+                        autoSkip: true,
+                        xAxes: [{
+                            display: false
+                        }]
                     },
                     animation: {
                         duration: 0
-                    }
+                    },
+
                 }
             });
 
@@ -477,6 +517,7 @@ var SearchComponent = {
                         m.component(SearchYearFilterComponent),
                         m.component(SearchYearMonthFilterComponent),
                         m.component(SearchYearMonthDayFilterComponent),
+                        m.component(SearchRevisionComponent),
                         m.component(SearchDeletedComponent),
                         m.component(FilterOptionsComponent, {
                             filterinstantly: SearchModel.filterinstantly
@@ -1231,6 +1272,95 @@ var SearchYearMonthDayFilterComponent = {
     }
 }
 
+var SearchRevisionComponent = {
+    controller: function() {
+
+        var showall = false;
+        var trimlength = 5;
+        var filtervalue = '';
+        
+        return {
+            trimlanguage: function (ownerfilters) {
+                var toreturn = ownerfilters;
+
+                if (filtervalue.length === 0 && !showall) {
+                    toreturn = _.first(toreturn, trimlength);
+                }
+
+                if (filtervalue.length !== 0) {
+                    toreturn = _.filter(toreturn, function (e) { 
+                        return e.revision.toLowerCase().indexOf(filtervalue) !== -1; 
+                    });
+                }
+
+                return toreturn;
+            },
+            toggleshowall: function() {
+                showall = !showall;
+            },
+            showall: function () {
+                return showall;
+            },
+            trimlength: function () {
+                return trimlength;
+            },
+            clickenvent: function(owner) {
+                SearchModel.togglefilter('revision', owner);
+            },
+            filtervalue: function(value) {
+                filtervalue = value;
+            },
+            hasfilter: function() {
+                return filtervalue.length !== 0;
+            },
+            getfiltervalue: function() {
+                return filtervalue;
+            }
+        }
+    },
+    view: function(ctrl, args) {
+
+        var showmoreless = m('div');
+
+        if (SearchModel.repoFacetRevision() === undefined || SearchModel.repoFacetRevision().length == 0) {
+            return showmoreless;
+        }
+
+        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetRevision().length) {
+            var morecount = SearchModel.repoFacetRevision().length - ctrl.trimlength();
+
+            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more revisions ', m('span.glyphicon.glyphicon-chevron-down'))
+
+            if (ctrl.showall()) {
+                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less revisions ', m('span.glyphicon.glyphicon-chevron-up'))
+            }
+        }
+
+        return m('div', [
+            m('h5', 'Revision'),
+            m('input.repo-filter', {
+                onkeyup: m.withAttr('value', ctrl.filtervalue),
+                placeholder: 'Filter Revisions',
+                value: ctrl.getfiltervalue()
+            }),
+            _.map(ctrl.trimlanguage(SearchModel.repoFacetRevision()), function(res, ind) {
+                return m.component(FilterCheckboxComponent, {
+                    onclick: function() { 
+                        ctrl.clickenvent(res.revision); 
+                        if (SearchModel.filterinstantly()) {
+                            SearchModel.search();
+                        }
+                    },
+                    value: res.revision.substring(0, 12),
+                    count: res.count,
+                    checked: SearchModel.filterexists('revision', res.revision)
+                });
+            }),
+            showmoreless
+        ]);
+    }
+}
+
 var SearchDeletedComponent = {
     controller: function() {
         return {
@@ -1407,7 +1537,7 @@ var SearchChartComponent = {
         // TODO need to have logic to display the hide show if there is data to show it
         return m('div.row.search-chart', [
             //m('div', 'Hide Chart ▼'),
-            m('canvas', {id: 'timeChart', width: '500', height: '65'})
+            m('canvas', {id: 'timeChart', width: '500', height: '45'})
         ]);  
     }
 }
