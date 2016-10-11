@@ -95,6 +95,10 @@ var SearchModel = {
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
         SearchModel.ownfilters([]);
+        SearchModel.yearfilters([]);
+        SearchModel.yearmonthfilters([]);
+        SearchModel.yearmonthdayfilters([]);
+        SearchModel.deletedfilters([]);
     },
     toggleinstant: function() {
         if (window.localStorage) {
@@ -263,6 +267,8 @@ var SearchModel = {
                         SearchModel.getlangfilters() + 
                         SearchModel.getrepofilters() + 
                         SearchModel.getownfilters() + 
+                        SearchModel.getyearfilters() + 
+                        SearchModel.getyearmonthfilters() + 
                         SearchModel.getyearmonthdayfilters() + 
                         pagequery);
         }
