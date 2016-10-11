@@ -60,8 +60,8 @@ public class IndexGitHistoryJob implements Job {
     }
 
     public void getGitChangeSets() throws IOException, GitAPIException {
-        Repository localRepository = new FileRepository(new File("./repo/server/.git"));
-        //Repository localRepository = new FileRepository(new File("./repo/thumbor/.git"));
+        //Repository localRepository = new FileRepository(new File("./repo/server/.git"));
+        Repository localRepository = new FileRepository(new File("./repo/thumbor/.git"));
 
         Git git = new Git(localRepository);
         Iterable<RevCommit> logs = git.log().call();
@@ -114,7 +114,7 @@ public class IndexGitHistoryJob implements Job {
 
                 String contents = gs.fetchFileRevision(localRepository.getWorkTree().toString() + "/.git", oldRevison.getRevision(), entry.getOldPath());
 
-                CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "server", entry.getOldPath(), entry.getOldPath(), entry.getOldPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", oldRevison.getAuthor());
+                CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "thumbor", entry.getOldPath(), entry.getOldPath(), entry.getOldPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", oldRevison.getAuthor());
                 cd.setRevision(oldRevison.getRevision());
                 cd.setYearMonthDay(sdf.format(oldRevison.getExpiry()));
                 cd.setYearMonth(cd.getYearMonthDay().substring(0, 6));
@@ -127,7 +127,7 @@ public class IndexGitHistoryJob implements Job {
                 System.out.println("ADD " + entry.getNewPath());
                 String contents = gs.fetchFileRevision(localRepository.getWorkTree().toString() + "/.git", newRevision.getRevision(), entry.getNewPath());
 
-                CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "server", entry.getNewPath(), entry.getNewPath(), entry.getNewPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", newRevision.getAuthor());
+                CodeIndexDocument cd = new CodeIndexDocument(entry.getNewPath(), "thumbor", entry.getNewPath(), entry.getNewPath(), entry.getNewPath(), "md5hash", "Java", contents.split("\\r?\\n").length, contents, "", newRevision.getAuthor());
                 cd.setRevision(newRevision.getRevision());
                 cd.setYearMonthDay(sdf.format(oldRevison.getExpiry()));
                 cd.setYearMonth(cd.getYearMonthDay().substring(0, 6));

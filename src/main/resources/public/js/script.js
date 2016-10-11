@@ -110,6 +110,101 @@ var SearchModel = {
         }
         SearchModel.filterinstantly(!SearchModel.filterinstantly());
     },
+    getstringtitle: function() {
+        var repos = '';
+        var langs = '';
+        var owns = '';
+        var years = '';
+        var yearmonths = '';
+        var yearmonthdays = '';
+
+        if (SearchModel.activerepositoryfilters().length !== 0) {
+            var plural = 'repository';
+            if (SearchModel.activerepositoryfilters().length >= 2) {
+                plural = 'repositories';
+            }
+
+            repos = ' filtered by ' + plural + ' "' + SearchModel.activerepositoryfilters().join(', ') + '"';
+        }
+
+        if (SearchModel.activelangfilters().length !== 0) {
+            var plural = 'language';
+            if (SearchModel.activelangfilters().length >= 2) {
+                plural = 'languages';
+            }
+
+            if (repos === '') {
+                langs = ' filtered by ' + plural + ' "';
+            }
+            else {
+                langs = ' and ' + plural + ' "';
+            }
+            langs = langs + SearchModel.activelangfilters().join(', ') + '"';
+        }
+
+        if (SearchModel.activeownfilters().length != 0) {
+            var plural = 'owner';
+
+            if (SearchModel.activeownfilters().length >= 2) {
+                plural = 'owners';
+            }
+
+            if (repos === '' && langs === '') {
+                owns = ' filtered by ' + plural + ' "';
+            }
+            else {
+                owns = ' and ' + plural + ' "';
+            }
+
+            owns = owns + SearchModel.activeownfilters().join(', ') + '"';
+        }
+
+        if (SearchModel.activeyearfilters().length != 0) {
+            var plural = 'the year';
+
+            if (SearchModel.activeyearfilters().length >= 2) {
+                plural = 'the years';
+            }
+
+            years = ' in ' + plural + ' "' + SearchModel.activeyearfilters().join(', ') + '"';
+        }
+
+        if (SearchModel.activeyearmonthfilters().length != 0) {
+            var plural = 'the year/month';
+
+            if (SearchModel.activeyearmonthfilters().length >= 2) {
+                plural = 'the year/months';
+            }
+
+            if (years === '') {
+                yearmonths = ' filtered by ' + plural + ' "';
+            }
+            else {
+                yearmonths = ' and ' + plural + ' "';
+            }
+
+            yearmonths = yearmonths + _.map(SearchModel.activeyearmonthfilters(), function(e) { return e.substring(0, 4) + '/' + e.substring(4, 8); } ).join(', ') + '"';
+        }
+
+        if (SearchModel.activeyearmonthdayfilters().length != 0) {
+            var plural = 'the year/month/day';
+
+            if (SearchModel.activeyearmonthdayfilters().length >= 2) {
+                plural = 'the year/month/days';
+            }
+
+            if (years === '' && yearmonths === '') {
+                yearmonthdays = ' filtered by ' + plural + ' "';
+            }
+            else {
+                yearmonthdays = ' and ' + plural + ' "';
+            }
+
+            yearmonthdays = yearmonthdays + _.map(SearchModel.activeyearmonthdayfilters(), function(e) { return e.substring(0, 4) + '/' + e.substring(4, 6) + '/' + e.substring(6, 8); } ).join(', ') + '"';
+        }
+
+        return '"' + SearchModel.query() + '"' + repos + langs + owns + years + yearmonths + yearmonthdays;
+    },
     togglefilter: function (type, name) {
         switch(type) {
             case 'language':
@@ -1457,56 +1552,13 @@ var SearchCountComponent = {
         }
 
 
-        var repos = '';
-        var langs = '';
-        var owns = '';
+        var stringTitle = SearchModel.getstringtitle();
 
-        if (args.repofilters.length !== 0) {
-            var plural = 'repository';
-            if (args.repofilters.length >= 2) {
-                plural = 'repositories';
-            }
-
-            repos = ' filtered by ' + plural + ' "' + args.repofilters.join(', ') + '"';
-        }
-
-        if (args.languagefilters.length !== 0) {
-            var plural = 'language';
-            if (args.languagefilters.length >= 2) {
-                plural = 'languages';
-            }
-
-            if (repos === '') {
-                langs = ' filtered by ' + plural + ' "';
-            }
-            else {
-                langs = ' and ' + plural + ' "';
-            }
-            langs = langs + args.languagefilters.join(', ') + '"';
-        }
-
-        if (args.ownerfilters.length != 0) {
-            var plural = 'owner';
-
-            if (args.ownerfilters.length >= 2) {
-                plural = 'owners';
-            }
-
-            if (repos === '' && langs === '') {
-                owns = ' filtered by ' + plural + ' "';
-            }
-            else {
-                owns = ' and ' + plural + ' "';
-            }
-
-            owns = owns + args.ownerfilters.join(', ') + '"';
-        }
-
-        document.title = 'Search for "' + args.query + '"' + repos + langs + owns;
+        document.title = 'Search for ' + stringTitle;
 
         return m('div.row.search-count', [
-            m('b', args.totalhits + ' results: '),
-            m('span.grey', '"' + args.query + '"' + repos + langs + owns)
+            m('b', SearchModel.totalhits() + ' results: '),
+            m('span.grey', stringTitle)
         ]);
     }
 }
