@@ -44,21 +44,14 @@ var HelperModel = {
         return year + '/' + month + '/' + day;
     },
     humanise: function (diff) {
-        // The string we're working with to create the representation
         var str = '';
-        // Map lengths of `diff` to different time periods
         var values = [[' Year', 365], [' Month', 30], [' Day', 1]];
 
-        // Iterate over the values...
         for (var i=0;i<values.length;i++) {
             var amount = Math.floor(diff / values[i][1]);
 
-            // ... and find the largest time value that fits into the diff
             if (amount >= 1) {
-                // If we match, add to the string ('s' is for pluralization)
                 str += amount + values[i][0] + (amount > 1 ? 's' : '') + ' ';
-
-                // and subtract from the diff
                 diff -= amount * values[i][1];
             }
         }
@@ -130,6 +123,13 @@ var SearchModel = {
             localStorage.setItem('toggleinstant', JSON.stringify(!SearchModel.filterinstantly()));
         }
         SearchModel.filterinstantly(!SearchModel.filterinstantly());
+    },
+    togglehistory: function() {
+        if (window.localStorage) {
+            localStorage.setItem('togglehistory', JSON.stringify(!SearchModel.searchhistory()));
+        }
+
+        SearchModel.searchhistory(!SearchModel.searchhistory());
     },
     getstringtitle: function() {
         var repos = '';
@@ -823,7 +823,7 @@ var FilterOptionsComponent = {
     controller: function() {
         return {
             togglehistory: function() {
-                SearchModel.searchhistory(!SearchModel.searchhistory());
+                SearchModel.togglehistory();
                 SearchModel.search();
             },
             toggleinstant: function() {
@@ -832,10 +832,15 @@ var FilterOptionsComponent = {
         }
     },
     view: function(ctrl, args) {
-        var inputparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
+        var instantparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
+        var historyparams = { type: 'checkbox', onclick: ctrl.togglehistory };
         
         if (SearchModel.filterinstantly()) {
-            inputparams.checked = 'checked'
+            instantparams.checked = 'checked'
+        }
+
+        if (SearchModel.searchhistory()) {
+            historyparams.checked = 'checked'
         }
 
         return m('div', 
@@ -843,13 +848,13 @@ var FilterOptionsComponent = {
             m('div', [
                 m('div.checkbox', 
                     m('label', [
-                        m('input', inputparams),
+                        m('input', instantparams),
                         m('span', 'Apply Filters Instantly')
                     ])
                 ),
                 m('div.checkbox', 
                     m('label', [
-                        m('input', { type: 'checkbox', onclick: function() { ctrl.togglehistory(); } }),
+                        m('input', historyparams),
                         m('span', 'Search Across History')
                     ])
                 )
@@ -1749,8 +1754,11 @@ if (preload !== undefined) {
 if (window.localStorage) {
     var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
+    tmp = JSON.parse(localStorage.getItem('togglehistory'));
+    tmp !== null ? SearchModel.searchhistory(tmp) : SearchModel.searchhistory(true);
 }
 else {
     SearchModel.filterinstantly(true);
+    SearchModel.searchhistory(false);
 }
 
