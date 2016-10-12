@@ -36,12 +36,33 @@ var HelperModel = {
         var date = new Date(year, month, day);
         return date;
     },
-    yearMonthDayDelimit: function(yearMonthDay) {
+    yearMonthDayDelimit: function (yearMonthDay) {
         var year = yearMonthDay.substring(0, 4);
         var month = yearMonthDay.substring(4, 6);
         var day = yearMonthDay.substring(6, 8);
 
         return year + '/' + month + '/' + day;
+    },
+    humanise: function (diff) {
+        // The string we're working with to create the representation
+        var str = '';
+        // Map lengths of `diff` to different time periods
+        var values = [[' Year', 365], [' Month', 30], [' Day', 1]];
+
+        // Iterate over the values...
+        for (var i=0;i<values.length;i++) {
+            var amount = Math.floor(diff / values[i][1]);
+
+            // ... and find the largest time value that fits into the diff
+            if (amount >= 1) {
+                // If we match, add to the string ('s' is for pluralization)
+                str += amount + values[i][0] + (amount > 1 ? 's' : '') + ' ';
+
+                // and subtract from the diff
+                diff -= amount * values[i][1];
+            }
+        }
+        return str;
     }
 }
 
@@ -467,95 +488,97 @@ var SearchModel = {
 
             SearchModel.currentlyloading(false);
         }).then( function(e) {
-            
-            if (SearchModel.chart() !== undefined) {
-                SearchModel.chart().destroy();
-            }
-
-            if (SearchModel.repoFacetYearMonthDay().length == 0) {
-                return;
-            }
-
-            var ctx = document.getElementById('timeChart');
-
-
-            var facets = {};
-            var labels = [];
-            _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
-                var fac = HelperModel.yearMonthDayDelimit(e.yearMonthDay);
-                facets[fac] = e.count; 
-                labels.push(fac);
-            });
-
-            labels.sort();
-
-            if (labels.length != 0) {
-                var startDate = HelperModel.yearMonthDayToDate(labels[0]);
-                var endDate = HelperModel.yearMonthDayToDate(labels[labels.length - 1]);
-
-
-                labels = _.map(HelperModel.getDateSpan(startDate, endDate), function(e) {
-                    var year = e.getFullYear();
-                    var month = e.getMonth() + 1;
-                    month = month < 10 ? '0' + month : month;
-                    var day = e.getDate() < 10 ? '0' + e.getDate() : e.getDate();
-
-                    return year + '/' + month + '/' + day;
-                });
-
-                labels = labels.splice(labels.length - 366, labels.length);
-            }
-
-            var data = {
-                labels: labels,
-                datasets: [{
-                    label: SearchModel.query(),
-                    fill: false,
-                    lineTension: 0.1,
-                    backgroundColor: 'rgba(75,192,192,0.4)',
-                    borderColor: '#428bca', // Line colour
-                    borderCapStyle: 'butt',
-                    borderDash: [],
-                    borderDashOffset: 0.0,
-                    borderJoinStyle: 'miter',
-                    pointBorderColor: 'rgba(75,192,192,1)',
-                    pointBackgroundColor: '#fff',
-                    pointBorderWidth: 5,
-                    pointHoverRadius: 5,
-                    pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                    pointHoverBorderColor: 'rgba(220,220,220,1)',
-                    pointHoverBorderWidth: 1,
-                    pointRadius: 1,
-                    pointHitRadius: 10,
-                    data: _.map(labels, function(e) { return facets[e]; } ),
-                    spanGaps: false
-                }]
-            };
-
-            var myLineChart = new Chart(ctx, {
-                type: 'bar',
-                data: data,
-                options: {
-                    legend: {
-                        display: false
-                     },
-                     responsiveAnimationDuration: 0,
-                     scales: {
-                        autoSkip: true,
-                        xAxes: [{
-                            display: false
-                        }]
-                    },
-                    animation: {
-                        duration: 0
-                    },
-
-                }
-            });
-
-            SearchModel.chart(myLineChart);
-            
+            SearchModel.renderchart();
         });
+    },
+    chartlimit: m.prop(365),
+    renderchart: function() {
+        if (SearchModel.chart() !== undefined) {
+            SearchModel.chart().destroy();
+        }
+
+        if (SearchModel.repoFacetYearMonthDay().length == 0) {
+            return;
+        }
+
+        var ctx = document.getElementById('timeChart');
+
+
+        var facets = {};
+        var labels = [];
+        _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
+            var fac = HelperModel.yearMonthDayDelimit(e.yearMonthDay);
+            facets[fac] = e.count; 
+            labels.push(fac);
+        });
+
+        labels.sort();
+
+        if (labels.length != 0) {
+            var startDate = HelperModel.yearMonthDayToDate(labels[0]);
+            var endDate = HelperModel.yearMonthDayToDate(labels[labels.length - 1]);
+
+
+            labels = _.map(HelperModel.getDateSpan(startDate, endDate), function(e) {
+                var year = e.getFullYear();
+                var month = e.getMonth() + 1;
+                month = month < 10 ? '0' + month : month;
+                var day = e.getDate() < 10 ? '0' + e.getDate() : e.getDate();
+
+                return year + '/' + month + '/' + day;
+            });
+
+            labels = labels.splice(labels.length - SearchModel.chartlimit(), labels.length);
+        }
+
+        var data = {
+            labels: labels,
+            datasets: [{
+                label: SearchModel.query(),
+                fill: false,
+                lineTension: 0.1,
+                backgroundColor: 'rgba(75,192,192,0.4)',
+                borderColor: '#428bca', // Line colour
+                borderCapStyle: 'butt',
+                borderDash: [],
+                borderDashOffset: 0.0,
+                borderJoinStyle: 'miter',
+                pointBorderColor: 'rgba(75,192,192,1)',
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 5,
+                pointHoverRadius: 5,
+                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
+                pointHoverBorderColor: 'rgba(220,220,220,1)',
+                pointHoverBorderWidth: 1,
+                pointRadius: 1,
+                pointHitRadius: 10,
+                data: _.map(labels, function(e) { return facets[e]; } ),
+                spanGaps: false
+            }]
+        };
+
+        var myLineChart = new Chart(ctx, {
+            type: 'bar',
+            data: data,
+            options: {
+                legend: {
+                    display: false
+                 },
+                 responsiveAnimationDuration: 0,
+                 scales: {
+                    autoSkip: true,
+                    xAxes: [{
+                        display: false
+                    }]
+                },
+                animation: {
+                    duration: 0
+                },
+
+            }
+        });
+
+        SearchModel.chart(myLineChart);
     }
 };
 
@@ -1579,6 +1602,18 @@ var SearchChartComponent = {
                 }
 
                 return true;
+            },
+            zoomout: function() {
+                SearchModel.chartlimit(parseInt(SearchModel.chartlimit() * 2));
+                SearchModel.renderchart();
+            },
+            zoomin: function() {
+                var days = parseInt(SearchModel.chartlimit() / 2);
+                if (days == 0) {
+                    days = 1;
+                }
+                SearchModel.chartlimit(days);
+                SearchModel.renderchart();
             }
         }
     },
@@ -1589,7 +1624,11 @@ var SearchChartComponent = {
 
         // TODO need to have logic to display the hide show if there is data to show it
         return m('div.row.search-chart', [
-            //m('div', 'Hide Chart ▼'),
+            m('small', [
+                m('span', { onclick: function () { ctrl.zoomout(); } }, '◀ Zoom | '),
+                m('span', HelperModel.humanise(SearchModel.chartlimit())),
+                m('span', { onclick: function () { ctrl.zoomin(); } }, ' | Zoom ▶')
+            ]),            
             m('canvas', {id: 'timeChart', width: '500', height: '45'})
         ]);  
     }
@@ -1708,7 +1747,8 @@ if (preload !== undefined) {
 
 
 if (window.localStorage) {
-    JSON.parse(localStorage.getItem('toggleinstant')) !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
+    var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
+    tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
 }
 else {
     SearchModel.filterinstantly(true);
