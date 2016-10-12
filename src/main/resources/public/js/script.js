@@ -802,15 +802,16 @@ var FilterOptionsComponent = {
             togglehistory: function() {
                 SearchModel.searchhistory(!SearchModel.searchhistory());
                 SearchModel.search();
+            },
+            toggleinstant: function() {
+                SearchModel.toggleinstant();
             }
         }
     },
     view: function(ctrl, args) {
-        var inputparams = { type: 'checkbox', onclick: function() { 
-            SearchModel.toggleinstant();
-        } };
+        var inputparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
         
-        if (args.filterinstantly) {
+        if (SearchModel.filterinstantly()) {
             inputparams.checked = 'checked'
         }
 
@@ -1704,3 +1705,12 @@ if (preload !== undefined) {
 
     SearchModel.search(preload.page, true);
 }
+
+
+if (window.localStorage) {
+    JSON.parse(localStorage.getItem('toggleinstant')) !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
+}
+else {
+    SearchModel.filterinstantly(true);
+}
+
