@@ -488,7 +488,7 @@ var SearchModel = {
 
             SearchModel.currentlyloading(false);
         }).then( function(e) {
-            SearchModel.renderchart();
+            //SearchModel.renderchart();
         });
     },
     chartlimit: m.prop(365),
@@ -517,7 +517,7 @@ var SearchModel = {
         if (labels.length != 0) {
             var startDate = HelperModel.yearMonthDayToDate(labels[0]);
             var endDate = HelperModel.yearMonthDayToDate(labels[labels.length - 1]);
-
+            //endDate = new Date();
 
             labels = _.map(HelperModel.getDateSpan(startDate, endDate), function(e) {
                 var year = e.getFullYear();
@@ -566,10 +566,34 @@ var SearchModel = {
                  },
                  responsiveAnimationDuration: 0,
                  scales: {
-                    autoSkip: true,
                     xAxes: [{
-                        display: false
-                    }]
+                        ticks: {
+                            //autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45,
+                            callback: function(value, index, values) {
+                                //console.log(index);
+                                //console.log(values.length);
+                                if (values.length < 30) {
+                                    return value;
+                                }
+
+                                //if (parseInt(index) % 3 === 0 || index == values.length - 1) {
+                                if (value.indexOf('/01') !== -1) {
+                                    return '' + value;
+                                }
+                                
+                                return '---';
+                            }
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            callback: function(value, index, values) {
+                                return '' + parseInt(value);
+                            }
+                        }
+                    }],
                 },
                 animation: {
                     duration: 0
@@ -1595,6 +1619,23 @@ var SearchCountComponent = {
 var SearchChartComponent = {
     controller: function() {
         var display = true;
+        var steps = [
+            365 * 20,
+            365 * 10,
+            365 * 5,
+            365 * 2,
+            365,
+            6 * 30,
+            3 * 30,
+            1 * 30,
+            15,
+            7,
+            5,
+            4,
+            3,
+            2,
+            1
+        ];
 
         return {
             shoulddisplay: function() {
@@ -1609,32 +1650,40 @@ var SearchChartComponent = {
                 return true;
             },
             zoomout: function() {
-                SearchModel.chartlimit(parseInt(SearchModel.chartlimit() * 2));
+                var index = _.findIndex(steps, function(e) { return e == SearchModel.chartlimit(); });
+                if (index == 0) {
+                    return;
+                } 
+                index -= 1;
+
+                SearchModel.chartlimit(steps[index]);
                 SearchModel.renderchart();
             },
             zoomin: function() {
-                var days = parseInt(SearchModel.chartlimit() / 2);
-                if (days == 0) {
-                    days = 1;
-                }
-                SearchModel.chartlimit(days);
+                var index = _.findIndex(steps, function(e) { return e == SearchModel.chartlimit(); });
+                if (index == steps.length) {
+                    return;
+                } 
+                index += 1;
+
+                SearchModel.chartlimit(steps[index]);
                 SearchModel.renderchart();
             }
         }
     },
     view: function(ctrl) {
-        if (ctrl.shoulddisplay() === false) {
+        //if (ctrl.shoulddisplay() === false) {
             return m('div');
-        }
+        //}
 
         // TODO need to have logic to display the hide show if there is data to show it
         return m('div.row.search-chart', [
-            m('small', [
-                m('span', { onclick: function () { ctrl.zoomout(); } }, '◀ Zoom | '),
-                m('span', HelperModel.humanise(SearchModel.chartlimit())),
-                m('span', { onclick: function () { ctrl.zoomin(); } }, ' | Zoom ▶')
-            ]),            
             m('canvas', {id: 'timeChart', width: '500', height: '45'})
+            // m('small', [
+            //     m('span', { onclick: function () { ctrl.zoomout(); } }, '◀ More | '),
+            //     m('span', HelperModel.humanise(SearchModel.chartlimit())),
+            //     m('span', { onclick: function () { ctrl.zoomin(); } }, ' | Less ▶')
+            // ])
         ]);  
     }
 }
@@ -1665,7 +1714,6 @@ var SearchAlternateFilterComponent = {
                     )
                 })
             ])
-            
         ]);
     }
 }
