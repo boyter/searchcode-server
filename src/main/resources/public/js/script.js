@@ -138,6 +138,7 @@ var SearchModel = {
         var years = '';
         var yearmonths = '';
         var yearmonthdays = '';
+        var revisions = '';
 
         if (SearchModel.activerepositoryfilters().length !== 0) {
             var plural = 'repository';
@@ -224,7 +225,17 @@ var SearchModel = {
             yearmonthdays = yearmonthdays + _.map(SearchModel.activeyearmonthdayfilters(), function(e) { return e.substring(0, 4) + '/' + e.substring(4, 6) + '/' + e.substring(6, 8); } ).join(', ') + '"';
         }
 
-        return '"' + SearchModel.query() + '"' + repos + langs + owns + years + yearmonths + yearmonthdays;
+        if (SearchModel.activerevisionfilters().length != 0) {
+            var plural = 'revision';
+
+            if (SearchModel.activerevisionfilters().length >= 2) {
+                plural = 'revisions';
+            }
+
+            yearmonthdays = ' limited to ' + plural  + ' "' + SearchModel.activerevisionfilters().join(', ') + '"';
+        }
+
+        return '"' + SearchModel.query() + '"' + repos + langs + owns + years + yearmonths + yearmonthdays + revisions;
     },
     togglefilter: function (type, name) {
         switch(type) {
@@ -834,7 +845,7 @@ var SearchButtonFilterComponent = {
                 m('span', m.trust('&nbsp;')),
                 m('input.btn.btn-xs.btn-success.filter-button', { 
                     type: 'submit',
-                    disabled: args.filterinstantly,
+                    disabled: SearchModel.filterinstantly(),
                     onclick: function() { args.search() }, 
                     value: 'Apply' }
                 )
