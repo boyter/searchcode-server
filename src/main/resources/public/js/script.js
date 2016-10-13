@@ -11,6 +11,7 @@
 /**
  * The implementation of the front end for searchcode server using Mithril.js
  */
+ var ff_timesearchenabled = false;
 
 Date.prototype.addDays = function (days) {
     var dat = new Date(this.valueOf())
@@ -922,7 +923,7 @@ var FilterOptionsComponent = {
                         m('span', 'Apply Filters Instantly')
                     ])
                 ),
-                m('div.checkbox', 
+                ff_timesearchenabled === false ? m('span') : m('div.checkbox', 
                     m('label', [
                         m('input', historyparams),
                         m('span', 'Search Across History')
@@ -1007,7 +1008,7 @@ var SearchRepositoriesFilterComponent = {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
                         ctrl.clickenvent(res.repoName);
-                        if (args.filterinstantly) {
+                        if (SearchModel.filterinstantly()) {
                             args.search();
                         }
                     },
@@ -1096,7 +1097,7 @@ var SearchLanguagesFilterComponent = {
                 return m.component(FilterCheckboxComponent, {
                     onclick: function() { 
                         ctrl.clickenvent(res.languageName); 
-                        if (args.filterinstantly) {
+                        if (SearchModel.filterinstantly()) {
                             args.search();
                         }
                     },
@@ -1718,18 +1719,13 @@ var SearchChartComponent = {
         }
     },
     view: function(ctrl) {
-        if (ctrl.shoulddisplay() === false) {
+        if (ctrl.shoulddisplay() === false || ff_timesearchenabled === false) {
             return m('div');
         }
 
         // TODO need to have logic to display the hide show if there is data to show it
         return m('div.row.search-chart', [
             m('canvas', {id: 'timeChart', width: '500', height: '45'})
-            // m('small', [
-            //     m('span', { onclick: function () { ctrl.zoomout(); } }, '◀ More | '),
-            //     m('span', HelperModel.humanise(SearchModel.chartlimit())),
-            //     m('span', { onclick: function () { ctrl.zoomin(); } }, ' | Less ▶')
-            // ])
         ]);  
     }
 }
