@@ -139,6 +139,23 @@ var SearchModel = {
         var yearmonths = '';
         var yearmonthdays = '';
         var revisions = '';
+        var deleted = '';
+
+        if (SearchModel.activedeletedfilters().length !== 0) {
+            if (_.contains(SearchModel.activedeletedfilters(), 'TRUE')) {
+                deleted = ' deleted files ';
+            }
+
+            if (_.contains(SearchModel.activedeletedfilters(), 'FALSE')) {
+                if (deleted.length === 0) {
+                    deleted = ' modified/added files ';
+                }
+                else {
+                    deleted += ' and modified/added files ';
+                }
+            }
+        }
+
 
         if (SearchModel.activerepositoryfilters().length !== 0) {
             var plural = 'repository';
@@ -235,7 +252,7 @@ var SearchModel = {
             yearmonthdays = ' limited to ' + plural  + ' "' + SearchModel.activerevisionfilters().join(', ') + '"';
         }
 
-        return '"' + SearchModel.query() + '"' + repos + langs + owns + years + yearmonths + yearmonthdays + revisions;
+        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + years + yearmonths + yearmonthdays + revisions;
     },
     togglefilter: function (type, name) {
         switch(type) {
