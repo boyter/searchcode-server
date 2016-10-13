@@ -62,6 +62,7 @@ public class ApiRouteService {
         String[] yearmonth;
         String[] yearmonthday;
         String[] revisions;
+        String[] deleted;
 
         String reposFilter = Values.EMPTYSTRING;
         String langsFilter = Values.EMPTYSTRING;
@@ -70,6 +71,7 @@ public class ApiRouteService {
         String yearMonthFilter = Values.EMPTYSTRING;
         String yearMonthDayFilter = Values.EMPTYSTRING;
         String revisionsFilter = Values.EMPTYSTRING;
+        String deletedFilter = Values.EMPTYSTRING;
 
         if(request.queryParams().contains("repo")) {
             repos = request.queryParamsValues("repo");
@@ -106,10 +108,15 @@ public class ApiRouteService {
             revisionsFilter = this.getRevisions(revisions, revisionsFilter);
         }
 
+        if(request.queryParams().contains("del")) {
+            deleted = request.queryParamsValues("del");
+            deletedFilter = this.getDeleted(deleted, deletedFilter);
+        }
+
         // split the query escape it and and it together
         String cleanQueryString = scl.formatQueryString(query);
 
-        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearFilter + yearMonthFilter + yearMonthDayFilter + revisionsFilter, page);
+        SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter + yearFilter + yearMonthFilter + yearMonthDayFilter + revisionsFilter + deletedFilter, page);
         searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
         searchResult.setQuery(query);
@@ -220,5 +227,16 @@ public class ApiRouteService {
             revisionsFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
         }
         return revisionsFilter;
+    }
+
+    private String getDeleted(String[] deleted, String deletedFilter) {
+        if (deleted.length != 0) {
+            List<String> reposList = Arrays.asList(deleted).stream()
+                    .map((s) -> Values.DELETED + ":" + QueryParser.escape(s))
+                    .collect(Collectors.toList());
+
+            deletedFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
+        }
+        return deletedFilter;
     }
 }

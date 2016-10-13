@@ -347,6 +347,11 @@ var SearchModel = {
                     return false;
                 }
                 break;
+            case 'deleted':
+                if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
+                    return false;
+                }
+                break;
         }
 
         return true;
@@ -414,6 +419,15 @@ var SearchModel = {
 
         return rev;
     },
+    getdeletedfilters: function() {
+        var del = '';
+
+        if (SearchModel.deletedfilters().length != 0) {
+            del = '&del=' + _.map(SearchModel.deletedfilters(), function(e) { return encodeURIComponent(e); } ).join('&del=');
+        }
+
+        return del;
+    },
     setstatechange: function(pagequery, isstatechange) {
         // set the state
         if (isstatechange === undefined) {
@@ -431,6 +445,8 @@ var SearchModel = {
                         SearchModel.getyearfilters() + 
                         SearchModel.getyearmonthfilters() + 
                         SearchModel.getyearmonthdayfilters() + 
+                        SearchModel.getrevisionfilters() + 
+                        SearchModel.getdeletedfilters() + 
                         pagequery);
         }
     },
@@ -450,6 +466,7 @@ var SearchModel = {
         var ym = SearchModel.getyearmonthfilters();
         var ymd = SearchModel.getyearmonthdayfilters();
         var rev = SearchModel.getrevisionfilters();
+        var del = SearchModel.getdeletedfilters();
 
         var searchpage = 0;
         var pagequery = ''
@@ -469,12 +486,13 @@ var SearchModel = {
         SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
         SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
         SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
+        SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
