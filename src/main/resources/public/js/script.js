@@ -581,7 +581,7 @@ var SearchModel = {
             labels: labels,
             datasets: [{
                 label: SearchModel.query(),
-                fill: false,
+                fill: true,
                 lineTension: 0.1,
                 backgroundColor: 'rgba(75,192,192,0.4)',
                 borderColor: '#428bca', // Line colour
@@ -599,12 +599,12 @@ var SearchModel = {
                 pointRadius: 1,
                 pointHitRadius: 10,
                 data: _.map(labels, function(e) { return facets[e]; } ),
-                spanGaps: false
+                spanGaps: true
             }]
         };
 
         var myLineChart = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: data,
             options: {
                 legend: {
@@ -616,7 +616,7 @@ var SearchModel = {
                         ticks: {
                             //autoSkip: false,
                             maxRotation: 30,
-                            minRotation: 0,
+                            minRotation: 30,
                             callback: function(value, index, values) {
                                 if (values.length < 30) {
                                     return value;
@@ -633,6 +633,9 @@ var SearchModel = {
                     yAxes: [{
                         ticks: {
                             callback: function(value, index, values) {
+                                if (('' + value).indexOf('.') !== -1) {
+                                    return '';
+                                }
                                 return '' + parseInt(value);
                             }
                         }
@@ -1575,7 +1578,7 @@ var SearchDeletedComponent = {
                             SearchModel.search();
                         }
                     },
-                    value: res.deleted,
+                    value: res.deleted === 'FALSE' ? 'Added/Modified' : 'Deleted',
                     count: res.count,
                     checked: SearchModel.filterexists('deleted', res.deleted)
                 });
