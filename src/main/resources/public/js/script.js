@@ -143,12 +143,12 @@ var SearchModel = {
 
         if (SearchModel.activedeletedfilters().length !== 0) {
             if (_.contains(SearchModel.activedeletedfilters(), 'TRUE')) {
-                deleted = ' deleted files ';
+                deleted = ' in deleted files ';
             }
 
             if (_.contains(SearchModel.activedeletedfilters(), 'FALSE')) {
                 if (deleted.length === 0) {
-                    deleted = ' modified/added files ';
+                    deleted = ' in modified/added files ';
                 }
                 else {
                     deleted += ' and modified/added files ';
@@ -534,7 +534,7 @@ var SearchModel = {
 
             SearchModel.currentlyloading(false);
         }).then( function(e) {
-            //SearchModel.renderchart();
+            SearchModel.renderchart();
         });
     },
     chartlimit: m.prop(365),
@@ -615,21 +615,18 @@ var SearchModel = {
                     xAxes: [{
                         ticks: {
                             //autoSkip: false,
-                            maxRotation: 45,
-                            minRotation: 45,
+                            maxRotation: 30,
+                            minRotation: 0,
                             callback: function(value, index, values) {
-                                //console.log(index);
-                                //console.log(values.length);
                                 if (values.length < 30) {
                                     return value;
                                 }
 
-                                //if (parseInt(index) % 3 === 0 || index == values.length - 1) {
-                                if (value.indexOf('/01') !== -1) {
+                                if (parseInt(index) % 3 === 0 || index == values.length - 1) {
                                     return '' + value;
                                 }
                                 
-                                return '---';
+                                return '';
                             }
                         }
                     }],
@@ -1718,9 +1715,9 @@ var SearchChartComponent = {
         }
     },
     view: function(ctrl) {
-        //if (ctrl.shoulddisplay() === false) {
+        if (ctrl.shoulddisplay() === false) {
             return m('div');
-        //}
+        }
 
         // TODO need to have logic to display the hide show if there is data to show it
         return m('div.row.search-chart', [
