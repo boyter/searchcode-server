@@ -521,7 +521,7 @@ print data['sucessful'], data['message']</textarea>
 
         <p>searchcode server uses the high performance jetty web server. It should perform well even with thousands of requests
         as a front facing solution. If a reverse proxy solution is required there is no need to configure static assets, simply
-        configure all requests to pass back to searchcode server on 127.0.0.1. You should also set the property only_localhost to true
+        configure all requests to pass back to searchcode server. You should also set the config property only_localhost to true
         in this case.</p>
 
         <h3 id="properties">Properties</h3>
@@ -587,6 +587,12 @@ print data['sucessful'], data['message']</textarea>
               <dd>A white list of file extensions that if match will always be added to the index. The white list has a higher priority then the blacklist and so if an extension appears in both it will be indexed.</dd>
               <dt>binary_extension_black_list</dt>
               <dd>A black list of file extensions that if match will never be added to the index. The black list has a lower priority then the whitelist and so if an extension appears in both it will be indexed.</dd>
+              <dt>number_git_processors</dt>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Defaults to 5.</dd>
+              <dt>number_svn_processors</dt>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Defaults to 5.</dd>
+              <dt>number_file_processors</dt>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories. Defaults to 1.</dd>
             </dl>
 
         </p>

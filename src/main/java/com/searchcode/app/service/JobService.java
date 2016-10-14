@@ -15,6 +15,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -44,7 +45,9 @@ public class JobService implements IJobService {
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 1; // TODO allow this to be configurable
-    private int NUMBERPROCESSORS = 5; // TODO allow this to be configurable
+    private int NUMBERGITPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS), Values.DEFAULT_NUMBER_GIT_PROCESSORS);
+    private int NUMBERSVNPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS), Values.DEFAULT_NUMBER_SVN_PROCESSORS);
+    private int NUMBERFILEPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);;
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
     private boolean LOWMEMORY = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
@@ -249,15 +252,19 @@ public class JobService implements IJobService {
             List<RepoResult> repoResults = this.repo.getAllRepo();
 
             // Create a pool of crawlers which read from the queue
-            for(int i=0; i< this.NUMBERPROCESSORS; i++) {
+            for (int i = 0; i < this.NUMBERGITPROCESSORS; i++) {
                 this.startIndexGitRepoJobs("" + i);
-                if (SVNENABLED) {
+            }
+
+            if (SVNENABLED) {
+                for (int i = 0; i < this.NUMBERSVNPROCESSORS; i++) {
                     this.startIndexSvnRepoJobs("" + i);
                 }
             }
 
-            // Single file index job
-            this.startIndexFileRepoJobs("1");
+            for (int i = 0; i < this.NUMBERFILEPROCESSORS; i++) {
+                this.startIndexFileRepoJobs("" + i);
+            }
 
             if(repoResults.size() == 0) {
                 LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");

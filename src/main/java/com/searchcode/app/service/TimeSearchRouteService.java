@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 /**
  * Contains API Route logic
  */
-public class ApiRouteService {
+public class TimeSearchRouteService {
 
     private final Injector injector;
 
-    public ApiRouteService() {
+    public TimeSearchRouteService() {
         injector = Guice.createInjector(new InjectorConfig());
     }
 

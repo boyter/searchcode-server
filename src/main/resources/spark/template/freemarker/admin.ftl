@@ -77,76 +77,76 @@
     </tr>
 
     <tr>
-    <td><b>sqlite_file</b></td>
-    <td>${sqlite_file}</td>
+        <td><b>sqlite_file</b></td>
+        <td>${sqlite_file}</td>
     </tr>
     <tr>
-    <td><b>server_port</b></td>
-    <td>${server_port}</td>
+        <td><b>server_port</b></td>
+        <td>${server_port}</td>
     </tr>
     <tr>
-    <td><b>index_location</b></td>
-    <td>${index_location}</td>
+        <td><b>index_location</b></td>
+        <td>${index_location}</td>
     </tr>
     <tr>
-    <td><b>facets_location</b></td>
-    <td>${facets_location}</td>
+        <td><b>facets_location</b></td>
+        <td>${facets_location}</td>
     </tr>
     <tr>
-    <td><b>repository_location</b></td>
-    <td>${repository_location}</td>
+        <td><b>repository_location</b></td>
+        <td>${repository_location}</td>
     </tr>
     <tr>
-    <td><b>check_repo_chages</b></td>
-    <td>${check_repo_chages}</td>
+        <td><b>check_repo_chages</b></td>
+        <td>${check_repo_chages}</td>
     </tr>
     <tr>
-    <td><b>check_filerepo_chages</b></td>
-    <td>${check_filerepo_chages}</td>
+        <td><b>check_filerepo_chages</b></td>
+        <td>${check_filerepo_chages}</td>
     </tr>
     <tr>
-    <td><b>spelling_corrector_size</b></td>
-    <td>${spelling_corrector_size}</td>
+        <td><b>spelling_corrector_size</b></td>
+        <td>${spelling_corrector_size}</td>
     </tr>
     <tr>
-    <td><b>max_document_queue_size</b></td>
-    <td>${max_document_queue_size}</td>
+        <td><b>max_document_queue_size</b></td>
+        <td>${max_document_queue_size}</td>
     </tr>
     <tr>
-    <td><b>max_document_queue_line_size</b></td>
-    <td>${max_document_queue_line_size}</td>
+        <td><b>max_document_queue_line_size</b></td>
+        <td>${max_document_queue_line_size}</td>
     </tr>
     <tr>
-    <td><b>max_file_line_depth</b></td>
-    <td>${max_file_line_depth}</td>
+        <td><b>max_file_line_depth</b></td>
+        <td>${max_file_line_depth}</td>
     </tr>
     <tr>
-    <td><b>only_localhost</b></td>
-    <td>${only_localhost}</td>
+        <td><b>only_localhost</b></td>
+        <td>${only_localhost}</td>
     </tr>
     <tr>
-    <td><b>low_memory</b></td>
-    <td>${low_memory}</td>
+        <td><b>low_memory</b></td>
+        <td>${low_memory}</td>
     </tr>
     <tr>
-    <td><b>git_binary_path</b></td>
-    <td>${git_binary_path}</td>
+        <td><b>git_binary_path</b></td>
+        <td>${git_binary_path}</td>
     </tr>
     <tr>
-    <td><b>use_system_git</b></td>
-    <td>${use_system_git}</td>
+        <td><b>use_system_git</b></td>
+        <td>${use_system_git}</td>
     </tr>
     <tr>
-    <td><b>api_enabled</b></td>
-    <td>${api_enabled}</td>
+        <td><b>api_enabled</b></td>
+        <td>${api_enabled}</td>
     </tr>
     <tr>
-    <td><b>api_key_authentication</b></td>
-    <td>${api_key_authentication}</td>
+        <td><b>api_key_authentication</b></td>
+        <td>${api_key_authentication}</td>
     </tr>
     <tr>
-    <td><b>svn_enabled</b></td>
-    <td>${svn_enabled}</td>
+        <td><b>svn_enabled</b></td>
+        <td>${svn_enabled}</td>
     </tr>
     <tr>
         <td><b>svn_binary_path</b></td>
@@ -167,6 +167,18 @@
     <tr>
         <td><b>binary_extension_black_list</b></td>
         <td>${binary_extension_black_list}</td>
+    </tr>
+    <tr>
+        <td><b>number_git_processors</b></td>
+        <td>${number_git_processors}</td>
+    </tr>
+    <tr>
+        <td><b>number_svn_processors</b></td>
+        <td>${number_svn_processors}</td>
+    </tr>
+    <tr>
+        <td><b>number_file_processors</b></td>
+        <td>${number_file_processors}</td>
     </tr>
 </table>
     

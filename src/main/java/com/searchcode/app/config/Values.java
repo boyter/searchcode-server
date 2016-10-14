@@ -70,6 +70,12 @@ public class Values {
     public static String DEFAULT_BINARY_BLACK_LIST = "";
     public static String GUESS_BINARY = "binary_guess";
     public static String DEFAULT_GUESS_BINARY = "true";
+    public static String NUMBER_GIT_PROCESSORS = "number_git_processors";
+    public static String DEFAULT_NUMBER_GIT_PROCESSORS = "5";
+    public static String NUMBER_SVN_PROCESSORS = "number_svn_processors";
+    public static String DEFAULT_NUMBER_SVN_PROCESSORS = "5";
+    public static String NUMBER_FILE_PROCESSORS = "number_file_processors";
+    public static String DEFAULT_NUMBER_FILE_PROCESSORS = "1";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";
