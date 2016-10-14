@@ -386,7 +386,9 @@ public abstract class IndexBaseRepoJob implements Job {
                 }
             });
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
+        } catch (Exception ex) {
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
 
         // TODO investigate if a memory issue with this logic for very large folders
