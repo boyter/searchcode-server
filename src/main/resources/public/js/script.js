@@ -1844,8 +1844,10 @@ if (preload !== undefined) {
 if (window.localStorage) {
     var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
-    tmp = JSON.parse(localStorage.getItem('togglehistory'));
-    tmp !== null ? SearchModel.searchhistory(tmp) : SearchModel.searchhistory(true);
+    if (ff_timesearchenabled === true) {
+        tmp = JSON.parse(localStorage.getItem('togglehistory'));
+        tmp !== null ? SearchModel.searchhistory(tmp) : SearchModel.searchhistory(true);
+    }
 }
 else {
     SearchModel.filterinstantly(true);

@@ -588,9 +588,9 @@ print data['sucessful'], data['message']</textarea>
               <dt>binary_extension_black_list</dt>
               <dd>A black list of file extensions that if match will never be added to the index. The black list has a lower priority then the whitelist and so if an extension appears in both it will be indexed.</dd>
               <dt>number_git_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Defaults to 5.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
               <dt>number_svn_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Defaults to 5.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
               <dt>number_file_processors</dt>
               <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories. Defaults to 1.</dd>
             </dl>
@@ -743,6 +743,7 @@ print data['sucessful'], data['message']</textarea>
           This issue typically occurs on Unix/Linux servers with a low ulimit.
           If you are getting errors like the above you may need to change your ulimit to a higher number as the default
           of 1024 for most systems can be too low.<br />
+          Also consider lowering the values for number_git_processors, number_svn_processors and number_file_processors.
         </p>
         <p>
           <b>java.nio.file.AccessDeniedException</b><br/>
