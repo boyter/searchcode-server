@@ -300,11 +300,11 @@ public class CodeSearcher {
         int noPages = numTotalHits / this.PAGELIMIT;
 
         if(noPages > 20) {
-            noPages = 20;
+            noPages = 19;
         }
 
         List<Integer> pages = new ArrayList<>();
-        for(int i=0; i< noPages; i++) {
+        for(int i = 0; i <= noPages; i++) {
             pages.add(i);
         }
 

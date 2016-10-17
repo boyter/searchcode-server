@@ -378,7 +378,7 @@ public class App {
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
 
-            if(req.queryParams().contains("q") && req.queryParams("q").trim() != "") {
+            if(req.queryParams().contains("q") && req.queryParams("q").trim() != Values.EMPTYSTRING) {
                 String query = req.queryParams("q").trim();
 
                 int page = 0;
