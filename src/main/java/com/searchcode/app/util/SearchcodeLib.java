@@ -13,6 +13,8 @@ package com.searchcode.app.util;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeOwner;
@@ -361,27 +363,50 @@ public class SearchcodeLib {
         String[] split = query.trim().split("\\s+");
 
         StringBuilder sb = new StringBuilder();
+        List<String> stringList = new ArrayList<>();
+
+        String and = " AND ";
+        String or = " OR ";
+        String not = " NOT ";
 
         for(String term: split) {
             switch (term) {
                 case "AND":
-                    sb.append("AND ");
+                    sb.append(and);
+                    if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(and)) {
+                        stringList.add(and);
+                    }
                     break;
                 case "OR":
-                    sb.append(" OR ");
+                    sb.append(or);
+                    if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(or)) {
+                        stringList.add(or);
+                    }
                     break;
                 case "NOT":
-                    sb.append(" NOT ");
+                    sb.append(not);
+                    if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(not)) {
+                        stringList.add(not);
+                    }
                     break;
                 default:
                     sb.append(" ");
                     sb.append(QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*"));
                     sb.append(" ");
+                    if (Iterables.getLast(stringList, null) == null ||
+                        Iterables.getLast(stringList).equals(and) ||
+                        Iterables.getLast(stringList).equals(or) ||
+                        Iterables.getLast(stringList).equals(not)) {
+                        stringList.add(" " + QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*") + " ");
+                    }
+                    else {
+                        stringList.add(and + QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*") + " ");
+                    }
                     break;
             }
         }
-
-        return sb.toString().trim();
+        String temp = StringUtils.join(stringList, " ");
+        return temp.trim();
     }
 
     /**

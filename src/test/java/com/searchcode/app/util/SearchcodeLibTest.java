@@ -406,8 +406,8 @@ public class SearchcodeLibTest extends TestCase {
     public void testFormatQueryString() {
         SearchcodeLib scl = new SearchcodeLib();
 
-        assertEquals("test  string", scl.formatQueryString("test string"));
-        assertEquals("test  string  other\\|", scl.formatQueryString("test string other|"));
+        assertEquals("test   AND string", scl.formatQueryString("test string"));
+        assertEquals("test   AND string   AND other\\|", scl.formatQueryString("test string other|"));
         assertEquals("test", scl.formatQueryString("test"));
         assertEquals("test", scl.formatQueryString("test  "));
         assertEquals("test", scl.formatQueryString("    test  "));
@@ -416,8 +416,13 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testFormatQueryStringOperators() {
         SearchcodeLib scl = new SearchcodeLib();
-        assertEquals("test AND  string", scl.formatQueryString("test AND string"));
-        assertEquals("(test AND  string)", scl.formatQueryString("(test AND string)"));
+        assertEquals("test   AND   string", scl.formatQueryString("test AND string"));
+        assertEquals("(test   AND   string)", scl.formatQueryString("(test AND string)"));
+    }
+
+    public void testFormatQueryStringDefaultAnd() {
+        SearchcodeLib scl = new SearchcodeLib();
+        assertEquals("test   AND string", scl.formatQueryString("test string"));
     }
 
     public void testGenerateAltQueries() {
