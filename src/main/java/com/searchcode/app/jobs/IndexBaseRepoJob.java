@@ -313,82 +313,88 @@ public abstract class IndexBaseRepoJob implements Job {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
-                    if (Singleton.getBackgroundJobsEnabled() == false) {
-                        return FileVisitResult.TERMINATE;
-                    }
-
-                    while (CodeIndexer.shouldPauseAdding()) {
-                        Singleton.getLogger().info("Pausing parser.");
-                        try {
-                            Thread.sleep(SLEEPTIME);
-                        } catch (InterruptedException ex) {
+                    try {
+                        if (Singleton.getBackgroundJobsEnabled() == false) {
+                            return FileVisitResult.TERMINATE;
                         }
-                    }
 
-                    // Convert Path file to unix style that way everything is easier to reason about
-                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                    String fileName = file.getFileName().toString();
-                    String md5Hash = Values.EMPTYSTRING;
+                        while (CodeIndexer.shouldPauseAdding()) {
+                            Singleton.getLogger().info("Pausing parser.");
+                            try {
+                                Thread.sleep(SLEEPTIME);
+                            } catch (InterruptedException ex) {
+                            }
+                        }
 
-                    if (ignoreFile(fileParent)) {
+                        // Convert Path file to unix style that way everything is easier to reason about
+                        String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
+                        String fileToString = FilenameUtils.separatorsToUnix(file.toString());
+                        String fileName = file.getFileName().toString();
+                        String md5Hash = Values.EMPTYSTRING;
+
+                        if (ignoreFile(fileParent)) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        List<String> codeLines;
+                        try {
+                            codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
+                        } catch (IOException ex) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (scl.isMinified(codeLines)) {
+                            Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (codeLines.isEmpty()) {
+                            Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (scl.isBinary(codeLines, fileName)) {
+                            Singleton.getLogger().info("Appears to be binary will not index " + fileToString);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        try {
+                            FileInputStream fis = new FileInputStream(new File(fileToString));
+                            md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+                            fis.close();
+                        } catch (IOException ex) {
+                            Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
+                        }
+
+                        String languageName = scl.languageGuesser(fileName, codeLines);
+                        String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
+                        String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
+                        String repoLocationRepoNameLocationFilename = fileToString;
+
+                        String newString = getBlameFilePath(fileLocationFilename);
+                        String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
+
+                        // If low memory don't add to the queue, just index it directly
+                        if (lowMemory) {
+                            CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                        } else {
+                            Singleton.incrementCodeIndexLinesCount(codeLines.size());
+                            codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                        }
+
+                        fileLocations.add(fileLocationFilename);
                         return FileVisitResult.CONTINUE;
                     }
-
-                    List<String> codeLines;
-                    try {
-                        codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
-                    } catch (IOException ex) {
-                        return FileVisitResult.CONTINUE;
+                    catch(Exception ex) {
+                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
                     }
 
-                    if (scl.isMinified(codeLines)) {
-                        Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (codeLines.isEmpty()) {
-                        Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (scl.isBinary(codeLines, fileName)) {
-                        Singleton.getLogger().info("Appears to be binary will not index " + fileToString);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    try {
-                        FileInputStream fis = new FileInputStream(new File(fileToString));
-                        md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                        fis.close();
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
-                    }
-
-                    String languageName = scl.languageGuesser(fileName, codeLines);
-                    String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-                    String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
-                    String repoLocationRepoNameLocationFilename = fileToString;
-
-                    String newString = getBlameFilePath(fileLocationFilename);
-                    String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-
-                    // If low memory don't add to the queue, just index it directly
-                    if (lowMemory) {
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } else {
-                        Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                        codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    }
-
-                    fileLocations.add(fileLocationFilename);
+                    // Continue at all costs
                     return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
-        } catch (Exception ex) {
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
 
         // TODO investigate if a memory issue with this logic for very large folders
