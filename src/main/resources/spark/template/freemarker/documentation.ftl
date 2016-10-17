@@ -593,6 +593,8 @@ print data['sucessful'], data['message']</textarea>
               <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
               <dt>number_file_processors</dt>
               <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories. Defaults to 1.</dd>
+              <dt>default_and_match</dt>
+              <dd>Should the matching logic default to AND matching where nothing is specified. If set to true all queries will be similar to "import AND junit". If set to false all queries will be similar to "import OR junit". Default logic can be overridden by explicitly adding search operators. Defaults to true.</dd>
             </dl>
 
         </p>

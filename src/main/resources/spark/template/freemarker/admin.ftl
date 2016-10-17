@@ -180,6 +180,10 @@
         <td><b>number_file_processors</b></td>
         <td>${number_file_processors}</td>
     </tr>
+    <tr>
+        <td><b>default_and_match</b></td>
+        <td>${default_and_match}</td>
+    </tr>
 </table>
     
 

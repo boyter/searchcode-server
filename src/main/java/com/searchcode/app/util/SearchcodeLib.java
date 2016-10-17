@@ -38,6 +38,7 @@ public class SearchcodeLib {
     private String[] WHITELIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
     private String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
     private boolean GUESSBINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
+    private boolean ANDMATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
 
     public SearchcodeLib() {}
 
@@ -360,6 +361,14 @@ public class SearchcodeLib {
      * Parse the query and escape it as per Lucene but without affecting search operators such as AND OR and NOT
      */
     public String formatQueryString(String query) {
+        if (this.ANDMATCH) {
+            return this.formatQueryStringAndDefault(query);
+        }
+
+        return this.formatQueryStringOrDefault(query);
+    }
+
+    private String formatQueryStringAndDefault(String query) {
         String[] split = query.trim().split("\\s+");
 
         StringBuilder sb = new StringBuilder();
@@ -372,31 +381,25 @@ public class SearchcodeLib {
         for(String term: split) {
             switch (term) {
                 case "AND":
-                    sb.append(and);
                     if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(and)) {
                         stringList.add(and);
                     }
                     break;
                 case "OR":
-                    sb.append(or);
                     if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(or)) {
                         stringList.add(or);
                     }
                     break;
                 case "NOT":
-                    sb.append(not);
                     if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(not)) {
                         stringList.add(not);
                     }
                     break;
                 default:
-                    sb.append(" ");
-                    sb.append(QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*"));
-                    sb.append(" ");
                     if (Iterables.getLast(stringList, null) == null ||
-                        Iterables.getLast(stringList).equals(and) ||
-                        Iterables.getLast(stringList).equals(or) ||
-                        Iterables.getLast(stringList).equals(not)) {
+                            Iterables.getLast(stringList).equals(and) ||
+                            Iterables.getLast(stringList).equals(or) ||
+                            Iterables.getLast(stringList).equals(not)) {
                         stringList.add(" " + QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*") + " ");
                     }
                     else {
@@ -407,6 +410,37 @@ public class SearchcodeLib {
         }
         String temp = StringUtils.join(stringList, " ");
         return temp.trim();
+    }
+
+    private String formatQueryStringOrDefault(String query) {
+        String[] split = query.trim().split("\\s+");
+
+        StringBuilder sb = new StringBuilder();
+
+        String and = " AND ";
+        String or = " OR ";
+        String not = " NOT ";
+
+        for(String term: split) {
+            switch (term) {
+                case "AND":
+                    sb.append(and);
+                    break;
+                case "OR":
+                    sb.append(or);
+                    break;
+                case "NOT":
+                    sb.append(not);
+                    break;
+                default:
+                    sb.append(" ");
+                    sb.append(QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*"));
+                    sb.append(" ");
+                    break;
+            }
+        }
+
+        return sb.toString().trim();
     }
 
     /**

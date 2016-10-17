@@ -76,6 +76,8 @@ public class Values {
     public static String DEFAULT_NUMBER_SVN_PROCESSORS = "2";
     public static String NUMBER_FILE_PROCESSORS = "number_file_processors";
     public static String DEFAULT_NUMBER_FILE_PROCESSORS = "1";
+    public static String AND_MATCH = "default_and_match";
+    public static String DEFAULT_AND_MATCH = "true";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";
