@@ -304,8 +304,10 @@ public class CodeSearcher {
         }
 
         List<Integer> pages = new ArrayList<>();
-        for(int i = 0; i <= noPages; i++) {
-            pages.add(i);
+        if(numTotalHits != 0) {
+            for (int i = 0; i <= noPages; i++) {
+                pages.add(i);
+            }
         }
 
         List<CodeResult> codeResults = new ArrayList<>();
