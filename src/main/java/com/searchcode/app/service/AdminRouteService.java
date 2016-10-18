@@ -61,6 +61,8 @@ public class AdminRouteService {
         map.put(Values.NUMBER_FILE_PROCESSORS, Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS));
         map.put(Values.AND_MATCH, Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
 
+        map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
+
         return map;
     }
 }

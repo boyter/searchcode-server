@@ -20,62 +20,64 @@
 
     <tr>
     <td width="50%"><b>Admin Functions</b></td>
-    <td width="50%"><a id="recrawl-reindex" href="#" class="btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a> <a id="force-queue" href="#" class="btn btn-danger btn-xs" role="button">Force Index Queue</a> <span id="admin-message"></span></td>
-    </tr>
-
-    <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-    </tr>
-
-    <tr>
-    <td><b>Server Version</b></td>
-    <td>${version} <a id="check-version" href="#">(check if latest version)</a><span id="latest-check"></span></td>
-    </tr>
-
-    <tr>
-    <td><b>Current Server Time</b></td>
-    <td>${currentdatetime}</td>
-    </tr>
-
-    <tr>
-    <td><b>Repositories Tracked</b></td>
-    <td>${repoCount}</td>
+    <td width="50%">
+        <a id="recrawl-reindex" href="#" class="btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
+        <a id="force-queue" href="#" class="btn btn-danger btn-xs" role="button">Force Index Queue</a>
+        <a id="pause-indexing" href="#" class="btn btn-danger btn-xs" role="button">Pause/Unpause Indexing</a>
+        <span id="admin-message"></span></td>
     </tr>
     <tr>
-    <td><b>Documents Indexed</b></td>
-    <td>${numDocs}</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
     </tr>
-
     <tr>
-    <td><b>Number of Searches</b></td>
-    <td>${numSearches}</td>
+        <td><b>Server Version</b></td>
+        <td>${version} <a id="check-version" href="#">(check if latest version)</a><span id="latest-check"></span></td>
     </tr>
-
     <tr>
-    <td><b>Uptime</b></td>
-    <td>${uptime}</td>
+        <td><b>Current Server Time</b></td>
+        <td>${currentdatetime}</td>
     </tr>
-
     <tr>
-    <td><b>Edition</b></td>
-    <td><#if isCommunity == true>
-        Community Edition
-        <#else>
-        Full Edition
-        </#if></td>
+        <td><b>Repositories Tracked</b></td>
+        <td>${repoCount}</td>
     </tr>
-
+    <tr>
+        <td><b>Documents Indexed</b></td>
+        <td>${numDocs}</td>
+    </tr>
+    <tr>
+        <td><b>Number of Searches</b></td>
+        <td>${numSearches}</td>
+    </tr>
+    <tr>
+        <td><b>Uptime</b></td>
+        <td>${uptime}</td>
+    </tr>
+    <tr>
+        <td><b>Edition</b></td>
+        <td><#if isCommunity == true>
+            Community Edition
+            <#else>
+            Full Edition
+            </#if></td>
+    </tr>
     <tr>
         <td><b>Number of Repositories Queued for Deletion</b></td>
         <td>${deletionQueue}</td>
     </tr>
-
     <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
+        <td><b>Index Status</b></td>
+        <td id="pause-index-status">${index_paused}</td>
     </tr>
 
+
+
+
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
     <tr>
         <td><b>sqlite_file</b></td>
         <td>${sqlite_file}</td>
@@ -223,6 +225,25 @@ $(document).ready(function(){
                     $('#admin-message').html('<i>Queue forced successfully.</i>');
                }).fail(function(xhr, ajaxOptions, thrownError) {
                     $('#admin-message').html('<i>Queue force failed. Please try again later.</i>');
+               });
+    });
+
+    $('#pause-indexing').click(function(e) {
+            e.preventDefault();
+            var thus = $(this);
+
+            $.post('/admin/togglepause/')
+               .done(function(data, textStatus, jqXHR) {
+                    if (data === 'true') {
+                        $('#admin-message').html('<i>Indexing is now paused.</i>');
+                        $('#pause-index-status').html('paused');
+                    }
+                    else {
+                        $('#admin-message').html('<i>Indexing is running.</i>');
+                        $('#pause-index-status').html('running');
+                    }
+               }).fail(function(xhr, ajaxOptions, thrownError) {
+                    $('#admin-message').html('<i>Pause indexing failed. Please try again later.</i>');
                });
     });
 

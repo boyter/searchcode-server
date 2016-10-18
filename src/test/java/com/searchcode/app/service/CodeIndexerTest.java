@@ -9,11 +9,23 @@ import java.io.IOException;
 import java.util.Queue;
 import java.util.Random;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class CodeIndexerTest extends TestCase {
     public CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", "repoName", "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, "contents", "repoRemoteLocation", "codeOwner");
 
     public void testIndexDocument() throws IOException {
         CodeIndexer.indexDocument(codeIndexDocument);
+    }
+
+    public void testShouldPauseAddingExpectTrue() {
+        Singleton.setPauseBackgroundJobs(true);
+        assertThat(CodeIndexer.shouldPauseAdding()).isTrue();
+    }
+
+    public void testShouldPauseAddingExpectFalse() {
+        Singleton.setPauseBackgroundJobs(false);
+        assertThat(CodeIndexer.shouldPauseAdding()).isFalse();
     }
 
     // TODO actually assert something in here

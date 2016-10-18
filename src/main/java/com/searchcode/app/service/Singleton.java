@@ -53,6 +53,7 @@ public final class Singleton {
     private static TimeSearchRouteService timeSearchRouteService = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
+    private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
@@ -232,5 +233,14 @@ public final class Singleton {
 
     public static synchronized void setBackgroundJobsEnabled(boolean jobsEnabled) {
         backgroundJobsEnabled = jobsEnabled;
+    }
+
+
+    public static synchronized boolean getPauseBackgroundJobs() {
+        return pauseBackgroundJobs;
+    }
+
+    public static synchronized void setPauseBackgroundJobs(boolean pauseBackgroundJobs) {
+        Singleton.pauseBackgroundJobs = pauseBackgroundJobs;
     }
 }

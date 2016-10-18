@@ -1101,6 +1101,16 @@ public class App {
             return js.forceEnqueue();
         }, new JsonTransformer());
 
+        post("/admin/togglepause/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+            Singleton.setPauseBackgroundJobs(!Singleton.getPauseBackgroundJobs());
+            return Singleton.getPauseBackgroundJobs();
+        }, new JsonTransformer());
+
         get("/admin/checkversion/", "application/json", (request, response) -> {
             if(getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");

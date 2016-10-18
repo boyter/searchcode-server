@@ -50,6 +50,11 @@ public class CodeIndexer {
      * used by the parsers to know if they should continue processing or not
      */
     public static synchronized boolean shouldPauseAdding() {
+
+        if (Singleton.getPauseBackgroundJobs()) {
+            return true;
+        }
+
         int indexQueueSize = Singleton.getCodeIndexQueue().size();
         int codeIndexLinesCount = Singleton.getCodeIndexLinesCount();
 
