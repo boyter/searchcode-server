@@ -308,8 +308,7 @@ public abstract class IndexBaseRepoJob implements Job {
         boolean lowMemory = this.LOWMEMORY;
 
         try {
-            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE,
-                    new SimpleFileVisitor<Path>() {
+            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
@@ -322,8 +321,7 @@ public abstract class IndexBaseRepoJob implements Job {
                             Singleton.getLogger().info("Pausing parser.");
                             try {
                                 Thread.sleep(SLEEPTIME);
-                            } catch (InterruptedException ex) {
-                            }
+                            } catch (InterruptedException ex) {}
                         }
 
                         // Convert Path file to unix style that way everything is easier to reason about
