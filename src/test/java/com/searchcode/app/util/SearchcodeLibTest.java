@@ -403,26 +403,37 @@ public class SearchcodeLibTest extends TestCase {
         assertTrue(scl.languageCostIgnore("Configuration"));
     }
 
-    public void testFormatQueryString() {
+    public void testFormatQueryStringAnd() {
         SearchcodeLib scl = new SearchcodeLib();
 
-        assertEquals("test   AND string", scl.formatQueryString("test string"));
-        assertEquals("test   AND string   AND other\\|", scl.formatQueryString("test string other|"));
-        assertEquals("test", scl.formatQueryString("test"));
-        assertEquals("test", scl.formatQueryString("test  "));
-        assertEquals("test", scl.formatQueryString("    test  "));
-        assertEquals("test", scl.formatQueryString("    test"));
+        assertEquals("test   AND string", scl.formatQueryStringAndDefault("test string"));
+        assertEquals("test   AND string   AND other\\|", scl.formatQueryStringAndDefault("test string other|"));
+        assertEquals("test", scl.formatQueryStringAndDefault("test"));
+        assertEquals("test", scl.formatQueryStringAndDefault("test  "));
+        assertEquals("test", scl.formatQueryStringAndDefault("    test  "));
+        assertEquals("test", scl.formatQueryStringAndDefault("    test"));
     }
 
     public void testFormatQueryStringOperators() {
         SearchcodeLib scl = new SearchcodeLib();
-        assertEquals("test   AND   string", scl.formatQueryString("test AND string"));
-        assertEquals("(test   AND   string)", scl.formatQueryString("(test AND string)"));
+        assertEquals("test   AND   string", scl.formatQueryStringAndDefault("test AND string"));
+        assertEquals("(test   AND   string)", scl.formatQueryStringAndDefault("(test AND string)"));
     }
 
     public void testFormatQueryStringDefaultAnd() {
         SearchcodeLib scl = new SearchcodeLib();
-        assertEquals("test   AND string", scl.formatQueryString("test string"));
+        assertEquals("test   AND string", scl.formatQueryStringAndDefault("test string"));
+    }
+
+    public void testFormatQueryStringOperatorsOr() {
+        SearchcodeLib scl = new SearchcodeLib();
+        assertEquals("test  AND  string", scl.formatQueryStringOrDefault("test AND string"));
+        assertEquals("(test  AND  string)", scl.formatQueryStringOrDefault("(test AND string)"));
+    }
+
+    public void testFormatQueryStringDefaultOr() {
+        SearchcodeLib scl = new SearchcodeLib();
+        assertEquals("test  string", scl.formatQueryStringOrDefault("test string"));
     }
 
     public void testGenerateAltQueries() {

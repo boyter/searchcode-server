@@ -368,10 +368,9 @@ public class SearchcodeLib {
         return this.formatQueryStringOrDefault(query);
     }
 
-    private String formatQueryStringAndDefault(String query) {
+    public String formatQueryStringAndDefault(String query) {
         String[] split = query.trim().split("\\s+");
 
-        StringBuilder sb = new StringBuilder();
         List<String> stringList = new ArrayList<>();
 
         String and = " AND ";
@@ -412,7 +411,7 @@ public class SearchcodeLib {
         return temp.trim();
     }
 
-    private String formatQueryStringOrDefault(String query) {
+    public String formatQueryStringOrDefault(String query) {
         String[] split = query.trim().split("\\s+");
 
         StringBuilder sb = new StringBuilder();
