@@ -11,7 +11,9 @@
 package com.searchcode.app.jobs;
 
 
+import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.BinaryFinding;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
@@ -31,6 +33,7 @@ import org.quartz.JobExecutionException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -41,6 +44,7 @@ public abstract class IndexBaseRepoJob implements Job {
     protected boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+    public boolean LOGINDEXED = true; // TODO make this configurable
 
     /**
      * This method to be implemented by the extending class
@@ -209,6 +213,9 @@ public abstract class IndexBaseRepoJob implements Job {
         Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
 
+        // Used to hold the reports of what was indexed
+        List<String[]> reportList = new ArrayList<>();
+
         for(String changedFile: repositoryChanged.getChangedFiles()) {
 
             if (Singleton.getBackgroundJobsEnabled() == false) {
@@ -233,21 +240,26 @@ public abstract class IndexBaseRepoJob implements Job {
                 codeLines = Helpers.readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+                reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
                 break;
             }
 
             if(scl.isMinified(codeLines)) {
                 Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
+                reportList.add(new String[]{changedFile, "excluded", "appears to be minified"});
                 break;
             }
 
             if (codeLines.isEmpty()) {
                 Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
+                reportList.add(new String[]{changedFile, "excluded", "empty file"});
                 break;
             }
 
-            if (scl.isBinary(codeLines, fileName)) {
-                Singleton.getLogger().info("Appears to be binary will not index  " + changedFile);
+            BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
+            if (binaryFinding.isBinary()) {
+                Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + changedFile);
+                reportList.add(new String[]{changedFile, "excluded", binaryFinding.getReason()});
                 break;
             }
 
@@ -268,6 +280,7 @@ public abstract class IndexBaseRepoJob implements Job {
             String newString = this.getBlameFilePath(fileLocationFilename);
             String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
 
+            reportList.add(new String[]{changedFile, "included", ""});
 
             if (codeLines != null) {
                 if (this.LOWMEMORY) {
@@ -281,6 +294,18 @@ public abstract class IndexBaseRepoJob implements Job {
                     codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                 }
             }
+        }
+
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + "_delta.csv.tmp"));
+            writer.writeAll(reportList);
+            writer.flush();
+            writer.close();
+
+            Path source = Paths.get(Helpers.getLogPath() + repoName + "_delta.csv.tmp");
+            Files.move(source, source.resolveSibling(repoName + "_delta.csv"), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         for(String deletedFile: repositoryChanged.getDeletedFiles()) {
@@ -306,6 +331,9 @@ public abstract class IndexBaseRepoJob implements Job {
         // Convert once outside the main loop
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
         boolean lowMemory = this.LOWMEMORY;
+
+        // Used to hold the reports of what was indexed
+        List<String[]> reportList = new ArrayList<>();
 
         try {
             Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
@@ -338,21 +366,27 @@ public abstract class IndexBaseRepoJob implements Job {
                         try {
                             codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                         } catch (IOException ex) {
+                            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
+                            reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (scl.isMinified(codeLines)) {
                             Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
+                            reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (codeLines.isEmpty()) {
                             Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
+                            reportList.add(new String[]{fileToString, "excluded", "empty file"});
                             return FileVisitResult.CONTINUE;
                         }
 
-                        if (scl.isBinary(codeLines, fileName)) {
-                            Singleton.getLogger().info("Appears to be binary will not index " + fileToString);
+                        BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
+                        if (binaryFinding.isBinary()) {
+                            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileToString);
+                            reportList.add(new String[]{fileToString, "excluded", binaryFinding.getReason()});
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -381,6 +415,7 @@ public abstract class IndexBaseRepoJob implements Job {
                         }
 
                         fileLocations.add(fileLocationFilename);
+                        reportList.add(new String[]{fileToString, "included", ""});
                         return FileVisitResult.CONTINUE;
                     }
                     catch(Exception ex) {
@@ -395,7 +430,18 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
 
-        // TODO investigate if a memory issue with this logic for very large folders
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + ".csv.tmp"));
+            writer.writeAll(reportList);
+            writer.flush();
+            writer.close();
+
+            Path source = Paths.get(Helpers.getLogPath() + repoName + ".csv.tmp");
+            Files.move(source, source.resolveSibling(repoName + ".csv"), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if (existingRepo) {
             CodeSearcher cs = new CodeSearcher();
             List<String> indexLocations = cs.getRepoDocuments(repoName);

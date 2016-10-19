@@ -40,11 +40,7 @@ public class LoggerWrapper {
     public LoggerWrapper() {
         String path = Values.EMPTYSTRING;
         try {
-            path = (String) Properties.getProperties().getOrDefault("log_path", "./");
-
-            if (!(path.endsWith("/") || path.endsWith("\\"))) {
-                path = path + "/";
-            }
+            path = Helpers.getLogPath();
 
             path += "searchcode-server-%g.log";
             Handler handler = new FileHandler(path, 10 * 1024 * 1024, 1);

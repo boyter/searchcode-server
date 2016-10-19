@@ -145,4 +145,14 @@ public class Helpers {
 
         return result;
     }
+
+    public static String getLogPath() {
+        String path = (String) Properties.getProperties().getOrDefault("log_path", "./");
+
+        if (!(path.endsWith("/") || path.endsWith("\\"))) {
+            path = path + "/";
+        }
+
+        return path;
+    }
 }

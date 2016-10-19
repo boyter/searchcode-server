@@ -3,13 +3,10 @@ package com.searchcode.app.util;
 import junit.framework.TestCase;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class HelpersTest extends TestCase {
 

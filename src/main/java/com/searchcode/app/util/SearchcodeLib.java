@@ -17,6 +17,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
+import com.searchcode.app.dto.BinaryFinding;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.lang3.ArrayUtils;
@@ -211,9 +212,9 @@ public class SearchcodeLib {
      * Determine if a List<String> which is used to represent a code file contains a code file that is
      * suspected to be ascii or non ascii. This is for the purposes of excluding it from the index.
      */
-    public boolean isBinary(List<String> codeLines, String fileName) {
+    public BinaryFinding isBinary(List<String> codeLines, String fileName) {
         if (codeLines.isEmpty()) {
-            return true;
+            return new BinaryFinding(false, "file is empty");
         }
 
         String lowerFileName = fileName.toLowerCase();
@@ -221,7 +222,7 @@ public class SearchcodeLib {
         for (String extention: this.WHITELIST) {
             if (lowerFileName.endsWith("." + extention)) {
                 Singleton.getLogger().info("Appears in extension whitelist will index " + fileName);
-                return false;
+                return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
 
@@ -229,7 +230,7 @@ public class SearchcodeLib {
         for (String extention: this.BLACKLIST) {
             if (lowerFileName.endsWith("." + extention)) {
                 Singleton.getLogger().info("Appears in extension blacklist will not index " + fileName);
-                return true;
+                return new BinaryFinding(true, "appears in extension blacklist");
             }
         }
 
@@ -238,14 +239,14 @@ public class SearchcodeLib {
             for (String extention: classifier.extensions) {
                 if (lowerFileName.endsWith("." + extention)) {
                     Singleton.getLogger().info("Appears in internal extension whitelist will index " + fileName);
-                    return false;
+                    return new BinaryFinding(false, "appears in internal extension whitelist");
                 }
             }
         }
 
         // If we aren't meant to guess then assume it isnt binary
         if (this.GUESSBINARY == false) {
-            return false;
+            return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 
         int lines = codeLines.size() < 10000 ? codeLines.size() : 10000;
@@ -265,21 +266,21 @@ public class SearchcodeLib {
         }
 
         if (nonAsciiCount == 0) {
-            return false;
+            return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 
         if (asciiCount == 0) {
-            return true;
+            return new BinaryFinding(true, "all characters found non-ascii");
         }
 
         // If only 30% of characters are ascii then its probably binary
         double percent = asciiCount / (asciiCount + nonAsciiCount);
 
         if (percent < 0.30) {
-            return true;
+            return new BinaryFinding(true, "only 30% of characters are non-ascii");
         }
 
-        return false;
+        return new BinaryFinding(false, Values.EMPTYSTRING);
     }
 
     /**
