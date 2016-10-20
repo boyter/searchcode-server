@@ -305,6 +305,12 @@ public class CodeSearcher {
 
         List<Integer> pages = new ArrayList<>();
         if(numTotalHits != 0) {
+
+            // Account for off by 1 errors
+            if(numTotalHits % 10 == 0) {
+                noPages -= 1;
+            }
+
             for (int i = 0; i <= noPages; i++) {
                 pages.add(i);
             }
