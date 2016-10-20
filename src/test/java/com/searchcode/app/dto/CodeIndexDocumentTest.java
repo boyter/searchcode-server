@@ -28,4 +28,11 @@ public class CodeIndexDocumentTest extends TestCase {
         String result = cd.getHash();
         assertThat(result).isEqualTo("e9d71f5ee7c92d6dc9e92ffdad17b8bd49418f98");
     }
+
+    public void testSetRepoLocationReplacement() {
+        CodeIndexDocument cd = new CodeIndexDocument();
+
+        cd.setRepoLocationRepoNameLocationFilename(".//this/");
+        assertThat(cd.getRepoLocationRepoNameLocationFilename()).isEqualTo("./this/");
+    }
 }

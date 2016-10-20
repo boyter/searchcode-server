@@ -59,7 +59,7 @@ public class CodeIndexDocument {
     }
 
     public void setRepoLocationRepoNameLocationFilename(String repoLocationRepoNameLocationFilename) {
-        this.repoLocationRepoNameLocationFilename = repoLocationRepoNameLocationFilename;
+        this.repoLocationRepoNameLocationFilename = repoLocationRepoNameLocationFilename.replace("//", "/");
     }
 
     public String getRepoName() {
