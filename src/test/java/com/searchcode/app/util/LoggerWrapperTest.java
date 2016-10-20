@@ -38,6 +38,12 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getAllLogs()).hasSize(3);
     }
 
+    public void testWrapperProperties() {
+        LoggerWrapper logger = new LoggerWrapper();
+        assertThat(logger.BYTESLOGSIZE).isEqualTo(10485760);
+        assertThat(logger.LOGCOUNT).isEqualTo(10);
+    }
+
 // TODO look into this, appears to be related to stressing the properties lookup more than anything
 //    public void testLoggerWrapperStress() {
 //        LoggerWrapper logger = new LoggerWrapper();

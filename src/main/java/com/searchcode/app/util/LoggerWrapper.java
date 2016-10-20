@@ -37,13 +37,17 @@ public class LoggerWrapper {
 
     private EvictingQueue severeRecentCache = null;
 
+    public int BYTESLOGSIZE = 10 * 1024 * 1024;
+
+    public int LOGCOUNT = 10;
+
     public LoggerWrapper() {
         String path = Values.EMPTYSTRING;
         try {
             path = Helpers.getLogPath();
 
             path += "searchcode-server-%g.log";
-            Handler handler = new FileHandler(path, 10 * 1024 * 1024, 1);
+            Handler handler = new FileHandler(path, this.BYTESLOGSIZE, this.LOGCOUNT);
 
             String logLevel = (String) Properties.getProperties().getOrDefault("log_level", "severe");
 

@@ -119,6 +119,8 @@ XX XXXXXXX XXXX - 1.3.3
  - Additional properties for controlling background threads
  - Fix off by 1 error where some results would not be shown
  - Admin can now selectively pause indexing
+ - Ability to log out all indexed and excluded files to CSV
+ - Set file rotation to have 10x10mb files
 
 04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
