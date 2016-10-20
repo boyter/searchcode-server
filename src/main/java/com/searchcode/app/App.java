@@ -703,6 +703,10 @@ public class App {
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
             map.put("numSearches", statsService.getSearchCount());
             map.put("uptime", statsService.getUptime());
+            map.put("loadAverage", statsService.getLoadAverage());
+            map.put("sysArch", statsService.getArch());
+            map.put("sysVersion", statsService.getOsVersion());
+            map.put("processorCount", statsService.getProcessorCount());
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
             map.put("currentdatetime", new Date().toString());

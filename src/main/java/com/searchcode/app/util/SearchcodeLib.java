@@ -214,14 +214,13 @@ public class SearchcodeLib {
      */
     public BinaryFinding isBinary(List<String> codeLines, String fileName) {
         if (codeLines.isEmpty()) {
-            return new BinaryFinding(false, "file is empty");
+            return new BinaryFinding(true, "file is empty");
         }
 
         String lowerFileName = fileName.toLowerCase();
         // Check against user set whitelist
         for (String extention: this.WHITELIST) {
             if (lowerFileName.endsWith("." + extention)) {
-                Singleton.getLogger().info("Appears in extension whitelist will index " + fileName);
                 return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
@@ -229,7 +228,6 @@ public class SearchcodeLib {
         // Check against user set blacklist
         for (String extention: this.BLACKLIST) {
             if (lowerFileName.endsWith("." + extention)) {
-                Singleton.getLogger().info("Appears in extension blacklist will not index " + fileName);
                 return new BinaryFinding(true, "appears in extension blacklist");
             }
         }
@@ -238,7 +236,6 @@ public class SearchcodeLib {
         for (Classifier classifier: this.classifier) {
             for (String extention: classifier.extensions) {
                 if (lowerFileName.endsWith("." + extention)) {
-                    Singleton.getLogger().info("Appears in internal extension whitelist will index " + fileName);
                     return new BinaryFinding(false, "appears in internal extension whitelist");
                 }
             }

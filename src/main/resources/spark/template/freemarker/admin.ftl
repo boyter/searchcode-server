@@ -186,13 +186,37 @@
         <td><b>default_and_match</b></td>
         <td>${default_and_match}</td>
     </tr>
+    <tr>
+        <td><b>log_indexed</b></td>
+        <td>${log_indexed}</td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><b>System Architecture</b></td>
+        <td>${sysArch}</td>
+    </tr>
+    <tr>
+        <td><b>System Version</b></td>
+        <td>${sysVersion}</td>
+    </tr>
+    <tr>
+        <td><b>Number of Processors</b></td>
+        <td>${processorCount}</td>
+    </tr>
+    <tr>
+        <td><b>System Load Average</b></td>
+        <td>${loadAverage}</td>
+    </tr>
 </table>
     
 
 
 
 <script src="/js/jquery-1.11.1.min.js"></script>
-
 <style>
 td {
     word-break: break-all;

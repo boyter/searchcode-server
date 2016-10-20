@@ -78,6 +78,8 @@ public class Values {
     public static String DEFAULT_NUMBER_FILE_PROCESSORS = "1";
     public static String AND_MATCH = "default_and_match";
     public static String DEFAULT_AND_MATCH = "true";
+    public static String LOG_INDEXED = "log_indexed";
+    public static String DEFAULT_LOG_INDEXED = "false";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";

@@ -32,6 +32,7 @@ number_git_processors=2
 number_svn_processors=2
 number_file_processors=1
 default_and_match=true
+log_indexed=false
 # The below will probably be moved into the settings page at some point in the
 # future.
 password=Adm1n234

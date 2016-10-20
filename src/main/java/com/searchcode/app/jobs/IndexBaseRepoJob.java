@@ -20,9 +20,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.SearchcodeLib;
-import com.searchcode.app.util.UniqueRepoQueue;
+import com.searchcode.app.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +42,7 @@ public abstract class IndexBaseRepoJob implements Job {
     protected boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
-    public boolean LOGINDEXED = true; // TODO make this configurable
+    public boolean LOGINDEXED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty("only_localhost", "false")); // TODO make this configurable
 
     /**
      * This method to be implemented by the extending class
@@ -296,16 +294,8 @@ public abstract class IndexBaseRepoJob implements Job {
             }
         }
 
-        try {
-            CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + "_delta.csv.tmp"));
-            writer.writeAll(reportList);
-            writer.flush();
-            writer.close();
-
-            Path source = Paths.get(Helpers.getLogPath() + repoName + "_delta.csv.tmp");
-            Files.move(source, source.resolveSibling(repoName + "_delta.csv"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (this.LOGINDEXED && reportList.isEmpty() == false) {
+            this.logIndexed(repoName + "_delta", reportList);
         }
 
         for(String deletedFile: repositoryChanged.getDeletedFiles()) {
@@ -430,16 +420,8 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
 
-        try {
-            CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + ".csv.tmp"));
-            writer.writeAll(reportList);
-            writer.flush();
-            writer.close();
-
-            Path source = Paths.get(Helpers.getLogPath() + repoName + ".csv.tmp");
-            Files.move(source, source.resolveSibling(repoName + ".csv"), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (this.LOGINDEXED) {
+            logIndexed(repoName, reportList);
         }
 
         if (existingRepo) {
@@ -456,6 +438,20 @@ public abstract class IndexBaseRepoJob implements Job {
                     }
                 }
             }
+        }
+    }
+
+    private void logIndexed(String repoName, List<String[]> reportList) {
+        try {
+            CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + ".csv.tmp"));
+            writer.writeAll(reportList);
+            writer.flush();
+            writer.close();
+
+            Path source = Paths.get(Helpers.getLogPath() + repoName + ".csv.tmp");
+            Files.move(source, source.resolveSibling(repoName + ".csv"), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException ex) {
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " logIndexed for " + repoName + "\n with message: " + ex.getMessage());
         }
     }
 

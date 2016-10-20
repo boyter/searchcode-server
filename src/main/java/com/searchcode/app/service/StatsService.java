@@ -12,6 +12,7 @@ package com.searchcode.app.service;
 
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 
 /**
@@ -27,6 +28,26 @@ public class StatsService {
         int totalCount = (Integer) Singleton.getGenericCache().getOrDefault(totalSearchKey, 0);
         totalCount++;
         Singleton.getGenericCache().put(totalSearchKey, totalCount);
+    }
+
+    public String getLoadAverage() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        return "" + osBean.getSystemLoadAverage();
+    }
+
+    public String getArch() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        return osBean.getArch();
+    }
+
+    public String getOsVersion() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        return osBean.getVersion();
+    }
+
+    public String getProcessorCount() {
+        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        return "" + osBean.getAvailableProcessors();
     }
 
     /**
