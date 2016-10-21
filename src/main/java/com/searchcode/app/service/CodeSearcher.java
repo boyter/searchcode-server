@@ -81,6 +81,7 @@ public class CodeSearcher {
         SearchResult searchResult = new SearchResult();
         statsService.incrementSearchCount();
 
+
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
             IndexSearcher searcher = new IndexSearcher(reader);
@@ -91,6 +92,7 @@ public class CodeSearcher {
 
             Query query = parser.parse(queryString);
             LOGGER.info("Searching for: " + query.toString(CODEFIELD));
+            LOGGER.searchLog(query.toString(CODEFIELD) + " " + page);
 
             searchResult = this.doPagingSearch(reader, searcher, query, page);
             reader.close();

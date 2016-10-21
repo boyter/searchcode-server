@@ -37,6 +37,8 @@ public class LoggerWrapper {
 
     private EvictingQueue severeRecentCache = null;
 
+    private EvictingQueue searchLog = null;
+
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
 
     public int LOGCOUNT = 10;
@@ -94,6 +96,7 @@ public class LoggerWrapper {
         this.infoRecentCache = EvictingQueue.create(1000);
         this.warningRecentCache = EvictingQueue.create(1000);
         this.severeRecentCache = EvictingQueue.create(1000);
+        this.searchLog = EvictingQueue.create(1000);
     }
 
     public void info(String toLog) {
@@ -117,6 +120,12 @@ public class LoggerWrapper {
         this.logger.warning(toLog);
     }
 
+    public void searchLog(String toLog) {
+        String message = "SEARCH: " + new Date().toString() + ": " + toLog;
+        this.searchLog.add(message);
+        this.searchLog.add(message);
+    }
+
     public List<String> getAllLogs() {
         List<String> values = new ArrayList(this.allCache);
         return Lists.reverse(values);
@@ -134,6 +143,11 @@ public class LoggerWrapper {
 
     public List<String> getSevereLogs() {
         List<String> values = new ArrayList(this.severeRecentCache);
+        return Lists.reverse(values);
+    }
+
+    public List<String> getSearchLogs() {
+        List<String> values = new ArrayList(this.searchLog);
         return Lists.reverse(values);
     }
 }

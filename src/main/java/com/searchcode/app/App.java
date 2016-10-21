@@ -883,6 +883,9 @@ public class App {
                 case "ALL":
                     logs = Singleton.getLogger().getAllLogs();
                     break;
+                case "SEARCH":
+                    logs = Singleton.getLogger().getSearchLogs();
+                    break;
                 case "SEVERE":
                 default:
                     logs = Singleton.getLogger().getSevereLogs();

@@ -272,7 +272,7 @@ public abstract class IndexBaseRepoJob implements Job {
             String languageName = scl.languageGuesser(changedFile, codeLines);
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
-            String repoLocationRepoNameLocationFilename = changedFile.replace("//", "/");
+            String repoLocationRepoNameLocationFilename = changedFile;
 
 
             String newString = this.getBlameFilePath(fileLocationFilename);

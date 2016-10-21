@@ -34,17 +34,17 @@ public class CodeIndexDocument {
     public CodeIndexDocument() {}
 
     public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner) {
-        setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
-        setRepoName(repoName);
-        setFileName(fileName);
-        setFileLocation(fileLocation);
-        setFileLocationFilename(fileLocationFilename);
-        setMd5hash(md5hash);
-        setLanguageName(languageName);
-        setCodeLines(codeLines);
-        setContents(contents);
-        setRepoRemoteLocation(repoRemoteLocation);
-        setCodeOwner(codeOwner);
+        this.setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
+        this.setRepoName(repoName);
+        this.setFileName(fileName);
+        this.setFileLocation(fileLocation);
+        this.setFileLocationFilename(fileLocationFilename);
+        this.setMd5hash(md5hash);
+        this.setLanguageName(languageName);
+        this.setCodeLines(codeLines);
+        this.setContents(contents);
+        this.setRepoRemoteLocation(repoRemoteLocation);
+        this.setCodeOwner(codeOwner);
     }
 
     /**
