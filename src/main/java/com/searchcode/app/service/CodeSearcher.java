@@ -305,18 +305,7 @@ public class CodeSearcher {
             noPages = 19;
         }
 
-        List<Integer> pages = new ArrayList<>();
-        if(numTotalHits != 0) {
-
-            // Account for off by 1 errors
-            if(numTotalHits % 10 == 0) {
-                noPages -= 1;
-            }
-
-            for (int i = 0; i <= noPages; i++) {
-                pages.add(i);
-            }
-        }
+        List<Integer> pages = this.calculatePages(numTotalHits, noPages);
 
         List<CodeResult> codeResults = new ArrayList<>();
 
@@ -364,6 +353,21 @@ public class CodeSearcher {
         return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
     }
 
+    public List<Integer> calculatePages(int numTotalHits, int noPages) {
+        List<Integer> pages = new ArrayList<>();
+        if(numTotalHits != 0) {
+
+            // Account for off by 1 errors
+            if(numTotalHits % 10 == 0) {
+                noPages -= 1;
+            }
+
+            for (int i = 0; i <= noPages; i++) {
+                pages.add(i);
+            }
+        }
+        return pages;
+    }
 
     /**
      * Returns the matching language facets for a given query
