@@ -216,7 +216,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
 
-            if (this.shouldJobTerminate() == true) {
+            if (this.shouldJobPauseOrTerminate() == true) {
                 return;
             }
 
@@ -247,10 +247,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
-            BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
-            if (binaryFinding.isBinary()) {
-                Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + changedFile);
-                reportList.add(new String[]{changedFile, "excluded", binaryFinding.getReason()});
+            if (this.determineBinary(changedFile, fileName, codeLines, reportList)) {
                 break;
             }
 
@@ -267,7 +264,7 @@ public abstract class IndexBaseRepoJob implements Job {
             reportList.add(new String[]{changedFile, "included", ""});
 
             if (codeLines != null) {
-                if (this.LOWMEMORY) {
+                if (this.LOWMEMORY) { // TODO the codeindexer should be the one to worry about this not this class
                     try {
                         CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                     } catch (IOException ex) {
@@ -317,7 +314,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
                     try {
-                        if (shouldJobTerminate() == true) {
+                        if (shouldJobPauseOrTerminate() == true) {
                             return FileVisitResult.TERMINATE;
                         }
 
@@ -352,10 +349,7 @@ public abstract class IndexBaseRepoJob implements Job {
                             return FileVisitResult.CONTINUE;
                         }
 
-                        BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
-                        if (binaryFinding.isBinary()) {
-                            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileToString);
-                            reportList.add(new String[]{fileToString, "excluded", binaryFinding.getReason()});
+                        if (determineBinary(fileToString, fileName, codeLines, reportList)) {
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -415,6 +409,23 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     /**
+     * Shared method which performs all logic for determining and doing if
+     * the file is believed to be binary
+     */
+    public boolean determineBinary(String fileLocation, String fileName, List<String> codeLines, List<String[]> reportList) {
+        SearchcodeLib scl = new SearchcodeLib();
+        BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
+
+        if (binaryFinding.isBinary()) {
+            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileLocation);
+            reportList.add(new String[]{ fileLocation, "excluded", binaryFinding.getReason() });
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Attempts to get MD5 for file on disk
      */
     public String getFileMd5(String fileName) {
@@ -435,7 +446,7 @@ public abstract class IndexBaseRepoJob implements Job {
      * Checks if the job should pause and if so loop endlessly sleeping. Returns
      * true if the job should be terminated and false if it should continue to run
      */
-    public boolean shouldJobTerminate() {
+    public boolean shouldJobPauseOrTerminate() {
         if (Singleton.getBackgroundJobsEnabled() == false) {
             return true;
         }
@@ -454,6 +465,9 @@ public abstract class IndexBaseRepoJob implements Job {
         return false;
     }
 
+    /**
+     * Logs to the logs directory a formatted CSV of the supplied list strings
+     */
     private void logIndexed(String repoName, List<String[]> reportList) {
         try {
             CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + ".csv.tmp"));
