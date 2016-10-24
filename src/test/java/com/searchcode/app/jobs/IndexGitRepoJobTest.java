@@ -48,8 +48,9 @@ public class IndexGitRepoJobTest extends TestCase {
         }
     }
 
-    public void testshouldJobTerminate() {
+    public void testShouldJobTerminate() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+
         assertThat(gitRepoJob.shouldJobTerminate()).isFalse();
         Singleton.setBackgroundJobsEnabled(false);
         assertThat(gitRepoJob.shouldJobTerminate()).isTrue();
@@ -58,6 +59,11 @@ public class IndexGitRepoJobTest extends TestCase {
         Singleton.setPauseBackgroundJobs(true);
         Singleton.setBackgroundJobsEnabled(false);
         assertThat(gitRepoJob.shouldJobTerminate()).isTrue();
+    }
+
+    public void testGetFileMd5() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        gitRepoJob.getFileMd5("filedoesnotexist");
     }
 
     // TODO actually do something with this information

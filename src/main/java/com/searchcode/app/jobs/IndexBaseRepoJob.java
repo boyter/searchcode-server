@@ -254,13 +254,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
-            try {
-                FileInputStream fis = new FileInputStream(new File(changedFile));
-                md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                fis.close();
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("Unable to generate MD5 for " + changedFile);
-            }
+            md5Hash = this.getFileMd5(changedFile);
 
             String languageName = scl.languageGuesser(changedFile, codeLines);
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
@@ -365,13 +359,7 @@ public abstract class IndexBaseRepoJob implements Job {
                             return FileVisitResult.CONTINUE;
                         }
 
-                        try {
-                            FileInputStream fis = new FileInputStream(new File(fileToString));
-                            md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-                            fis.close();
-                        } catch (IOException ex) {
-                            Singleton.getLogger().warning("Unable to generate MD5 for " + fileToString);
-                        }
+                        md5Hash = getFileMd5(fileToString);
 
                         String languageName = scl.languageGuesser(fileName, codeLines);
                         String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
@@ -413,7 +401,7 @@ public abstract class IndexBaseRepoJob implements Job {
             CodeSearcher cs = new CodeSearcher();
             List<String> indexLocations = cs.getRepoDocuments(repoName);
 
-            for (String file : indexLocations) {
+            for (String file: indexLocations) {
                 if (!fileLocations.contains(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
@@ -424,6 +412,23 @@ public abstract class IndexBaseRepoJob implements Job {
                 }
             }
         }
+    }
+
+    /**
+     * Attempts to get MD5 for file on disk
+     */
+    public String getFileMd5(String fileName) {
+        String md5Hash = Values.EMPTYSTRING;
+
+        try {
+            FileInputStream fis = new FileInputStream(new File(fileName));
+            md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+            fis.close();
+        } catch (IOException ex) {
+            Singleton.getLogger().warning("Unable to generate MD5 for " + fileName);
+        }
+
+        return md5Hash;
     }
 
     /**
