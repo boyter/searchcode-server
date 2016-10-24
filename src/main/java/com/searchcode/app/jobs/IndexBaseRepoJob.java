@@ -221,6 +221,10 @@ public abstract class IndexBaseRepoJob implements Job {
             }
 
             while(CodeIndexer.shouldPauseAdding()) {
+                if (Singleton.getBackgroundJobsEnabled() == false) {
+                    return;
+                }
+
                 Singleton.getLogger().info("Pausing parser.");
                 try {
                     Thread.sleep(this.SLEEPTIME);
@@ -336,6 +340,10 @@ public abstract class IndexBaseRepoJob implements Job {
                         }
 
                         while (CodeIndexer.shouldPauseAdding()) {
+                            if (Singleton.getBackgroundJobsEnabled() == false) {
+                                return FileVisitResult.TERMINATE;
+                            }
+
                             Singleton.getLogger().info("Pausing parser.");
                             try {
                                 Thread.sleep(SLEEPTIME);
