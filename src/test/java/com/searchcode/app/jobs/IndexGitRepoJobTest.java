@@ -1,8 +1,11 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 import java.util.Arrays;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class IndexGitRepoJobTest extends TestCase {
     public void testGetBlameFilePath() {
@@ -43,6 +46,18 @@ public class IndexGitRepoJobTest extends TestCase {
             gitRepoJob.deleteIndexSuccess("/tmp/");
             gitRepoJob.deleteCloneUpdateSuccess("/tmp/");
         }
+    }
+
+    public void testshouldJobTerminate() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        assertThat(gitRepoJob.shouldJobTerminate()).isFalse();
+        Singleton.setBackgroundJobsEnabled(false);
+        assertThat(gitRepoJob.shouldJobTerminate()).isTrue();
+        Singleton.setBackgroundJobsEnabled(true);
+        assertThat(gitRepoJob.shouldJobTerminate()).isFalse();
+        Singleton.setPauseBackgroundJobs(true);
+        Singleton.setBackgroundJobsEnabled(false);
+        assertThat(gitRepoJob.shouldJobTerminate()).isTrue();
     }
 
     // TODO actually do something with this information

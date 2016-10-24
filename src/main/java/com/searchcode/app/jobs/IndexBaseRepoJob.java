@@ -216,19 +216,8 @@ public abstract class IndexBaseRepoJob implements Job {
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
 
-            if (Singleton.getBackgroundJobsEnabled() == false) {
+            if (this.shouldJobTerminate() == true) {
                 return;
-            }
-
-            while(CodeIndexer.shouldPauseAdding()) {
-                if (Singleton.getBackgroundJobsEnabled() == false) {
-                    return;
-                }
-
-                Singleton.getLogger().info("Pausing parser.");
-                try {
-                    Thread.sleep(this.SLEEPTIME);
-                } catch (InterruptedException ex) {}
             }
 
             String[] split = changedFile.split("/");
@@ -277,7 +266,6 @@ public abstract class IndexBaseRepoJob implements Job {
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
             String repoLocationRepoNameLocationFilename = changedFile;
-
 
             String newString = this.getBlameFilePath(fileLocationFilename);
             String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
@@ -335,19 +323,8 @@ public abstract class IndexBaseRepoJob implements Job {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
                     try {
-                        if (Singleton.getBackgroundJobsEnabled() == false) {
+                        if (shouldJobTerminate() == true) {
                             return FileVisitResult.TERMINATE;
-                        }
-
-                        while (CodeIndexer.shouldPauseAdding()) {
-                            if (Singleton.getBackgroundJobsEnabled() == false) {
-                                return FileVisitResult.TERMINATE;
-                            }
-
-                            Singleton.getLogger().info("Pausing parser.");
-                            try {
-                                Thread.sleep(SLEEPTIME);
-                            } catch (InterruptedException ex) {}
                         }
 
                         // Convert Path file to unix style that way everything is easier to reason about
@@ -447,6 +424,29 @@ public abstract class IndexBaseRepoJob implements Job {
                 }
             }
         }
+    }
+
+    /**
+     * Checks if the job should pause and if so loop endlessly sleeping. Returns
+     * true if the job should be terminated and false if it should continue to run
+     */
+    public boolean shouldJobTerminate() {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return true;
+        }
+
+        while (CodeIndexer.shouldPauseAdding()) {
+            if (Singleton.getBackgroundJobsEnabled() == false) {
+                return true;
+            }
+
+            Singleton.getLogger().info("Pausing parser.");
+            try {
+                Thread.sleep(SLEEPTIME);
+            } catch (InterruptedException ex) {}
+        }
+
+        return false;
     }
 
     private void logIndexed(String repoName, List<String[]> reportList) {
