@@ -77,6 +77,11 @@ QUnit.test( 'clearfilters', function( assert ) {
   assert.equal(SearchModel.deletedfilters().length, 0);
 });
 
+QUnit.test( 'toggleinstant', function( assert ) {
+  var current = SearchModel.filterinstantly();
+  SearchModel.toggleinstant();
+  assert.notEqual(current, SearchModel.filterinstantly());
+});
 
 </script>
 </body>
