@@ -10,6 +10,7 @@
   <div id="qunit"></div>
   <div id="qunit-fixture"></div>
   <script src="./qunit-git.js"></script>
+  <script src="../../main/resources/public/js/underscore-min.js"></script>
   <script src="../../main/resources/public/js/mithril.min.js"></script>
   <script src="../../main/resources/public/js/script.js"></script>
 <script>
@@ -92,6 +93,7 @@ QUnit.test( 'togglehistory', function( assert ) {
 });
 
 QUnit.test( 'getstringtitle', function( assert ) {
+  // TODO add more tests here for the history filter logic
   SearchModel.query('my search string');
   assert.equal(SearchModel.getstringtitle(), '"my search string"');
   
@@ -111,6 +113,45 @@ QUnit.test( 'getstringtitle', function( assert ) {
   assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owners "person1, person2"');
 });
 
+QUnit.test( 'togglefilter', function( assert ) {
+  SearchModel.togglefilter('language', 'test');
+  assert.equal(SearchModel.langfilters()[0], 'test');
+  SearchModel.togglefilter('language', 'test');
+  assert.equal(SearchModel.langfilters().length, 0);
+
+  SearchModel.togglefilter('repo', 'test');
+  assert.equal(SearchModel.repositoryfilters()[0], 'test');
+  SearchModel.togglefilter('repo', 'test');
+  assert.equal(SearchModel.repositoryfilters().length, 0);
+
+  SearchModel.togglefilter('owner', 'test');
+  assert.equal(SearchModel.ownfilters()[0], 'test');
+  SearchModel.togglefilter('owner', 'test');
+  assert.equal(SearchModel.ownfilters().length, 0);
+});
+
+QUnit.test( 'filterexists', function( assert ) {
+  SearchModel.langfilters(['test']);
+  assert.ok(SearchModel.filterexists('language', 'test'));
+  assert.notOk(SearchModel.filterexists('language', 'test2'));
+
+  SearchModel.repositoryfilters(['test']);
+  assert.ok(SearchModel.filterexists('repo', 'test'));
+  assert.notOk(SearchModel.filterexists('repo', 'test2'));
+
+  SearchModel.ownfilters(['test']);
+  assert.ok(SearchModel.filterexists('owner', 'test'));
+  assert.notOk(SearchModel.filterexists('owner', 'test2'));
+});
+
+QUnit.test( 'getlangfilters', function( assert ) {
+  SearchModel.langfilters([]);
+  assert.equal(SearchModel.getlangfilters(), '');
+  SearchModel.langfilters(['test']);
+  assert.equal(SearchModel.getlangfilters(), '&lan=test');
+  SearchModel.langfilters(['test1', 'test2']);
+  assert.equal(SearchModel.getlangfilters(), '&lan=test1&lan=test2');
+});
 
 </script>
 </body>
