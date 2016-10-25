@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>searchcode tests</title>
+  <link rel="stylesheet" href="./qunit-git.css">
+</head>
+<body>
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
+  <script src="./qunit-git.js"></script>
+  <script src="../../main/resources/public/js/mithril.min.js"></script>
+  <script src="../../main/resources/public/js/script.js"></script>
+<script>
+QUnit.module('HelperModel');
+QUnit.test( 'humanise', function( assert ) {
+  assert.equal(HelperModel.humanise(1), '1 Day ');
+  assert.equal(HelperModel.humanise(2), '2 Days ');
+  assert.equal(HelperModel.humanise(3), '3 Days ');
+  assert.equal(HelperModel.humanise(7), '7 Days ');
+  assert.equal(HelperModel.humanise(30), '1 Month ');
+  assert.equal(HelperModel.humanise(60), '2 Months ');
+  assert.equal(HelperModel.humanise(365), '1 Year ');
+  assert.equal(HelperModel.humanise(365 * 2), '2 Years ');
+
+  assert.equal(HelperModel.humanise(56), '1 Month 26 Days ');
+  assert.equal(HelperModel.humanise(400), '1 Year 1 Month 5 Days ');
+});
+
+QUnit.test( 'getDateSpan', function( assert ) {
+  assert.equal(HelperModel.getDateSpan(new Date(), new Date()).length, 1);
+  assert.equal(HelperModel.getDateSpan(new Date(2000,01,01), new Date(2000,01,10)).length, 10);
+});
+
+QUnit.test( 'yearMonthDayToDate', function( assert ) {
+  assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getFullYear(), 2000);
+  assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getMonth(), 11);
+  assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getDate(), 12);
+});
+
+QUnit.test( 'yearMonthDayToDate', function( assert ) {
+  assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getFullYear(), 2000);
+  assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getMonth(), 11);
+  assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getDate(), 12);
+});
+
+QUnit.module('SearchModel');
+QUnit.test( 'clearfilters', function( assert ) {
+  SearchModel.langfilters('notwhatweexpect');
+  assert.equal(SearchModel.langfilters(), 'notwhatweexpect');
+  SearchModel.repositoryfilters('notwhatweexpect');
+  assert.equal(SearchModel.repositoryfilters(), 'notwhatweexpect');
+  
+  SearchModel.ownfilters('notwhatweexpect');
+  assert.equal(SearchModel.ownfilters(), 'notwhatweexpect');
+  SearchModel.yearfilters('notwhatweexpect');
+  assert.equal(SearchModel.yearfilters(), 'notwhatweexpect');
+  SearchModel.yearmonthfilters('notwhatweexpect');
+  assert.equal(SearchModel.yearmonthfilters(), 'notwhatweexpect');
+  SearchModel.yearmonthdayfilters('notwhatweexpect');
+  assert.equal(SearchModel.yearmonthdayfilters(), 'notwhatweexpect');
+  SearchModel.revisionfilters('notwhatweexpect');
+  assert.equal(SearchModel.revisionfilters(), 'notwhatweexpect');
+  SearchModel.deletedfilters('notwhatweexpect');
+  assert.equal(SearchModel.deletedfilters(), 'notwhatweexpect');
+
+  SearchModel.clearfilters();
+
+  assert.equal(SearchModel.langfilters().length, 0);
+  assert.equal(SearchModel.repositoryfilters().length, 0);
+  assert.equal(SearchModel.ownfilters().length, 0);
+  assert.equal(SearchModel.yearfilters().length, 0);
+  assert.equal(SearchModel.yearmonthfilters().length, 0);
+  assert.equal(SearchModel.yearmonthdayfilters().length, 0);
+  assert.equal(SearchModel.revisionfilters().length, 0);
+  assert.equal(SearchModel.deletedfilters().length, 0);
+});
+
+
+</script>
+</body>
+</html>
