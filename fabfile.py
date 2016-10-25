@@ -31,6 +31,11 @@ import datetime
 VERSION = "1.3.3"
 
 
+def setup_npm():
+    # Required to run Qunit via command line
+    # http://stackoverflow.com/questions/24704043/how-to-run-qunit-tests-from-command-line
+    local('npm install -g node-qunit-phantomjs')
+
 def run_proxy():
     local('python ./assets/javascript_proxy/webserver.py')
 
@@ -39,7 +44,8 @@ def package():
     local("mvn package")
 
 def test():
-    local("mvn test")
+    local('mvn test')
+    local('node-qunit-phantomjs ./src/test/javascript/index.html')
 
 def test_integration():
     print 'Be sure to run: "fab compile_js configure_prod run" first'
