@@ -21,10 +21,15 @@ Submissions/Pull Requests
 -------------------------
 If you would like to submit code to be integrated into searchcode server please specifyc that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
+Before making any submission be sure to run "fab test"
+
 To Build
 --------
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
-maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement.
+maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement. To run 
+the javascript unit tests through the command line you will need to install NPM and then run
+npm install -g node-qunit-phantomjs but you can always run them in your browser if required by opening 
+./src/test/javascript/index.html
 
 To test the application you can either run "mvn test" or "fab test". To build a full release IE ready
 for production you should run "fab build_release" which will test compile and build a release into
