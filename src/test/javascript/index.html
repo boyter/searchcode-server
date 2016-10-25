@@ -81,7 +81,36 @@ QUnit.test( 'toggleinstant', function( assert ) {
   var current = SearchModel.filterinstantly();
   SearchModel.toggleinstant();
   assert.notEqual(current, SearchModel.filterinstantly());
+  assert.notEqual(current, JSON.parse(localStorage.getItem('toggleinstant')));
 });
+
+QUnit.test( 'togglehistory', function( assert ) {
+  var current = SearchModel.searchhistory();
+  SearchModel.togglehistory();
+  assert.notEqual(current, SearchModel.searchhistory());
+  assert.notEqual(current, JSON.parse(localStorage.getItem('togglehistory')));
+});
+
+QUnit.test( 'getstringtitle', function( assert ) {
+  SearchModel.query('my search string');
+  assert.equal(SearchModel.getstringtitle(), '"my search string"');
+  
+  SearchModel.activerepositoryfilters(['one']);
+  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repository "one"');
+  SearchModel.activerepositoryfilters(['one', 'two']);
+  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two"');
+
+  SearchModel.activelangfilters(['java']);
+  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and language "java"');
+  SearchModel.activelangfilters(['java', 'python']);
+  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python"');
+
+  SearchModel.activeownfilters(['person1']);
+  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owner "person1"');
+  SearchModel.activeownfilters(['person1', 'person2']);
+  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owners "person1, person2"');
+});
+
 
 </script>
 </body>

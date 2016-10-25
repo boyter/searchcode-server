@@ -45,6 +45,9 @@ def package():
 
 def test():
     local('mvn test')
+    js_test()
+
+def js_test():
     local('node-qunit-phantomjs ./src/test/javascript/index.html')
 
 def test_integration():
