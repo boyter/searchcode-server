@@ -153,6 +153,33 @@ QUnit.test( 'getlangfilters', function( assert ) {
   assert.equal(SearchModel.getlangfilters(), '&lan=test1&lan=test2');
 });
 
+QUnit.test( 'getrepofilters', function( assert ) {
+  SearchModel.repositoryfilters([]);
+  assert.equal(SearchModel.getrepofilters(), '');
+  SearchModel.repositoryfilters(['test']);
+  assert.equal(SearchModel.getrepofilters(), '&repo=test');
+  SearchModel.repositoryfilters(['test1', 'test2']);
+  assert.equal(SearchModel.getrepofilters(), '&repo=test1&repo=test2');
+});
+
+QUnit.test( 'getownfilters', function( assert ) {
+  SearchModel.ownfilters([]);
+  assert.equal(SearchModel.getownfilters(), '');
+  SearchModel.ownfilters(['test']);
+  assert.equal(SearchModel.getownfilters(), '&own=test');
+  SearchModel.ownfilters(['test1', 'test2']);
+  assert.equal(SearchModel.getownfilters(), '&own=test1&own=test2');
+});
+
+QUnit.module('SearchComponent');
+
+QUnit.test( 'view', function( assert ) {
+  var result = SearchComponent.view();
+  assert.equal(result.tag, 'div');
+  assert.equal(result.children.length, 5);
+  assert.equal(result.children[4].tag, 'div');
+});
+
 </script>
 </body>
 </html>
