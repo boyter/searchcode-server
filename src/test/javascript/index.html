@@ -172,12 +172,38 @@ QUnit.test( 'getownfilters', function( assert ) {
 });
 
 QUnit.module('SearchComponent');
-
 QUnit.test( 'view', function( assert ) {
   var result = SearchComponent.view();
   assert.equal(result.tag, 'div');
   assert.equal(result.children.length, 5);
   assert.equal(result.children[4].tag, 'div');
+});
+
+QUnit.module('SearchNoResultsComponent');
+QUnit.test( 'view', function( assert ) {
+  var result = SearchNoResultsComponent.view(null, {totalhits: 10});
+  assert.equal(result.tag, 'div');
+  assert.equal(result.children.length, 0);
+
+  result = SearchNoResultsComponent.view(null, {totalhits: 0, altquery: [], query: 'my query'});
+  assert.equal(result.children[0].tag, 'h4')
+  assert.ok(result.children[0].children[0].indexOf('No results found for ') !== -1);
+  assert.equal(result.children[0].children[1].tag, 'i')
+  assert.ok(result.children[0].children[1].children[0].indexOf('my query') !== -1);
+
+
+  result = SearchNoResultsComponent.view(null, {totalhits: 0, altquery: ['one', 'two'], query: 'my query'});
+  
+  assert.deepEqual(result.children[1].children[0], {
+    "attrs": {},
+    "children": [
+      "Try one of the following searches instead"
+    ],
+    "tag": "h5"
+  });
+
+  assert.deepEqual(result.children[1].children[1].children[0].children[0].children[0], 'one');
+  assert.deepEqual(result.children[1].children[1].children[1].children[0].children[0], 'two');
 });
 
 </script>
