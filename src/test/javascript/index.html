@@ -206,6 +206,76 @@ QUnit.test( 'view', function( assert ) {
   assert.deepEqual(result.children[1].children[1].children[1].children[0].children[0], 'two');
 });
 
+QUnit.test( 'controller', function( assert ) {
+  var result = SearchNoResultsComponent.controller();
+  var called = false;
+  SearchModel.search = function() { called = true; };
+  result.doaltquery('myquery');
+
+  assert.equal('myquery', SearchModel.searchvalue());
+  assert.ok(called);
+});
+
+QUnit.module('SearchLoadingComponent');
+QUnit.test( 'view', function( assert ) {
+  SearchModel.currentlyloading(false);
+  var result = SearchLoadingComponent.view();
+  
+  assert.deepEqual(result, {
+    "attrs": {
+      "className": "search-loading",
+      "style": {
+        "display": "none"
+      }
+    },
+    "children": [
+      {
+        "attrs": {
+          "src": "/img/loading.gif"
+        },
+        "children": [],
+        "tag": "img"
+      },
+      {
+        "attrs": {},
+        "children": [
+          "Loading..."
+        ],
+        "tag": "h5"
+      }
+    ],
+    "tag": "div"
+  });
+
+  SearchModel.currentlyloading(true);
+  var result = SearchLoadingComponent.view();
+  
+  assert.deepEqual(result, {
+    "attrs": {
+      "className": "search-loading"
+    },
+    "children": [
+      {
+        "attrs": {
+          "src": "/img/loading.gif"
+        },
+        "children": [],
+        "tag": "img"
+      },
+      {
+        "attrs": {},
+        "children": [
+          "Loading..."
+        ],
+        "tag": "h5"
+      }
+    ],
+    "tag": "div"
+  });
+});
+
+
+
 </script>
 </body>
 </html>

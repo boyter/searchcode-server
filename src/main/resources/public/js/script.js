@@ -815,7 +815,7 @@ var SearchNextPreviousComponent = {
 }
 
 var SearchLoadingComponent = {
-    view: function(ctrl, args) {
+    view: function() {
         var style = {};
 
         if (SearchModel.currentlyloading() === false) {
