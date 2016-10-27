@@ -707,6 +707,7 @@ public class App {
             map.put("sysArch", statsService.getArch());
             map.put("sysVersion", statsService.getOsVersion());
             map.put("processorCount", statsService.getProcessorCount());
+            map.put("memoryUsage", statsService.getMemoryUsage("<br>"));
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
             map.put("currentdatetime", new Date().toString());
@@ -1337,6 +1338,7 @@ public class App {
             return new ModelAndView(map, "404.ftl");
 
         }, new FreeMarkerEngine());
+        
 
         /**
          * Test that was being used to display blame information

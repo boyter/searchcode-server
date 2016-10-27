@@ -14,6 +14,7 @@ package com.searchcode.app.service;
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.text.NumberFormat;
 
 /**
  * Simple class used to show basic stats such ad the total number of searches and how long the application
@@ -48,6 +49,26 @@ public class StatsService {
     public String getProcessorCount() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
         return "" + osBean.getAvailableProcessors();
+    }
+
+    public String getMemoryUsage(String seperator) {
+        Runtime runtime = Runtime.getRuntime();
+
+        NumberFormat format = NumberFormat.getInstance();
+
+        StringBuilder sb = new StringBuilder();
+        long maxMemory = runtime.maxMemory();
+        long allocatedMemory = runtime.totalMemory();
+        long freeMemory = runtime.freeMemory();
+        long usedMB = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
+
+        sb.append("free memory: " + format.format(freeMemory / 1024) + seperator);
+        sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + seperator);
+        sb.append("max memory: " + format.format(maxMemory / 1024) + seperator);
+        sb.append("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + seperator);
+        sb.append("memory usage: " + usedMB + "MB");
+
+        return sb.toString();
     }
 
     /**

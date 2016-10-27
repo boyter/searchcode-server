@@ -12,6 +12,7 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.StatsService;
 import org.quartz.*;
 
 import java.io.IOException;
@@ -34,8 +35,10 @@ public class IndexDocumentsJob implements Job {
             int codeIndexQueueSize = Singleton.getCodeIndexQueue().size();
 
             if (codeIndexQueueSize != 0) {
+                StatsService statsService = new StatsService();
                 Singleton.getLogger().info("Documents to index: " + codeIndexQueueSize);
                 Singleton.getLogger().info("Lines to index: " + Singleton.getCodeIndexLinesCount());
+                Singleton.getLogger().info("Memory Usage: " + statsService.getMemoryUsage(", "));
                 CodeIndexer.indexDocuments(Singleton.getCodeIndexQueue());
             }
         } catch (Exception ex) {

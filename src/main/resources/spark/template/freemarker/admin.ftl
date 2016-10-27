@@ -211,6 +211,11 @@
         <td><b>System Load Average</b></td>
         <td>${loadAverage}</td>
     </tr>
+
+    <tr>
+        <td><b>Memory Usage</b></td>
+        <td>${memoryUsage}</td>
+    </tr>
 </table>
     
 
