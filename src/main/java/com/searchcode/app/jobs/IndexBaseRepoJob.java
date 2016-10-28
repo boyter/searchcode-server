@@ -373,6 +373,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
                         fileLocations.add(fileLocationFilename);
                         reportList.add(new String[]{fileToString, "included", ""});
+
                         return FileVisitResult.CONTINUE;
                     }
                     catch(Exception ex) {
@@ -392,17 +393,24 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         if (existingRepo) {
-            CodeSearcher cs = new CodeSearcher();
-            List<String> indexLocations = cs.getRepoDocuments(repoName);
+            cleanMissingPathFiles(repoName, fileLocations);
+        }
+    }
 
-            for (String file: indexLocations) {
-                if (!fileLocations.contains(file)) {
-                    Singleton.getLogger().info("Missing from disk, removing from index " + file);
-                    try {
-                        CodeIndexer.deleteByFileLocationFilename(file);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
-                    }
+    /**
+     * Method to remove from the index files that are no longer required
+     */
+    public void cleanMissingPathFiles(String repoName, List<String> fileLocations) {
+        CodeSearcher cs = new CodeSearcher();
+        List<String> indexLocations = cs.getRepoDocuments(repoName);
+
+        for (String file: indexLocations) {
+            if (!fileLocations.contains(file)) {
+                Singleton.getLogger().info("Missing from disk, removing from index " + file);
+                try {
+                    CodeIndexer.deleteByFileLocationFilename(file);
+                } catch (IOException ex) {
+                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                 }
             }
         }

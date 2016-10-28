@@ -46,7 +46,7 @@ import java.util.logging.Logger;
  * Does all of the queries which happen against the Lucene index, including search queries and working out
  * how many documents have been indexed.
  */
-public class CodeSearcher {
+public class CodeSearcher implements ICodeSearcher {
 
     public String INDEXPATH = Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION);
     public String CODEFIELD = Values.CONTENTS;
@@ -261,6 +261,7 @@ public class CodeSearcher {
         return codeResult;
     }
 
+    // TODO for very large repo's this can become huge. Needs to support paging
     public List<String> getRepoDocuments(String repoName) {
         List<String> fileLocations = new ArrayList<>();
         try {
