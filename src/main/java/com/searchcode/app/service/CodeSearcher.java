@@ -262,8 +262,12 @@ public class CodeSearcher implements ICodeSearcher {
     }
 
     // TODO for very large repo's this can become huge. Needs to support paging
-    public List<String> getRepoDocuments(String repoName) {
-        List<String> fileLocations = new ArrayList<>();
+    public List<String> getRepoDocuments(String repoName, int page) {
+
+        int PAGELIMIT = 1000;
+        List<String> fileLocations = new ArrayList<>(PAGELIMIT);
+        int start = PAGELIMIT * page;
+
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
             IndexSearcher searcher = new IndexSearcher(reader);
@@ -275,7 +279,7 @@ public class CodeSearcher implements ICodeSearcher {
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
             ScoreDoc[] hits = results.scoreDocs;
 
-            for (int i = 0; i < hits.length; i++) {
+            for (int i = start; i < (start + PAGELIMIT); i++) {
                 Document doc = searcher.doc(hits[i].doc);
                 fileLocations.add(doc.get(Values.FILELOCATIONFILENAME));
             }

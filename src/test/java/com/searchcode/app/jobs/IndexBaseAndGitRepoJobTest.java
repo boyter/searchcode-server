@@ -1,7 +1,12 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
+import org.mockito.Mockito;
+
+import static org.mockito.Mockito.*;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,7 +14,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class IndexGitRepoJobTest extends TestCase {
+public class IndexBaseAndGitRepoJobTest extends TestCase {
     public void testGetBlameFilePath() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
         String actual = gitRepoJob.getBlameFilePath("./repo/something/test");
@@ -83,5 +88,34 @@ public class IndexGitRepoJobTest extends TestCase {
         String[] split = "myrepo/path/to/myfile.txt".split("/");
         String temp = String.join("/", Arrays.asList(split).subList(1, split.length));
         assertEquals("path/to/myfile.txt", temp);
+    }
+
+    public void testMissingPathFilesNoLocations() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);
+
+        when(codeSearcherMock.getRepoDocuments("testRepoName", 0)).thenReturn(new ArrayList<>());
+        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new ArrayList<>());
+        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
+    }
+
+    public void testMissingPathFilesShouldPage() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);
+
+        List<String> repoReturn = new ArrayList<>();
+        for(int i = 0; i < 10; i++) {
+            repoReturn.add("string"+i);
+        }
+
+        when(codeSearcherMock.getRepoDocuments("testRepoName", 0)).thenReturn(repoReturn);
+        when(codeSearcherMock.getRepoDocuments("testRepoName", 1)).thenReturn(repoReturn);
+        when(codeSearcherMock.getRepoDocuments("testRepoName", 2)).thenReturn(new ArrayList<>());
+
+        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new ArrayList<>());
+
+        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
+        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 1);
+        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 2);
     }
 }

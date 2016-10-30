@@ -298,6 +298,7 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
         SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
+        CodeSearcher codeSearcher = new CodeSearcher();
         List<String> fileLocations = new ArrayList<>();
         Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
 
@@ -393,26 +394,36 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         if (existingRepo) {
-            cleanMissingPathFiles(repoName, fileLocations);
+            this.cleanMissingPathFiles(codeSearcher, repoName, fileLocations);
         }
     }
 
     /**
      * Method to remove from the index files that are no longer required
      */
-    public void cleanMissingPathFiles(String repoName, List<String> fileLocations) {
-        CodeSearcher cs = new CodeSearcher();
-        List<String> indexLocations = cs.getRepoDocuments(repoName);
+    public void cleanMissingPathFiles(CodeSearcher codeSearcher, String repoName, List<String> fileLocations) {
+        int page = 0;
+        boolean doClean = true;
 
-        for (String file: indexLocations) {
-            if (!fileLocations.contains(file)) {
-                Singleton.getLogger().info("Missing from disk, removing from index " + file);
-                try {
-                    CodeIndexer.deleteByFileLocationFilename(file);
-                } catch (IOException ex) {
-                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
+        while (doClean) {
+            List<String> indexLocations = codeSearcher.getRepoDocuments(repoName, page);
+
+            if (indexLocations.isEmpty()) {
+                doClean = false;
+            }
+
+            for (String file : indexLocations) {
+                if (!fileLocations.contains(file)) {
+                    Singleton.getLogger().info("Missing from disk, removing from index " + file);
+                    try {
+                        CodeIndexer.deleteByFileLocationFilename(file);
+                    } catch (IOException ex) {
+                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
+                    }
                 }
             }
+
+            page++;
         }
     }
 

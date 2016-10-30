@@ -16,7 +16,7 @@ public interface ICodeSearcher {
     CodeResult getByCodeId(String codeId);
 
     CodeResult getById(int documentId);
-    List<String> getRepoDocuments(String repoName);
+    List<String> getRepoDocuments(String repoName, int page);
 
     SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException;
     List<Integer> calculatePages(int numTotalHits, int noPages);
