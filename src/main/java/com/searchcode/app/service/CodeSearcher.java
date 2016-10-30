@@ -261,9 +261,12 @@ public class CodeSearcher implements ICodeSearcher {
         return codeResult;
     }
 
-    // TODO for very large repo's this can become huge. Needs to support paging
+    /**
+     * Due to very large repositories (500,000 files) this needs to support
+     * paging. Also need to consider the fact that is a list of strings
+     * TODO maybe convert to hash so lookups are faster
+     */
     public List<String> getRepoDocuments(String repoName, int page) {
-
         int PAGELIMIT = 1000;
         List<String> fileLocations = new ArrayList<>(PAGELIMIT);
         int start = PAGELIMIT * page;
@@ -277,9 +280,10 @@ public class CodeSearcher implements ICodeSearcher {
             Query query = parser.parse(Values.REPONAME + ":" + repoName);
 
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
+            int end = Math.min(results.totalHits, (this.PAGELIMIT * (page + 1)));
             ScoreDoc[] hits = results.scoreDocs;
 
-            for (int i = start; i < (start + PAGELIMIT); i++) {
+            for (int i = start; i < end; i++) {
                 Document doc = searcher.doc(hits[i].doc);
                 fileLocations.add(doc.get(Values.FILELOCATIONFILENAME));
             }
@@ -287,7 +291,7 @@ public class CodeSearcher implements ICodeSearcher {
             reader.close();
         }
         catch(Exception ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            LOGGER.severe("CodeSearcher getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
         }
 
         return fileLocations;

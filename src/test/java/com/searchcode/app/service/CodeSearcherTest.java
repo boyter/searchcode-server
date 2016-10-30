@@ -1,8 +1,10 @@
 package com.searchcode.app.service;
 
+import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
 import junit.framework.TestCase;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -43,5 +45,18 @@ public class CodeSearcherTest extends TestCase {
         CodeResult cr2 = cs.getByRepoFileName("authoring", "src/tests/acceptance/Ninemsn.Portal.News.Authoring.Tests.Acceptance/Steps/ImagePickerStepDefintions.cs");
 
         cr1 = null;
+    }
+
+    // Integration Test
+    public void testGetRepoDocuments() throws IOException {
+        CodeIndexDocument codeIndexDocument = new CodeIndexDocument("/", "testGetRepoDocuments", "/", "/", "/", "md5hash", "Java", 10, "", "/", "/");
+        CodeIndexer.indexDocument(codeIndexDocument);
+        CodeSearcher cs = new CodeSearcher();
+
+        List<String> testGetRepoDocuments = cs.getRepoDocuments("testGetRepoDocuments", 0);
+        assertThat(testGetRepoDocuments).hasSize(1);
+
+        testGetRepoDocuments = cs.getRepoDocuments("testGetRepoDocuments", 1);
+        assertThat(testGetRepoDocuments).hasSize(0);
     }
 }
