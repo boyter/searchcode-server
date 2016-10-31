@@ -1,5 +1,7 @@
 package com.searchcode.app.service;
 
+import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -63,9 +65,13 @@ public class CodeIndexerTest extends TestCase {
     }
 
     public void testShouldBackOffWhenLoadVeryHigh() {
+        Data dataMock = Mockito.mock(Data.class);
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
+
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
+        when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
         Singleton.setStatsService(statsServiceMock);
+        Singleton.setData(dataMock);
 
         assertThat(CodeIndexer.shouldBackOff()).isTrue();
     }

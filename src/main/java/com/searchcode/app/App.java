@@ -1347,7 +1347,7 @@ public class App {
             return new ModelAndView(map, "404.ftl");
 
         }, new FreeMarkerEngine());
-        
+
 
         /**
          * Test that was being used to display blame information
