@@ -43,8 +43,6 @@ public class CodeSearcherTest extends TestCase {
 
         CodeResult cr1 = cs.getByRepoFileName("authoring", "src/app/Ninemsn.Portal.SitecoreItems.Master/sitecore/media library/Files/MediaService/angrywhale.item");
         CodeResult cr2 = cs.getByRepoFileName("authoring", "src/tests/acceptance/Ninemsn.Portal.News.Authoring.Tests.Acceptance/Steps/ImagePickerStepDefintions.cs");
-
-        cr1 = null;
     }
 
     // Integration Test
