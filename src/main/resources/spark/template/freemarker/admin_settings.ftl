@@ -108,6 +108,15 @@
         </tr>
 
         <tr>
+            <td valign="top"><b>Backoff Value</b></td>
+            <td valign="top"><input id="backoffValue" class="form-control" type="text" value="${backoffValue}" name="backoffValue"></td>
+            </tr>
+            <tr>
+            <td></td>
+            <td>Empty this field to reset. Used for controlling the indexer. If set to a non zero value it will attempt to keep the CPU load value below the set value. Works off the CPU load averages reported. If you find searchcode to be slow to respond then set this value to half the number of processors. Note that other processes on the machine can affect this value and if set too low will cause the index to never run.</td>
+        </tr>
+
+        <tr>
             <td valign="top"><input id="changeSettings" class="btn btn-primary" type="submit" name="Change Settings" value="Change Settings" /></td>
             <td></td>
         </tr>

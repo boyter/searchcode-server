@@ -280,7 +280,7 @@ public class CodeSearcher implements ICodeSearcher {
             Query query = parser.parse(Values.REPONAME + ":" + repoName);
 
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-            int end = Math.min(results.totalHits, (this.PAGELIMIT * (page + 1)));
+            int end = Math.min(results.totalHits, (PAGELIMIT * (page + 1)));
             ScoreDoc[] hits = results.scoreDocs;
 
             for (int i = start; i < end; i++) {

@@ -72,6 +72,23 @@ public class CodeIndexer {
     }
 
     /**
+     * Checks to see how much CPU we are using and if its higher then the limit set
+     * inside the settings page mute the index for a while
+     */
+    public static synchronized boolean shouldBackOff() {
+        // TODO implement the actual getting
+        //this.MINIFIEDLENGTH = Integer.parseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH));
+        StatsService statsService = Singleton.getStatsService();
+        Double loadAverage = Double.parseDouble(statsService.getLoadAverage());
+
+        if (loadAverage > 1.2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Deletes all files that belong to a repository.
      * TODO I don't think this clears anything from the facets, which it should
      */

@@ -53,7 +53,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    private static final boolean ISCOMMUNITY = true;
+    public static final boolean ISCOMMUNITY = false;
     private static final String VERSION = "1.3.3";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
@@ -840,6 +840,7 @@ public class App {
             map.put("maxLineDepth", "" + (int)getMaxLineDepth());
             map.put("minifiedLength", "" + (int)getMinifiedLength());
             map.put("owaspenabled", owaspAdvisoriesEnabled());
+            map.put("backoffValue", (double) getBackoffValue());
             map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_settings.ftl");
@@ -946,6 +947,14 @@ public class App {
             }
             catch(NumberFormatException ex) {
                 data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
+            }
+
+            try {
+                double backoffValue = Double.parseDouble(request.queryParams("backoffValue"));
+                data.saveData(Values.BACKOFFVALUE, "" + backoffValue);
+            }
+            catch(NumberFormatException ex) {
+                data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
             }
 
             boolean owaspadvisories = Boolean.parseBoolean(request.queryParams("owaspadvisories"));
@@ -1421,6 +1430,22 @@ public class App {
         }
 
         return Double.parseDouble(minifiedLength);
+    }
+
+    public static double getBackoffValue() {
+        if(ISCOMMUNITY) {
+            return Double.parseDouble(Values.DEFAULTBACKOFFVALUE);
+        }
+
+        Data data = injector.getInstance(Data.class);
+        String backoffValue = data.getDataByName(Values.BACKOFFVALUE);
+
+        if(backoffValue == null) {
+            data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
+            backoffValue = Values.DEFAULTBACKOFFVALUE;
+        }
+
+        return Double.parseDouble(backoffValue);
     }
 
     public static boolean owaspAdvisoriesEnabled() {

@@ -4,12 +4,14 @@ import com.searchcode.app.dto.CodeIndexDocument;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Queue;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.when;
 
 public class CodeIndexerTest extends TestCase {
     public CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", "repoName", "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, "contents", "repoRemoteLocation", "codeOwner");
@@ -58,6 +60,22 @@ public class CodeIndexerTest extends TestCase {
         catch(Exception ex) {
             assertTrue(false);
         }
+    }
+
+    public void testShouldBackOffWhenLoadVeryHigh() {
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
+        Singleton.setStatsService(statsServiceMock);
+
+        assertThat(CodeIndexer.shouldBackOff()).isTrue();
+    }
+
+    public void testShouldBackOffWhenLoadZero() {
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
+        Singleton.setStatsService(statsServiceMock);
+
+        assertThat(CodeIndexer.shouldBackOff()).isFalse();
     }
 
     // TODO expand on these tests

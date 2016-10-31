@@ -407,12 +407,13 @@ public abstract class IndexBaseRepoJob implements Job {
 
         while (doClean) {
             List<String> indexLocations = codeSearcher.getRepoDocuments(repoName, page);
+            Singleton.getLogger().info("cleanMissingPathFiles doClean " + page + " " + indexLocations.size());
 
             if (indexLocations.isEmpty()) {
                 doClean = false;
             }
 
-            for (String file : indexLocations) {
+            for (String file: indexLocations) {
                 if (!fileLocations.contains(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {

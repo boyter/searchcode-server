@@ -13,8 +13,10 @@ package com.searchcode.app.service;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.searchcode.app.App;
 import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.util.Properties;
 import spark.Request;
 import spark.Response;
@@ -66,4 +68,37 @@ public class AdminRouteService {
 
         return map;
     }
+
+//    public Map<String, Object> SettingsPage(Request request, Response response) {
+//        Map<String, Object> map = new HashMap<>();
+//
+//        String[] highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
+//
+//        Map<String, Object> map = new HashMap<>();
+//        map.put("logoImage", getLogo());
+//        map.put("syntaxHighlighter", getSyntaxHighlighter());
+//        map.put("highlighters", highlighters);
+//        map.put("averageSalary", "" + (int)getAverageSalary());
+//        map.put("matchLines", "" + (int)getMatchLines());
+//        map.put("maxLineDepth", "" + (int)getMaxLineDepth());
+//        map.put("minifiedLength", "" + (int)getMinifiedLength());
+//        map.put("owaspenabled", owaspAdvisoriesEnabled());
+//        map.put("isCommunity", ISCOMMUNITY);
+//    }
+//
+//    public double getMatchLines() {
+//        if(App.ISCOMMUNITY) {
+//            return Double.parseDouble(Values.DEFAULTMATCHLINES);
+//        }
+//
+//        Data data = injector.getInstance(Data.class);
+//        String matchLines = data.getDataByName(Values.MATCHLINES);
+//
+//        if(matchLines == null) {
+//            data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
+//            matchLines = Values.DEFAULTMATCHLINES;
+//        }
+//
+//        return Double.parseDouble(matchLines);
+//    }
 }

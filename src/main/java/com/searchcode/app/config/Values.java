@@ -116,11 +116,12 @@ public class Values {
     public static String MINIFIEDLENGTH = "minified_length";
     public static String OWASPENABLED = "owasp_enabled";
     public static String LOGO = "logo";
+    public static String BACKOFFVALUE = "backoff_value";
+
     public static String DEFAULTSYNTAXHIGHLIGHTER = "github";
     public static String DEFAULTAVERAGESALARY = "56000";
     public static String DEFAULTMATCHLINES = "15";
     public static String DEFAULTMAXLINEDEPTH = "10000";
     public static String DEFAULTMINIFIEDLENGTH = "255";
-
-
+    public static String DEFAULTBACKOFFVALUE = "0";
 }

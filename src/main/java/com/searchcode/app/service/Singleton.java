@@ -51,6 +51,7 @@ public final class Singleton {
     private static Scheduler scheduler = null;
     private static Repo repo = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
+    private static StatsService statsService = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
@@ -242,5 +243,17 @@ public final class Singleton {
 
     public static synchronized void setPauseBackgroundJobs(boolean pauseBackgroundJobs) {
         Singleton.pauseBackgroundJobs = pauseBackgroundJobs;
+    }
+
+    public static StatsService getStatsService() {
+        if (statsService == null) {
+            statsService = new StatsService();
+        }
+
+        return statsService;
+    }
+
+    public static void setStatsService(StatsService statsService) {
+        Singleton.statsService = statsService;
     }
 }
