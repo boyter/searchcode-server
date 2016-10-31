@@ -50,6 +50,7 @@ public final class Singleton {
     private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
     private static Repo repo = null;
+    private static Data data = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
 
@@ -255,5 +256,18 @@ public final class Singleton {
 
     public static void setStatsService(StatsService statsService) {
         Singleton.statsService = statsService;
+    }
+
+    public static synchronized Data getData() {
+        if (data == null) {
+            Injector injector = Guice.createInjector(new InjectorConfig());
+            data = injector.getInstance(Data.class);
+        }
+
+        return data;
+    }
+
+    public static void setData(Data data) {
+        Singleton.data = data;
     }
 }

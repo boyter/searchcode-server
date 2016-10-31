@@ -629,6 +629,8 @@ print data['sucessful'], data['message']</textarea>
             <dd>How many lines into a file should be scanned for matching code. Increasing this value will slow down searches for larger files but is more likely to display the correct lines. Needs to be a number or will default to 10000.</dd>
             <dt>Minified Length</dt>
             <dd>What the average length of lines in a file (ignoring empty) needs to be to mark the file as minified and being excluded from being indexed. Changing this value will affect files as they are re-indexed when the watched repositories change. Needs to be a number or will default to 255.</dd>
+            <dt>Backoff Value</dt>
+            <dd>Used for controlling the indexer CPU usage. If set to a non zero value it will attempt to keep the CPU load value below the set value. You can view the reported load average on the default admin page. Works off the CPU load averages reported. If you find searchcode to be slow to respond then set this value to half the number of processors. Note that other processes on the machine can affect this value and if set too low will cause the index to never run. Needs to be a number or will default to 0.</dd>
           </dl>
         </p>
 

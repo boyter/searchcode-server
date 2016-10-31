@@ -72,8 +72,8 @@ public class App {
         Spark.port(server_port);
 
         JobService js = injector.getInstance(JobService.class);
-        Repo repo = injector.getInstance(Repo.class);
-        Data data = injector.getInstance(Data.class);
+        Repo repo = Singleton.getRepo();
+        Data data = Singleton.getData();
         Api api = injector.getInstance(Api.class);
 
         ApiService apiService = injector.getInstance(ApiService.class);

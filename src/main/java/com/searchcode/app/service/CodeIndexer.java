@@ -10,7 +10,11 @@
 
 package com.searchcode.app.service;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.util.CodeAnalyzer;
 import com.searchcode.app.util.Helpers;
@@ -51,7 +55,7 @@ public class CodeIndexer {
      */
     public static synchronized boolean shouldPauseAdding() {
 
-        if (Singleton.getPauseBackgroundJobs()) {
+        if (Singleton.getPauseBackgroundJobs() || shouldBackOff()) {
             return true;
         }
 
@@ -76,12 +80,18 @@ public class CodeIndexer {
      * inside the settings page mute the index for a while
      */
     public static synchronized boolean shouldBackOff() {
-        // TODO implement the actual getting
-        //this.MINIFIEDLENGTH = Integer.parseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH));
+        Data data = Singleton.getData();
         StatsService statsService = Singleton.getStatsService();
+
+        Double loadValue = Double.parseDouble(data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE));
         Double loadAverage = Double.parseDouble(statsService.getLoadAverage());
 
-        if (loadAverage > 1.2) {
+        if (loadValue <= 0) {
+            return false;
+        }
+
+        if (loadAverage >= loadValue) {
+            Singleton.getLogger().info("Load Average higher then set value. Pausing indexing.");
             return true;
         }
 
