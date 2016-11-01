@@ -36,8 +36,8 @@ public class SearchcodeLib {
     private int MAXSPLITLENGTH = 100000;
     private Pattern MULTIPLEUPPERCASE = Pattern.compile("[A-Z]{2,}");
     private int MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
-    private String[] WHITELIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
-    private String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
+    public String[] WHITELIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
+    public String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
     private boolean GUESSBINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
     private boolean ANDMATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
 
@@ -208,14 +208,6 @@ public class SearchcodeLib {
                 return false;
             }
         }
-
-        // Check against user set blacklist
-        for (String extension: this.BLACKLIST) {
-            if (lowerFileName.endsWith("." + extension)) {
-                return true;
-            }
-        }
-
 
         OptionalDouble average = codeLines.stream().map(x -> x.trim().replace(" ", "")).mapToInt(String::length).average();
         if (average.isPresent() && average.getAsDouble() > this.MINIFIEDLENGTH) {

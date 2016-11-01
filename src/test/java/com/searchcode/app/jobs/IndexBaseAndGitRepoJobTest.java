@@ -2,6 +2,7 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
@@ -57,6 +58,9 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
 
     public void testShouldJobTerminate() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
+        Singleton.setStatsService(statsServiceMock);
 
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
         Singleton.setBackgroundJobsEnabled(false);

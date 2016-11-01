@@ -177,6 +177,24 @@ public class SearchcodeLibTest extends TestCase {
         assertTrue(sl.isMinified(codeLines, "something.something"));
     }
 
+    public void testIsMinifiedWhiteListAlwaysWins() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+
+        ArrayList<String> whiteList = new ArrayList<>();
+        whiteList.add("something");
+        sl.WHITELIST = whiteList.toArray(new String[whiteList.size()]);
+
+        String minified = "";
+        for (int i=0; i < 500; i++) {
+            minified += "a";
+        }
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add(minified);
+
+        assertFalse(sl.isMinified(codeLines, "something.something"));
+    }
+
     public void testIsMinifiedFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
