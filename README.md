@@ -128,6 +128,7 @@ XX XXXXXXX XXXX - 1.3.3
  - Set file rotation to have 10x10mb files
  - Add backoff setting to settings page to control CPU usage
  - Improve memory usage for large file repositories
+ - Whitelist now trumps minified
 
 04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
