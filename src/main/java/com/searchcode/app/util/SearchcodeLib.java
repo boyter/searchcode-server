@@ -203,15 +203,15 @@ public class SearchcodeLib {
 
         String lowerFileName = fileName.toLowerCase();
 
-        for (String extention: this.WHITELIST) {
-            if (lowerFileName.endsWith("." + extention)) {
+        for (String extension: this.WHITELIST) {
+            if (lowerFileName.endsWith("." + extension)) {
                 return false;
             }
         }
 
         // Check against user set blacklist
-        for (String extention: this.BLACKLIST) {
-            if (lowerFileName.endsWith("." + extention)) {
+        for (String extension: this.BLACKLIST) {
+            if (lowerFileName.endsWith("." + extension)) {
                 return true;
             }
         }
@@ -236,8 +236,8 @@ public class SearchcodeLib {
 
         String lowerFileName = fileName.toLowerCase();
         // Check against user set whitelist
-        for (String extention: this.WHITELIST) {
-            if (lowerFileName.endsWith("." + extention)) {
+        for (String extension: this.WHITELIST) {
+            if (lowerFileName.endsWith("." + extension)) {
                 return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
