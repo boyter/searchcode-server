@@ -6,6 +6,7 @@ import com.searchcode.app.dto.CodeIndexDocument;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import java.io.IOException;
@@ -28,7 +29,16 @@ public class CodeIndexerTest extends TestCase {
     }
 
     public void testShouldPauseAddingExpectFalse() {
+        Data dataMock = Mockito.mock(Data.class);
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        when(statsServiceMock.getLoadAverage()).thenReturn("10000000");
+        when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("0");
+
+        Singleton.setStatsService(statsServiceMock);
+        Singleton.setData(dataMock);
+
         Singleton.setPauseBackgroundJobs(false);
+
         assertThat(CodeIndexer.shouldPauseAdding()).isFalse();
     }
 

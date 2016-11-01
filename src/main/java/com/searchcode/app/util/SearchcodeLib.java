@@ -199,7 +199,24 @@ public class SearchcodeLib {
      * Determine if a List<String> which is used to represent a code file contains a code file that is
      * suspected to be minified. This is for the purposes of excluding it from the index.
      */
-    public boolean isMinified(List<String> codeLines) {
+    public boolean isMinified(List<String> codeLines, String fileName) {
+
+        String lowerFileName = fileName.toLowerCase();
+
+        for (String extention: this.WHITELIST) {
+            if (lowerFileName.endsWith("." + extention)) {
+                return false;
+            }
+        }
+
+        // Check against user set blacklist
+        for (String extention: this.BLACKLIST) {
+            if (lowerFileName.endsWith("." + extention)) {
+                return true;
+            }
+        }
+
+
         OptionalDouble average = codeLines.stream().map(x -> x.trim().replace(" ", "")).mapToInt(String::length).average();
         if (average.isPresent() && average.getAsDouble() > this.MINIFIEDLENGTH) {
             return true;

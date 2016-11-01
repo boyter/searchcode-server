@@ -174,7 +174,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
 
-        assertTrue(sl.isMinified(codeLines));
+        assertTrue(sl.isMinified(codeLines, "something.something"));
     }
 
     public void testIsMinifiedFalse() {
@@ -187,7 +187,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified);
 
-        assertFalse(sl.isMinified(codeLines));
+        assertFalse(sl.isMinified(codeLines, "something.something"));
     }
 
     public void testCodeOwnerSameTimeDifferntCount() {

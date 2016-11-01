@@ -55,7 +55,11 @@ public class CodeIndexer {
      */
     public static synchronized boolean shouldPauseAdding() {
 
-        if (Singleton.getPauseBackgroundJobs() || shouldBackOff()) {
+        if (Singleton.getPauseBackgroundJobs()) {
+            return true;
+        }
+
+        if (shouldBackOff()) {
             return true;
         }
 
