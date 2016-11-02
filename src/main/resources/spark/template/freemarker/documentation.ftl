@@ -569,6 +569,8 @@ print data['sucessful'], data['message']</textarea>
               <dd>If you enable use_system_git you need to ensure that this equals the path to your git executable for your system. By default set to /usr/bin/git</dd>
               <dt>log_level</dt>
               <dd>What level of logging is requested both to STDOUT and the default log file. Accepts the uppercase values of INFO, WARNING, SEVERE or OFF. By default set to SEVERE. Critical warnings will still be printed to STDOUT.</dd>
+              <dt>log_count</dt>
+              <dd>How many rolling log files to keep. By default set to 10.</dd>
               <dt>api_enabled</dt>
               <dd>Boolean value true or false. Should the searchcode server API be enabled. By default set to false.</dd>
               <dt>api_key_authentication</dt>

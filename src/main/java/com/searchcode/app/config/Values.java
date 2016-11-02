@@ -80,6 +80,10 @@ public class Values {
     public static String DEFAULT_AND_MATCH = "true";
     public static String LOG_INDEXED = "log_indexed";
     public static String DEFAULT_LOG_INDEXED = "false";
+    public static String LOG_COUNT = "log_count";
+    public static String DEFAULT_LOG_COUNT = "10";
+    public static String LOG_LEVEL = "log_level";
+    public static String DEFAULT_LOG_LEVEL = "SEVERE";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";

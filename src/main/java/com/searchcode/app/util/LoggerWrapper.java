@@ -28,30 +28,25 @@ import java.util.logging.*;
 public class LoggerWrapper {
 
     private Logger logger = null;
-
     private EvictingQueue allCache = null;
-
     private EvictingQueue infoRecentCache = null;
-
     private EvictingQueue warningRecentCache = null;
-
     private EvictingQueue severeRecentCache = null;
-
     private EvictingQueue searchLog = null;
 
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
-
     public int LOGCOUNT = 10;
 
     public LoggerWrapper() {
+        this.LOGCOUNT = Helpers.tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
+
         String path = Values.EMPTYSTRING;
         try {
             path = Helpers.getLogPath();
-
             path += "searchcode-server-%g.log";
             Handler handler = new FileHandler(path, this.BYTESLOGSIZE, this.LOGCOUNT);
 
-            String logLevel = (String) Properties.getProperties().getOrDefault("log_level", "severe");
+            String logLevel = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
 
             handler.setFormatter(new SimpleFormatter());
 

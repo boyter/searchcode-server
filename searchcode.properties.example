@@ -13,6 +13,7 @@ only_localhost=false
 low_memory=false
 log_level=SEVERE
 log_path=./logs
+log_count=10
 spelling_corrector_size=10000
 max_document_queue_size=1000
 max_document_queue_line_size=100000

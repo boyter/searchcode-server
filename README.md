@@ -120,15 +120,15 @@ XX XXXXXXX XXXX - 1.3.3
  - White/Black list of file extensions
  - Fix bug where OWASP results not escaped
  - Add logout button to admin sections
- - Refactor JavaScript and remove bugs
+ - Refactor JavaScript and fix bugs
  - Additional properties for controlling background threads
  - Fix off by 1 error where some results would not be shown
  - Admin can now selectively pause indexing
  - Ability to log out all indexed and excluded files to CSV
- - Set file rotation to have 10x10mb files
+ - Set file rotation to have 10x10mb files by default but controlled through property
  - Add backoff setting to settings page to control CPU usage
  - Improve memory usage for large file repositories
- - Whitelist now trumps minified
+ - Whitelist trumps minified logic
 
 04 October 2016 - 1.3.2
  - Improve matching of certain strings such as E.G. linux2.7.4 or i386
