@@ -62,6 +62,7 @@ def pushtagbranch():
     local('git push --tags')
 
 def build_all_release():
+    js_test()
     build_release()
     build_community_release()
 

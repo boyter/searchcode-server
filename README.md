@@ -111,7 +111,7 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXX XXXX - 1.3.3
+02 November 2016 - 1.3.3
  - Add log level selection to admin logs page
  - Can now search across filenames and paths
  - Slight performance improvements for indexing
