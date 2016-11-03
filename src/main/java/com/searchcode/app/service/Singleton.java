@@ -13,6 +13,7 @@ package com.searchcode.app.service;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.searchcode.app.config.InjectorConfig;
+import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
@@ -51,6 +52,7 @@ public final class Singleton {
     private static Scheduler scheduler = null;
     private static Repo repo = null;
     private static Data data = null;
+    private static Api api = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
 
@@ -269,5 +271,18 @@ public final class Singleton {
 
     public static void setData(Data data) {
         Singleton.data = data;
+    }
+
+    public static synchronized Api getApi() {
+        if (api == null) {
+            Injector injector = Guice.createInjector(new InjectorConfig());
+            api = injector.getInstance(Api.class);
+        }
+
+        return api;
+    }
+
+    public static void setApi(Api api) {
+        Singleton.api = api;
     }
 }

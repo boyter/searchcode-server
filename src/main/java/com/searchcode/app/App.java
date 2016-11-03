@@ -71,7 +71,7 @@ public class App {
         JobService js = injector.getInstance(JobService.class);
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
-        Api api = injector.getInstance(Api.class);
+        Api api = Singleton.getApi();
 
         ApiService apiService = injector.getInstance(ApiService.class);
         StatsService statsService = new StatsService();
@@ -1111,7 +1111,7 @@ public class App {
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "coderesult.ftl");
         }, new FreeMarkerEngine());
-        
+
         get("/documentation/", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
 
