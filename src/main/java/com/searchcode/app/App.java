@@ -1111,86 +1111,13 @@ public class App {
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "coderesult.ftl");
         }, new FreeMarkerEngine());
-
-
-        /**
-         * Deprecated should not be used
-         * TODO delete this method
-         */
-        get("/codesearch/view/:codeid", (request, response) -> {
-            Map<String, Object> map = new HashMap<>();
-
-            int codeid = Integer.parseInt(request.params(":codeid"));
-            CodeSearcher cs = new CodeSearcher();
-            Cocomo2 coco = new Cocomo2();
-
-            StringBuilder code = new StringBuilder();
-
-            // escape all the lines and include deeplink for line number
-            CodeResult codeResult = cs.getById(codeid);
-
-            if (codeResult == null) {
-                response.redirect("/404/");
-                halt();
-            }
-
-            List<String> codeLines = codeResult.code;
-            for (int i = 0; i < codeLines.size(); i++) {
-                code.append("<span id=\"" + (i + 1) + "\"></span>");
-                code.append(StringEscapeUtils.escapeHtml4(codeLines.get(i)));
-                code.append("\n");
-            }
-
-            int limit = Integer.parseInt(
-                    Properties.getProperties().getProperty(
-                            Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-            boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
-
-            RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
-
-            if (repoResult != null) {
-                map.put("source", repoResult.getSource());
-            }
-
-            map.put("fileName", codeResult.fileName);
-            map.put("codePath", codeResult.codePath);
-            map.put("codeLength", codeResult.codeLines);
-            map.put("languageName", codeResult.languageName);
-            map.put("md5Hash", codeResult.md5hash);
-            map.put("repoName", codeResult.repoName);
-            map.put("highlight", highlight);
-            map.put("repoLocation", codeResult.getRepoLocation());
-
-            map.put("codeValue", code.toString());
-            map.put("highligher", getSyntaxHighlighter());
-            map.put("codeOwner", codeResult.getCodeOwner());
-
-            double estimatedEffort = coco.estimateEffort(scl.countFilteredLines(codeResult.getCode()));
-            int estimatedCost = (int) coco.estimateCost(estimatedEffort, getAverageSalary());
-            if (estimatedCost != 0 && !scl.languageCostIgnore(codeResult.getLanguageName())) {
-                map.put("estimatedCost", estimatedCost);
-            }
-
-            map.put("logoImage", getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "coderesult.ftl");
-        }, new FreeMarkerEngine());
-
-
+        
         get("/documentation/", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "documentation.ftl");
-        }, new FreeMarkerEngine());
-
-        get("/search_test/", (request, response) -> {
-            Map<String, Object> map = new HashMap<>();
-
-            map.put("logoImage", getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "search_test.ftl");
         }, new FreeMarkerEngine());
 
         get("/404/", (request, response) -> {
@@ -1201,16 +1128,6 @@ public class App {
             return new ModelAndView(map, "404.ftl");
 
         }, new FreeMarkerEngine());
-
-
-        /**
-         * Test that was being used to display blame information
-         */
-//        get("/test/:reponame/*", (request, response) -> {
-//            User user = injector.getInstance(User.class);
-//            user.Blame(request.params(":reponame"), request.splat()[0]);
-//            return "";
-//        }, new JsonTransformer());
     }
 
     private static String getLogo() {
