@@ -54,7 +54,7 @@ import static spark.Spark.*;
 public class App {
 
     public static final boolean ISCOMMUNITY = false;
-    private static final String VERSION = "1.3.4";
+    public static final String VERSION = "1.3.4";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
     public static Injector injector;
@@ -978,31 +978,8 @@ public class App {
                 return null;
             }
 
-            String repos = request.queryParams("repos");
-            String repolines[] = repos.split("\\r?\\n");
-
-            for(String line: repolines) {
-                String[] repoparams = line.split(",", -1);
-
-                if(repoparams.length == 7) {
-
-                    String branch = repoparams[6].trim();
-                    if (branch.equals(Values.EMPTYSTRING)) {
-                        branch = "master";
-                    }
-
-                    String scm = repoparams[1].trim().toLowerCase();
-                    if(scm.equals(Values.EMPTYSTRING)) {
-                        scm = "git";
-                    }
-
-                    RepoResult rr = repo.getRepoByName(repoparams[0]);
-
-                    if (rr == null) {
-                        repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch));
-                    }
-                }
-            }
+            AdminRouteService adminRouteService = new AdminRouteService();
+            adminRouteService.PostBulk(request, response);
 
             response.redirect("/admin/bulk/");
             halt();
@@ -1016,26 +993,8 @@ public class App {
                 return null;
             }
 
-            String[] reponames = request.queryParamsValues("reponame");
-            String[] reposcms = request.queryParamsValues("reposcm");
-            String[] repourls = request.queryParamsValues("repourl");
-            String[] repousername = request.queryParamsValues("repousername");
-            String[] repopassword = request.queryParamsValues("repopassword");
-            String[] reposource = request.queryParamsValues("reposource");
-            String[] repobranch = request.queryParamsValues("repobranch");
-
-
-            for(int i=0;i<reponames.length; i++) {
-                if(reponames[i].trim().length() != 0) {
-
-                    String branch = repobranch[i].trim();
-                    if (branch.equals(Values.EMPTYSTRING)) {
-                        branch = "master";
-                    }
-
-                    repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch));
-                }
-            }
+            AdminRouteService adminRouteService = new AdminRouteService();
+            adminRouteService.PostRepo(request, response);
 
             response.redirect("/admin/repo/");
             halt();
@@ -1135,20 +1094,8 @@ public class App {
                 return false;
             }
 
-            String version;
-            try {
-                version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);
-            }
-            catch(IOException ex) {
-                return "Unable to determine if running the latest version. Check https://searchcode.com/product/download/ for the latest release.";
-            }
-
-            if (App.VERSION.equals(version)) {
-                return "Your searchcode server version " + version + " is the latest.";
-            }
-            else {
-                return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version + ".";
-            }
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.CheckVersion();
         }, new JsonTransformer());
 
 

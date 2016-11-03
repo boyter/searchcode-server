@@ -17,10 +17,15 @@ import com.searchcode.app.App;
 import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
+import com.searchcode.app.dao.Repo;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Properties;
+import org.apache.commons.io.IOUtils;
 import spark.Request;
 import spark.Response;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -69,36 +74,73 @@ public class AdminRouteService {
         return map;
     }
 
-//    public Map<String, Object> SettingsPage(Request request, Response response) {
-//        Map<String, Object> map = new HashMap<>();
-//
-//        String[] highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
-//
-//        Map<String, Object> map = new HashMap<>();
-//        map.put("logoImage", getLogo());
-//        map.put("syntaxHighlighter", getSyntaxHighlighter());
-//        map.put("highlighters", highlighters);
-//        map.put("averageSalary", "" + (int)getAverageSalary());
-//        map.put("matchLines", "" + (int)getMatchLines());
-//        map.put("maxLineDepth", "" + (int)getMaxLineDepth());
-//        map.put("minifiedLength", "" + (int)getMinifiedLength());
-//        map.put("owaspenabled", owaspAdvisoriesEnabled());
-//        map.put("isCommunity", ISCOMMUNITY);
-//    }
-//
-//    public double getMatchLines() {
-//        if(App.ISCOMMUNITY) {
-//            return Double.parseDouble(Values.DEFAULTMATCHLINES);
-//        }
-//
-//        Data data = injector.getInstance(Data.class);
-//        String matchLines = data.getDataByName(Values.MATCHLINES);
-//
-//        if(matchLines == null) {
-//            data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
-//            matchLines = Values.DEFAULTMATCHLINES;
-//        }
-//
-//        return Double.parseDouble(matchLines);
-//    }
+    public void PostBulk(Request request, Response response) {
+        String repos = request.queryParams("repos");
+        String repolines[] = repos.split("\\r?\\n");
+        Repo repo = Singleton.getRepo();
+
+        for(String line: repolines) {
+            String[] repoparams = line.split(",", -1);
+
+            if(repoparams.length == 7) {
+
+                String branch = repoparams[6].trim();
+                if (branch.equals(Values.EMPTYSTRING)) {
+                    branch = "master";
+                }
+
+                String scm = repoparams[1].trim().toLowerCase();
+                if(scm.equals(Values.EMPTYSTRING)) {
+                    scm = "git";
+                }
+
+                RepoResult rr = repo.getRepoByName(repoparams[0]);
+
+                if (rr == null) {
+                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch));
+                }
+            }
+        }
+    }
+
+    public void PostRepo(Request request, Response response) {
+        String[] reponames = request.queryParamsValues("reponame");
+        String[] reposcms = request.queryParamsValues("reposcm");
+        String[] repourls = request.queryParamsValues("repourl");
+        String[] repousername = request.queryParamsValues("repousername");
+        String[] repopassword = request.queryParamsValues("repopassword");
+        String[] reposource = request.queryParamsValues("reposource");
+        String[] repobranch = request.queryParamsValues("repobranch");
+
+        Repo repo = Singleton.getRepo();
+
+        for(int i=0;i<reponames.length; i++) {
+            if(reponames[i].trim().length() != 0) {
+
+                String branch = repobranch[i].trim();
+                if (branch.equals(Values.EMPTYSTRING)) {
+                    branch = "master";
+                }
+
+                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch));
+            }
+        }
+    }
+
+    public String CheckVersion() {
+        String version;
+        try {
+            version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);
+        }
+        catch(IOException ex) {
+            return "Unable to determine if running the latest version. Check https://searchcode.com/product/download/ for the latest release.";
+        }
+
+        if (App.VERSION.equals(version)) {
+            return "Your searchcode server version " + version + " is the latest.";
+        }
+        else {
+            return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version + ".";
+        }
+    }
 }
