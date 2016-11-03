@@ -53,6 +53,7 @@ public final class Singleton {
     private static Repo repo = null;
     private static Data data = null;
     private static Api api = null;
+    private static ApiService apiService = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
 
@@ -284,5 +285,13 @@ public final class Singleton {
 
     public static void setApi(Api api) {
         Singleton.api = api;
+    }
+
+    public static synchronized ApiService getApiService() {
+        if (apiService == null) {
+            apiService = new ApiService();
+        }
+
+        return apiService;
     }
 }

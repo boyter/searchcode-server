@@ -69,11 +69,12 @@ public class App {
         Spark.port(server_port);
 
         JobService js = injector.getInstance(JobService.class);
+
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
         Api api = Singleton.getApi();
+        ApiService apiService = Singleton.getApiService();
 
-        ApiService apiService = injector.getInstance(ApiService.class);
         StatsService statsService = new StatsService();
         OWASPClassifier owaspClassifier = new OWASPClassifier();
 

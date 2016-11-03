@@ -27,9 +27,12 @@ public class ApiService implements IApiService {
 
     private IApi api = null;
 
-    @Inject
     public ApiService(IApi api) {
         this.api = api;
+    }
+
+    public ApiService() {
+        this.api = Singleton.getApi();
     }
 
     /**
