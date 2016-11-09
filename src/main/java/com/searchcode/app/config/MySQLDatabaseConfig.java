@@ -22,7 +22,7 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
     public synchronized Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
-                Class.forName("com.mysql.jdbc.Driver");
+                Class.forName("com.mysql.cj.jdbc.Driver");
                 String connectionString = (String)Properties.getProperties().getOrDefault("searchcode_connection_string", "jdbc:mysql://localhost:3306/searchcode?serverTimezone=UTC");
                 String user = (String)Properties.getProperties().getOrDefault("searchcode_connection_user", "root");
                 String pass = (String)Properties.getProperties().getOrDefault("searchcode_connection_password", "root");
