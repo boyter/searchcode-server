@@ -12,9 +12,11 @@ package com.searchcode.app.config;
 
 import com.searchcode.app.util.Properties;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
-public class MySQLDatabaseConfig implements IDatabaseConfig {
+public class SphinxSearchConfig implements IDatabaseConfig {
 
     private Connection connection = null;
 
@@ -23,10 +25,8 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
         try {
             if (connection == null || connection.isClosed()) {
                 Class.forName("com.mysql.jdbc.Driver");
-                String connectionString = (String)Properties.getProperties().getOrDefault("searchcode_connection_string", "jdbc:mysql://localhost:3306/searchcode?serverTimezone=UTC");
-                String user = (String)Properties.getProperties().getOrDefault("searchcode_connection_user", "root");
-                String pass = (String)Properties.getProperties().getOrDefault("searchcode_connection_password", "root");
-                connection = DriverManager.getConnection(connectionString, user, pass);
+                String connectionString = "jdbc:mysql://127.0.0.1:9306?characterEncoding=utf8&maxAllowedPacket=512000";
+                connection = DriverManager.getConnection(connectionString, "", "");
             }
         }
         catch (ClassNotFoundException e) {
