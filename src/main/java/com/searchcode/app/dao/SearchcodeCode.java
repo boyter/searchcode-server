@@ -8,11 +8,11 @@
  * Version 1.3.4
  */
 
-package com.searchcode.app.dao.searchcode;
+package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
-import com.searchcode.app.model.searchcode.CodeResult;
+import com.searchcode.app.model.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
 
 import java.sql.Connection;
@@ -22,15 +22,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Code {
+public class SearchcodeCode {
 
     private IDatabaseConfig dbConfig;
 
-    public Code() {
+    public SearchcodeCode() {
         this.dbConfig = new MySQLDatabaseConfig();
     }
 
-    public Code(IDatabaseConfig dbConfig) {
+    public SearchcodeCode(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
 
@@ -57,9 +57,9 @@ public class Code {
         return maxId;
     }
 
-    public synchronized List<CodeResult> getCodeBetween(int start, int end) {
+    public synchronized List<SearchcodeCodeResult> getCodeBetween(int start, int end) {
 
-        List<CodeResult> codeResultList = new ArrayList<>(end - start);
+        List<SearchcodeCodeResult> codeResultList = new ArrayList<>(end - start);
 
         try {
             Connection conn = this.dbConfig.getConnection();
@@ -77,7 +77,7 @@ public class Code {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                codeResultList.add(new CodeResult(
+                codeResultList.add(new SearchcodeCodeResult(
                         rs.getInt("id"),
                         rs.getInt("repoid"),
                         rs.getInt("filetypeid"),

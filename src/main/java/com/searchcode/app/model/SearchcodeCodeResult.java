@@ -1,6 +1,6 @@
-package com.searchcode.app.model.searchcode;
+package com.searchcode.app.model;
 
-public class CodeResult {
+public class SearchcodeCodeResult {
     private int id;
     private int repoid;
     private int filetypeid;
@@ -10,7 +10,7 @@ public class CodeResult {
     private String filename;
     private int linescount;
 
-    public CodeResult(int id, int repoid, int filetypeid, int langugeid, int sourceid, String content, String filename, int linescount) {
+    public SearchcodeCodeResult(int id, int repoid, int filetypeid, int langugeid, int sourceid, String content, String filename, int linescount) {
         setId(id);
         setRepoid(repoid);
         setFiletypeid(filetypeid);
