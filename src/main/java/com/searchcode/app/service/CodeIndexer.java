@@ -200,17 +200,7 @@ public class CodeIndexer {
 
                 scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
-                StringBuilder indexContents = new StringBuilder();
-
-                indexContents.append(codeIndexDocument.getFileName());
-                indexContents.append(" ");
-                indexContents.append(codeIndexDocument.getFileLocationFilename());
-                indexContents.append(" ");
-                indexContents.append(codeIndexDocument.getFileLocation());
-                indexContents.append(scl.splitKeywords(codeIndexDocument.getContents()));
-                indexContents.append(scl.codeCleanPipeline(codeIndexDocument.getContents()));
-                indexContents.append(scl.findInterestingKeywords(codeIndexDocument.getContents()));
-                String toIndex = indexContents.toString().toLowerCase();
+                String toIndex = getIndexContents(scl, codeIndexDocument);
 
                 doc.add(new TextField(Values.REPONAME, codeIndexDocument.getRepoName(), Field.Store.YES));
                 doc.add(new TextField(Values.FILENAME, codeIndexDocument.getFileName(), Field.Store.YES));
@@ -248,6 +238,21 @@ public class CodeIndexer {
             }
             Singleton.getLogger().info("Closing writers");
         }
+    }
+
+    /**
+     * Creates the contents to index using the various pipelines and cleaning
+     */
+    public static String getIndexContents(SearchcodeLib scl, CodeIndexDocument codeIndexDocument) {
+        StringBuilder indexContents = new StringBuilder();
+
+        indexContents.append(codeIndexDocument.getFileName()).append(" ");
+        indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
+        indexContents.append(codeIndexDocument.getFileLocation());
+        indexContents.append(scl.splitKeywords(codeIndexDocument.getContents()));
+        indexContents.append(scl.codeCleanPipeline(codeIndexDocument.getContents()));
+        indexContents.append(scl.findInterestingKeywords(codeIndexDocument.getContents()));
+        return indexContents.toString().toLowerCase();
     }
 
     /**
