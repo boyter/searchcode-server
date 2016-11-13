@@ -25,7 +25,7 @@ public class SphinxSearchConfig implements IDatabaseConfig {
         try {
             if (connection == null || connection.isClosed()) {
                 Class.forName("com.mysql.jdbc.Driver");
-                String connectionString = "jdbc:mysql://127.0.0.1:9306?characterEncoding=utf8&maxAllowedPacket=512000";
+                String connectionString = "jdbc:mysql://127.0.0.1:9306?characterEncoding=utf8&maxAllowedPacket=1024000";
                 connection = DriverManager.getConnection(connectionString, "", "");
             }
         }

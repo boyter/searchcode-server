@@ -200,7 +200,15 @@ public class CodeIndexer {
 
                 scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
-                String toIndex = getIndexContents(scl, codeIndexDocument);
+                StringBuilder indexContents = new StringBuilder();
+
+                indexContents.append(codeIndexDocument.getFileName()).append(" ");
+                indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
+                indexContents.append(codeIndexDocument.getFileLocation());
+
+                indexContents.append(runCodeIndexPipeline(scl, codeIndexDocument.getContents()));
+
+                String toIndex = indexContents.toString().toLowerCase();
 
                 doc.add(new TextField(Values.REPONAME, codeIndexDocument.getRepoName(), Field.Store.YES));
                 doc.add(new TextField(Values.FILENAME, codeIndexDocument.getFileName(), Field.Store.YES));
@@ -240,19 +248,15 @@ public class CodeIndexer {
         }
     }
 
-    /**
-     * Creates the contents to index using the various pipelines and cleaning
-     */
-    public static String getIndexContents(SearchcodeLib scl, CodeIndexDocument codeIndexDocument) {
-        StringBuilder indexContents = new StringBuilder();
+    // TODO abstract this out better
+    public static String runCodeIndexPipeline(SearchcodeLib scl, String contents) {
+        StringBuilder sb = new StringBuilder();
 
-        indexContents.append(codeIndexDocument.getFileName()).append(" ");
-        indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
-        indexContents.append(codeIndexDocument.getFileLocation());
-        indexContents.append(scl.splitKeywords(codeIndexDocument.getContents()));
-        indexContents.append(scl.codeCleanPipeline(codeIndexDocument.getContents()));
-        indexContents.append(scl.findInterestingKeywords(codeIndexDocument.getContents()));
-        return indexContents.toString().toLowerCase();
+        sb.append(scl.splitKeywords(contents));
+        sb.append(scl.codeCleanPipeline(contents));
+        sb.append(scl.findInterestingKeywords(contents));
+
+        return sb.toString();
     }
 
     /**
