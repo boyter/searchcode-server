@@ -293,7 +293,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
     /**
      * Indexes all the documents in the path provided. Will also remove anything from the index if not on disk
-     * Generally this is a slow update used only for the inital clone of a repository
+     * Generally this is a slow update used only for the initial clone of a repository
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
@@ -315,7 +315,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
                     try {
-                        if (shouldJobPauseOrTerminate() == true) {
+                        if (shouldJobPauseOrTerminate()) {
                             return FileVisitResult.TERMINATE;
                         }
 
@@ -323,7 +323,6 @@ public abstract class IndexBaseRepoJob implements Job {
                         String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
                         String fileToString = FilenameUtils.separatorsToUnix(file.toString());
                         String fileName = file.getFileName().toString();
-                        String md5Hash = Values.EMPTYSTRING;
 
                         if (ignoreFile(fileParent)) {
                             return FileVisitResult.CONTINUE;
@@ -334,19 +333,19 @@ public abstract class IndexBaseRepoJob implements Job {
                             codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                         } catch (IOException ex) {
                             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                            reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
+                            reportList.add(new String[] { fileToString, "excluded", "unable to guess guess file encoding" });
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (scl.isMinified(codeLines, fileName)) {
                             Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                            reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
+                            reportList.add(new String[] { fileToString, "excluded", "appears to be minified" });
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (codeLines.isEmpty()) {
                             Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                            reportList.add(new String[]{fileToString, "excluded", "empty file"});
+                            reportList.add(new String[] { fileToString, "excluded", "empty file" });
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -354,7 +353,7 @@ public abstract class IndexBaseRepoJob implements Job {
                             return FileVisitResult.CONTINUE;
                         }
 
-                        md5Hash = getFileMd5(fileToString);
+                        String md5Hash = getFileMd5(fileToString);
 
                         String languageName = scl.languageGuesser(fileName, codeLines);
                         String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
@@ -364,8 +363,8 @@ public abstract class IndexBaseRepoJob implements Job {
                         String newString = getBlameFilePath(fileLocationFilename);
                         String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
 
-                        // If low memory don't add to the queue, just index it directly
-                        if (lowMemory) {
+                        // TODO this should be inside the indexer class not in here
+                        if (lowMemory) { // If low memory don't add to the queue, just index it directly
                             CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                         } else {
                             Singleton.incrementCodeIndexLinesCount(codeLines.size());
@@ -373,9 +372,7 @@ public abstract class IndexBaseRepoJob implements Job {
                         }
 
                         fileLocations.add(fileLocationFilename);
-                        reportList.add(new String[]{fileToString, "included", ""});
-
-                        return FileVisitResult.CONTINUE;
+                        reportList.add(new String[] { fileToString, "included", Values.EMPTYSTRING });
                     }
                     catch(Exception ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
