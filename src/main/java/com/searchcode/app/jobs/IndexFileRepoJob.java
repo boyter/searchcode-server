@@ -127,7 +127,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public boolean ignoreFile(String fileParent) {
-        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
+        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/") || fileParent.contains(".git/") || fileParent.equals(".git")) {
             return true;
         }
 

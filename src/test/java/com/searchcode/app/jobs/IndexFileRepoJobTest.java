@@ -16,4 +16,10 @@ public class IndexFileRepoJobTest extends TestCase {
         fileLocationFilename = fileRepoJob.getFileLocationFilename("./repo/.git/filename", "./repo/");
         assertThat(fileLocationFilename).isEqualTo("repo.git/filename");
     }
+
+    public void testGetCodeOwner() {
+        IndexFileRepoJob fileRepoJob = new IndexFileRepoJob();
+        String codeOwner = fileRepoJob.getCodeOwner(null, null, null, null, null);
+        assertThat(codeOwner).isEqualTo("File System");
+    }
 }

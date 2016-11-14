@@ -358,8 +358,11 @@ public abstract class IndexBaseRepoJob implements Job {
                         String md5Hash = getFileMd5(fileToString);
 
                         String languageName = scl.languageGuesser(fileName, codeLines);
+
                         String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
                         String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
+                        // Is used for finding the file on disk, so needs to be the path to the actual file
+                        // it is also the primary key for everything
                         String repoLocationRepoNameLocationFilename = fileToString;
 
                         String newString = getBlameFilePath(fileLocationFilename);
@@ -373,7 +376,8 @@ public abstract class IndexBaseRepoJob implements Job {
                             codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                         }
 
-                        fileLocations.add(fileLocationFilename);
+                        // This needs to be the primary key of the file
+                        fileLocations.add(repoLocationRepoNameLocationFilename);
                         reportList.add(new String[] { fileToString, "included", Values.EMPTYSTRING });
                     }
                     catch(Exception ex) {

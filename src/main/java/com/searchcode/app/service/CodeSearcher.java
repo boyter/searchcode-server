@@ -285,7 +285,7 @@ public class CodeSearcher implements ICodeSearcher {
 
             for (int i = start; i < end; i++) {
                 Document doc = searcher.doc(hits[i].doc);
-                fileLocations.add(doc.get(Values.FILELOCATIONFILENAME));
+                fileLocations.add(doc.get(Values.PATH));
             }
 
             reader.close();
