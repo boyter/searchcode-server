@@ -117,17 +117,18 @@ public abstract class IndexBaseRepoJob implements Job {
         AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
 
         if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
-            Singleton.getLogger().info("Indexing " + repoResult.getName());
+
+            String repoName = repoResult.getName();
+            String repoRemoteLocation = repoResult.getUrl();
+            String repoUserName = repoResult.getUsername();
+            String repoPassword = repoResult.getPassword();
+            String repoBranch = repoResult.getBranch();
+            Singleton.getLogger().info("Indexing " + repoName);
+
             try {
                 runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
-
-                String repoName = repoResult.getName();
-                String repoRemoteLocation = repoResult.getUrl();
-                String repoUserName = repoResult.getUsername();
-                String repoPassword = repoResult.getPassword();
-                String repoBranch = repoResult.getBranch();
 
                 String repoLocations = data.get("REPOLOCATIONS").toString();
                 this.LOWMEMORY = Boolean.parseBoolean(data.get("LOWMEMORY").toString());
@@ -297,8 +298,9 @@ public abstract class IndexBaseRepoJob implements Job {
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
+        SearchcodeLib scl = Singleton.getSearchCodeLib();
         CodeSearcher codeSearcher = new CodeSearcher();
+
         List<String> fileLocations = new ArrayList<>();
         Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
 
@@ -324,7 +326,7 @@ public abstract class IndexBaseRepoJob implements Job {
                         String fileToString = FilenameUtils.separatorsToUnix(file.toString());
                         String fileName = file.getFileName().toString();
 
-                        if (ignoreFile(fileParent)) {
+                         if (ignoreFile(fileParent)) {
                             return FileVisitResult.CONTINUE;
                         }
 

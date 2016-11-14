@@ -94,6 +94,15 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         assertEquals("path/to/myfile.txt", temp);
     }
 
+    public void testGetFileLocationFilename() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        String fileLocationFilename = gitRepoJob.getFileLocationFilename(".git/filename", "./repo/");
+        assertThat(fileLocationFilename).isEqualTo(".git/filename");
+
+        fileLocationFilename = gitRepoJob.getFileLocationFilename("./repo/.git/filename", "./repo/");
+        assertThat(fileLocationFilename).isEqualTo(".git/filename");
+    }
+
     public void testMissingPathFilesNoLocations() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
         CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);

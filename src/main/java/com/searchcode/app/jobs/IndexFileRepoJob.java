@@ -52,7 +52,7 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexFileRepoJob extends IndexBaseRepoJob {
 
-    private String repoName;
+    public String repoName;
 
     /**
      * The main method used for finding jobs to index and actually doing the work
