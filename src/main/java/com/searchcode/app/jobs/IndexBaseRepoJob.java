@@ -315,7 +315,6 @@ public abstract class IndexBaseRepoJob implements Job {
             Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-
                     try {
                         if (shouldJobPauseOrTerminate()) {
                             return FileVisitResult.TERMINATE;
@@ -326,7 +325,7 @@ public abstract class IndexBaseRepoJob implements Job {
                         String fileToString = FilenameUtils.separatorsToUnix(file.toString());
                         String fileName = file.getFileName().toString();
 
-                         if (ignoreFile(fileParent)) {
+                        if (ignoreFile(fileParent)) {
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -335,19 +334,25 @@ public abstract class IndexBaseRepoJob implements Job {
                             codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                         } catch (IOException ex) {
                             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                            reportList.add(new String[] { fileToString, "excluded", "unable to guess guess file encoding" });
+                            if (LOGINDEXED) {
+                                reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
+                            }
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (scl.isMinified(codeLines, fileName)) {
                             Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                            reportList.add(new String[] { fileToString, "excluded", "appears to be minified" });
+                            if (LOGINDEXED) {
+                                reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
+                            }
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (codeLines.isEmpty()) {
                             Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                            reportList.add(new String[] { fileToString, "excluded", "empty file" });
+                            if (LOGINDEXED) {
+                                reportList.add(new String[]{fileToString, "excluded", "empty file"});
+                            }
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -356,7 +361,6 @@ public abstract class IndexBaseRepoJob implements Job {
                         }
 
                         String md5Hash = getFileMd5(fileToString);
-
                         String languageName = scl.languageGuesser(fileName, codeLines);
 
                         String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
@@ -378,7 +382,9 @@ public abstract class IndexBaseRepoJob implements Job {
 
                         // This needs to be the primary key of the file
                         fileLocations.add(repoLocationRepoNameLocationFilename);
-                        reportList.add(new String[] { fileToString, "included", Values.EMPTYSTRING });
+                        if (LOGINDEXED) {
+                            reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
+                        }
                     }
                     catch(Exception ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
