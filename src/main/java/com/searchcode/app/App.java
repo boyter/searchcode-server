@@ -362,6 +362,7 @@ public class App {
                 return new ModelAndView(map, "searchresults.ftl");
             }
 
+            map.put("photoId", 1);
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
             map.put("logoImage", getLogo());
             map.put("isCommunity", ISCOMMUNITY);

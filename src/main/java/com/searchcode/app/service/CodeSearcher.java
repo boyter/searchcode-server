@@ -196,6 +196,7 @@ public class CodeSearcher implements ICodeSearcher {
                     Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
                 }
 
+
                 codeResult = new CodeResult(code, null);
                 codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
                 codeResult.setFileName(doc.get(Values.FILENAME));
