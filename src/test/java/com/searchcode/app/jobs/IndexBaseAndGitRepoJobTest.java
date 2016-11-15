@@ -94,6 +94,21 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         assertEquals("path/to/myfile.txt", temp);
     }
 
+    public void testGetRelativeToProjectPath() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        String relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("/Users/boyter/test5", "/Users/boyter/test5/u/something/sources/small/c3p0.csv");
+        assertThat(relativeToProjectPath).isEqualTo("/u/something/sources/small/c3p0.csv");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("/Users/boyter/test5/", "/Users/boyter/test5/u/something/sources/small/c3p0.csv");
+        assertThat(relativeToProjectPath).isEqualTo("/u/something/sources/small/c3p0.csv");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test", "./repo/test/chinese.php");
+        assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test/", "./repo/test/chinese.php");
+        assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
+    }
+
     public void testGetFileLocationFilename() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
         String fileLocationFilename = gitRepoJob.getFileLocationFilename(".git/filename", "./repo/");

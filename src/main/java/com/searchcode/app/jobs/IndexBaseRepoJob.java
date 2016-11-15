@@ -255,6 +255,8 @@ public abstract class IndexBaseRepoJob implements Job {
             md5Hash = this.getFileMd5(changedFile);
 
             String languageName = scl.languageGuesser(changedFile, codeLines);
+
+
             String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
             String repoLocationRepoNameLocationFilename = changedFile;
@@ -363,7 +365,8 @@ public abstract class IndexBaseRepoJob implements Job {
                         String md5Hash = getFileMd5(fileToString);
                         String languageName = scl.languageGuesser(fileName, codeLines);
 
-                        String fileLocation = fileToString.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
+
+                        String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
                         String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
                         // Is used for finding the file on disk, so needs to be the path to the actual file
                         // it is also the primary key for everything
@@ -426,7 +429,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!fileLocations.contains(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
-                        CodeIndexer.deleteByFileLocationFilename(file);
+                        CodeIndexer.deleteByFileLocationFilename(file); // TODO check if this works
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }
@@ -435,6 +438,14 @@ public abstract class IndexBaseRepoJob implements Job {
 
             page++;
         }
+    }
+
+
+    public String getRelativeToProjectPath(String projectPath, String filePath) {
+        if (projectPath.charAt(projectPath.length() - 1) == '/') {
+            projectPath = projectPath.substring(0, projectPath.length() - 1);
+        }
+        return filePath.replace(projectPath, Values.EMPTYSTRING);
     }
 
     /**
