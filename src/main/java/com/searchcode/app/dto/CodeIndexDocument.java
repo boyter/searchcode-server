@@ -13,10 +13,10 @@ package com.searchcode.app.dto;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class CodeIndexDocument {
-    private String repoLocationRepoNameLocationFilename;
+    private String repoLocationRepoNameLocationFilename; // Primary key and full path to file relative to where application is installed
     private String repoName;
     private String fileName;
-    private String fileLocation;
+    private String fileLocation; // Path to file relative to repo location
     private String fileLocationFilename;
     private String md5hash;
     private String languageName;

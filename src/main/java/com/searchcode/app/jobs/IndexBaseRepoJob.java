@@ -374,9 +374,8 @@ public abstract class IndexBaseRepoJob implements Job {
 
                         String newString = getBlameFilePath(fileLocationFilename);
                         String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-
-                        // TODO this should be inside the indexer class not in here
-                        if (lowMemory) { // If low memory don't add to the queue, just index it directly
+                        
+                        if (lowMemory) { // TODO this should be inside the indexer class not in here
                             CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                         } else {
                             Singleton.incrementCodeIndexLinesCount(codeLines.size());
