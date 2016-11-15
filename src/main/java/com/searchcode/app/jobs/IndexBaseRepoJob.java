@@ -266,7 +266,7 @@ public abstract class IndexBaseRepoJob implements Job {
             reportList.add(new String[]{changedFile, "included", ""});
 
             if (codeLines != null) {
-                if (this.LOWMEMORY) { // TODO the codeindexer should be the one to worry about this not this class
+                if (this.LOWMEMORY) {
                     try {
                         CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                     } catch (IOException ex) {
@@ -286,6 +286,7 @@ public abstract class IndexBaseRepoJob implements Job {
         for(String deletedFile: repositoryChanged.getDeletedFiles()) {
             Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
             try {
+                // TODO fix this
                 CodeIndexer.deleteByFileLocationFilename(deletedFile);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
@@ -428,7 +429,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!fileLocations.contains(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
-                        CodeIndexer.deleteByFileLocationFilename(file); // TODO check if this works
+                        CodeIndexer.deleteByFilePath(file);
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }
