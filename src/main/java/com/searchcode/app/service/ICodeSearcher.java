@@ -12,10 +12,7 @@ import java.util.List;
 public interface ICodeSearcher {
     int getTotalNumberDocumentsIndexed();
     SearchResult search(String queryString, int page);
-    CodeResult getByRepoFileName(String repo, String fileName);
     CodeResult getByCodeId(String codeId);
-
-    CodeResult getById(int documentId);
     List<String> getRepoDocuments(String repoName, int page);
 
     SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException;

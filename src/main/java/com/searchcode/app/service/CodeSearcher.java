@@ -105,68 +105,8 @@ public class CodeSearcher implements ICodeSearcher {
     }
 
     /**
-     * Attempts to find a unique file given the repository name and the path/filename however
-     * it seems to randomly not find things for some files. No idea of the root cause at this point and have implemented
-     * a work around where we get the file by getById which is no ideal. The bug appears to be due to some issue
-     * inside lucene itself as using raw queries to pull back the file results in no matches, and yet it does appear
-     * when not limiting to the repo
-     * TODO investigate the lucene issue that occurs here mentioned above
-     */
-    public CodeResult getByRepoFileName(String repo, String fileName) {
-        CodeResult codeResult = null;
-
-        try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
-            IndexSearcher searcher = new IndexSearcher(reader);
-            Analyzer analyzer = new CodeAnalyzer();
-            QueryParser parser = new QueryParser(CODEFIELD, analyzer);
-
-            // TODO I have a feeling this may not be unique if there are to files in the same directory with different case... something to investigate
-            Query query = parser.parse(Values.FILELOCATIONFILENAME + ":" + QueryParser.escape(repo + "/" + fileName));
-            Singleton.getLogger().info("Query to get by filename = " + Values.FILELOCATIONFILENAME + ":" + QueryParser.escape(repo + "/" + fileName));
-
-            TopDocs results = searcher.search(query, 1);
-            ScoreDoc[] hits = results.scoreDocs;
-
-            if (hits.length != 0) {
-                Document doc = searcher.doc(hits[0].doc);
-
-                String filepath = doc.get(Values.PATH);
-
-                List<String> code = new ArrayList<>();
-                try {
-                    code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
-                } catch (Exception ex) {
-                    Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
-                }
-
-                codeResult = new CodeResult(code, null);
-                codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-                codeResult.setFileName(doc.get(Values.FILENAME));
-                codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
-                codeResult.setMd5hash(doc.get(Values.MD5HASH));
-                codeResult.setCodeLines(doc.get(Values.CODELINES));
-                codeResult.setDocumentId(hits[0].doc);
-                codeResult.setRepoName(doc.get(Values.REPONAME));
-                codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
-                codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
-                codeResult.setCodeId(doc.get(Values.CODEID));
-
-            }
-
-            reader.close();
-
-        }
-        catch(Exception ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-        }
-
-        return codeResult;
-    }
-
-    /**
      * Only used as fallback if getByRepoFileName fails for some reason due to what appears to be a lucene index bug
-     * this should always work as the path used is sha1 and sould be unique for anything the current codebase can
+     * this should always work as the path used is sha1 and should be unique for anything the current codebase can
      * deal with
      */
     public CodeResult getByCodeId(String codeId) {
@@ -196,8 +136,8 @@ public class CodeSearcher implements ICodeSearcher {
                     Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
                 }
 
-
                 codeResult = new CodeResult(code, null);
+                codeResult.setFilePath(filepath);
                 codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
                 codeResult.setFileName(doc.get(Values.FILENAME));
                 codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
@@ -219,48 +159,6 @@ public class CodeSearcher implements ICodeSearcher {
         return codeResult;
     }
 
-    /**
-     * Only used as fallback if getByRepoFileName fails for some reason due to what appears to be a lucene index bug
-     * Using this is problematic because if the index is updated while this method is called it will possibly
-     * return the incorrect result. We could add a shared lock between them both but that's hardly ideal especially
-     * since when its called the index could already be updated
-     */
-    public CodeResult getById(int documentId) {
-        CodeResult codeResult = null;
-
-        try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
-            Document doc = reader.document(documentId);
-
-            String filepath = doc.get(Values.PATH);
-
-            List<String> code = new ArrayList<>();
-            try {
-                code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
-            }
-            catch(Exception ex) {
-                LOGGER.warning("Indexed file appears to binary: " + filepath);
-            }
-
-            codeResult = new CodeResult(code, null);
-            codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-            codeResult.setFileName(doc.get(Values.FILENAME));
-            codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
-            codeResult.setMd5hash(doc.get(Values.MD5HASH));
-            codeResult.setCodeLines(doc.get(Values.CODELINES));
-            codeResult.setDocumentId(documentId);
-            codeResult.setRepoName(doc.get(Values.REPONAME));
-            codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
-            codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
-
-            reader.close();
-        }
-        catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-        }
-
-        return codeResult;
-    }
 
     /**
      * Due to very large repositories (500,000 files) this needs to support

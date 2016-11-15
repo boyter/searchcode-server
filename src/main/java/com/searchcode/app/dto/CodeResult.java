@@ -18,6 +18,7 @@ import java.util.List;
 public class CodeResult {
     public List<String> code = new ArrayList<>();
     public List<CodeMatchResult> matchingResults = new ArrayList<>();
+    public String filePath = "";
     public String codePath = "";
     public String fileName = "";
     public String fileLocation = "";
@@ -173,5 +174,13 @@ public class CodeResult {
 
     public void setCodeId(String codeId) {
         this.codeId = codeId;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String path) {
+        this.filePath = path;
     }
 }

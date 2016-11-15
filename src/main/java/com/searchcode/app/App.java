@@ -1023,14 +1023,6 @@ public class App {
             CodeResult codeResult = cs.getByCodeId(codeId);
 
             if (codeResult == null) {
-                try {
-                    int codeid = Integer.parseInt(request.params(":codeid"));
-                    codeResult = cs.getById(codeid);
-                }
-                catch(NumberFormatException ex) {}
-            }
-
-            if (codeResult == null) {
                 response.redirect("/404/");
                 halt();
             }
