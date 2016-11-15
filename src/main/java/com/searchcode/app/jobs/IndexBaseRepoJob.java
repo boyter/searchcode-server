@@ -216,7 +216,6 @@ public abstract class IndexBaseRepoJob implements Job {
         List<String[]> reportList = new ArrayList<>();
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
-
             if (this.shouldJobPauseOrTerminate() == true) {
                 return;
             }
@@ -224,6 +223,7 @@ public abstract class IndexBaseRepoJob implements Job {
             String[] split = changedFile.split("/");
             String fileName = split[split.length - 1];
             changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
+            changedFile = changedFile.replace("//", "/");
 
             String md5Hash = Values.EMPTYSTRING;
             List<String> codeLines = null;
@@ -284,10 +284,11 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         for(String deletedFile: repositoryChanged.getDeletedFiles()) {
+            deletedFile = fileRepoLocations + "/" + repoName + "/" + deletedFile;
+            deletedFile = deletedFile.replace("//", "/");
             Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
             try {
-                // TODO fix this
-                CodeIndexer.deleteByFileLocationFilename(deletedFile);
+                CodeIndexer.deleteByFilePath(deletedFile);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
@@ -374,7 +375,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
                         String newString = getBlameFilePath(fileLocationFilename);
                         String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-                        
+
                         if (lowMemory) { // TODO this should be inside the indexer class not in here
                             CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                         } else {

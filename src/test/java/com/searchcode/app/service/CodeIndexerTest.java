@@ -55,10 +55,6 @@ public class CodeIndexerTest extends TestCase {
     }
 
     // TODO actually assert something in here
-    public void testDeleteByFileLocationFilename() throws IOException {
-        CodeIndexer.deleteByFileLocationFilename("fileLocationFilename");
-    }
-
     public void testDeleteByFilePath() throws IOException {
         CodeIndexer.deleteByFilePath("./repo/test/README.md");
     }

@@ -120,32 +120,6 @@ public class CodeIndexer {
     }
 
     /**
-     * Deletes a file from the index given its location
-     * TODO I don't think this clears anything from the facets, which it should
-     */
-    public static synchronized void deleteByFileLocationFilename(String fileLocationFilename) throws IOException {
-        Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
-
-        Analyzer analyzer = new CodeAnalyzer();
-        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-
-        IndexWriter writer = new IndexWriter(dir, iwc);
-
-        try {
-            QueryParser parser = new QueryParser("contents", analyzer);
-            Query query = parser.parse("filelocationfilename:" + QueryParser.escape(fileLocationFilename));
-            writer.deleteDocuments(query);
-        }
-        catch(Exception ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in CodeIndexer\n with message: " + ex.getMessage());
-        }
-        finally {
-            writer.close();
-        }
-    }
-
-    /**
      * Deletes a file from the index using the primary key
      * TODO I don't think this clears anything from the facets, which it should
      */
