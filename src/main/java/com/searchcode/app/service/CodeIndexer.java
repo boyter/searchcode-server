@@ -236,7 +236,6 @@ public class CodeIndexer {
                 else {
                     codeIndexDocument = codeIndexDocumentQueue.poll();
                 }
-
             }
         }
         finally {

@@ -256,9 +256,8 @@ public abstract class IndexBaseRepoJob implements Job {
 
             String languageName = scl.languageGuesser(changedFile, codeLines);
 
-
-            String fileLocation = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING).replace(fileName, Values.EMPTYSTRING);
-            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING); // HERE
+            String fileLocation = getRelativeToProjectPath(path.toString(), changedFile);
+            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
             String repoLocationRepoNameLocationFilename = changedFile;
 
             String newString = this.getBlameFilePath(fileLocationFilename);
@@ -441,10 +440,16 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
 
+    /**
+     * Returns a string the represents where the file lives inside the repository
+     */
     public String getRelativeToProjectPath(String projectPath, String filePath) {
         if (projectPath.charAt(projectPath.length() - 1) == '/') {
             projectPath = projectPath.substring(0, projectPath.length() - 1);
         }
+        projectPath = projectPath.replace("//", "/");
+        filePath = filePath.replace("//", "/");
+
         return filePath.replace(projectPath, Values.EMPTYSTRING);
     }
 

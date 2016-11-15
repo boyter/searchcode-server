@@ -107,6 +107,9 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
 
         relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test/", "./repo/test/chinese.php");
         assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test", "./repo//test/chinese.php");
+        assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
     }
 
     public void testGetFileLocationFilename() {
