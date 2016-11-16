@@ -107,6 +107,9 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public String getFileLocationFilename(String fileToString, String fileRepoLocations) {
+        if (this.repoName == null) {
+            return fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
+        }
         return this.repoName + fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
     }
 
