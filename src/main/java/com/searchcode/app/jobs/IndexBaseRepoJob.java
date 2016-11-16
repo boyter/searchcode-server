@@ -21,6 +21,7 @@ import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -288,7 +289,8 @@ public abstract class IndexBaseRepoJob implements Job {
             deletedFile = deletedFile.replace("//", "/");
             Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
             try {
-                CodeIndexer.deleteByFilePath(deletedFile);
+                // TODO investigate if this works
+                CodeIndexer.deleteByCodeId(deletedFile);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
@@ -429,7 +431,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!fileLocations.contains(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
-                        CodeIndexer.deleteByFilePath(file);
+                        CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(file));
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }

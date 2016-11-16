@@ -17,34 +17,42 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class EndToEndTest extends TestCase{
     public void testEndToEndFile() throws IOException {
+        CodeSearcher cs = new CodeSearcher();
         File directoryWithFiles = createDirectoryWithFiles();
         IndexFileRepoJob indexFileRepoJob = new IndexFileRepoJob();
+
+        // Index created files
         indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
+        SearchResult searchResult = cs.search("endtoendtestfile", 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
-        CodeSearcher cs = new CodeSearcher();
+        // Delete a single file
+        String codeId = searchResult.getCodeResultList().get(0).getCodeId();
+        CodeIndexer.deleteByCodeId(codeId);
+        searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
-        SearchResult endToEndTestFile = cs.search("EndToEndTestFile".toLowerCase(), 0);
-        assertThat(endToEndTestFile.getCodeResultList().size()).isEqualTo(2);
+        // Delete file from disk then
+        File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
+        toDelete.delete();
+        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), true);
+        searchResult = cs.search("endtoendtestfile", 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
-        //String toDelete = directoryWithFiles.toString() + "/EndToEndTestFile1.php";
-        String toDelete = endToEndTestFile.getCodeResultList().get(0).getCodePath();
-        CodeIndexer.deleteByFilePath(toDelete);
-
-        endToEndTestFile = cs.search("EndToEndTestFile".toLowerCase(), 0);
-        assertThat(endToEndTestFile.getCodeResultList().size()).isEqualTo(1);
-
+        // Delete everything
         CodeIndexer.deleteByReponame("ENDTOENDTEST");
-        endToEndTestFile = cs.search("EndToEndTestFile".toLowerCase(), 0);
-        assertThat(endToEndTestFile.getCodeResultList().size()).isEqualTo(0);
+        searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
 
 
     private File createDirectoryWithFiles() throws IOException {
-        File tempPath = this.createTempPath();
+        File tempPath = this.clearAndCreateTempPath();
 
-        File file1 = createFile(tempPath, "EndToEndTestFile1.php", "EndToEndTestFile EndToEndTestFile1");
-        File file2 = createFile(tempPath, "EndToEndTestFile2.py",  "EndToEndTestFile EndToEndTestFile2");
+        createFile(tempPath, "EndToEndTestFile1.php", "EndToEndTestFile EndToEndTestFile1");
+        createFile(tempPath, "EndToEndTestFile2.py",  "EndToEndTestFile EndToEndTestFile2");
+        createFile(tempPath, "EndToEndTestFile3.java",  "EndToEndTestFile EndToEndTestFile3");
 
         return tempPath;
     }
@@ -59,7 +67,7 @@ public class EndToEndTest extends TestCase{
         return file;
     }
 
-    private File createTempPath() throws IOException {
+    private File clearAndCreateTempPath() throws IOException {
         String baseName = org.apache.commons.codec.digest.DigestUtils.md5Hex("EndToEndFileTest");
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
         File tempDir = new File(baseDir, baseName);
