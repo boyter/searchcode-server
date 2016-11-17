@@ -112,7 +112,8 @@ Change Log
 ==========
 
 XX XXXXXXXX XXXX - 1.3.4
- - 
+ - Refactor index logic to resolve removal bugs
+ - Optimise memory usage of file repositories
 
 02 November 2016 - 1.3.3
  - Add log level selection to admin logs page
