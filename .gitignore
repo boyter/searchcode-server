@@ -26,3 +26,5 @@ lib/
 logs/
 searchcode.sqlite
 searchcode.properties
+assets/integration_test/gitload/*.php
+assets/integration_test/fileload/*.py
