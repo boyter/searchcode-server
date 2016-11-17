@@ -82,6 +82,21 @@ class TestIntegration(unittest.TestCase):
             data = self.getData(url)
             self.assertTrue('No results found' in data)
 
+    def testCheckResponseHeadersApi(self):
+        urls = [
+            'api/codesearch/?q=test',
+            'api/repo/list/',
+            'api/repo/add/',
+            'api/repo/delete/',
+            'api/repo/reindex/',
+        ]
+        
+        for url in urls:
+            url = 'http://%s/%s' % (host, url)
+            data = urllib2.urlopen(url)
+            header = data.info().getheader('Content-Type')
+            self.assertEqual(header, 'application/json', url)
+
     def testFuzzyBadData(self):
         self.getData("http://%s/html/?q=test&p=100" % (host))
         self.getData("http://%s/html/?q=test&p=a" % (host))

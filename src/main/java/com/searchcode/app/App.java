@@ -374,6 +374,7 @@ public class App {
          */
         get("/api/codesearch/", (req, res) -> {
             res.header("Content-Encoding", "gzip");
+            res.header("Content-Type", "application/json");
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
 
@@ -474,6 +475,8 @@ public class App {
         }, new JsonTransformer());
 
         get("/api/repo/add/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+
             boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
             boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
@@ -568,6 +571,8 @@ public class App {
         }, new JsonTransformer());
 
         get("/api/repo/delete/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+
             boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
             boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
@@ -614,6 +619,8 @@ public class App {
         }, new JsonTransformer());
 
         get("/api/repo/list/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+
             boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
             boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
@@ -649,6 +656,7 @@ public class App {
         }, new JsonTransformer());
 
         get("/api/repo/reindex/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
             boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
             boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
