@@ -1,6 +1,7 @@
 package com.searchcode.app.integration;
 
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.jobs.IndexFileRepoJob;
 import com.searchcode.app.jobs.IndexGitRepoJob;
@@ -11,6 +12,7 @@ import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -18,7 +20,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class EndToEndTest extends TestCase{
     public void testEndToEndFilePath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
-        File directoryWithFiles = createDirectoryWithFiles();
+        File directoryWithFiles = createDirectoryWithFiles("EndToEndFileTest");
         IndexFileRepoJob indexFileRepoJob = new IndexFileRepoJob();
 
         // Index created files
@@ -64,7 +66,7 @@ public class EndToEndTest extends TestCase{
 
     public void testEndToEndGitPath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
-        File directoryWithFiles = createDirectoryWithFiles();
+        File directoryWithFiles = createDirectoryWithFiles("EndToEndGitTest");
 
         String result = this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "init", ".");
         result = this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "add", ".");
@@ -108,7 +110,7 @@ public class EndToEndTest extends TestCase{
 
     public void testEndToEndSvnPath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
-        File directoryWithFiles = createDirectoryWithFiles();
+        File directoryWithFiles = createDirectoryWithFiles("EndToEndSvnTest");
 
         IndexSvnRepoJob indexSvnRepoJob = new IndexSvnRepoJob();
         indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
@@ -146,6 +148,56 @@ public class EndToEndTest extends TestCase{
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
+    public void testEndToEndGitDelta() throws IOException {
+        CodeSearcher cs = new CodeSearcher();
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        File directoryWithFiles = createDirectoryWithFiles("EndToEndGitTest");
+
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "init", ".");
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "add", ".");
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"First commit\"");
+
+        // Clone from the above into a new directory
+        File tempPath = this.clearAndCreateTempPath("EndToEndGitCloneTest");
+        this.runCommand(tempPath.toString(), "/usr/bin/git", "clone", directoryWithFiles.toString(), "EndToEndGitTest");
+
+        // Index
+        indexGitRepoJob.indexDocsByPath(Paths.get(tempPath.toString()), "EndToEndGitTest", "", tempPath.toString(), false);
+        SearchResult searchResult = cs.search("endtoendtestfile", 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
+
+        // Update the source
+        createFile(directoryWithFiles, "EndToEndTestFile4.cpp", "EndToEndTestFile EndToEndTestFile4");
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "add", ".");
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"Add new\"");
+
+        // Index and lets dance
+        RepositoryChanged repositoryChanged = indexGitRepoJob.updateExistingRepository("EndToEndGitTest", "repoRemoteLocation", "", "", tempPath.toString(), "", false);
+        String repoGitLocation = tempPath.toString() + "/" + "EndToEndGitTest";
+        Path docDir = Paths.get(repoGitLocation);
+        indexGitRepoJob.indexDocsByDelta(docDir, "EndToEndGitTest", tempPath.toString(), "", repositoryChanged);
+
+        searchResult = cs.search("endtoendtestfile", 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(4);
+
+        // Update the source
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "rm", "EndToEndTestFile4.cpp");
+        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"Baleted\"");
+
+        // Index and lets dance
+        repositoryChanged = indexGitRepoJob.updateExistingRepository("EndToEndGitTest", "repoRemoteLocation", "", "", tempPath.toString(), "", false);
+        repoGitLocation = tempPath.toString() + "/" + "EndToEndGitTest";
+        docDir = Paths.get(repoGitLocation);
+        indexGitRepoJob.indexDocsByDelta(docDir, "EndToEndGitTest", tempPath.toString(), "", repositoryChanged);
+
+        searchResult = cs.search("endtoendtestfile", 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
+
+        CodeIndexer.deleteByReponame("EndToEndGitTest");
+        searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
+        assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
+    }
+
     private String runCommand(String directory, String... command) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 
@@ -165,8 +217,8 @@ public class EndToEndTest extends TestCase{
         return sb.toString();
     }
 
-    private File createDirectoryWithFiles() throws IOException {
-        File tempPath = this.clearAndCreateTempPath();
+    private File createDirectoryWithFiles(String unique) throws IOException {
+        File tempPath = this.clearAndCreateTempPath(unique);
 
         createFile(tempPath, "EndToEndTestFile1.php", "EndToEndTestFile EndToEndTestFile1");
         createFile(tempPath, "EndToEndTestFile2.py",  "EndToEndTestFile EndToEndTestFile2");
@@ -185,8 +237,8 @@ public class EndToEndTest extends TestCase{
         return file;
     }
 
-    private File clearAndCreateTempPath() throws IOException {
-        String baseName = org.apache.commons.codec.digest.DigestUtils.md5Hex("EndToEndFileTest");
+    private File clearAndCreateTempPath(String unique) throws IOException {
+        String baseName = org.apache.commons.codec.digest.DigestUtils.md5Hex(unique);
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
         File tempDir = new File(baseDir, baseName);
 

@@ -289,8 +289,7 @@ public abstract class IndexBaseRepoJob implements Job {
             deletedFile = deletedFile.replace("//", "/");
             Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
             try {
-                // TODO investigate if this works
-                CodeIndexer.deleteByCodeId(deletedFile);
+                CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(deletedFile));
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
