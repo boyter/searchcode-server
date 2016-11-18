@@ -11,7 +11,6 @@
 package com.searchcode.app.config;
 
 import com.searchcode.app.util.Properties;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
