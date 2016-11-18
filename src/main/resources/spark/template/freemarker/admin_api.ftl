@@ -47,6 +47,11 @@
 
     <#else>
     <p>The API is disabled or calls are set to be unauthenticated.</p>
+    <p>To enable the API and authenticated calls please do the following</p>
+    <ul>
+        <ol>Change <code>api_enabled</code> to <code>true</code> in the searchcode.properties file</ol>
+        <ol>Change <code>api_key_authentication</code> to <code>true</code> in the searchcode.properties file</ol>
+    </ul>
     </#if>
 
 </div>
