@@ -10,6 +10,9 @@
 
 package com.searchcode.app.config;
 
+import com.searchcode.app.util.Properties;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -21,8 +24,10 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
     public synchronized Connection getConnection() throws SQLException {
         try {
             if(connection == null || connection.isClosed()) {
+                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE);
+
                 Class.forName("org.sqlite.JDBC");
-                connection = DriverManager.getConnection("jdbc:sqlite:./searchcode.sqlite");
+                connection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);
 
                 // WAL write ahead logging supposedly helps with performance but did not notice a difference
                 // PreparedStatement stmt = connection.prepareStatement("PRAGMA journal_mode=WAL;");
