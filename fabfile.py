@@ -43,6 +43,10 @@ def package():
     local('rm -rf ./target/*')
     local("mvn package")
 
+def test_full():
+    test()
+    test_integration()
+
 def test():
     local('mvn test')
     js_test()
@@ -53,6 +57,7 @@ def js_test():
 def test_integration():
     print 'Be sure to run: "fab compile_js configure_prod run" first'
     local("python ./assets/integration_test/test.py")
+    local("python ./assets/integration_test/fuzztest.py")
 
 def run():
     package()
