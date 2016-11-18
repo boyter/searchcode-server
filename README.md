@@ -14,8 +14,7 @@ See https://searchcode.com/product/ for more details
 Support
 -------
 If you are building from source then you get no support and must work within the restrictions specified of the
-fair source licence (see LICENSE.txt for details). To purchase support see 
-https://searchcode.com/product/#downloadlinks
+fair source licence (see LICENSE.txt for details). To purchase support see https://searchcode.com/product/#downloadlinks
 
 Submissions/Pull Requests
 -------------------------
@@ -31,13 +30,36 @@ the javascript unit tests through the command line you will need to install NPM 
 npm install -g node-qunit-phantomjs but you can always run them in your browser if required by opening 
 ./src/test/javascript/index.html
 
-To test the application you can either run "mvn test" or "fab test". To build a full release IE ready
-for production you should run "fab build_release" which will test compile and build a release into
+To test the application you can either run "mvn test" or "fab test". Note that these tests will only cover unit
+some integration and javascript unit. For full coverage run "fab test_full" with the application running in the background
+to ensure everything is working as expected.
+
+To build a full release IE ready for production you should run "fab build_release" which will test compile and build a release into
 the release folder and produce the file "searchcode-server.tar.gz" which is a ready to deploy release.
 
 If you want to simply test and run then you can run "fab run" however this will be default build a package
 and run that. To run quickly just open in your IDE of choice and start running App.java
 
+There are a special bunch of tests used for verifying that indexing logic for GIT and File repositories works correctly. To perform 
+this you need to run one of all of the following shell scripts,
+
+./assets/integration_test/gitload/gitload.sh
+./assets/integration_test/gitupdate/gitupdate.sh
+./assets/integration_test/fileupdatetest/fileload.sh
+./assets/integration_test/fileload/fileload.sh
+
+Then add the git ones as GIT repositories in the application and the file ones as FILE repositories. It is also useful to 
+set the properties
+
+check_repo_chages=60
+check_filerepo_chages=60
+
+but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
+to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
+than 400 documents indexed at any time (if indexing all 4 repositories) and a minimum of 201 (the fileload.sh files + fileupdatetest files + gitupdate files). Leave things running over several hours to ensure that the logic works correctly.
+
+Before a release is made a build must pass all of the above checks, with the indexer logic tests being run for a minimum of 24 hours. To
+ensure that performance is acceptable the tests are also run on a Atom powered netbook.
 
 To Run
 ------
