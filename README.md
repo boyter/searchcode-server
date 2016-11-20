@@ -91,7 +91,7 @@ http://SERVER_IP:8080
 Be sure to replace SERVER_IP with the ip address if your server or localhost if running locally.
 If you see a page with a search bar then everything is fine.
 
-For further control you may want to edit the above files and include the java -Xmx arguement to specify the
+For further control you may want to edit the above files and include the java -Xmx argument to specify the
 amount of RAM to use or any other java option you wish to pass in.
 
 To administer your searchcode server instance you need to click on the Admin link in the top right.
