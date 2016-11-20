@@ -23,7 +23,8 @@ class TestIntegration(unittest.TestCase):
 
     def testMainPage(self):
         data = self.getData("http://%s/" % (host))
-        self.assertTrue('Searching across' in data)
+        result = 'Searching across' in data or 'You have no repositories indexed' in data
+        self.assertTrue(result)
 
     def testDocumentationPage(self):
         data = self.getData("http://%s/documentation/" % (host))
@@ -66,7 +67,8 @@ class TestIntegration(unittest.TestCase):
     def testNoSearch(self):
         url = "http://%s/?q=&p=0" % (host)
         data = self.getData(url)
-        self.assertTrue('Searching across' in data)
+        result = 'Searching across' in data or 'You have no repositories indexed' in data
+        self.assertTrue(result)
 
     def testNoSearchHtml(self):
         url = "http://%s/html/?q=&p=0" % (host)
