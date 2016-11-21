@@ -689,25 +689,8 @@ public class App {
                 return null;
             }
 
-            AdminRouteService ars = new AdminRouteService();
-            CodeSearcher cs = new CodeSearcher();
-            Map<String, Object> map = ars.AdminPage(request, response);
-
-
-            map.put("repoCount", repo.getRepoCount());
-            map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("numSearches", statsService.getSearchCount());
-            map.put("uptime", statsService.getUptime());
-            map.put("loadAverage", statsService.getLoadAverage());
-            map.put("sysArch", statsService.getArch());
-            map.put("sysVersion", statsService.getOsVersion());
-            map.put("processorCount", statsService.getProcessorCount());
-            map.put("memoryUsage", statsService.getMemoryUsage("<br>"));
-            map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
-            map.put("version", VERSION);
-            map.put("currentdatetime", new Date().toString());
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
+            AdminRouteService adminRouteService = new AdminRouteService();
+            Map<String, Object> map = adminRouteService.AdminPage(request, response);
 
             return new ModelAndView(map, "admin.ftl");
         }, new FreeMarkerEngine());
@@ -719,40 +702,9 @@ public class App {
                 return null;
             }
 
-            int repoCount = repo.getRepoCount();
-            String offSet = request.queryParams("offset");
-            String searchQuery = request.queryParams("q");
-            int indexOffset = 0;
+            AdminRouteService adminRouteService = new AdminRouteService();
+            Map<String, Object> map = adminRouteService.AdminRepo(request, response);
 
-            Map<String, Object> map = new HashMap<>();
-
-            if (offSet != null) {
-                try {
-                    indexOffset = Integer.parseInt(offSet);
-                    if (indexOffset > repoCount || indexOffset < 0) {
-                        indexOffset = 0;
-                    }
-                }
-                catch(NumberFormatException ex) {
-                    indexOffset = 0;
-                }
-            }
-
-            if (searchQuery != null) {
-                map.put("repoResults", repo.searchRepo(searchQuery));
-            }
-            else {
-                map.put("repoResults", repo.getPagedRepo(indexOffset, 100));
-            }
-
-            map.put("searchQuery", searchQuery);
-            map.put("hasPrevious", indexOffset > 0);
-            map.put("hasNext", (indexOffset + 100) < repoCount);
-            map.put("previousOffset", "" + (indexOffset - 100));
-            map.put("nextOffset", "" + (indexOffset + 100));
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "admin_repo.ftl");
         }, new FreeMarkerEngine());
 
@@ -777,16 +729,9 @@ public class App {
                 return null;
             }
 
-            Map<String, Object> map = new HashMap<>();
+            AdminRouteService adminRouteService = new AdminRouteService();
+            Map<String, Object> map = adminRouteService.AdminApi(request, response);
 
-            map.put("apiKeys", api.getAllApi());
-
-            boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-            boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-
-            map.put("apiAuthentication", apiEnabled && apiAuth);
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "admin_api.ftl");
         }, new FreeMarkerEngine());
 
@@ -827,16 +772,6 @@ public class App {
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminSettings(request, response);
 
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("syntaxHighlighter", CommonRouteService.getSyntaxHighlighter());
-            map.put("averageSalary", "" + (int) CommonRouteService.getAverageSalary());
-            map.put("matchLines", "" + (int) CommonRouteService.getMatchLines());
-            map.put("maxLineDepth", "" + (int) CommonRouteService.getMaxLineDepth());
-            map.put("minifiedLength", "" + (int) CommonRouteService.getMinifiedLength());
-            map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
-            map.put("backoffValue", (double) CommonRouteService.getBackoffValue());
-            map.put("isCommunity", App.ISCOMMUNITY);
-
             return new ModelAndView(map, "admin_settings.ftl");
         }, new FreeMarkerEngine());
 
@@ -849,9 +784,6 @@ public class App {
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminLogs(request, response);
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_logs.ftl");
         }, new FreeMarkerEngine());

@@ -16,30 +16,31 @@ import com.google.inject.Injector;
 import com.searchcode.app.App;
 import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Properties;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.apache.commons.io.IOUtils;
 import spark.Request;
 import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AdminRouteService {
-    private final Injector injector;
 
     public AdminRouteService() {
-        injector = Guice.createInjector(new InjectorConfig());
     }
 
     public Map<String, Object> AdminPage(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
+
+        CodeSearcher cs = new CodeSearcher();
+        Repo repo = Singleton.getRepo();
+        StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here
         map.put(Values.SQLITEFILE, Properties.getProperties().getProperty(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE));
@@ -71,7 +72,81 @@ public class AdminRouteService {
         map.put(Values.AND_MATCH, Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
         map.put(Values.LOG_INDEXED, Properties.getProperties().getProperty(Values.LOG_INDEXED, Values.DEFAULT_LOG_INDEXED));
 
+
+        map.put("repoCount", repo.getRepoCount());
+        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numSearches", statsService.getSearchCount());
+        map.put("uptime", statsService.getUptime());
+        map.put("loadAverage", statsService.getLoadAverage());
+        map.put("sysArch", statsService.getArch());
+        map.put("sysVersion", statsService.getOsVersion());
+        map.put("processorCount", statsService.getProcessorCount());
+        map.put("memoryUsage", statsService.getMemoryUsage("<br>"));
+        map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
+        map.put("version", App.VERSION);
+        map.put("currentdatetime", new Date().toString());
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
+
         map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
+
+        return map;
+    }
+
+    public Map<String, Object> AdminRepo(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
+
+        Repo repo = Singleton.getRepo();
+
+        int repoCount = repo.getRepoCount();
+        String offSet = request.queryParams("offset");
+        String searchQuery = request.queryParams("q");
+        int indexOffset = 0;
+
+        if (offSet != null) {
+            try {
+                indexOffset = Integer.parseInt(offSet);
+                if (indexOffset > repoCount || indexOffset < 0) {
+                    indexOffset = 0;
+                }
+            }
+            catch(NumberFormatException ex) {
+                indexOffset = 0;
+            }
+        }
+
+        if (searchQuery != null) {
+            map.put("repoResults", repo.searchRepo(searchQuery));
+        }
+        else {
+            map.put("repoResults", repo.getPagedRepo(indexOffset, 100));
+        }
+
+        map.put("searchQuery", searchQuery);
+        map.put("hasPrevious", indexOffset > 0);
+        map.put("hasNext", (indexOffset + 100) < repoCount);
+        map.put("previousOffset", "" + (indexOffset - 100));
+        map.put("nextOffset", "" + (indexOffset + 100));
+
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
+
+        return map;
+    }
+
+    public Map<String, Object> AdminApi(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
+
+        Api api = Singleton.getApi();
+
+        map.put("apiKeys", api.getAllApi());
+
+        boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
+        boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
+
+        map.put("apiAuthentication", apiEnabled && apiAuth);
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
 
         return map;
     }
@@ -80,6 +155,16 @@ public class AdminRouteService {
         String[] highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
 
         Map<String, Object> map = new HashMap<>();
+
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("syntaxHighlighter", CommonRouteService.getSyntaxHighlighter());
+        map.put("averageSalary", Values.EMPTYSTRING + (int) CommonRouteService.getAverageSalary());
+        map.put("matchLines", Values.EMPTYSTRING + (int) CommonRouteService.getMatchLines());
+        map.put("maxLineDepth", Values.EMPTYSTRING + (int) CommonRouteService.getMaxLineDepth());
+        map.put("minifiedLength", Values.EMPTYSTRING + (int) CommonRouteService.getMinifiedLength());
+        map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
+        map.put("backoffValue", CommonRouteService.getBackoffValue());
+        map.put("isCommunity", App.ISCOMMUNITY);
         map.put("highlighters", highlighters);
 
         return map;
@@ -115,6 +200,9 @@ public class AdminRouteService {
 
         map.put("level", level);
         map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
+
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
 
         return map;
     }
