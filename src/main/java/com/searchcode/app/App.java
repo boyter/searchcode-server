@@ -153,7 +153,7 @@ public class App {
                 map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList)));
 
 
-                map.put("logoImage", getLogo());
+                map.put("logoImage", CommonRouteService.getLogo());
                 map.put("isCommunity", ISCOMMUNITY);
                 return new ModelAndView(map, "search_test.ftl");
             }
@@ -172,7 +172,7 @@ public class App {
 
             map.put("photoId", photoId);
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "index.ftl");
         }, new FreeMarkerEngine());
@@ -301,7 +301,7 @@ public class App {
 
 
                 map.put("isHtml", true);
-                map.put("logoImage", getLogo());
+                map.put("logoImage", CommonRouteService.getLogo());
                 map.put("isCommunity", ISCOMMUNITY);
                 return new ModelAndView(map, "searchresults.ftl");
             }
@@ -318,7 +318,7 @@ public class App {
 
             map.put("photoId", photoId);
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "index.ftl");
         }, new FreeMarkerEngine());
@@ -362,14 +362,14 @@ public class App {
 
                 map.put("altQuery", "");
 
-                map.put("logoImage", getLogo());
+                map.put("logoImage", CommonRouteService.getLogo());
                 map.put("isCommunity", ISCOMMUNITY);
                 return new ModelAndView(map, "searchresults.ftl");
             }
 
             map.put("photoId", 1);
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "index.ftl");
         }, new FreeMarkerEngine());
@@ -723,7 +723,7 @@ public class App {
             map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
             map.put("version", VERSION);
             map.put("currentdatetime", new Date().toString());
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin.ftl");
@@ -768,7 +768,7 @@ public class App {
             map.put("previousOffset", "" + (indexOffset - 100));
             map.put("nextOffset", "" + (indexOffset + 100));
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "admin_repo.ftl");
         }, new FreeMarkerEngine());
@@ -782,7 +782,7 @@ public class App {
 
             Map<String, Object> map = new HashMap<>();
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "admin_bulk.ftl");
         }, new FreeMarkerEngine());
@@ -802,7 +802,7 @@ public class App {
             boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
             map.put("apiAuthentication", apiEnabled && apiAuth);
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "admin_api.ftl");
         }, new FreeMarkerEngine());
@@ -844,7 +844,7 @@ public class App {
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminSettings(request, response);
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("syntaxHighlighter", getSyntaxHighlighter());
             map.put("averageSalary", "" + (int)getAverageSalary());
             map.put("matchLines", "" + (int)getMatchLines());
@@ -867,7 +867,7 @@ public class App {
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminLogs(request, response);
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_logs.ftl");
@@ -930,7 +930,7 @@ public class App {
                 return null;
             }
             Map<String, Object> map = new HashMap<>();
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
@@ -942,7 +942,7 @@ public class App {
                 halt();
             }
             Map<String, Object> map = new HashMap<>();
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
 
             if (req.queryParams().contains("password")) {
@@ -1114,7 +1114,7 @@ public class App {
                 map.put("estimatedCost", estimatedCost);
             }
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "coderesult.ftl");
         }, new FreeMarkerEngine());
@@ -1122,7 +1122,7 @@ public class App {
         get("/documentation/", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "documentation.ftl");
         }, new FreeMarkerEngine());
@@ -1130,20 +1130,11 @@ public class App {
         get("/404/", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
 
-            map.put("logoImage", getLogo());
+            map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
             return new ModelAndView(map, "404.ftl");
 
         }, new FreeMarkerEngine());
-    }
-
-    private static String getLogo() {
-        if(ISCOMMUNITY) {
-            return Values.EMPTYSTRING;
-        }
-
-        Data data = injector.getInstance(Data.class);
-        return data.getDataByName(Values.LOGO, Values.EMPTYSTRING);
     }
 
     public static double getAverageSalary() {
