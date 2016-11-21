@@ -70,7 +70,7 @@ public class App {
 
         LOGGER.info("Starting searchcode server on port " + server_port);
 
-        if(onlyLocalhost) {
+        if (onlyLocalhost) {
             LOGGER.info("Only listening on 127.0.0.1 ");
             Spark.ipAddress("127.0.0.1");
         }
@@ -107,16 +107,16 @@ public class App {
 
             map.put("repoCount", repo.getRepoCount());
 
-            if(request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
+            if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
                 String query = request.queryParams("q").trim();
                 int page = 0;
 
-                if(request.queryParams().contains("p")) {
+                if (request.queryParams().contains("p")) {
                     try {
                         page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
                     }
-                    catch(NumberFormatException ex) {
+                    catch (NumberFormatException ex) {
                         page = 0;
                     }
                 }
@@ -125,7 +125,7 @@ public class App {
                 List<String> langsList = new ArrayList<>();
                 List<String> ownsList = new ArrayList<>();
 
-                if(request.queryParams().contains("repo")) {
+                if (request.queryParams().contains("repo")) {
                     String[] repos = new String[0];
                     repos = request.queryParamsValues("repo");
 
@@ -134,7 +134,7 @@ public class App {
                     }
                 }
 
-                if(request.queryParams().contains("lan")) {
+                if (request.queryParams().contains("lan")) {
                     String[] langs = new String[0];
                     langs = request.queryParamsValues("lan");
 
@@ -143,7 +143,7 @@ public class App {
                     }
                 }
 
-                if(request.queryParams().contains("own")) {
+                if (request.queryParams().contains("own")) {
                     String[] owns = new String[0];
                     owns = request.queryParamsValues("own");
 
@@ -178,17 +178,17 @@ public class App {
 
             map.put("repoCount", repo.getRepoCount());
 
-            if(request.queryParams().contains("q")) {
+            if (request.queryParams().contains("q")) {
                 String query = request.queryParams("q").trim();
                 String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
                 int page = 0;
 
-                if(request.queryParams().contains("p")) {
+                if (request.queryParams().contains("p")) {
                     try {
                         page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
                     }
-                    catch(NumberFormatException ex) {
+                    catch (NumberFormatException ex) {
                         page = 0;
                     }
                 }
@@ -204,7 +204,7 @@ public class App {
                 String ownsQueryString = Values.EMPTYSTRING;
 
 
-                if(request.queryParams().contains("repo")) {
+                if (request.queryParams().contains("repo")) {
                     repos = request.queryParamsValues("repo");
 
                     if (repos.length != 0) {
@@ -222,7 +222,7 @@ public class App {
                     }
                 }
 
-                if(request.queryParams().contains("lan")) {
+                if (request.queryParams().contains("lan")) {
                     langs = request.queryParamsValues("lan");
 
                     if (langs.length != 0) {
@@ -240,7 +240,7 @@ public class App {
                     }
                 }
 
-                if(request.queryParams().contains("own")) {
+                if (request.queryParams().contains("own")) {
                     owners = request.queryParamsValues("own");
 
                     if (owners.length != 0) {
@@ -265,19 +265,19 @@ public class App {
                 searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
                 for(CodeFacetRepo f: searchResult.getRepoFacetResults()) {
-                    if(Arrays.asList(repos).contains(f.getRepoName())) {
+                    if (Arrays.asList(repos).contains(f.getRepoName())) {
                         f.setSelected(true);
                     }
                 }
 
                 for(CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
-                    if(Arrays.asList(langs).contains(f.getLanguageName())) {
+                    if (Arrays.asList(langs).contains(f.getLanguageName())) {
                         f.setSelected(true);
                     }
                 }
 
                 for(CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
-                    if(Arrays.asList(owners).contains(f.getOwner())) {
+                    if (Arrays.asList(owners).contains(f.getOwner())) {
                         f.setSelected(true);
                     }
                 }
@@ -317,12 +317,12 @@ public class App {
 
             map.put("repoCount", repo.getRepoCount());
 
-            if(request.queryParams().contains("q")) {
+            if (request.queryParams().contains("q")) {
                 String query = request.queryParams("q").trim();
 
                 int page = 0;
 
-                if(request.queryParams().contains("p")) {
+                if (request.queryParams().contains("p")) {
                     try {
                         page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
@@ -366,12 +366,12 @@ public class App {
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
 
-            if(request.queryParams().contains("q") && request.queryParams("q").trim() != Values.EMPTYSTRING) {
+            if (request.queryParams().contains("q") && request.queryParams("q").trim() != Values.EMPTYSTRING) {
                 String query = request.queryParams("q").trim();
 
                 int page = 0;
 
-                if(request.queryParams().contains("p")) {
+                if (request.queryParams().contains("p")) {
                     try {
                         page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
@@ -389,7 +389,7 @@ public class App {
                 String ownersFilter = Values.EMPTYSTRING;
 
 
-                if(request.queryParams().contains("repo")) {
+                if (request.queryParams().contains("repo")) {
                     repos = request.queryParamsValues("repo");
 
                     if (repos.length != 0) {
@@ -401,7 +401,7 @@ public class App {
                     }
                 }
 
-                if(request.queryParams().contains("lan")) {
+                if (request.queryParams().contains("lan")) {
                     langs = request.queryParamsValues("lan");
 
                     if (langs.length != 0) {
@@ -413,7 +413,7 @@ public class App {
                     }
                 }
 
-                if(request.queryParams().contains("own")) {
+                if (request.queryParams().contains("own")) {
                     owners = request.queryParamsValues("own");
 
                     if (owners.length != 0) {
@@ -428,7 +428,7 @@ public class App {
                 // Need to pass in the filters into this query
                 String cacheKey = query + page + reposFilter + langsFilter + ownersFilter;
 
-                if(cache.containsKey(cacheKey)) {
+                if (cache.containsKey(cacheKey)) {
                     return cache.get(cacheKey);
                 }
 
@@ -683,7 +683,7 @@ public class App {
         }, new JsonTransformer());
 
         get("/admin/", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return null;
@@ -713,7 +713,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/repo/", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return null;
@@ -757,7 +757,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/bulk/", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return null;
@@ -805,7 +805,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/api/delete/", "application/json", (request, response) -> {
-            if(getAuthenticatedUser(request) == null || !request.queryParams().contains("publicKey")) {
+            if (getAuthenticatedUser(request) == null || !request.queryParams().contains("publicKey")) {
                 response.redirect("/login/");
                 halt();
                 return false;
@@ -818,7 +818,7 @@ public class App {
         }, new JsonTransformer());
 
         get("/admin/settings/", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return null;
@@ -841,7 +841,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/logs/", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return null;
@@ -863,7 +863,7 @@ public class App {
                 return null;
             }
 
-            if(ISCOMMUNITY) {
+            if (ISCOMMUNITY) {
                 response.redirect("/admin/settings/");
                 halt();
             }
@@ -907,7 +907,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/login/", (request, response) -> {
-            if(getAuthenticatedUser(request) != null) {
+            if (getAuthenticatedUser(request) != null) {
                 response.redirect("/admin/");
                 halt();
                 return null;
@@ -919,7 +919,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/login/", (request, response) -> {
-            if(request.queryParams().contains("password") && request.queryParams("password").equals(com.searchcode.app.util.Properties.getProperties().getProperty("password"))) {
+            if (request.queryParams().contains("password") && request.queryParams("password").equals(com.searchcode.app.util.Properties.getProperties().getProperty("password"))) {
                 addAuthenticatedUser(request);
                 response.redirect("/admin/");
                 halt();
@@ -942,7 +942,7 @@ public class App {
         });
 
         get("/admin/delete/", "application/json", (request, response) -> {
-            if(getAuthenticatedUser(request) == null || !request.queryParams().contains("repoName")) {
+            if (getAuthenticatedUser(request) == null || !request.queryParams().contains("repoName")) {
                 response.redirect("/login/");
                 halt();
                 return false;
@@ -993,7 +993,7 @@ public class App {
         }, new JsonTransformer());
 
         get("/admin/checkversion/", "application/json", (request, response) -> {
-            if(getAuthenticatedUser(request) == null) {
+            if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return false;
@@ -1011,7 +1011,7 @@ public class App {
             Cocomo2 coco = new Cocomo2();
 
             String fileName = Values.EMPTYSTRING;
-            if(request.splat().length != 0) {
+            if (request.splat().length != 0) {
                 fileName = request.splat()[0];
             }
 
