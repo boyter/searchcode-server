@@ -687,24 +687,7 @@ public class App {
             }
 
             AdminRouteService ars = new AdminRouteService();
-            CodeSearcher cs = new CodeSearcher();
             Map<String, Object> map = ars.AdminPage(request, response);
-
-
-            map.put("repoCount", repo.getRepoCount());
-            map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("numSearches", statsService.getSearchCount());
-            map.put("uptime", statsService.getUptime());
-            map.put("loadAverage", statsService.getLoadAverage());
-            map.put("sysArch", statsService.getArch());
-            map.put("sysVersion", statsService.getOsVersion());
-            map.put("processorCount", statsService.getProcessorCount());
-            map.put("memoryUsage", statsService.getMemoryUsage("<br>"));
-            map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
-            map.put("version", VERSION);
-            map.put("currentdatetime", new Date().toString());
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
 
             return new ModelAndView(map, "admin.ftl");
         }, new FreeMarkerEngine());
@@ -826,12 +809,12 @@ public class App {
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("syntaxHighlighter", CommonRouteService.getSyntaxHighlighter());
-            map.put("averageSalary", "" + (int) CommonRouteService.getAverageSalary());
-            map.put("matchLines", "" + (int) CommonRouteService.getMatchLines());
-            map.put("maxLineDepth", "" + (int) CommonRouteService.getMaxLineDepth());
-            map.put("minifiedLength", "" + (int) CommonRouteService.getMinifiedLength());
+            map.put("averageSalary", Values.EMPTYSTRING + (int) CommonRouteService.getAverageSalary());
+            map.put("matchLines", Values.EMPTYSTRING + (int) CommonRouteService.getMatchLines());
+            map.put("maxLineDepth", Values.EMPTYSTRING + (int) CommonRouteService.getMaxLineDepth());
+            map.put("minifiedLength", Values.EMPTYSTRING + (int) CommonRouteService.getMinifiedLength());
             map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
-            map.put("backoffValue", (double) CommonRouteService.getBackoffValue());
+            map.put("backoffValue", CommonRouteService.getBackoffValue());
             map.put("isCommunity", App.ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_settings.ftl");
