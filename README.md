@@ -18,7 +18,7 @@ fair source licence (see LICENSE.txt for details). To purchase support see https
 
 Submissions/Pull Requests
 -------------------------
-If you would like to submit code to be integrated into searchcode server please specifyc that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
+If you would like to submit code to be integrated into searchcode server please specify that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
 Before making any submission be sure to run "fab test"
 
@@ -91,7 +91,7 @@ http://SERVER_IP:8080
 Be sure to replace SERVER_IP with the ip address if your server or localhost if running locally.
 If you see a page with a search bar then everything is fine.
 
-For further control you may want to edit the above files and include the java -Xmx arguement to specify the
+For further control you may want to edit the above files and include the java -Xmx argument to specify the
 amount of RAM to use or any other java option you wish to pass in.
 
 To administer your searchcode server instance you need to click on the Admin link in the top right.
