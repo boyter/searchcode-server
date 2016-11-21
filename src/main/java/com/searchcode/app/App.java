@@ -1139,7 +1139,7 @@ public class App {
 
     private static String getLogo() {
         if(ISCOMMUNITY) {
-            return "";
+            return Values.EMPTYSTRING;
         }
 
         Data data = injector.getInstance(Data.class);
