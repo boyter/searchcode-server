@@ -53,7 +53,10 @@ public class App {
     public static final boolean ISCOMMUNITY = false;
     public static final String VERSION = "1.3.5";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
-    public static Map<String, SearchResult> cache = ExpiringMap.builder().expirationPolicy(ExpirationPolicy.ACCESSED).expiration(60, TimeUnit.SECONDS).build();
+    public static Map<String, SearchResult> cache = ExpiringMap.builder()
+                                                               .expirationPolicy(ExpirationPolicy.ACCESSED)
+                                                               .expiration(60, TimeUnit.SECONDS)
+                                                               .build();
     public static Injector injector;
     public static SearchcodeLib scl;
 
@@ -91,26 +94,26 @@ public class App {
         Spark.staticFileLocation("/public");
 
         before((request, response) -> {
-            if(onlyLocalhost) {
+            if (onlyLocalhost) {
                 if (!request.ip().equals("127.0.0.1")) {
                     halt(204);
                 }
             }
         });
 
-        get("/", (req, res) -> {
-            res.header("Content-Encoding", "gzip");
+        get("/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             Map<String, Object> map = new HashMap<>();
 
             map.put("repoCount", repo.getRepoCount());
 
-            if(req.queryParams().contains("q") && !req.queryParams("q").trim().equals("")) {
-                String query = req.queryParams("q").trim();
+            if(request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
+                String query = request.queryParams("q").trim();
                 int page = 0;
 
-                if(req.queryParams().contains("p")) {
+                if(request.queryParams().contains("p")) {
                     try {
-                        page = Integer.parseInt(req.queryParams("p"));
+                        page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
                     }
                     catch(NumberFormatException ex) {
@@ -122,27 +125,27 @@ public class App {
                 List<String> langsList = new ArrayList<>();
                 List<String> ownsList = new ArrayList<>();
 
-                if(req.queryParams().contains("repo")) {
+                if(request.queryParams().contains("repo")) {
                     String[] repos = new String[0];
-                    repos = req.queryParamsValues("repo");
+                    repos = request.queryParamsValues("repo");
 
                     if (repos.length != 0) {
                         reposList = Arrays.asList(repos);
                     }
                 }
 
-                if(req.queryParams().contains("lan")) {
+                if(request.queryParams().contains("lan")) {
                     String[] langs = new String[0];
-                    langs = req.queryParamsValues("lan");
+                    langs = request.queryParamsValues("lan");
 
                     if (langs.length != 0) {
                         langsList = Arrays.asList(langs);
                     }
                 }
 
-                if(req.queryParams().contains("own")) {
+                if(request.queryParams().contains("own")) {
                     String[] owns = new String[0];
-                    owns = req.queryParamsValues("own");
+                    owns = request.queryParamsValues("own");
 
                     if (owns.length != 0) {
                         ownsList = Arrays.asList(owns);
@@ -167,22 +170,22 @@ public class App {
             return new ModelAndView(map, "index.ftl");
         }, new FreeMarkerEngine());
 
-        get("/html/", (req, res) -> {
-            res.header("Content-Encoding", "gzip");
+        get("/html/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
             Map<String, Object> map = new HashMap<>();
 
             map.put("repoCount", repo.getRepoCount());
 
-            if(req.queryParams().contains("q")) {
-                String query = req.queryParams("q").trim();
+            if(request.queryParams().contains("q")) {
+                String query = request.queryParams("q").trim();
                 String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
                 int page = 0;
 
-                if(req.queryParams().contains("p")) {
+                if(request.queryParams().contains("p")) {
                     try {
-                        page = Integer.parseInt(req.queryParams("p"));
+                        page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
                     }
                     catch(NumberFormatException ex) {
@@ -201,8 +204,8 @@ public class App {
                 String ownsQueryString = Values.EMPTYSTRING;
 
 
-                if(req.queryParams().contains("repo")) {
-                    repos = req.queryParamsValues("repo");
+                if(request.queryParams().contains("repo")) {
+                    repos = request.queryParamsValues("repo");
 
                     if (repos.length != 0) {
                         List<String> reposList = Arrays.asList(repos).stream()
@@ -219,8 +222,8 @@ public class App {
                     }
                 }
 
-                if(req.queryParams().contains("lan")) {
-                    langs = req.queryParamsValues("lan");
+                if(request.queryParams().contains("lan")) {
+                    langs = request.queryParamsValues("lan");
 
                     if (langs.length != 0) {
                         List<String> langsList = Arrays.asList(langs).stream()
@@ -237,8 +240,8 @@ public class App {
                     }
                 }
 
-                if(req.queryParams().contains("own")) {
-                    owners = req.queryParamsValues("own");
+                if(request.queryParams().contains("own")) {
+                    owners = request.queryParamsValues("own");
 
                     if (owners.length != 0) {
                         List<String> ownersList = Arrays.asList(owners).stream()
@@ -307,21 +310,21 @@ public class App {
          * Allows one to write literal lucene search queries against the index
          * TODO This is still very much WIP
          */
-        get("/literal/", (req, res) -> {
+        get("/literal/", (request, response) -> {
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
             Map<String, Object> map = new HashMap<>();
 
             map.put("repoCount", repo.getRepoCount());
 
-            if(req.queryParams().contains("q")) {
-                String query = req.queryParams("q").trim();
+            if(request.queryParams().contains("q")) {
+                String query = request.queryParams("q").trim();
 
                 int page = 0;
 
-                if(req.queryParams().contains("p")) {
+                if(request.queryParams().contains("p")) {
                     try {
-                        page = Integer.parseInt(req.queryParams("p"));
+                        page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
                     }
                     catch(NumberFormatException ex) {
@@ -381,9 +384,9 @@ public class App {
                 String[] repos = new String[0];
                 String[] langs = new String[0];
                 String[] owners = new String[0];
-                String reposFilter = "";
-                String langsFilter = "";
-                String ownersFilter = "";
+                String reposFilter = Values.EMPTYSTRING;
+                String langsFilter = Values.EMPTYSTRING;
+                String ownersFilter = Values.EMPTYSTRING;
 
 
                 if(request.queryParams().contains("repo")) {
@@ -915,17 +918,17 @@ public class App {
             return new ModelAndView(map, "login.ftl");
         }, new FreeMarkerEngine());
 
-        post("/login/", (req, res) -> {
-            if(req.queryParams().contains("password") && req.queryParams("password").equals(com.searchcode.app.util.Properties.getProperties().getProperty("password"))) {
-                addAuthenticatedUser(req);
-                res.redirect("/admin/");
+        post("/login/", (request, response) -> {
+            if(request.queryParams().contains("password") && request.queryParams("password").equals(com.searchcode.app.util.Properties.getProperties().getProperty("password"))) {
+                addAuthenticatedUser(request);
+                response.redirect("/admin/");
                 halt();
             }
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
 
-            if (req.queryParams().contains("password")) {
+            if (request.queryParams().contains("password")) {
                 map.put("passwordInvalid", true);
             }
 
