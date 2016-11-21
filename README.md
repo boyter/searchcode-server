@@ -134,7 +134,7 @@ Change Log
 ==========
 
 XX XXXXXXXX XXXX - 1.3.5
- - TODO
+ - Fix only_localhost to really only listen localhost not drop connections
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs

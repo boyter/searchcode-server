@@ -66,6 +66,11 @@ public class App {
         databaseMigrations();
 
         LOGGER.info("Starting searchcode server on port " + server_port);
+
+        if(onlyLocalhost) {
+            LOGGER.info("Only listening on 127.0.0.1 ");
+            Spark.ipAddress("127.0.0.1");
+        }
         Spark.port(server_port);
 
         JobService js = injector.getInstance(JobService.class);
