@@ -193,12 +193,12 @@ public class App {
                 String[] repos = new String[0];
                 String[] langs = new String[0];
                 String[] owners = new String[0];
-                String reposFilter = "";
-                String langsFilter = "";
-                String ownersFilter = "";
-                String reposQueryString = "";
-                String langsQueryString = "";
-                String ownsQueryString = "";
+                String reposFilter = Values.EMPTYSTRING;
+                String langsFilter = Values.EMPTYSTRING;
+                String ownersFilter = Values.EMPTYSTRING;
+                String reposQueryString = Values.EMPTYSTRING;
+                String langsQueryString = Values.EMPTYSTRING;
+                String ownsQueryString = Values.EMPTYSTRING;
 
 
                 if(req.queryParams().contains("repo")) {
