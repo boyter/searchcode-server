@@ -845,13 +845,13 @@ public class App {
             Map<String, Object> map = adminRouteService.AdminSettings(request, response);
 
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("syntaxHighlighter", getSyntaxHighlighter());
-            map.put("averageSalary", "" + (int)getAverageSalary());
-            map.put("matchLines", "" + (int)getMatchLines());
-            map.put("maxLineDepth", "" + (int)getMaxLineDepth());
-            map.put("minifiedLength", "" + (int)getMinifiedLength());
-            map.put("owaspenabled", owaspAdvisoriesEnabled());
-            map.put("backoffValue", (double) getBackoffValue());
+            map.put("syntaxHighlighter", CommonRouteService.getSyntaxHighlighter());
+            map.put("averageSalary", "" + (int) CommonRouteService.getAverageSalary());
+            map.put("matchLines", "" + (int) CommonRouteService.getMatchLines());
+            map.put("maxLineDepth", "" + (int) CommonRouteService.getMaxLineDepth());
+            map.put("minifiedLength", "" + (int) CommonRouteService.getMinifiedLength());
+            map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
+            map.put("backoffValue", (double) CommonRouteService.getBackoffValue());
             map.put("isCommunity", App.ISCOMMUNITY);
 
             return new ModelAndView(map, "admin_settings.ftl");
@@ -1068,7 +1068,7 @@ public class App {
             }
 
             List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
-            if (owaspAdvisoriesEnabled()) {
+            if (CommonRouteService.owaspAdvisoriesEnabled()) {
                 if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
                     owaspResults = owaspClassifier.classifyCode(codeLines, codeResult.languageName);
                 }
@@ -1104,12 +1104,12 @@ public class App {
             map.put("repoLocation", codeResult.getRepoLocation());
 
             map.put("codeValue", code.toString());
-            map.put("highligher", getSyntaxHighlighter());
+            map.put("highligher", CommonRouteService.getSyntaxHighlighter());
             map.put("codeOwner", codeResult.getCodeOwner());
             map.put("owaspResults", owaspResults);
 
             double estimatedEffort = coco.estimateEffort(scl.countFilteredLines(codeResult.getCode()));
-            int estimatedCost = (int)coco.estimateCost(estimatedEffort, getAverageSalary());
+            int estimatedCost = (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
             if (estimatedCost != 0 && !scl.languageCostIgnore(codeResult.getLanguageName())) {
                 map.put("estimatedCost", estimatedCost);
             }
@@ -1135,118 +1135,6 @@ public class App {
             return new ModelAndView(map, "404.ftl");
 
         }, new FreeMarkerEngine());
-    }
-
-    public static double getAverageSalary() {
-        if(ISCOMMUNITY) {
-            return Double.parseDouble(Values.DEFAULTAVERAGESALARY);
-        }
-
-        Data data = injector.getInstance(Data.class);
-        String salary = data.getDataByName(Values.AVERAGESALARY);
-
-        if(salary == null) {
-            data.saveData(Values.AVERAGESALARY, Values.DEFAULTAVERAGESALARY);
-            salary = Values.DEFAULTAVERAGESALARY;
-        }
-
-        return Double.parseDouble(salary);
-    }
-
-    public static double getMatchLines() {
-        if(ISCOMMUNITY) {
-            return Double.parseDouble(Values.DEFAULTMATCHLINES);
-        }
-
-        Data data = injector.getInstance(Data.class);
-        String matchLines = data.getDataByName(Values.MATCHLINES);
-
-        if(matchLines == null) {
-            data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
-            matchLines = Values.DEFAULTMATCHLINES;
-        }
-
-        return Double.parseDouble(matchLines);
-    }
-
-    public static double getMaxLineDepth() {
-        if(ISCOMMUNITY) {
-            return Double.parseDouble(Values.DEFAULTMAXLINEDEPTH);
-        }
-
-        Data data = injector.getInstance(Data.class);
-        String matchLines = data.getDataByName(Values.MAXLINEDEPTH);
-
-        if(matchLines == null) {
-            data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
-            matchLines = Values.DEFAULTMAXLINEDEPTH;
-        }
-
-        return Double.parseDouble(matchLines);
-    }
-
-    public static double getMinifiedLength() {
-        if(ISCOMMUNITY) {
-            return Double.parseDouble(Values.DEFAULTMINIFIEDLENGTH);
-        }
-
-        Data data = injector.getInstance(Data.class);
-        String minifiedLength = data.getDataByName(Values.MINIFIEDLENGTH);
-
-        if(minifiedLength == null) {
-            data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
-            minifiedLength = Values.DEFAULTMINIFIEDLENGTH;
-        }
-
-        return Double.parseDouble(minifiedLength);
-    }
-
-    public static double getBackoffValue() {
-        if(ISCOMMUNITY) {
-            return Double.parseDouble(Values.DEFAULTBACKOFFVALUE);
-        }
-
-        Data data = injector.getInstance(Data.class);
-        String backoffValue = data.getDataByName(Values.BACKOFFVALUE);
-
-        if(backoffValue == null) {
-            data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
-            backoffValue = Values.DEFAULTBACKOFFVALUE;
-        }
-
-        return Double.parseDouble(backoffValue);
-    }
-
-    public static boolean owaspAdvisoriesEnabled() {
-        if(ISCOMMUNITY) {
-            return false;
-        }
-
-        Data data = injector.getInstance(Data.class);
-        Boolean owaspEnabled = Boolean.parseBoolean(data.getDataByName(Values.OWASPENABLED));
-
-        if(owaspEnabled == null) {
-            data.saveData(Values.OWASPENABLED, "false");
-            owaspEnabled = false;
-        }
-
-        return owaspEnabled;
-    }
-
-    public static String getSyntaxHighlighter() {
-        if(ISCOMMUNITY) {
-            return Values.DEFAULTSYNTAXHIGHLIGHTER;
-        }
-
-        Data data = injector.getInstance(Data.class);
-        String highlighter = data.getDataByName(Values.SYNTAXHIGHLIGHTER);
-
-        if(highlighter == null || highlighter.trim().equals("")) {
-            highlighter = Properties.getProperties().getProperty(Values.SYNTAXHIGHLIGHTER, Values.DEFAULTSYNTAXHIGHLIGHTER);
-            data.saveData(Values.SYNTAXHIGHLIGHTER, highlighter);
-        }
-
-        return highlighter;
     }
 
     /**
