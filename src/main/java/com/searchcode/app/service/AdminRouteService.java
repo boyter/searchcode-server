@@ -11,17 +11,13 @@
 package com.searchcode.app.service;
 
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.searchcode.app.App;
-import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Properties;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.apache.commons.io.IOUtils;
 import spark.Request;
 import spark.Response;
