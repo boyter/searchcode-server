@@ -5,6 +5,8 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.util.Properties;
 
+import java.util.Calendar;
+
 public class CommonRouteService {
     public static String getLogo() {
         if(App.ISCOMMUNITY) {
@@ -125,5 +127,28 @@ public class CommonRouteService {
         }
 
         return highlighter;
+    }
+
+
+    public static int getPhotoId() {
+        // Totally pointless vanity but lets rotate the image every week
+        int photoId = getWeekOfMonth();
+
+        if (photoId <= 0) {
+            photoId = 3;
+        }
+        if (photoId > 4) {
+            photoId = 2;
+        }
+
+        return photoId;
+    }
+
+    /**
+     * Used to know what week of the month it is to display a different image on the main page
+     */
+    private static int getWeekOfMonth() {
+        Calendar cal = Calendar.getInstance();
+        return cal.get(Calendar.WEEK_OF_MONTH);
     }
 }

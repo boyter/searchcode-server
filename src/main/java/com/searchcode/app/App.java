@@ -158,19 +158,9 @@ public class App {
                 return new ModelAndView(map, "search_test.ftl");
             }
 
-            // Totally pointless vanity but lets rotate the image every week
-            int photoId = getWeekOfMonth();
-
-            if (photoId <= 0) {
-                photoId = 3;
-            }
-            if (photoId > 4) {
-                photoId = 2;
-            }
-
             CodeSearcher cs = new CodeSearcher();
 
-            map.put("photoId", photoId);
+            map.put("photoId", CommonRouteService.getPhotoId());
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
@@ -306,17 +296,7 @@ public class App {
                 return new ModelAndView(map, "searchresults.ftl");
             }
 
-            // Totally pointless vanity but lets rotate the image every week
-            int photoId = getWeekOfMonth();
-
-            if (photoId <= 0) {
-                photoId = 3;
-            }
-            if (photoId > 4) {
-                photoId = 2;
-            }
-
-            map.put("photoId", photoId);
+            map.put("photoId", CommonRouteService.getPhotoId());
             map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
@@ -377,20 +357,20 @@ public class App {
         /**
          * This is the endpoint used by the frontend.
          */
-        get("/api/codesearch/", (req, res) -> {
-            res.header("Content-Encoding", "gzip");
-            res.header("Content-Type", "application/json");
+        get("/api/codesearch/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
+            response.header("Content-Type", "application/json");
             CodeSearcher cs = new CodeSearcher();
             CodeMatcher cm = new CodeMatcher(data);
 
-            if(req.queryParams().contains("q") && req.queryParams("q").trim() != Values.EMPTYSTRING) {
-                String query = req.queryParams("q").trim();
+            if(request.queryParams().contains("q") && request.queryParams("q").trim() != Values.EMPTYSTRING) {
+                String query = request.queryParams("q").trim();
 
                 int page = 0;
 
-                if(req.queryParams().contains("p")) {
+                if(request.queryParams().contains("p")) {
                     try {
-                        page = Integer.parseInt(req.queryParams("p"));
+                        page = Integer.parseInt(request.queryParams("p"));
                         page = page > 19 ? 19 : page;
                     }
                     catch(NumberFormatException ex) {
@@ -406,8 +386,8 @@ public class App {
                 String ownersFilter = "";
 
 
-                if(req.queryParams().contains("repo")) {
-                    repos = req.queryParamsValues("repo");
+                if(request.queryParams().contains("repo")) {
+                    repos = request.queryParamsValues("repo");
 
                     if (repos.length != 0) {
                         List<String> reposList = Arrays.asList(repos).stream()
@@ -418,8 +398,8 @@ public class App {
                     }
                 }
 
-                if(req.queryParams().contains("lan")) {
-                    langs = req.queryParamsValues("lan");
+                if(request.queryParams().contains("lan")) {
+                    langs = request.queryParamsValues("lan");
 
                     if (langs.length != 0) {
                         List<String> langsList = Arrays.asList(langs).stream()
@@ -430,8 +410,8 @@ public class App {
                     }
                 }
 
-                if(req.queryParams().contains("own")) {
-                    owners = req.queryParamsValues("own");
+                if(request.queryParams().contains("own")) {
+                    owners = request.queryParamsValues("own");
 
                     if (owners.length != 0) {
                         List<String> ownersList = Arrays.asList(owners).stream()
@@ -1150,14 +1130,6 @@ public class App {
         repo.addSourceToTable(); // Added source to repo
         repo.addBranchToTable(); // Add branch to repo
         api.createTableIfMissing();
-    }
-
-    /**
-     * Used to know what week of the month it is to display a different image on the main page
-     */
-    private static int getWeekOfMonth() {
-        Calendar cal = Calendar.getInstance();
-        return cal.get(Calendar.WEEK_OF_MONTH);
     }
 
     private static void addAuthenticatedUser(Request request) {
