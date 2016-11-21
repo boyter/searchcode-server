@@ -56,6 +56,7 @@ public final class Singleton {
     private static ApiService apiService = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
+    private static JobService jobService = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
@@ -293,5 +294,13 @@ public final class Singleton {
         }
 
         return apiService;
+    }
+
+    public static synchronized JobService getJobService() {
+        if (jobService == null) {
+            jobService = new JobService();
+        }
+
+        return jobService;
     }
 }

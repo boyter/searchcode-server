@@ -643,41 +643,9 @@ public class App {
 
         get("/api/repo/reindex/", "application/json", (request, response) -> {
             response.header("Content-Type", "application/json");
-            boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-            boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
+            ApiRouteService apiRouteService = new ApiRouteService();
 
-            if (!apiEnabled) {
-                return new ApiResponse(false, "API not enabled");
-            }
-
-            String publicKey = request.queryParams("pub");
-            String signedKey = request.queryParams("sig");
-
-            if (apiAuth) {
-                if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
-                    return new ApiResponse(false, "pub is a required parameter");
-                }
-
-                if (signedKey == null || signedKey.trim().equals(Values.EMPTYSTRING)) {
-                    return new ApiResponse(false, "sig is a required parameter");
-                }
-
-                String toValidate = String.format("pub=%s",
-                        URLEncoder.encode(publicKey));
-
-                boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
-
-                if (!validRequest) {
-                    return new ApiResponse(false, "invalid signed url");
-                }
-            }
-
-            boolean result = js.rebuildAll();
-            if (result) {
-                js.forceEnqueue();
-            }
-
-            return new ApiResponse(result, "reindex forced");
+            return apiRouteService.RepositoryReindex(request, response);
         }, new JsonTransformer());
 
         get("/file/:codeid/:reponame/*", (request, response) -> {

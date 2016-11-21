@@ -53,9 +53,8 @@ public class JobService implements IJobService {
     private boolean LOWMEMORY = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
 
-    @Inject
-    public JobService(IRepo repo) {
-        this.repo = repo;
+    public JobService() {
+        this.repo = Singleton.getRepo();
         try {
             this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
         }
