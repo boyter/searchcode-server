@@ -170,7 +170,7 @@ public class AdminRouteService {
         Map<String, Object> map = new HashMap<>();
         String level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
 
-        if(request.queryParams().contains("level") && !request.queryParams("level").trim().equals("")) {
+        if (request.queryParams().contains("level") && !request.queryParams("level").trim().equals("")) {
             level = request.queryParams("level").trim().toUpperCase();
         }
 
@@ -267,7 +267,7 @@ public class AdminRouteService {
         for(String line: repolines) {
             String[] repoparams = line.split(",", -1);
 
-            if(repoparams.length == 7) {
+            if (repoparams.length == 7) {
 
                 String branch = repoparams[6].trim();
                 if (branch.equals(Values.EMPTYSTRING)) {
@@ -275,7 +275,7 @@ public class AdminRouteService {
                 }
 
                 String scm = repoparams[1].trim().toLowerCase();
-                if(scm.equals(Values.EMPTYSTRING)) {
+                if (scm.equals(Values.EMPTYSTRING)) {
                     scm = "git";
                 }
 
@@ -300,7 +300,7 @@ public class AdminRouteService {
         Repo repo = Singleton.getRepo();
 
         for(int i=0;i<reponames.length; i++) {
-            if(reponames[i].trim().length() != 0) {
+            if (reponames[i].trim().length() != 0) {
 
                 String branch = repobranch[i].trim();
                 if (branch.equals(Values.EMPTYSTRING)) {

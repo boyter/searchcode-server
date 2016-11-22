@@ -19,7 +19,7 @@ import java.util.Calendar;
 
 public class CommonRouteService {
     public static String getLogo() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Values.EMPTYSTRING;
         }
 
@@ -28,14 +28,14 @@ public class CommonRouteService {
     }
 
     public static double getAverageSalary() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Double.parseDouble(Values.DEFAULTAVERAGESALARY);
         }
 
         Data data = Singleton.getData();
         String salary = data.getDataByName(Values.AVERAGESALARY);
 
-        if(salary == null) {
+        if (salary == null) {
             data.saveData(Values.AVERAGESALARY, Values.DEFAULTAVERAGESALARY);
             salary = Values.DEFAULTAVERAGESALARY;
         }
@@ -44,14 +44,14 @@ public class CommonRouteService {
     }
 
     public static double getMatchLines() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Double.parseDouble(Values.DEFAULTMATCHLINES);
         }
 
         Data data = Singleton.getData();
         String matchLines = data.getDataByName(Values.MATCHLINES);
 
-        if(matchLines == null) {
+        if (matchLines == null) {
             data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
             matchLines = Values.DEFAULTMATCHLINES;
         }
@@ -60,14 +60,14 @@ public class CommonRouteService {
     }
 
     public static double getMaxLineDepth() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Double.parseDouble(Values.DEFAULTMAXLINEDEPTH);
         }
 
         Data data = Singleton.getData();
         String matchLines = data.getDataByName(Values.MAXLINEDEPTH);
 
-        if(matchLines == null) {
+        if (matchLines == null) {
             data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
             matchLines = Values.DEFAULTMAXLINEDEPTH;
         }
@@ -76,14 +76,14 @@ public class CommonRouteService {
     }
 
     public static double getMinifiedLength() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Double.parseDouble(Values.DEFAULTMINIFIEDLENGTH);
         }
 
         Data data = Singleton.getData();
         String minifiedLength = data.getDataByName(Values.MINIFIEDLENGTH);
 
-        if(minifiedLength == null) {
+        if (minifiedLength == null) {
             data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
             minifiedLength = Values.DEFAULTMINIFIEDLENGTH;
         }
@@ -92,14 +92,14 @@ public class CommonRouteService {
     }
 
     public static double getBackoffValue() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Double.parseDouble(Values.DEFAULTBACKOFFVALUE);
         }
 
         Data data = Singleton.getData();
         String backoffValue = data.getDataByName(Values.BACKOFFVALUE);
 
-        if(backoffValue == null) {
+        if (backoffValue == null) {
             data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
             backoffValue = Values.DEFAULTBACKOFFVALUE;
         }
@@ -108,14 +108,14 @@ public class CommonRouteService {
     }
 
     public static boolean owaspAdvisoriesEnabled() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return false;
         }
 
         Data data = Singleton.getData();
         Boolean owaspEnabled = Boolean.parseBoolean(data.getDataByName(Values.OWASPENABLED));
 
-        if(owaspEnabled == null) {
+        if (owaspEnabled == null) {
             data.saveData(Values.OWASPENABLED, "false");
             owaspEnabled = false;
         }
@@ -124,14 +124,14 @@ public class CommonRouteService {
     }
 
     public static String getSyntaxHighlighter() {
-        if(App.ISCOMMUNITY) {
+        if (App.ISCOMMUNITY) {
             return Values.DEFAULTSYNTAXHIGHLIGHTER;
         }
 
         Data data = Singleton.getData();
         String highlighter = data.getDataByName(Values.SYNTAXHIGHLIGHTER);
 
-        if(highlighter == null || highlighter.trim().equals("")) {
+        if (highlighter == null || highlighter.trim().equals("")) {
             highlighter = Properties.getProperties().getProperty(Values.SYNTAXHIGHLIGHTER, Values.DEFAULTSYNTAXHIGHLIGHTER);
             data.saveData(Values.SYNTAXHIGHLIGHTER, highlighter);
         }

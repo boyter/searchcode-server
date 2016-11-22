@@ -22,7 +22,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
 
     public synchronized Connection getConnection() throws SQLException {
         try {
-            if(connection == null || connection.isClosed()) {
+            if (connection == null || connection.isClosed()) {
                 String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE);
 
                 Class.forName("org.sqlite.JDBC");

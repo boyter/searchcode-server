@@ -265,7 +265,7 @@ public class JobService implements IJobService {
                 this.startIndexFileRepoJobs("" + i);
             }
 
-            if(repoResults.size() == 0) {
+            if (repoResults.size() == 0) {
                 LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
             }
 

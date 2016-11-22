@@ -242,7 +242,7 @@ public class EndToEndTest extends TestCase{
         File baseDir = new File(System.getProperty("java.io.tmpdir"));
         File tempDir = new File(baseDir, baseName);
 
-        if(tempDir.exists()) {
+        if (tempDir.exists()) {
             FileUtils.deleteDirectory(tempDir);
         }
 

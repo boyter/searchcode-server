@@ -458,25 +458,25 @@ public class SearchcodeLib {
         query = query.trim().replaceAll(" +", " ");
         String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
 
-        if(!altquery.equals(query) && !Values.EMPTYSTRING.equals(altquery)) {
+        if (!altquery.equals(query) && !Values.EMPTYSTRING.equals(altquery)) {
             altQueries.add(altquery);
         }
 
         altquery = this.splitKeywords(query).trim();
-        if(!altquery.equals("") && !altquery.equals(query) && !altQueries.contains(altquery)) {
+        if (!altquery.equals("") && !altquery.equals(query) && !altQueries.contains(altquery)) {
             altQueries.add(altquery);
         }
 
         ISpellingCorrector sc = Singleton.getSpellingCorrector();
         altquery = Values.EMPTYSTRING;
         for(String word: query.replaceAll(" +", " ").split(" ")) {
-            if(!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
+            if (!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
                 altquery += " " + sc.correct(word);
             }
         }
         altquery = altquery.trim();
 
-        if(!altquery.toLowerCase().equals(query.toLowerCase()) && !altQueries.contains(altquery)) {
+        if (!altquery.toLowerCase().equals(query.toLowerCase()) && !altQueries.contains(altquery)) {
             altQueries.add(altquery);
         }
 
@@ -506,7 +506,7 @@ public class SearchcodeLib {
     public String hash(String contents) {
         int hashLength = 20;
 
-        if(contents.length() == 0) {
+        if (contents.length() == 0) {
             return Strings.padStart("", hashLength, '0');
         }
 
@@ -523,7 +523,7 @@ public class SearchcodeLib {
         for(int i=0; i< toHash.length(); i++) {
             char c = toHash.charAt(i);
 
-            if(allowedCharacters.indexOf(c) != -1) {
+            if (allowedCharacters.indexOf(c) != -1) {
                 // allowed so keep it
             }
         }
@@ -686,18 +686,18 @@ public class SearchcodeLib {
         String[] split = fileName.split("\\.");
         String extension = split[split.length - 1].toLowerCase();
 
-        if("txt".equals(extension)) {
+        if ("txt".equals(extension)) {
             return "Text";
         }
 
         // Find all languages that might be this one
         Object[] matching = classifier.stream().filter(x -> ArrayUtils.contains(x.extensions, extension)).toArray();
-        if(matching.length == 0) {
+        if (matching.length == 0) {
             // Check against all using the pattern and see if we can guess
             return "Unknown";
         }
 
-        if(matching.length == 1) {
+        if (matching.length == 1) {
             return ((Classifier)matching[0]).language;
         }
 
@@ -717,13 +717,13 @@ public class SearchcodeLib {
                 }
             }
 
-            if(matchingKeywords > bestKeywords) {
+            if (matchingKeywords > bestKeywords) {
                 bestKeywords = matchingKeywords;
                 languageGuess = classifier.language;
             }
         }
 
-        if(languageGuess == null || languageGuess.trim().equals("")) {
+        if (languageGuess == null || languageGuess.trim().equals("")) {
             languageGuess = "Unknown";
         }
 

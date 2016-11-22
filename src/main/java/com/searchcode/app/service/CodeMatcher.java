@@ -48,7 +48,7 @@ public class CodeMatcher {
         for(CodeResult code: codeResult) {
             List<CodeMatchResult> result = matchResults(code.getCode(), lstMatchTerms, highlightLine);
 
-            if(result != null) {
+            if (result != null) {
                 code.setMatchingResults(result);
                 results.add(code);
             }
@@ -72,28 +72,28 @@ public class CodeMatcher {
             CodeMatchResult match = resultLines.get(i);
             match.setLineNumber(match.getLineNumber() + 1);
 
-            if(!resultExists(newResultLines, match.getLineNumber())) {
+            if (!resultExists(newResultLines, match.getLineNumber())) {
                 newResultLines.add(match);
             }
 
             CodeMatchResult resultBefore = getResultByLineNumber(resultLines, match.getLineNumber() - 1);
             CodeMatchResult resultAfter  = getResultByLineNumber(resultLines, match.getLineNumber() + 1);
 
-            if(resultBefore != null && !resultExists(newResultLines, match.getLineNumber() - 1)) {
+            if (resultBefore != null && !resultExists(newResultLines, match.getLineNumber() - 1)) {
                 newResultLines.add(resultBefore);
             }
-            if(resultAfter != null && !resultExists(newResultLines, match.getLineNumber() + 1)) {
+            if (resultAfter != null && !resultExists(newResultLines, match.getLineNumber() + 1)) {
                 newResultLines.add(resultAfter);
             }
 
-            if(newResultLines.size() >= MATCHLINES) {
+            if (newResultLines.size() >= MATCHLINES) {
                 break;
             }
         }
 
         newResultLines.sort((p1, p2) -> new Integer(p1.getLineNumber()).compareTo(p2.getLineNumber()));
 
-        if(!newResultLines.isEmpty()) {
+        if (!newResultLines.isEmpty()) {
             newResultLines.get(0).addBreak = false;
             return newResultLines;
         }
@@ -187,7 +187,7 @@ public class CodeMatcher {
         List<String> newTerms = new ArrayList<>();
 
         for(String s: matchTerms.trim().split(" ")) {
-            if(!s.isEmpty()) {
+            if (!s.isEmpty()) {
                 switch(s) {
                     case "AND":
                     case "OR":
@@ -202,27 +202,27 @@ public class CodeMatcher {
 
         for(String s: splitMatchTerms) {
             for(String t: s.split("\\.")) {
-                if(!t.isEmpty()) {
+                if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
             for(String t: s.split("\\(")) {
-                if(!t.isEmpty()) {
+                if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
             for(String t: s.split("\\-")) {
-                if(!t.isEmpty()) {
+                if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
             for(String t: s.split("<")) {
-                if(!t.isEmpty()) {
+                if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
             for(String t: s.split(">")) {
-                if(!t.isEmpty()) {
+                if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
@@ -257,7 +257,7 @@ public class CodeMatcher {
 
             for(String term: terms) {
                 // Find the longest matching
-                if(term.replace(")", "").endsWith("*")) {
+                if (term.replace(")", "").endsWith("*")) {
                     if (token.toLowerCase().contains(term.replace(")", "").replace("*", ""))) {
                         if (term.length() > longestTerm.length()) {
                             longestTerm = term;
@@ -307,7 +307,7 @@ public class CodeMatcher {
      */
     private boolean resultExists(List<CodeMatchResult> lst, int value) {
         for(CodeMatchResult s: lst){
-            if(s.getLineNumber() == value) {
+            if (s.getLineNumber() == value) {
                 return true;
             }
         }
@@ -319,7 +319,7 @@ public class CodeMatcher {
      */
     private CodeMatchResult getResultByLineNumber(List<CodeMatchResult> lst, int value) {
         for(CodeMatchResult s: lst){
-            if(s.getLineNumber() == value) {
+            if (s.getLineNumber() == value) {
                 return s;
             }
         }

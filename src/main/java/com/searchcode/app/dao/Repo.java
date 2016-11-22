@@ -250,7 +250,7 @@ public class Repo implements IRepo {
 
         boolean isNew = false;
 
-        if(existing != null) {
+        if (existing != null) {
             // Update with new details
             try {
                 Connection conn = this.dbConfig.getConnection();
@@ -318,12 +318,12 @@ public class Repo implements IRepo {
             while (rs.next()) {
                 value = rs.getString("name");
 
-                if("source".equals(value)) {
+                if ("source".equals(value)) {
                     shouldAlter = false;
                 }
             }
 
-            if(shouldAlter) {
+            if (shouldAlter) {
                 List<String> commands = Arrays.asList(
                         "ALTER TABLE \"repo\" RENAME TO \"oXHFcGcd04oXHFcGcd04_repo\"",
                         "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\" VARCHAR)",
@@ -356,14 +356,14 @@ public class Repo implements IRepo {
             while (rs.next()) {
                 value = rs.getString("name");
 
-                if("branch".equals(value)) {
+                if ("branch".equals(value)) {
                     shouldAlter = false;
                 }
             }
 
             // Python to generate random table name
             // ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(20))
-            if(shouldAlter) {
+            if (shouldAlter) {
                 List<String> commands = Arrays.asList(
                         "ALTER TABLE \"repo\" RENAME TO \"y6L0VN5j9eQSg65hWtJJ_repo\"",
                         "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)",

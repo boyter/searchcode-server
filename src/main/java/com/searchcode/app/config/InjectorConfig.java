@@ -31,7 +31,7 @@ public class InjectorConfig extends AbstractModule {
     protected void configure() {
         String databaseType = Properties.getProperties().getProperty("database", "sqlite");
 
-        if("sqlite".equals(databaseType)) {
+        if ("sqlite".equals(databaseType)) {
             bind(IDatabaseConfig.class).to(SQLiteDatabaseConfig.class);
             LOGGER.info("Using SQLITE database");
         }

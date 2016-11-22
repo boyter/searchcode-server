@@ -181,7 +181,7 @@ public class Api implements IApi {
                 value = rs.getString("name");
             }
 
-            if(value.equals("")) {
+            if (value.equals("")) {
                 stmt = conn.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
                 stmt.execute();
             }

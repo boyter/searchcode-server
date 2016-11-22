@@ -84,7 +84,7 @@ public class Data implements IData {
 
         boolean isNew = false;
 
-        if(existing != null) {
+        if (existing != null) {
             try {
                 Connection conn = this.dbConfig.getConnection();
                 PreparedStatement stmt = conn.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
@@ -144,7 +144,7 @@ public class Data implements IData {
                 value = rs.getString("name");
             }
 
-            if(value.equals("")) {
+            if (value.equals("")) {
                 stmt = conn.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR);");
                 stmt.execute();
             }

@@ -74,8 +74,8 @@ public class CompressTest {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
-                //if(!file.toString().endsWith(".java") && !file.toString().endsWith(".xml")) {
-                //if(!file.toString().endsWith(".java") && !file.toString().endsWith(".py") && !file.toString().endsWith(".rb")) {
+                //if (!file.toString().endsWith(".java") && !file.toString().endsWith(".xml")) {
+                //if (!file.toString().endsWith(".java") && !file.toString().endsWith(".py") && !file.toString().endsWith(".rb")) {
                 //    return FileVisitResult.CONTINUE;
                 //}
 
@@ -135,7 +135,7 @@ public class CompressTest {
             blamer.setFilePath(fileName);
             BlameResult blame = blamer.call();
 
-            if(blame ==null) {
+            if (blame ==null) {
                 System.out.println("Blame is null");
                 return "";
             }

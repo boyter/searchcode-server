@@ -337,7 +337,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
             // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
             // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
-            if(useCredentials) {
+            if (useCredentials) {
                 processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
             }
             else {

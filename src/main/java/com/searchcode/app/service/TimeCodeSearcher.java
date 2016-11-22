@@ -244,7 +244,7 @@ public class TimeCodeSearcher {
         int end = Math.min(numTotalHits, (this.PAGELIMIT * (page + 1)));
         int noPages = numTotalHits / this.PAGELIMIT;
 
-        if(noPages > 20) {
+        if (noPages > 20) {
             noPages = 20;
         }
 
@@ -329,7 +329,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.DELETED);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -364,7 +364,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.REVISION);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -399,7 +399,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.DATEYEAR);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -434,7 +434,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.DATEYEARMONTH);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -469,7 +469,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.DATEYEARMONTHDAY);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -504,7 +504,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.LANGUAGENAME);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -539,7 +539,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.REPONAME);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -574,7 +574,7 @@ public class TimeCodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.CODEOWNER);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {

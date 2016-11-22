@@ -209,7 +209,7 @@ public class CodeSearcher implements ICodeSearcher {
         int end = Math.min(numTotalHits, (this.PAGELIMIT * (page + 1)));
         int noPages = numTotalHits / this.PAGELIMIT;
 
-        if(noPages > 20) {
+        if (noPages > 20) {
             noPages = 19;
         }
 
@@ -263,10 +263,10 @@ public class CodeSearcher implements ICodeSearcher {
 
     public List<Integer> calculatePages(int numTotalHits, int noPages) {
         List<Integer> pages = new ArrayList<>();
-        if(numTotalHits != 0) {
+        if (numTotalHits != 0) {
 
             // Account for off by 1 errors
-            if(numTotalHits % 10 == 0) {
+            if (numTotalHits % 10 == 0) {
                 noPages -= 1;
             }
 
@@ -290,7 +290,7 @@ public class CodeSearcher implements ICodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.LANGUAGENAME);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -323,7 +323,7 @@ public class CodeSearcher implements ICodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.REPONAME);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {
@@ -356,7 +356,7 @@ public class CodeSearcher implements ICodeSearcher {
             Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
             FacetResult result = facets.getTopChildren(200, Values.CODEOWNER);
 
-            if(result != null) {
+            if (result != null) {
                 int stepThru = result.childCount > 200 ? 200 : result.childCount;
 
                 for (int i = 0; i < stepThru; i++) {

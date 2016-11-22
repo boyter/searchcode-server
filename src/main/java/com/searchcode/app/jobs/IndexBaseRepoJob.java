@@ -237,7 +237,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 break;
             }
 
-            if(scl.isMinified(codeLines, fileName)) {
+            if (scl.isMinified(codeLines, fileName)) {
                 Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
                 reportList.add(new String[]{changedFile, "excluded", "appears to be minified"});
                 break;
