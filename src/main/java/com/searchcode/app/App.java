@@ -353,50 +353,6 @@ public class App {
             return new ModelAndView(map, "index.ftl");
         }, new FreeMarkerEngine());
 
-        /**
-         * This is the endpoint used by the frontend.
-         */
-        get("/api/codesearch/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
-            response.header("Content-Type", "application/json");
-            SearchRouteService searchRouteService = new SearchRouteService();
-            return searchRouteService.CodeSearch(request, response);
-        }, new JsonTransformer());
-
-
-        get("/api/timecodesearch/", (request, response) -> {
-            TimeSearchRouteService ars = new TimeSearchRouteService();
-            return ars.getTimeSearch(request, response);
-        }, new JsonTransformer());
-
-        get("/api/repo/add/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
-            ApiRouteService apiRouteService = new ApiRouteService();
-
-            return apiRouteService.RepoAdd(request, response);
-
-        }, new JsonTransformer());
-
-        get("/api/repo/delete/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
-            ApiRouteService apiRouteService = new ApiRouteService();
-
-            return apiRouteService.RepoDelete(request, response);
-        }, new JsonTransformer());
-
-        get("/api/repo/list/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
-            ApiRouteService apiRouteService = new ApiRouteService();
-
-            return apiRouteService.RepoList(request, response);
-        }, new JsonTransformer());
-
-        get("/api/repo/reindex/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
-            ApiRouteService apiRouteService = new ApiRouteService();
-
-            return apiRouteService.RepositoryReindex(request, response);
-        }, new JsonTransformer());
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
@@ -513,6 +469,53 @@ public class App {
 
         }, new FreeMarkerEngine());
 
+        ////////////////////////////////////////////////////
+        //              API Routes Below
+        ////////////////////////////////////////////////////
+
+        get("/api/codesearch/", (request, response) -> {
+            // This is the endpoint used by the frontend for AJAX search
+            response.header("Content-Encoding", "gzip");
+            response.header("Content-Type", "application/json");
+            SearchRouteService searchRouteService = new SearchRouteService();
+            return searchRouteService.CodeSearch(request, response);
+        }, new JsonTransformer());
+
+
+        get("/api/timecodesearch/", (request, response) -> {
+            TimeSearchRouteService ars = new TimeSearchRouteService();
+            return ars.getTimeSearch(request, response);
+        }, new JsonTransformer());
+
+        get("/api/repo/add/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+            ApiRouteService apiRouteService = new ApiRouteService();
+
+            return apiRouteService.RepoAdd(request, response);
+
+        }, new JsonTransformer());
+
+        get("/api/repo/delete/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+            ApiRouteService apiRouteService = new ApiRouteService();
+
+            return apiRouteService.RepoDelete(request, response);
+        }, new JsonTransformer());
+
+        get("/api/repo/list/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+            ApiRouteService apiRouteService = new ApiRouteService();
+
+            return apiRouteService.RepoList(request, response);
+        }, new JsonTransformer());
+
+        get("/api/repo/reindex/", "application/json", (request, response) -> {
+            response.header("Content-Type", "application/json");
+            ApiRouteService apiRouteService = new ApiRouteService();
+
+            return apiRouteService.RepositoryReindex(request, response);
+        }, new JsonTransformer());
+        
         ////////////////////////////////////////////////////
         //              Admin Routes Below
         ////////////////////////////////////////////////////
