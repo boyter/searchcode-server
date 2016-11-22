@@ -296,6 +296,10 @@ public final class Singleton {
         return apiService;
     }
 
+    public static void setJobService(JobService jobService) {
+        Singleton.jobService = jobService;
+    }
+
     public static synchronized JobService getJobService() {
         if (jobService == null) {
             jobService = new JobService();

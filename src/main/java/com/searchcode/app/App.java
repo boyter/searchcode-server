@@ -558,87 +558,16 @@ public class App {
 
         get("/api/repo/delete/", "application/json", (request, response) -> {
             response.header("Content-Type", "application/json");
+            ApiRouteService apiRouteService = new ApiRouteService();
 
-            boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-            boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-
-            if (!apiEnabled) {
-                return new ApiResponse(false, "API not enabled");
-            }
-
-            String publicKey = request.queryParams("pub");
-            String signedKey = request.queryParams("sig");
-            String reponames = request.queryParams("reponame");
-
-            if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
-                return new ApiResponse(false, "reponame is a required parameter");
-            }
-
-            if (apiAuth) {
-                if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
-                    return new ApiResponse(false, "pub is a required parameter");
-                }
-
-                if (signedKey == null || signedKey.trim().equals(Values.EMPTYSTRING)) {
-                    return new ApiResponse(false, "sig is a required parameter");
-                }
-
-                String toValidate = String.format("pub=%s&reponame=%s",
-                        URLEncoder.encode(publicKey),
-                        URLEncoder.encode(reponames));
-
-                boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
-
-                if (!validRequest) {
-                    return new ApiResponse(false, "invalid signed url");
-                }
-            }
-
-            RepoResult rr = repo.getRepoByName(reponames);
-            if (rr == null) {
-                return new ApiResponse(false, "repository already deleted");
-            }
-
-            Singleton.getUniqueDeleteRepoQueue().add(rr);
-
-            return new ApiResponse(true, "repository queued for deletion");
+            return apiRouteService.RepoDelete(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/list/", "application/json", (request, response) -> {
             response.header("Content-Type", "application/json");
+            ApiRouteService apiRouteService = new ApiRouteService();
 
-            boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-            boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-
-            if (!apiEnabled) {
-                return new ApiResponse(false, "API not enabled");
-            }
-
-            String publicKey = request.queryParams("pub");
-            String signedKey = request.queryParams("sig");
-
-            if (apiAuth) {
-                if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
-                    return new ApiResponse(false, "pub is a required parameter");
-                }
-
-                if (signedKey == null || signedKey.trim().equals(Values.EMPTYSTRING)) {
-                    return new ApiResponse(false, "sig is a required parameter");
-                }
-
-                String toValidate = String.format("pub=%s",
-                        URLEncoder.encode(publicKey));
-
-                boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
-
-                if (!validRequest) {
-                    return new ApiResponse(false, "invalid signed url");
-                }
-            }
-
-            List<RepoResult> repoResultList = repo.getAllRepo();
-
-            return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
+            return apiRouteService.RepoList(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/reindex/", "application/json", (request, response) -> {
