@@ -73,7 +73,7 @@ def build_all_release():
 
 def build_release():
     replacements = {
-        'private static final boolean ISCOMMUNITY = true;': 'private static final boolean ISCOMMUNITY = false;'
+        'public static final boolean ISCOMMUNITY = true;': 'public static final boolean ISCOMMUNITY = false;'
     }
     _python_sed(fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)
     compile_js()
@@ -90,7 +90,7 @@ def build_release():
 def build_community_release():
     # modify community flag in application
     replacements = {
-        'private static final boolean ISCOMMUNITY = false;': 'private static final boolean ISCOMMUNITY = true;'
+        'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;'
     }
     _python_sed(fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)
     compile_js()
