@@ -10,7 +10,6 @@
 
 package com.searchcode.app;
 
-import com.google.gson.Gson;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.searchcode.app.config.InjectorConfig;
@@ -18,24 +17,21 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.*;
+import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.*;
-import com.searchcode.app.util.Properties;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.ModelAndView;
 import spark.Request;
+import spark.Response;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static spark.Spark.*;
 
@@ -111,15 +107,10 @@ public class App {
             return codeRouteService.html(request, response);
         }, new FreeMarkerEngine());
 
-        /**
-         * Allows one to write literal lucene search queries against the index
-         * TODO This is still very much WIP
-         */
         get("/literal/", (request, response) -> {
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.literalSearch(request, response), "index.ftl");
         }, new FreeMarkerEngine());
-
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
             CodeRouteService codeRouteService = new CodeRouteService();
@@ -153,20 +144,20 @@ public class App {
 
         get("/api/codesearch/", (request, response) -> {
             // This is the endpoint used by the frontend for AJAX search
-            response.header("Content-Encoding", "gzip");
-            response.header("Content-Type", "application/json");
+            addJsonHeaders(response);
             SearchRouteService searchRouteService = new SearchRouteService();
             return searchRouteService.CodeSearch(request, response);
         }, new JsonTransformer());
 
 
         get("/api/timecodesearch/", (request, response) -> {
+            addJsonHeaders(response);
             TimeSearchRouteService ars = new TimeSearchRouteService();
             return ars.getTimeSearch(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/add/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
+            addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
 
             return apiRouteService.RepoAdd(request, response);
@@ -174,21 +165,21 @@ public class App {
         }, new JsonTransformer());
 
         get("/api/repo/delete/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
+            addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
 
             return apiRouteService.RepoDelete(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/list/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
+            addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
 
             return apiRouteService.RepoList(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/reindex/", "application/json", (request, response) -> {
-            response.header("Content-Type", "application/json");
+            addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
 
             return apiRouteService.RepositoryReindex(request, response);
@@ -467,6 +458,11 @@ public class App {
         repo.addSourceToTable(); // Added source to repo
         repo.addBranchToTable(); // Add branch to repo
         api.createTableIfMissing();
+    }
+
+    private static void addJsonHeaders(Response response) {
+        response.header("Content-Encoding", "gzip");
+        response.header("Content-Type", "application/json");
     }
 
     private static void addAuthenticatedUser(Request request) {
