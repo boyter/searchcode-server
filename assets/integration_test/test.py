@@ -87,9 +87,11 @@ class TestIntegration(unittest.TestCase):
     def testCheckResponseHeadersApi(self):
         urls = [
             'api/codesearch/?q=test',
+            'api/timecodesearch/?q=test',
             'api/repo/list/',
             'api/repo/add/',
             'api/repo/delete/',
+            'api/repo/reindex/',
             'api/repo/reindex/',
         ]
         
