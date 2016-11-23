@@ -10,7 +10,6 @@
 
 package com.searchcode.app.dao;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
@@ -23,7 +22,6 @@ import java.sql.SQLException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Provides access to all methods required to get API details from the database.
@@ -39,7 +37,6 @@ public class Api implements IApi {
     private AbstractMap<String, Object> genericCache = Singleton.getGenericCache();
     private String apiAllApiCacheKey = "api-all-api-cache";
 
-    @Inject
     public Api(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }

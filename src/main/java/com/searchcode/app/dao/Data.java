@@ -10,7 +10,6 @@
 
 package com.searchcode.app.dao;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.LoggerWrapper;
@@ -20,7 +19,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap;
-import java.util.logging.Logger;
 
 /**
  * Provides access to all methods required to get Data details from the database.
@@ -35,7 +33,6 @@ public class Data implements IData {
 
     private AbstractMap<String, String> cache = Singleton.getDataCache();
 
-    @Inject
     public Data(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }

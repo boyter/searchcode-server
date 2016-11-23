@@ -10,7 +10,6 @@
 
 package com.searchcode.app.service;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;

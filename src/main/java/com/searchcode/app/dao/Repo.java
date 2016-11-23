@@ -10,7 +10,6 @@
 
 package com.searchcode.app.dao;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -24,7 +23,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Provides access to all methods required to get Repo details from the database.
@@ -40,7 +38,6 @@ public class Repo implements IRepo {
     private String repoCountCacheKey = "repo-repo-count";
     private String repoAllRepoCacheKey = "repo-all-repo-cache";
 
-    @Inject
     public Repo(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }

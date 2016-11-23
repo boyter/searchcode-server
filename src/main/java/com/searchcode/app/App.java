@@ -10,9 +10,6 @@
 
 package com.searchcode.app;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
@@ -37,8 +34,6 @@ import static spark.Spark.*;
 
 /**
  * Main entry point for the application.
- * TODO break parts of this out so things are easier to maintain
- * TODO remove the Guice injector since we don't really use it enough to justify its existance
  * TODO add config override for the cache setting of 60
  */
 public class App {
@@ -50,11 +45,9 @@ public class App {
                                                                .expirationPolicy(ExpirationPolicy.ACCESSED)
                                                                .expiration(60, TimeUnit.SECONDS)
                                                                .build();
-    public static Injector injector;
     public static SearchcodeLib scl;
 
     public static void main( String[] args ) {
-        injector = Guice.createInjector(new InjectorConfig());
         int server_port = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT), Values.DEFAULTSERVERPORT);
         boolean onlyLocalhost = Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
 
@@ -69,7 +62,7 @@ public class App {
         }
         Spark.port(server_port);
 
-        JobService js = injector.getInstance(JobService.class);
+        JobService js = new JobService();
 
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
@@ -108,11 +101,13 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/literal/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.literalSearch(request, response), "index.ftl");
         }, new FreeMarkerEngine());
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl");
         }, new FreeMarkerEngine());
@@ -122,6 +117,7 @@ public class App {
         ////////////////////////////////////////////////////
 
         get("/documentation/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", CommonRouteService.getLogo());
@@ -130,6 +126,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/404/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", CommonRouteService.getLogo());
@@ -143,7 +140,6 @@ public class App {
         ////////////////////////////////////////////////////
 
         get("/api/codesearch/", (request, response) -> {
-            // This is the endpoint used by the frontend for AJAX search
             addJsonHeaders(response);
             SearchRouteService searchRouteService = new SearchRouteService();
             return searchRouteService.CodeSearch(request, response);
@@ -159,29 +155,24 @@ public class App {
         get("/api/repo/add/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-
             return apiRouteService.RepoAdd(request, response);
-
         }, new JsonTransformer());
 
         get("/api/repo/delete/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-
             return apiRouteService.RepoDelete(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/list/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-
             return apiRouteService.RepoList(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/reindex/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-
             return apiRouteService.RepositoryReindex(request, response);
         }, new JsonTransformer());
 
@@ -450,9 +441,9 @@ public class App {
      * TODO Do the migrations inside the sqlite database so the application does not need to
      */
     public static void databaseMigrations() {
-        Data data = injector.getInstance(Data.class);
-        Repo repo = injector.getInstance(Repo.class);
-        Api api = injector.getInstance(Api.class);
+        Data data = Singleton.getData();
+        Repo repo = Singleton.getRepo();
+        Api api = Singleton.getApi();
 
         data.createTableIfMissing(); // Added data key/value table
         repo.addSourceToTable(); // Added source to repo

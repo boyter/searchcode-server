@@ -15,7 +15,6 @@
         <hsqldb.version>2.3.3</hsqldb.version>
         <dbcp.version>2.1.1</dbcp.version>
         <jbcrypt.version>0.4</jbcrypt.version>
-        <guice.version>4.0</guice.version>
     </properties>
     <dependencies>
         <!-- Spark Java -->
@@ -58,12 +57,6 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
-        </dependency>
-        <!-- Dependancy Injection -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <version>${guice.version}</version>
         </dependency>
         <!--  Gson: Java to Json conversion -->
         <dependency>

@@ -1,14 +1,11 @@
 package com.searchcode.app.dao;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
+import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 public class DataTest extends TestCase {
     public void testRepoSaveUpdate() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Data data = injector.getInstance(Data.class);
+        Data data = Singleton.getData();
 
         String expected = "" + System.currentTimeMillis();
         String actual = data.getDataByName("test_case_data_ignore");
@@ -20,8 +17,7 @@ public class DataTest extends TestCase {
     }
 
     public void testManyGetCacheOk() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Data data = injector.getInstance(Data.class);
+        Data data = Singleton.getData();
 
         String expected = "" + System.currentTimeMillis();
         data.saveData("test_case_data_ignore", expected);
@@ -33,8 +29,7 @@ public class DataTest extends TestCase {
     }
 
     public void testCreateTable() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Data data = injector.getInstance(Data.class);
+        Data data = Singleton.getData();
 
         data.createTableIfMissing();
         data.createTableIfMissing();
