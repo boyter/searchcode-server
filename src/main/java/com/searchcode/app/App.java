@@ -82,7 +82,7 @@ public class App {
         scl = Singleton.getSearchcodeLib(data);
         js.initialJobs();
 
-        Gson gson = new Gson();
+
 
         Spark.staticFileLocation("/public");
 
@@ -100,207 +100,15 @@ public class App {
 
         get("/", (request, response) -> {
             response.header("Content-Encoding", "gzip");
-            Map<String, Object> map = new HashMap<>();
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return codeRouteService.root(request, response);
 
-            map.put("repoCount", repo.getRepoCount());
-
-            if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
-                String query = request.queryParams("q").trim();
-                int page = 0;
-
-                if (request.queryParams().contains("p")) {
-                    try {
-                        page = Integer.parseInt(request.queryParams("p"));
-                        page = page > 19 ? 19 : page;
-                    }
-                    catch (NumberFormatException ex) {
-                        page = 0;
-                    }
-                }
-
-                List<String> reposList = new ArrayList<>();
-                List<String> langsList = new ArrayList<>();
-                List<String> ownsList = new ArrayList<>();
-
-                if (request.queryParams().contains("repo")) {
-                    String[] repos = new String[0];
-                    repos = request.queryParamsValues("repo");
-
-                    if (repos.length != 0) {
-                        reposList = Arrays.asList(repos);
-                    }
-                }
-
-                if (request.queryParams().contains("lan")) {
-                    String[] langs = new String[0];
-                    langs = request.queryParamsValues("lan");
-
-                    if (langs.length != 0) {
-                        langsList = Arrays.asList(langs);
-                    }
-                }
-
-                if (request.queryParams().contains("own")) {
-                    String[] owns = new String[0];
-                    owns = request.queryParamsValues("own");
-
-                    if (owns.length != 0) {
-                        ownsList = Arrays.asList(owns);
-                    }
-                }
-
-                map.put("searchValue", query);
-                map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList)));
-
-
-                map.put("logoImage", CommonRouteService.getLogo());
-                map.put("isCommunity", ISCOMMUNITY);
-                return new ModelAndView(map, "search_test.ftl");
-            }
-
-            CodeSearcher cs = new CodeSearcher();
-
-            map.put("photoId", CommonRouteService.getPhotoId());
-            map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "index.ftl");
         }, new FreeMarkerEngine());
 
         get("/html/", (request, response) -> {
             response.header("Content-Encoding", "gzip");
-            CodeSearcher cs = new CodeSearcher();
-            CodeMatcher cm = new CodeMatcher(data);
-            Map<String, Object> map = new HashMap<>();
-
-            map.put("repoCount", repo.getRepoCount());
-
-            if (request.queryParams().contains("q")) {
-                String query = request.queryParams("q").trim();
-                String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
-                int page = 0;
-
-                if (request.queryParams().contains("p")) {
-                    try {
-                        page = Integer.parseInt(request.queryParams("p"));
-                        page = page > 19 ? 19 : page;
-                    }
-                    catch (NumberFormatException ex) {
-                        page = 0;
-                    }
-                }
-
-                String[] repos = new String[0];
-                String[] langs = new String[0];
-                String[] owners = new String[0];
-                String reposFilter = Values.EMPTYSTRING;
-                String langsFilter = Values.EMPTYSTRING;
-                String ownersFilter = Values.EMPTYSTRING;
-                String reposQueryString = Values.EMPTYSTRING;
-                String langsQueryString = Values.EMPTYSTRING;
-                String ownsQueryString = Values.EMPTYSTRING;
-
-
-                if (request.queryParams().contains("repo")) {
-                    repos = request.queryParamsValues("repo");
-
-                    if (repos.length != 0) {
-                        List<String> reposList = Arrays.asList(repos).stream()
-                                .map((s) -> "reponame:" + QueryParser.escape(s))
-                                .collect(Collectors.toList());
-
-                        reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
-
-                        List<String> reposQueryList = Arrays.asList(repos).stream()
-                                .map((s) -> "&repo=" + URLEncoder.encode(s))
-                                .collect(Collectors.toList());
-
-                        reposQueryString = StringUtils.join(reposQueryList, "");
-                    }
-                }
-
-                if (request.queryParams().contains("lan")) {
-                    langs = request.queryParamsValues("lan");
-
-                    if (langs.length != 0) {
-                        List<String> langsList = Arrays.asList(langs).stream()
-                                .map((s) -> "languagename:" + QueryParser.escape(s))
-                                .collect(Collectors.toList());
-
-                        langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
-
-                        List<String> langsQueryList = Arrays.asList(langs).stream()
-                                .map((s) -> "&lan=" + URLEncoder.encode(s))
-                                .collect(Collectors.toList());
-
-                        langsQueryString = StringUtils.join(langsQueryList, "");
-                    }
-                }
-
-                if (request.queryParams().contains("own")) {
-                    owners = request.queryParamsValues("own");
-
-                    if (owners.length != 0) {
-                        List<String> ownersList = Arrays.asList(owners).stream()
-                                .map((s) -> "codeowner:" + QueryParser.escape(s))
-                                .collect(Collectors.toList());
-
-                        ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
-
-                        List<String> ownsQueryList = Arrays.asList(owners).stream()
-                                .map((s) -> "&own=" + URLEncoder.encode(s))
-                                .collect(Collectors.toList());
-
-                        ownsQueryString = StringUtils.join(ownsQueryList, "");
-                    }
-                }
-
-                // split the query escape it and and it together
-                String cleanQueryString = scl.formatQueryString(query);
-
-                SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
-                searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
-
-                for(CodeFacetRepo f: searchResult.getRepoFacetResults()) {
-                    if (Arrays.asList(repos).contains(f.getRepoName())) {
-                        f.setSelected(true);
-                    }
-                }
-
-                for(CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
-                    if (Arrays.asList(langs).contains(f.getLanguageName())) {
-                        f.setSelected(true);
-                    }
-                }
-
-                for(CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
-                    if (Arrays.asList(owners).contains(f.getOwner())) {
-                        f.setSelected(true);
-                    }
-                }
-
-                map.put("searchValue", query);
-                map.put("searchResult", searchResult);
-                map.put("reposQueryString", reposQueryString);
-                map.put("langsQueryString", langsQueryString);
-                map.put("ownsQueryString", ownsQueryString);
-
-                map.put("altQuery", altquery);
-
-                map.put("totalPages", searchResult.getPages().size());
-
-
-                map.put("isHtml", true);
-                map.put("logoImage", CommonRouteService.getLogo());
-                map.put("isCommunity", ISCOMMUNITY);
-                return new ModelAndView(map, "searchresults.ftl");
-            }
-
-            map.put("photoId", CommonRouteService.getPhotoId());
-            map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "index.ftl");
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return codeRouteService.html(request, response);
         }, new FreeMarkerEngine());
 
         /**
@@ -308,50 +116,8 @@ public class App {
          * TODO This is still very much WIP
          */
         get("/literal/", (request, response) -> {
-            CodeSearcher cs = new CodeSearcher();
-            CodeMatcher cm = new CodeMatcher(data);
-            Map<String, Object> map = new HashMap<>();
-
-            map.put("repoCount", repo.getRepoCount());
-
-            if (request.queryParams().contains("q")) {
-                String query = request.queryParams("q").trim();
-
-                int page = 0;
-
-                if (request.queryParams().contains("p")) {
-                    try {
-                        page = Integer.parseInt(request.queryParams("p"));
-                        page = page > 19 ? 19 : page;
-                    }
-                    catch(NumberFormatException ex) {
-                        page = 0;
-                    }
-                }
-
-                String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
-
-                SearchResult searchResult = cs.search(query, page);
-                searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), altquery, false));
-
-
-                map.put("searchValue", query);
-                map.put("searchResult", searchResult);
-                map.put("reposQueryString", "");
-                map.put("langsQueryString", "");
-
-                map.put("altQuery", "");
-
-                map.put("logoImage", CommonRouteService.getLogo());
-                map.put("isCommunity", ISCOMMUNITY);
-                return new ModelAndView(map, "searchresults.ftl");
-            }
-
-            map.put("photoId", 1);
-            map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "index.ftl");
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return new ModelAndView(codeRouteService.literalSearch(request, response), "index.ftl");
         }, new FreeMarkerEngine());
 
 
