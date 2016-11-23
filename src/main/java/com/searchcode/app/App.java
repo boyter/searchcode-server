@@ -83,31 +83,32 @@ public class App {
             }
         });
 
+        after((request, response) -> {
+            response.header("Content-Encoding", "gzip");
+        });
+
+
         ////////////////////////////////////////////////////
         //          Search/Code Routes Below
         ////////////////////////////////////////////////////
 
         get("/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return codeRouteService.root(request, response);
 
         }, new FreeMarkerEngine());
 
         get("/html/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return codeRouteService.html(request, response);
         }, new FreeMarkerEngine());
 
         get("/literal/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.literalSearch(request, response), "index.ftl");
         }, new FreeMarkerEngine());
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl");
         }, new FreeMarkerEngine());
@@ -117,7 +118,6 @@ public class App {
         ////////////////////////////////////////////////////
 
         get("/documentation/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", CommonRouteService.getLogo());
@@ -126,7 +126,6 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/404/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", CommonRouteService.getLogo());
@@ -452,7 +451,6 @@ public class App {
     }
 
     private static void addJsonHeaders(Response response) {
-        response.header("Content-Encoding", "gzip");
         response.header("Content-Type", "application/json");
     }
 
