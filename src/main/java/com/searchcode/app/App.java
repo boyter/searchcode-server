@@ -25,7 +25,6 @@ import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
 import net.jodah.expiringmap.ExpirationPolicy;
 import net.jodah.expiringmap.ExpiringMap;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.ModelAndView;
@@ -80,8 +79,6 @@ public class App {
         Data data = Singleton.getData();
         ApiService apiService = Singleton.getApiService();
 
-        OWASPClassifier owaspClassifier = new OWASPClassifier();
-
         scl = Singleton.getSearchcodeLib(data);
         js.initialJobs();
 
@@ -96,6 +93,10 @@ public class App {
                 }
             }
         });
+
+        ////////////////////////////////////////////////////
+        //          Search/Code Routes Below
+        ////////////////////////////////////////////////////
 
         get("/", (request, response) -> {
             response.header("Content-Encoding", "gzip");
@@ -355,102 +356,13 @@ public class App {
 
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
-            Map<String, Object> map = new HashMap<>();
-
-            CodeSearcher cs = new CodeSearcher();
-            Cocomo2 coco = new Cocomo2();
-
-            String fileName = Values.EMPTYSTRING;
-            if (request.splat().length != 0) {
-                fileName = request.splat()[0];
-            }
-
-            String codeId = request.params(":codeid");
-            CodeResult codeResult = cs.getByCodeId(codeId);
-
-            if (codeResult == null) {
-                response.redirect("/404/");
-                halt();
-            }
-
-            List<String> codeLines = codeResult.code;
-            StringBuilder code = new StringBuilder();
-            StringBuilder lineNos = new StringBuilder();
-            String padStr = "";
-            for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
-                padStr += " ";
-            }
-            for (int i=1, d=10, len=codeLines.size(); i<=len; i++) {
-                if (i/d > 0)
-                {
-                    d *= 10;
-                    padStr = padStr.substring(0, padStr.length()-1);  // Del last char
-                }
-                code.append("<span id=\"")
-                        .append(i)
-                        .append("\"></span>")
-                        .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
-                        .append("\n");
-                lineNos.append(padStr)
-                        .append("<a href=\"#")
-                        .append(i)
-                        .append("\">")
-                        .append(i)
-                        .append("</a>")
-                        .append("\n");
-            }
-
-            List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
-            if (CommonRouteService.owaspAdvisoriesEnabled()) {
-                if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
-                    owaspResults = owaspClassifier.classifyCode(codeLines, codeResult.languageName);
-                }
-            }
-
-            int limit = Integer.parseInt(
-                    Properties.getProperties().getProperty(
-                            Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-            boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
-
-            RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
-
-            if (repoResult != null) {
-                map.put("source", repoResult.getSource());
-            }
-
-            map.put("fileName", codeResult.fileName);
-
-            // TODO fix this properly code path includes the repo name and should be removed
-            String codePath = codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length());
-            if (!codePath.startsWith("/")) {
-                codePath = "/" + codePath;
-            }
-            map.put("codePath", codePath);
-            map.put("codeLength", codeResult.codeLines);
-
-            map.put("linenos", lineNos.toString());
-
-            map.put("languageName", codeResult.languageName);
-            map.put("md5Hash", codeResult.md5hash);
-            map.put("repoName", codeResult.repoName);
-            map.put("highlight", highlight);
-            map.put("repoLocation", codeResult.getRepoLocation());
-
-            map.put("codeValue", code.toString());
-            map.put("highligher", CommonRouteService.getSyntaxHighlighter());
-            map.put("codeOwner", codeResult.getCodeOwner());
-            map.put("owaspResults", owaspResults);
-
-            double estimatedEffort = coco.estimateEffort(scl.countFilteredLines(codeResult.getCode()));
-            int estimatedCost = (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
-            if (estimatedCost != 0 && !scl.languageCostIgnore(codeResult.getLanguageName())) {
-                map.put("estimatedCost", estimatedCost);
-            }
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "coderesult.ftl");
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl");
         }, new FreeMarkerEngine());
+
+        ////////////////////////////////////////////////////
+        //              Page Routes Below
+        ////////////////////////////////////////////////////
 
         get("/documentation/", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
