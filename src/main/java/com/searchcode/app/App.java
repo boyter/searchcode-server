@@ -38,7 +38,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    public static final boolean ISCOMMUNITY = false;
+    public static final boolean ISCOMMUNITY = true;
     public static final String VERSION = "1.3.5";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
     public static Map<String, SearchResult> cache = ExpiringMap.builder()
@@ -70,9 +70,7 @@ public class App {
 
         scl = Singleton.getSearchcodeLib(data);
         js.initialJobs();
-
-
-
+        
         Spark.staticFileLocation("/public");
 
         before((request, response) -> {
@@ -83,22 +81,19 @@ public class App {
             }
         });
 
-        after((request, response) -> {
-            response.header("Content-Encoding", "gzip");
-        });
-
-
         ////////////////////////////////////////////////////
         //          Search/Code Routes Below
         ////////////////////////////////////////////////////
 
         get("/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return codeRouteService.root(request, response);
 
         }, new FreeMarkerEngine());
 
         get("/html/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return codeRouteService.html(request, response);
         }, new FreeMarkerEngine());
@@ -109,6 +104,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl");
         }, new FreeMarkerEngine());
@@ -451,6 +447,7 @@ public class App {
     }
 
     private static void addJsonHeaders(Response response) {
+        response.header("Content-Encoding", "gzip");
         response.header("Content-Type", "application/json");
     }
 
