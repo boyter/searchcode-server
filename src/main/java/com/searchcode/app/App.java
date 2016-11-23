@@ -70,7 +70,7 @@ public class App {
 
         scl = Singleton.getSearchcodeLib(data);
         js.initialJobs();
-        
+
         Spark.staticFileLocation("/public");
 
         before((request, response) -> {
