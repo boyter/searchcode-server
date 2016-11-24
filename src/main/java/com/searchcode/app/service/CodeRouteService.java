@@ -92,7 +92,6 @@ public class CodeRouteService {
             map.put("searchValue", query);
             map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList)));
 
-
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
             return new ModelAndView(map, "search_test.ftl");
