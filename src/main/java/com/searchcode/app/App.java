@@ -45,7 +45,6 @@ public class App {
                                                                .expirationPolicy(ExpirationPolicy.ACCESSED)
                                                                .expiration(60, TimeUnit.SECONDS)
                                                                .build();
-    public static SearchcodeLib scl;
 
     public static void main( String[] args ) {
         int server_port = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT), Values.DEFAULTSERVERPORT);
@@ -64,11 +63,7 @@ public class App {
 
         JobService js = new JobService();
 
-        Repo repo = Singleton.getRepo();
-        Data data = Singleton.getData();
         ApiService apiService = Singleton.getApiService();
-
-        scl = Singleton.getSearchcodeLib(data);
         js.initialJobs();
 
         Spark.staticFileLocation("/public");
@@ -376,6 +371,7 @@ public class App {
             }
 
             String repoName = request.queryParams("repoName");
+            Repo repo = Singleton.getRepo();
             RepoResult rr = repo.getRepoByName(repoName);
 
             if (rr != null) {
