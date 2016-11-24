@@ -14,6 +14,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.util.Helpers;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,8 +34,8 @@ public class CodeMatcher {
     public CodeMatcher()  {}
 
     public CodeMatcher(Data data) {
-        this.MATCHLINES = Integer.parseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES));
-        this.MAXLINEDEPTH = Integer.parseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH));
+        this.MATCHLINES = Helpers.tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
+        this.MAXLINEDEPTH = Helpers.tryParseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH), Values.DEFAULTMAXLINEDEPTH);
     }
 
     /**

@@ -44,7 +44,7 @@ public class SearchcodeLib {
     public SearchcodeLib() {}
 
     public SearchcodeLib(Data data) {
-        this.MINIFIEDLENGTH = Integer.parseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH));
+        this.MINIFIEDLENGTH = Helpers.tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
         if (this.MINIFIEDLENGTH <= 0) {
             this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
         }
