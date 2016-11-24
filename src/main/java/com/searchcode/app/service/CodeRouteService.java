@@ -181,7 +181,12 @@ public class CodeRouteService {
         map.put("fileName", codeResult.fileName);
 
         // TODO fix this properly code path includes the repo name and should be removed
-        String codePath = codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length());
+        String codePath = codeResult.codePath;
+
+        if (codeResult.codePath.contains("/")) {
+            codePath = codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length());
+        }
+
         if (!codePath.startsWith("/")) {
             codePath = "/" + codePath;
         }

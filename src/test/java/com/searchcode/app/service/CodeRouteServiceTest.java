@@ -146,14 +146,32 @@ public class CodeRouteServiceTest extends TestCase {
 
         CodeRouteService codeRouteService = new CodeRouteService(codeSearcher);
 
+        CodeResult codeResult = new CodeResult(new ArrayList<String>(), new ArrayList<CodeMatchResult>());
+        codeResult.setCodeLines("100");
+        codeResult.setLanguageName("LanguageName");
+        codeResult.setMd5hash("md5hash");
+        codeResult.setRepoName("myRepo");
+        codeResult.setRepoLocation("repoLocation");
+        codeResult.setCodeOwner("codeOwner");
+
         when(request.params(":codeid")).thenReturn("MATCH-MOCK");
-        when(codeSearcher.getByCodeId("MATCH-MOCK")).thenReturn(new CodeResult(new ArrayList<String>(), new ArrayList<CodeMatchResult>()));
+        when(codeSearcher.getByCodeId("MATCH-MOCK")).thenReturn(codeResult);
 
-        try {
-            codeRouteService.getCode(request, response);
-        }
-        catch(HaltException ex) {}
+        Map<String, Object> map = codeRouteService.getCode(request, response);
 
-        verify(response, times(1)).redirect("/404/");
+        assertThat(map.get("codePath")).isEqualTo("/");
+        assertThat(map.get("codeLength")).isEqualTo("100");
+        assertThat(map.get("languageName")).isEqualTo("LanguageName");
+        assertThat(map.get("md5Hash")).isEqualTo("md5hash");
+        assertThat(map.get("repoName")).isEqualTo("myRepo");
+        assertThat(map.get("highlight")).isEqualTo(true);
+        assertThat(map.get("repoLocation")).isEqualTo("repoLocation");
+        assertThat(map.get("codeValue")).isEqualTo("");
+        assertThat(map.get("highligher")).isNotNull();
+        assertThat(map.get("codeOwner")).isEqualTo("codeOwner");
+        assertThat(map.get("owaspResults")).isNotNull();
+        assertThat(map.get("logoImage")).isNotNull();
+        assertThat(map.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
+        assertThat(map.get("estimatedCost")).isNull();
     }
 }
