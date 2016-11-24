@@ -1,7 +1,10 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.App;
+import com.searchcode.app.dto.CodeMatchResult;
+import com.searchcode.app.dto.CodeResult;
 import junit.framework.TestCase;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import spark.HaltException;
 import spark.ModelAndView;
@@ -119,6 +122,38 @@ public class CodeRouteServiceTest extends TestCase {
         catch(HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
+    }
 
+    public void testGetCodeWithParamsNoMatch() {
+        CodeRouteService codeRouteService = new CodeRouteService();
+        Request request = Mockito.mock(Request.class);
+        Response response = Mockito.mock(Response.class);
+
+        when(request.params(":codeid")).thenReturn("NOTHING-SHOULD-MATCH-THIS-EVER");
+
+        try {
+            codeRouteService.getCode(request, response);
+        }
+        catch(HaltException ex) {}
+
+        verify(response, times(1)).redirect("/404/");
+    }
+
+    public void testGetCodeWithParamsWithMatch() {
+        Request request = Mockito.mock(Request.class);
+        Response response = Mockito.mock(Response.class);
+        CodeSearcher codeSearcher = Mockito.mock(CodeSearcher.class);
+
+        CodeRouteService codeRouteService = new CodeRouteService(codeSearcher);
+
+        when(request.params(":codeid")).thenReturn("MATCH-MOCK");
+        when(codeSearcher.getByCodeId("MATCH-MOCK")).thenReturn(new CodeResult(new ArrayList<String>(), new ArrayList<CodeMatchResult>()));
+
+        try {
+            codeRouteService.getCode(request, response);
+        }
+        catch(HaltException ex) {}
+
+        verify(response, times(1)).redirect("/404/");
     }
 }

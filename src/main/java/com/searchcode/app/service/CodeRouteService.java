@@ -22,10 +22,8 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.util.Cocomo2;
-import com.searchcode.app.util.OWASPClassifier;
+import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -36,6 +34,16 @@ import spark.Response;
 import static spark.Spark.halt;
 
 public class CodeRouteService {
+
+    private CodeSearcher codeSearcher;
+
+    public CodeRouteService() {
+        this.codeSearcher = new CodeSearcher();
+    }
+
+    public CodeRouteService(CodeSearcher codeSearcher) {
+        this.codeSearcher = codeSearcher;
+    }
 
     public ModelAndView root(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
@@ -108,16 +116,17 @@ public class CodeRouteService {
 
     public Map<String, Object> getCode(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
+
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
+
         SearchcodeLib scl = Singleton.getSearchcodeLib(data);
         OWASPClassifier owaspClassifier = new OWASPClassifier();
 
-        CodeSearcher cs = new CodeSearcher();
         Cocomo2 coco = new Cocomo2();
 
         String codeId = request.params(":codeid");
-        CodeResult codeResult = cs.getByCodeId(codeId);
+        CodeResult codeResult = this.codeSearcher.getByCodeId(codeId);
 
         if (codeResult == null) {
             response.redirect("/404/");
@@ -161,7 +170,7 @@ public class CodeRouteService {
         int limit = Integer.parseInt(
                 Properties.getProperties().getProperty(
                         Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-        boolean highlight = Integer.parseInt(codeResult.codeLines) <= limit;
+        boolean highlight = Helpers.tryParseInt(codeResult.codeLines, "0") <= limit;
 
         RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 
