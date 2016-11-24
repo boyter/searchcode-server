@@ -3,12 +3,16 @@ package com.searchcode.app.service;
 import com.searchcode.app.App;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
+import spark.HaltException;
 import spark.ModelAndView;
 import spark.Request;
+import spark.Response;
 
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class CodeRouteServiceTest extends TestCase {
@@ -102,5 +106,19 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
 
         assertThat(viewName).isEqualTo("searchresults.ftl");
+    }
+
+    public void testGetCodeNoParams() {
+        CodeRouteService codeRouteService = new CodeRouteService();
+        Request request = Mockito.mock(Request.class);
+        Response response = Mockito.mock(Response.class);
+
+        try {
+            codeRouteService.getCode(request, response);
+        }
+        catch(HaltException ex) {}
+
+        verify(response, times(1)).redirect("/404/");
+
     }
 }

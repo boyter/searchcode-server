@@ -116,11 +116,6 @@ public class CodeRouteService {
         CodeSearcher cs = new CodeSearcher();
         Cocomo2 coco = new Cocomo2();
 
-        String fileName = Values.EMPTYSTRING;
-        if (request.splat().length != 0) {
-            fileName = request.splat()[0];
-        }
-
         String codeId = request.params(":codeid");
         CodeResult codeResult = cs.getByCodeId(codeId);
 
