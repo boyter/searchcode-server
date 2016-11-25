@@ -4,19 +4,19 @@ import com.searchcode.app.App;
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
 import junit.framework.TestCase;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import spark.HaltException;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CodeRouteServiceTest extends TestCase {
     public void testRootNoQueryString() {
