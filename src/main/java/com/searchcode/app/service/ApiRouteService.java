@@ -78,6 +78,7 @@ public class ApiRouteService {
 
         String publicKey = request.queryParams("pub");
         String signedKey = request.queryParams("sig");
+        String hmacTypeString = request.queryParams("hmac");
 
         if (apiAuth) {
             if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
@@ -91,7 +92,8 @@ public class ApiRouteService {
             String toValidate = String.format("pub=%s",
                     URLEncoder.encode(publicKey));
 
-            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
+            ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
                 return new RepoResultApiResponse(false, "invalid signed url", null);
@@ -117,6 +119,7 @@ public class ApiRouteService {
         String publicKey = request.queryParams("pub");
         String signedKey = request.queryParams("sig");
         String reponames = request.queryParams("reponame");
+        String hmacTypeString = request.queryParams("hmac");
 
         if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
             return new ApiResponse(false, "reponame is a required parameter");
@@ -135,7 +138,8 @@ public class ApiRouteService {
                     URLEncoder.encode(publicKey),
                     URLEncoder.encode(reponames));
 
-            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
+            ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
                 return new ApiResponse(false, "invalid signed url");
@@ -171,6 +175,7 @@ public class ApiRouteService {
         String repopassword = request.queryParams("repopassword");
         String reposource = request.queryParams("reposource");
         String repobranch = request.queryParams("repobranch");
+        String hmacTypeString = request.queryParams("hmac");
 
         if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
             return new ApiResponse(false, "reponame is a required parameter");
@@ -219,7 +224,8 @@ public class ApiRouteService {
                     URLEncoder.encode(reposource),
                     URLEncoder.encode(repobranch));
 
-            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
+            ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
                 return new ApiResponse(false, "invalid signed url");
