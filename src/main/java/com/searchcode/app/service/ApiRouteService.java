@@ -36,6 +36,7 @@ public class ApiRouteService {
 
         String publicKey = request.queryParams("pub");
         String signedKey = request.queryParams("sig");
+        String hmacTypeString = request.queryParams("hmac");
 
         if (apiAuth) {
             if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
@@ -49,7 +50,8 @@ public class ApiRouteService {
             String toValidate = String.format("pub=%s",
                     URLEncoder.encode(publicKey));
 
-            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate);
+            ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
                 return new ApiResponse(false, "invalid signed url");

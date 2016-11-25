@@ -24,6 +24,8 @@ import java.util.List;
  */
 public class ApiService implements IApiService {
 
+    public enum HmacType { SHA1, SHA512};
+
     private IApi api = null;
 
     public ApiService(IApi api) {
@@ -50,6 +52,34 @@ public class ApiService implements IApiService {
         }
 
         String myHmac = HmacUtils.hmacSha1Hex(apiResult.getPrivateKey(), query);
+        return myHmac.equals(hmac);
+    }
+
+    /**
+     * Validates a request made to the API against the public key supplied, the hmac supplied and the
+     * query string itself.
+     * http://stackoverflow.com/questions/11830338/web-api-creating-api-keys
+     * http://stackoverflow.com/questions/6312544/hmac-sha1-how-to-do-it-properly-in-java
+     * http://stackoverflow.com/questions/3208160/how-to-generate-an-hmac-in-java-equivalent-to-a-python-example?rq=1
+     *
+     */
+    public boolean validateRequest(String publicKey, String hmac, String query, HmacType hmacType) {
+        ApiResult apiResult = this.api.getApiByPublicKey(publicKey);
+
+        if (apiResult == null) {
+            return false;
+        }
+
+        String myHmac;
+
+        switch(hmacType) {
+            case SHA512:
+                myHmac = HmacUtils.hmacSha512Hex(apiResult.getPrivateKey(), query);
+                break;
+            default:
+                myHmac = HmacUtils.hmacSha1Hex(apiResult.getPrivateKey(), query);
+                break;
+        }
         return myHmac.equals(hmac);
     }
 

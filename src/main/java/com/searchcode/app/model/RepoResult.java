@@ -34,7 +34,7 @@ public class RepoResult {
     }
 
     /**
-     * Required becuse we use this in the UniqueRepoQueue and in a few other places to ensure we don't
+     * Required because we use this in the UniqueRepoQueue and in a few other places to ensure we don't
      * add multiples of the same repo
      */
     @Override
