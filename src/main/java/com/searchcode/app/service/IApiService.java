@@ -15,7 +15,6 @@ import com.searchcode.app.model.ApiResult;
 import java.util.List;
 
 public interface IApiService {
-    boolean validateRequest(String publicKey, String hmac, String query);
     boolean validateRequest(String publicKey, String hmac, String query, ApiService.HmacType hmacType);
     ApiResult createKeys();
     List<ApiResult> getApiResults();

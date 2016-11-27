@@ -16,7 +16,7 @@ public class ApiServiceTest extends TestCase {
 
         ApiService service = new ApiService(apiMock);
 
-        boolean actual = service.validateRequest("publicKey", "", "");
+        boolean actual = service.validateRequest("publicKey", "", "", ApiService.HmacType.SHA1);
         assertFalse(actual);
     }
 
@@ -26,7 +26,7 @@ public class ApiServiceTest extends TestCase {
 
         ApiService service = new ApiService(apiMock);
 
-        boolean actual = service.validateRequest("publicKey", "3eb4cb7c8a30ac3814bbfae935cbe3c1f4f2acce", "stringtohmac");
+        boolean actual = service.validateRequest("publicKey", "3eb4cb7c8a30ac3814bbfae935cbe3c1f4f2acce", "stringtohmac", ApiService.HmacType.SHA1);
         assertTrue(actual);
     }
 
@@ -36,7 +36,7 @@ public class ApiServiceTest extends TestCase {
 
         ApiService service = new ApiService(apiMock);
 
-        boolean actual = service.validateRequest("publicKey", "incorrecthmac", "stringtohmac");
+        boolean actual = service.validateRequest("publicKey", "incorrecthmac", "stringtohmac", ApiService.HmacType.SHA1);
         assertFalse(actual);
     }
 
@@ -46,7 +46,7 @@ public class ApiServiceTest extends TestCase {
 
         ApiService service = new ApiService(apiMock);
 
-        boolean actual = service.validateRequest("publicKey", "e15db69d711f0f25ce07a9c11ebebe821e6fc312", "");
+        boolean actual = service.validateRequest("publicKey", "e15db69d711f0f25ce07a9c11ebebe821e6fc312", "", ApiService.HmacType.SHA1);
         assertTrue(actual);
     }
 
@@ -56,7 +56,7 @@ public class ApiServiceTest extends TestCase {
 
         ApiService service = new ApiService(apiMock);
 
-        boolean actual = service.validateRequest("publicKey", "1577b8c8f5781bf2817a45bfb47ded066c579c37", "testmessage1");
+        boolean actual = service.validateRequest("publicKey", "1577b8c8f5781bf2817a45bfb47ded066c579c37", "testmessage1", ApiService.HmacType.SHA1);
         assertTrue(actual);
     }
 
@@ -66,7 +66,7 @@ public class ApiServiceTest extends TestCase {
 
         ApiService service = new ApiService(apiMock);
 
-        boolean actual = service.validateRequest("publicKey", "0cb1ae7ab0db51dd82c4d29000523e643d8a1fcb", "?pub=publicKey&reponame=test&repourl=http://github.com/&reposource=&repobranch=master");
+        boolean actual = service.validateRequest("publicKey", "0cb1ae7ab0db51dd82c4d29000523e643d8a1fcb", "?pub=publicKey&reponame=test&repourl=http://github.com/&reposource=&repobranch=master", ApiService.HmacType.SHA1);
         assertTrue(actual);
     }
 
