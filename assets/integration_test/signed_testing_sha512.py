@@ -4,11 +4,21 @@ import urllib2
 import json
 import urllib
 import pprint
+import sqlite3
 
 '''Simple usage of the signed key API endpoints using SHA512 hmac'''
-
 publickey = "APIK-gZq0naQTvkO2ThCJPhVW1VAKSfX"
 privatekey = "G8B6iCC7YxKGl8yEnSZ7SZZYDVMUCmxe"
+
+# Connect to mysql and add our keys 
+# http://pythoncentral.io/introduction-to-sqlite-in-python/
+db = sqlite3.connect('searchcode.sqlite')
+cursor = db.cursor()
+cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
+db.commit()
+cursor.execute('INSERT INTO api (publickey,privatekey,lastused,data) VALUES (?,?,?,?)', (publickey,privatekey,'',''))
+db.commit()
+
 
 reponame = "myrepo"
 repourl = "myrepourl"
@@ -83,3 +93,8 @@ data = data.read()
 
 data = json.loads(data)
 print data['sucessful'], data['message']
+
+################################################################
+
+cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
+db.commit()

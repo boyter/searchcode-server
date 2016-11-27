@@ -58,6 +58,8 @@ def test_integration():
     print 'Be sure to run: "fab compile_js configure_prod run" first'
     local("python ./assets/integration_test/test.py")
     local("python ./assets/integration_test/fuzztest.py")
+    local("python ./assets/integration_test/signed_testing.py")
+    local("python ./assets/integration_test/signed_testing_sha512.py")
 
 def run():
     package()
