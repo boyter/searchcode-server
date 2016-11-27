@@ -24,19 +24,31 @@ import java.util.List;
 
 public class ApiRouteService {
 
-    public ApiResponse repositoryReindex(Request request, Response response) {
-        boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-        boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-        ApiService apiService = Singleton.getApiService();
-        JobService jobService = Singleton.getJobService();
+    private final IApiService apiService;
+    private final IJobService jobService;
 
-        if (!apiEnabled) {
+    public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
+    public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
+
+    public ApiRouteService() {
+        this.apiService = Singleton.getApiService();
+        this.jobService = Singleton.getJobService();
+    }
+
+    public ApiRouteService(IApiService apiService, IJobService jobService){
+        this.apiService = apiService;
+        this.jobService = jobService;
+    }
+
+    public ApiResponse repositoryReindex(Request request, Response response) {
+        if (!this.apiEnabled) {
             return new ApiResponse(false, "API not enabled");
         }
 
         String publicKey = request.queryParams("pub");
         String signedKey = request.queryParams("sig");
         String hmacTypeString = request.queryParams("hmac");
+
         hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (apiAuth) {
@@ -58,12 +70,14 @@ public class ApiRouteService {
             }
         }
 
-        boolean result = jobService.rebuildAll();
+        // Can fail
+        boolean result = this.jobService.rebuildAll();
         if (result) {
-            jobService.forceEnqueue();
+            this.jobService.forceEnqueue();
+            return new ApiResponse(result, "reindex forced");
         }
 
-        return new ApiResponse(result, "reindex forced");
+        return new ApiResponse(false, "was unable to force the index");
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {
