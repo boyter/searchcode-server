@@ -24,7 +24,7 @@ import java.util.List;
 
 public class ApiRouteService {
 
-    public ApiResponse RepositoryReindex(Request request, Response response) {
+    public ApiResponse repositoryReindex(Request request, Response response) {
         boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
         boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
         ApiService apiService = Singleton.getApiService();
@@ -37,6 +37,7 @@ public class ApiRouteService {
         String publicKey = request.queryParams("pub");
         String signedKey = request.queryParams("sig");
         String hmacTypeString = request.queryParams("hmac");
+        hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (apiAuth) {
             if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
@@ -47,8 +48,7 @@ public class ApiRouteService {
                 return new ApiResponse(false, "sig is a required parameter");
             }
 
-            String toValidate = String.format("pub=%s",
-                    URLEncoder.encode(publicKey));
+            String toValidate = String.format("pub=%s", URLEncoder.encode(publicKey));
 
             ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
@@ -66,7 +66,7 @@ public class ApiRouteService {
         return new ApiResponse(result, "reindex forced");
     }
 
-    public RepoResultApiResponse RepoList(Request request, Response response) {
+    public RepoResultApiResponse repoList(Request request, Response response) {
         boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
         boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
         ApiService apiService = Singleton.getApiService();
@@ -79,6 +79,7 @@ public class ApiRouteService {
         String publicKey = request.queryParams("pub");
         String signedKey = request.queryParams("sig");
         String hmacTypeString = request.queryParams("hmac");
+        hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (apiAuth) {
             if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
@@ -106,7 +107,7 @@ public class ApiRouteService {
 
     }
 
-    public ApiResponse RepoDelete(Request request, Response response) {
+    public ApiResponse repoDelete(Request request, Response response) {
         boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
         boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
         ApiService apiService = Singleton.getApiService();
@@ -120,6 +121,7 @@ public class ApiRouteService {
         String signedKey = request.queryParams("sig");
         String reponames = request.queryParams("reponame");
         String hmacTypeString = request.queryParams("hmac");
+        hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
             return new ApiResponse(false, "reponame is a required parameter");
@@ -156,7 +158,7 @@ public class ApiRouteService {
         return new ApiResponse(true, "repository queued for deletion");
     }
 
-    public ApiResponse RepoAdd(Request request, Response response) {
+    public ApiResponse repoAdd(Request request, Response response) {
         boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
         boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
         ApiService apiService = Singleton.getApiService();
@@ -176,6 +178,7 @@ public class ApiRouteService {
         String reposource = request.queryParams("reposource");
         String repobranch = request.queryParams("repobranch");
         String hmacTypeString = request.queryParams("hmac");
+        hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
             return new ApiResponse(false, "reponame is a required parameter");

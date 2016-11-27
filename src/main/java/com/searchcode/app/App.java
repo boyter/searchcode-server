@@ -145,25 +145,25 @@ public class App {
         get("/api/repo/add/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.RepoAdd(request, response);
+            return apiRouteService.repoAdd(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/delete/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.RepoDelete(request, response);
+            return apiRouteService.repoDelete(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/list/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.RepoList(request, response);
+            return apiRouteService.repoList(request, response);
         }, new JsonTransformer());
 
         get("/api/repo/reindex/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.RepositoryReindex(request, response);
+            return apiRouteService.repositoryReindex(request, response);
         }, new JsonTransformer());
 
         ////////////////////////////////////////////////////
