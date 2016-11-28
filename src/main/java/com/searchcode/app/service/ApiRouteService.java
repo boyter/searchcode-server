@@ -170,12 +170,7 @@ public class ApiRouteService {
     }
 
     public ApiResponse repoAdd(Request request, Response response) {
-        boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-        boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-        ApiService apiService = Singleton.getApiService();
-        Repo repo = Singleton.getRepo();
-
-        if (!apiEnabled) {
+        if (!this.apiEnabled) {
             return new ApiResponse(false, "API not enabled");
         }
 
@@ -257,13 +252,13 @@ public class ApiRouteService {
             repotype = "git";
         }
 
-        RepoResult repoResult = repo.getRepoByName(reponames);
+        RepoResult repoResult = this.repo.getRepoByName(reponames);
 
         if (repoResult != null) {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch));
+        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch));
 
         return new ApiResponse(true, "added repository successfully");
     }

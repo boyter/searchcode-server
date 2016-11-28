@@ -6,6 +6,7 @@ import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import spark.Request;
 
@@ -362,5 +363,274 @@ public class ApiRouteServiceTest extends TestCase {
         assertThat(apiResponse.getMessage()).isEqualTo("repository queued for deletion");
         assertThat(apiResponse.isSucessful()).isTrue();
         assertThat(uniqueRepoQueue.size()).isEqualTo(1);
+    }
+
+    /////////////////////////////////////////////////////////////////////
+    // TODO expand on the below tests they do not hit all code paths
+    /////////////////////////////////////////////////////////////////////
+
+    public void testRepoAddApiNotEnabled() {
+        ApiRouteService apiRouteService = new ApiRouteService();
+        apiRouteService.apiEnabled = false;
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(null, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("API not enabled");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepoName() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("reponame is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepoUrl() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("repourl is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepotype() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("repotype is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepoUsername() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("repousername is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepoPassword() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("repopassword is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepoSource() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("reposource is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddMissingRepoBranch() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+        when(mockRequest.queryParams("reposource")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("repobranch is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddNoAuthSucessful() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = false;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+        when(mockRequest.queryParams("reposource")).thenReturn("test");
+        when(mockRequest.queryParams("repobranch")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
+        assertThat(apiResponse.isSucessful()).isTrue();
+        verify(mockRepo, times(1)).saveRepo(Matchers.<RepoResult>anyObject());
+    }
+
+    public void testRepoAddAuthPubMissing() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        ApiService mockApiService = Mockito.mock(ApiService.class);
+
+        when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
+
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+        when(mockRequest.queryParams("reposource")).thenReturn("test");
+        when(mockRequest.queryParams("repobranch")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("pub is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddAuthSigMissing() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        ApiService mockApiService = Mockito.mock(ApiService.class);
+
+        when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
+
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+        when(mockRequest.queryParams("reposource")).thenReturn("test");
+        when(mockRequest.queryParams("repobranch")).thenReturn("test");
+        when(mockRequest.queryParams("pub")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("sig is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddAuthInvalidSigned() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        ApiService mockApiService = Mockito.mock(ApiService.class);
+
+        when(mockApiService.validateRequest("test", "test", "pub=test&reponame=test&repourl=test&repotype=test&repousername=test&repopassword=test&reposource=test&repobranch=test", ApiService.HmacType.SHA1)).thenReturn(false);
+
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+        when(mockRequest.queryParams("reposource")).thenReturn("test");
+        when(mockRequest.queryParams("repobranch")).thenReturn("test");
+        when(mockRequest.queryParams("pub")).thenReturn("test");
+        when(mockRequest.queryParams("sig")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("invalid signed url");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepoAddAuthValidSigned() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        ApiService mockApiService = Mockito.mock(ApiService.class);
+
+        when(mockApiService.validateRequest("test", "test", "pub=test&reponame=test&repourl=test&repotype=test&repousername=test&repopassword=test&reposource=test&repobranch=test", ApiService.HmacType.SHA1)).thenReturn(true);
+
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("test");
+        when(mockRequest.queryParams("repourl")).thenReturn("test");
+        when(mockRequest.queryParams("repotype")).thenReturn("test");
+        when(mockRequest.queryParams("repousername")).thenReturn("test");
+        when(mockRequest.queryParams("repopassword")).thenReturn("test");
+        when(mockRequest.queryParams("reposource")).thenReturn("test");
+        when(mockRequest.queryParams("repobranch")).thenReturn("test");
+        when(mockRequest.queryParams("pub")).thenReturn("test");
+        when(mockRequest.queryParams("sig")).thenReturn("test");
+
+        ApiResponse apiResponse = apiRouteService.repoAdd(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
+        assertThat(apiResponse.isSucessful()).isTrue();
+        verify(mockRepo, times(1)).saveRepo(Matchers.<RepoResult>anyObject());
     }
 }
