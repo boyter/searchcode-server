@@ -11,6 +11,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
@@ -26,6 +27,7 @@ public class ApiRouteService {
 
     private final IApiService apiService;
     private final IJobService jobService;
+    private final IRepo repo;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
@@ -33,11 +35,13 @@ public class ApiRouteService {
     public ApiRouteService() {
         this.apiService = Singleton.getApiService();
         this.jobService = Singleton.getJobService();
+        this.repo = Singleton.getRepo();
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService){
+    public ApiRouteService(IApiService apiService, IJobService jobService, IRepo repo){
         this.apiService = apiService;
         this.jobService = jobService;
+        this.repo = repo;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -80,12 +84,7 @@ public class ApiRouteService {
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {
-        boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-        boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-        ApiService apiService = Singleton.getApiService();
-        Repo repo = Singleton.getRepo();
-
-        if (!apiEnabled) {
+        if (!this.apiEnabled) {
             return new RepoResultApiResponse(false, "API not enabled", null);
         }
 
