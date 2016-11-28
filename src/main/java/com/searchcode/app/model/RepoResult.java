@@ -22,6 +22,8 @@ public class RepoResult {
     private String source = "";
     private String branch = "";
 
+    public RepoResult() {}
+
     public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch) {
         this.setRowId(rowId);
         this.setName(name);

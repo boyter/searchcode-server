@@ -17,6 +17,7 @@ import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.UniqueRepoQueue;
 import spark.Request;
 import spark.Response;
 
@@ -28,6 +29,7 @@ public class ApiRouteService {
     private final IApiService apiService;
     private final IJobService jobService;
     private final IRepo repo;
+    private final UniqueRepoQueue uniqueDeleteQueue;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
@@ -36,12 +38,14 @@ public class ApiRouteService {
         this.apiService = Singleton.getApiService();
         this.jobService = Singleton.getJobService();
         this.repo = Singleton.getRepo();
+        this.uniqueDeleteQueue = Singleton.getUniqueDeleteRepoQueue();
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, IRepo repo){
+    public ApiRouteService(IApiService apiService, IJobService jobService, IRepo repo, UniqueRepoQueue uniqueDeleteQueue){
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
+        this.uniqueDeleteQueue = uniqueDeleteQueue;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -120,11 +124,6 @@ public class ApiRouteService {
     }
 
     public ApiResponse repoDelete(Request request, Response response) {
-        boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-        boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
-        ApiService apiService = Singleton.getApiService();
-        Repo repo = Singleton.getRepo();
-
         if (!apiEnabled) {
             return new ApiResponse(false, "API not enabled");
         }
@@ -160,12 +159,12 @@ public class ApiRouteService {
             }
         }
 
-        RepoResult rr = repo.getRepoByName(reponames);
+        RepoResult rr = this.repo.getRepoByName(reponames);
         if (rr == null) {
             return new ApiResponse(false, "repository already deleted");
         }
 
-        Singleton.getUniqueDeleteRepoQueue().add(rr);
+        this.uniqueDeleteQueue.add(rr);
 
         return new ApiResponse(true, "repository queued for deletion");
     }
