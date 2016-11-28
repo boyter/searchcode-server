@@ -70,11 +70,10 @@ public class ApiRouteService {
             }
         }
 
-        // Can fail
         boolean result = this.jobService.rebuildAll();
         if (result) {
             this.jobService.forceEnqueue();
-            return new ApiResponse(result, "reindex forced");
+            return new ApiResponse(true, "reindex forced");
         }
 
         return new ApiResponse(false, "was unable to force the index");
