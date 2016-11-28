@@ -274,4 +274,93 @@ public class ApiRouteServiceTest extends TestCase {
         assertThat(apiResponse.isSucessful()).isTrue();
         assertThat(uniqueRepoQueue.size()).isEqualTo(1);
     }
+
+    public void testRepoDeleteAuthReponameNoPub() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+
+        when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, uniqueRepoQueue);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("reponame")).thenReturn("unit-test");
+
+        ApiResponse apiResponse = apiRouteService.repoDelete(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("pub is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+        assertThat(uniqueRepoQueue.size()).isEqualTo(0);
+    }
+
+    public void testRepoDeleteAuthReponameNoSig() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+
+        when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, uniqueRepoQueue);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("pub")).thenReturn("test");
+        when(mockRequest.queryParams("reponame")).thenReturn("unit-test");
+
+        ApiResponse apiResponse = apiRouteService.repoDelete(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("sig is a required parameter");
+        assertThat(apiResponse.isSucessful()).isFalse();
+        assertThat(uniqueRepoQueue.size()).isEqualTo(0);
+    }
+
+    public void testRepoDeleteAuthReponameFailedAuth() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+        ApiService mockApiService = Mockito.mock(ApiService.class);
+
+        when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
+        when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
+
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, uniqueRepoQueue);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("pub")).thenReturn("test");
+        when(mockRequest.queryParams("sig")).thenReturn("test");
+        when(mockRequest.queryParams("reponame")).thenReturn("unit-test");
+
+        ApiResponse apiResponse = apiRouteService.repoDelete(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("invalid signed url");
+        assertThat(apiResponse.isSucessful()).isFalse();
+        assertThat(uniqueRepoQueue.size()).isEqualTo(0);
+    }
+
+    public void testRepoDeleteAuthReponameAuth() {
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+        ApiService mockApiService = Mockito.mock(ApiService.class);
+
+        when(mockApiService.validateRequest("test", "test", "pub=test&reponame=unit-test", ApiService.HmacType.SHA1)).thenReturn(true);
+        when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
+
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, uniqueRepoQueue);
+        apiRouteService.apiEnabled = true;
+        apiRouteService.apiAuth = true;
+
+        when(mockRequest.queryParams("pub")).thenReturn("test");
+        when(mockRequest.queryParams("sig")).thenReturn("test");
+        when(mockRequest.queryParams("reponame")).thenReturn("unit-test");
+
+        ApiResponse apiResponse = apiRouteService.repoDelete(mockRequest, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("repository queued for deletion");
+        assertThat(apiResponse.isSucessful()).isTrue();
+        assertThat(uniqueRepoQueue.size()).isEqualTo(1);
+    }
 }
