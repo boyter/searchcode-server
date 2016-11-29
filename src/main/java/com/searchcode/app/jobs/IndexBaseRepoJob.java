@@ -304,8 +304,9 @@ public abstract class IndexBaseRepoJob implements Job {
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
         SearchcodeLib scl = Singleton.getSearchCodeLib();
         CodeSearcher codeSearcher = new CodeSearcher();
+        
+        Map<String, String> fileLocationsMap = new HashMap<>();
 
-        List<String> fileLocations = new ArrayList<>();
         Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
 
         // Convert once outside the main loop
@@ -385,7 +386,7 @@ public abstract class IndexBaseRepoJob implements Job {
                         }
 
                         // This needs to be the primary key of the file
-                        fileLocations.add(repoLocationRepoNameLocationFilename);
+                        fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
                         if (LOGINDEXED) {
                             reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
                         }
@@ -407,14 +408,14 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         if (existingRepo) {
-            this.cleanMissingPathFiles(codeSearcher, repoName, fileLocations);
+            this.cleanMissingPathFiles(codeSearcher, repoName, fileLocationsMap);
         }
     }
 
     /**
      * Method to remove from the index files that are no longer required
      */
-    public void cleanMissingPathFiles(CodeSearcher codeSearcher, String repoName, List<String> fileLocations) {
+    public void cleanMissingPathFiles(CodeSearcher codeSearcher, String repoName, Map<String, String> fileLocations) {
         int page = 0;
         boolean doClean = true;
 
@@ -427,7 +428,7 @@ public abstract class IndexBaseRepoJob implements Job {
             }
 
             for (String file: indexLocations) {
-                if (!fileLocations.contains(file)) {
+                if (!fileLocations.containsKey(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
                         CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(file));

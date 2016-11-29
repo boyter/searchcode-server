@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -126,7 +127,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);
 
         when(codeSearcherMock.getRepoDocuments("testRepoName", 0)).thenReturn(new ArrayList<>());
-        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new ArrayList<>());
+        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new HashMap<String, String>());
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
     }
 
@@ -143,7 +144,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         when(codeSearcherMock.getRepoDocuments("testRepoName", 1)).thenReturn(repoReturn);
         when(codeSearcherMock.getRepoDocuments("testRepoName", 2)).thenReturn(new ArrayList<>());
 
-        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new ArrayList<>());
+        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new HashMap<String, String>());
 
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 1);
