@@ -5,14 +5,13 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.service;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
+import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.SQLiteDatabaseConfig;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
@@ -56,6 +55,8 @@ public final class Singleton {
     private static ApiService apiService = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
+    private static JobService jobService = null;
+    private static IDatabaseConfig databaseConfig = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
@@ -129,8 +130,7 @@ public final class Singleton {
 
     public static synchronized Repo getRepo() {
         if (repo == null) {
-            Injector injector = Guice.createInjector(new InjectorConfig());
-            repo = injector.getInstance(Repo.class);
+            repo = new Repo(Singleton.getDatabaseConfig());
         }
 
         return repo;
@@ -263,8 +263,7 @@ public final class Singleton {
 
     public static synchronized Data getData() {
         if (data == null) {
-            Injector injector = Guice.createInjector(new InjectorConfig());
-            data = injector.getInstance(Data.class);
+            data = new Data(Singleton.getDatabaseConfig());
         }
 
         return data;
@@ -276,8 +275,7 @@ public final class Singleton {
 
     public static synchronized Api getApi() {
         if (api == null) {
-            Injector injector = Guice.createInjector(new InjectorConfig());
-            api = injector.getInstance(Api.class);
+            api = new Api(Singleton.getDatabaseConfig());
         }
 
         return api;
@@ -293,5 +291,29 @@ public final class Singleton {
         }
 
         return apiService;
+    }
+
+    public static void setJobService(JobService jobService) {
+        Singleton.jobService = jobService;
+    }
+
+    public static synchronized JobService getJobService() {
+        if (jobService == null) {
+            jobService = new JobService();
+        }
+
+        return jobService;
+    }
+
+    public static IDatabaseConfig getDatabaseConfig() {
+        if (databaseConfig == null) {
+            databaseConfig = new SQLiteDatabaseConfig();
+        }
+
+        return databaseConfig;
+    }
+
+    public static void setDatabaseConfig(IDatabaseConfig databaseConfig) {
+        Singleton.databaseConfig = databaseConfig;
     }
 }

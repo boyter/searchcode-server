@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.jobs;
@@ -217,7 +217,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             blame = blamer.call();
 
             // Hail mary attempt to solve issue on CentOS Attempt to set at all costs
-            if(blame == null) { // This one appears to solve the issue so don't remove it
+            if (blame == null) { // This one appears to solve the issue so don't remove it
                 String[] split = fileName.split("/");
                 blamer.setStartCommit(commitID);
                 if ( split.length != 1) {
@@ -225,7 +225,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 }
                 blame = blamer.call();
             }
-            if(blame == null) {
+            if (blame == null) {
                 String[] split = fileName.split("/");
                 blamer.setStartCommit(commitID);
                 if ( split.length != 1) {
@@ -306,14 +306,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
             PullCommand pullCmd = git.pull();
 
-            if(useCredentials) {
+            if (useCredentials) {
                 pullCmd.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
             }
 
             pullCmd.call();
             Ref newHEAD = localRepository.getRef("HEAD");
 
-            if(!head.toString().equals(newHEAD.toString())) {
+            if (!head.toString().equals(newHEAD.toString())) {
                 changed = true;
 
                 // Get the differences between the the heads which we updated at
@@ -369,7 +369,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             cloneCommand.setCloneAllBranches(true);
             cloneCommand.setBranch(branch);
 
-            if(useCredentials) {
+            if (useCredentials) {
                 cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
             }
 

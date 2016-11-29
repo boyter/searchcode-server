@@ -5,14 +5,11 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.service;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
@@ -120,10 +117,11 @@ public class CodeIndexer {
     }
 
     /**
-     * Deletes a file from the index given its location
-     * TODO I don't think this clears anything from the facets, which it should
+     * Deletes a file from the index using the code id which seems to be
+     * the most reliable way of doing it
+     * TODO Update the record and set the facets to a value we can ignore
      */
-    public static synchronized void deleteByFileLocationFilename(String fileLocationFilename) throws IOException {
+    public static synchronized void deleteByCodeId(String codeId) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
         Analyzer analyzer = new CodeAnalyzer();
@@ -133,8 +131,8 @@ public class CodeIndexer {
         IndexWriter writer = new IndexWriter(dir, iwc);
 
         try {
-            QueryParser parser = new QueryParser("contents", analyzer);
-            Query query = parser.parse("filelocationfilename:" + QueryParser.escape(fileLocationFilename));
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+            Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
         }
         catch(Exception ex) {
@@ -210,17 +208,17 @@ public class CodeIndexer {
 
                 String toIndex = indexContents.toString().toLowerCase();
 
-                doc.add(new TextField(Values.REPONAME, codeIndexDocument.getRepoName(), Field.Store.YES));
-                doc.add(new TextField(Values.FILENAME, codeIndexDocument.getFileName(), Field.Store.YES));
-                doc.add(new TextField(Values.FILELOCATION, codeIndexDocument.getFileLocation(), Field.Store.YES));
+                doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName(), Field.Store.YES));
+                doc.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
+                doc.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
-                doc.add(new TextField(Values.MD5HASH, codeIndexDocument.getMd5hash(), Field.Store.YES));
-                doc.add(new TextField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName(), Field.Store.YES));
-                doc.add(new IntField(Values.CODELINES, codeIndexDocument.getCodeLines(), Field.Store.YES));
-                doc.add(new TextField(Values.CONTENTS, toIndex, Field.Store.NO));
-                doc.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-                doc.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner(), Field.Store.YES));
-                doc.add(new TextField(Values.CODEID, codeIndexDocument.getHash(), Field.Store.YES));
+                doc.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
+                doc.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName(), Field.Store.YES));
+                doc.add(new  IntField(Values.CODELINES,            codeIndexDocument.getCodeLines(), Field.Store.YES));
+                doc.add(new TextField(Values.CONTENTS,             toIndex, Field.Store.NO));
+                doc.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+                doc.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner(), Field.Store.YES));
+                doc.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
 
                 // Extra metadata in this case when it was last indexed
                 doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
@@ -234,7 +232,6 @@ public class CodeIndexer {
                 else {
                     codeIndexDocument = codeIndexDocumentQueue.poll();
                 }
-
             }
         }
         finally {

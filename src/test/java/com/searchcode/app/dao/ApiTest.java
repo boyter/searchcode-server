@@ -1,15 +1,12 @@
 package com.searchcode.app.dao;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.model.ApiResult;
+import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 public class ApiTest extends TestCase {
     public void testMultipleCreateTable() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Api api = injector.getInstance(Api.class);
+        Api api = Singleton.getApi();
 
         api.createTableIfMissing();
         api.createTableIfMissing();
@@ -18,16 +15,14 @@ public class ApiTest extends TestCase {
     }
 
     public void testSaveDelete() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Api api = injector.getInstance(Api.class);
+        Api api = Singleton.getApi();
 
         api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
         api.deleteApiByPublicKey("publicKey");
     }
 
     public void testSaveRetrieve() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Api api = injector.getInstance(Api.class);
+        Api api = Singleton.getApi();
 
         api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
         ApiResult apiResult = api.getApiByPublicKey("publicKey");
@@ -39,8 +34,7 @@ public class ApiTest extends TestCase {
     }
 
     public void testMultipleRetrieveCache() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Api api = injector.getInstance(Api.class);
+        Api api = Singleton.getApi();
 
         api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
 
@@ -56,8 +50,7 @@ public class ApiTest extends TestCase {
     }
 
     public void testGetAllApi() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Api api = injector.getInstance(Api.class);
+        Api api = Singleton.getApi();
 
         api.saveApi(new ApiResult(0, "publicKey1", "privateKey", "", ""));
         api.saveApi(new ApiResult(0, "publicKey2", "privateKey", "", ""));

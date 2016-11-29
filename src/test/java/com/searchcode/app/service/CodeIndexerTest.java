@@ -55,8 +55,8 @@ public class CodeIndexerTest extends TestCase {
     }
 
     // TODO actually assert something in here
-    public void testDeleteByFileLocationFilename() throws IOException {
-        CodeIndexer.deleteByFileLocationFilename("fileLocationFilename");
+    public void testDeleteByFilePath() throws IOException {
+        CodeIndexer.deleteByCodeId("./repo/test/README.md");
     }
 
     // TODO fix the assert rather then programming by exception

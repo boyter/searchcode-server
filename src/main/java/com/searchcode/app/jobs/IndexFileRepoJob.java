@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 
@@ -52,7 +52,7 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexFileRepoJob extends IndexBaseRepoJob {
 
-    private String repoName;
+    public String repoName;
 
     /**
      * The main method used for finding jobs to index and actually doing the work
@@ -107,6 +107,9 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public String getFileLocationFilename(String fileToString, String fileRepoLocations) {
+        if (this.repoName == null) {
+            return fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
+        }
         return this.repoName + fileToString.replace(fileRepoLocations, Values.EMPTYSTRING);
     }
 
@@ -127,7 +130,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public boolean ignoreFile(String fileParent) {
-        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/")) {
+        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/") || fileParent.contains(".git/") || fileParent.equals(".git")) {
             return true;
         }
 

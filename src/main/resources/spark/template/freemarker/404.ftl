@@ -1,5 +1,5 @@
 <#import "masterTemplate.ftl" as layout />
-<@layout.masterTemplate title="Documentation">
+<@layout.masterTemplate title="404">
 
 
 <div class="row">

@@ -67,13 +67,13 @@
     <#list repoResults>
         <#items as result>
             <div>
-                <input type="text" value="${result.name}" name="reponame" disabled="true">
-                <input type="text" value="${result.scm}" name="reposcm" disabled="true">
-                <input type="text" value="${result.url}" name="repourl" disabled="true">
-                <input type="text" value="${result.username}" name="repousername" disabled="true">
-                <input type="password" value="${result.password}" name="repopassword" disabled="true">
-                <input type="text" value="${result.source}" name="reposource" disabled="true">
-                <input type="text" value="${result.branch}" name="repobranch" disabled="true">
+                <input type="text" value="${result.name}" name="reponame" readonly="true">
+                <input type="text" value="${result.scm}" name="reposcm" readonly="true">
+                <input type="text" value="${result.url}" name="repourl" readonly="true">
+                <input type="text" value="${result.username}" name="repousername" readonly="true">
+                <input type="password" value="${result.password}" name="repopassword" readonly="true">
+                <input type="text" value="${result.source}" name="reposource" readonly="true">
+                <input type="text" value="${result.branch}" name="repobranch" readonly="true">
                 <button class="btn btn-sm btn-danger delete" data-id="${result.name}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
             </div>
         </#items>

@@ -161,10 +161,12 @@
           the arguments sent to the API endpoint as detailed. Ask your administrator for a public and private key to be generated for you
           if you require access to the API.
           <br><br>
-          To sign a request see the below example in Python demonstrating how to perform all repository API calls.
+          To sign a request see the below examples in Python demonstrating how to perform all repository API calls.
           The most important thing to note is that parameter order is important. All API endpoints will list the order
-          that parameters should have passed in. The below code is has no license and is released as public domain. <br /><br />
-<textarea style="font-family: monospace,serif; width:100%; height:150px;" disabled="true">from hashlib import sha1
+          that parameters should have passed in. The below code is has no license and is released as public domain. The second
+          example is identical to the first but performs the signing using SHA512 for greater security.<br /><br />
+          SHA1 Example
+<textarea style="font-family: monospace,serif; width:100%; height:150px;" readonly="true">from hashlib import sha1
 from hmac import new as hmac
 import urllib2
 import json
@@ -247,11 +249,99 @@ data = data.read()
 
 data = json.loads(data)
 print data['sucessful'], data['message']</textarea>
+
+SHA512 example
+
+<textarea style="font-family: monospace,serif; width:100%; height:150px;" readonly="true">from hashlib import sha512
+from hmac import new as hmac
+import urllib2
+import json
+import urllib
+import pprint
+
+'''Simple usage of the signed key API endpoints using SHA512 hmac'''
+publickey = "REALPUBLICKEYHERE"
+privatekey = "REALPRIVATEKEYHERE"
+
+
+reponame = "myrepo"
+repourl = "myrepourl"
+repotype = "git"
+repousername = ""
+repopassword = ""
+reposource = ""
+repobranch = "master"
+
+message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s" % (
+  urllib.quote_plus(publickey),
+  urllib.quote_plus(reponame),
+  urllib.quote_plus(repourl),
+  urllib.quote_plus(repotype),
+  urllib.quote_plus(repousername),
+  urllib.quote_plus(repopassword),
+  urllib.quote_plus(reposource),
+  urllib.quote_plus(repobranch)
+)
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/add/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/list/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message'], data['repoResultList']
+
+################################################################
+
+message = "pub=%s&reponame=%s" % (
+  urllib.quote_plus(publickey),
+  urllib.quote_plus(reponame),
+)
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/delete/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/reindex/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']</textarea>
           <br><br>
           To achive the same result in Java use <a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/HmacUtils.html">HmacUtils</a> as follows,
           <br><br>
-          <textarea style="font-family: monospace,serif; width:100%; height:30px;" disabled="true">String myHmac = HmacUtils.hmacSha1Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
-
+          <textarea style="font-family: monospace,serif; width:100%; height:55px;" readonly="true">String myHmac = HmacUtils.hmacSha1Hex(MYPRIVATEKEY, PARAMSTOHMAC);
+String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
         </p>
         <p>
           <h4>Repository API (secured)</h4>

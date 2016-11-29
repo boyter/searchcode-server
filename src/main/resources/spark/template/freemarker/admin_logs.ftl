@@ -21,7 +21,7 @@
 </p>
 <p>Displaying <strong>${level}</strong> logs</p>
 
-<textarea style="width: 100%; height: 100%; font-family: monospace;" rows="20" disabled="true"><#list logs><#items as result>${result}
+<textarea style="width: 100%; height: 100%; font-family: monospace;" rows="20" readonly="true"><#list logs><#items as result>${result}
 </#items></#list></textarea>
 </div>
 

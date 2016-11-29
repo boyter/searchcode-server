@@ -5,12 +5,11 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.service;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;
@@ -53,9 +52,8 @@ public class JobService implements IJobService {
     private boolean LOWMEMORY = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
 
-    @Inject
-    public JobService(IRepo repo) {
-        this.repo = repo;
+    public JobService() {
+        this.repo = Singleton.getRepo();
         try {
             this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
         }
@@ -266,7 +264,7 @@ public class JobService implements IJobService {
                 this.startIndexFileRepoJobs("" + i);
             }
 
-            if(repoResults.size() == 0) {
+            if (repoResults.size() == 0) {
                 LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
             }
 

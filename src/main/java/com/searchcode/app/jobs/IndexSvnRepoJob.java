@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.jobs;
@@ -337,7 +337,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
             // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
             // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
-            if(useCredentials) {
+            if (useCredentials) {
                 processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
             }
             else {

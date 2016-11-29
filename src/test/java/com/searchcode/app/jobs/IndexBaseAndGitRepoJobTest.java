@@ -11,6 +11,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -94,12 +95,39 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         assertEquals("path/to/myfile.txt", temp);
     }
 
+    public void testGetRelativeToProjectPath() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        String relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("/Users/boyter/test5", "/Users/boyter/test5/u/something/sources/small/c3p0.csv");
+        assertThat(relativeToProjectPath).isEqualTo("/u/something/sources/small/c3p0.csv");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("/Users/boyter/test5/", "/Users/boyter/test5/u/something/sources/small/c3p0.csv");
+        assertThat(relativeToProjectPath).isEqualTo("/u/something/sources/small/c3p0.csv");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test", "./repo/test/chinese.php");
+        assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test/", "./repo/test/chinese.php");
+        assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
+
+        relativeToProjectPath = gitRepoJob.getRelativeToProjectPath("./repo/test", "./repo//test/chinese.php");
+        assertThat(relativeToProjectPath).isEqualTo("/chinese.php");
+    }
+
+    public void testGetFileLocationFilename() {
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        String fileLocationFilename = gitRepoJob.getFileLocationFilename(".git/filename", "./repo/");
+        assertThat(fileLocationFilename).isEqualTo(".git/filename");
+
+        fileLocationFilename = gitRepoJob.getFileLocationFilename("./repo/.git/filename", "./repo/");
+        assertThat(fileLocationFilename).isEqualTo(".git/filename");
+    }
+
     public void testMissingPathFilesNoLocations() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
         CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);
 
         when(codeSearcherMock.getRepoDocuments("testRepoName", 0)).thenReturn(new ArrayList<>());
-        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new ArrayList<>());
+        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new HashMap<String, String>());
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
     }
 
@@ -116,7 +144,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         when(codeSearcherMock.getRepoDocuments("testRepoName", 1)).thenReturn(repoReturn);
         when(codeSearcherMock.getRepoDocuments("testRepoName", 2)).thenReturn(new ArrayList<>());
 
-        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new ArrayList<>());
+        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new HashMap<String, String>());
 
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 1);

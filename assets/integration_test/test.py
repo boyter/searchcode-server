@@ -23,7 +23,8 @@ class TestIntegration(unittest.TestCase):
 
     def testMainPage(self):
         data = self.getData("http://%s/" % (host))
-        self.assertTrue('Searching across' in data)
+        result = 'Searching across' in data or 'You have no repositories indexed' in data
+        self.assertTrue(result)
 
     def testDocumentationPage(self):
         data = self.getData("http://%s/documentation/" % (host))
@@ -66,7 +67,8 @@ class TestIntegration(unittest.TestCase):
     def testNoSearch(self):
         url = "http://%s/?q=&p=0" % (host)
         data = self.getData(url)
-        self.assertTrue('Searching across' in data)
+        result = 'Searching across' in data or 'You have no repositories indexed' in data
+        self.assertTrue(result)
 
     def testNoSearchHtml(self):
         url = "http://%s/html/?q=&p=0" % (host)
@@ -81,6 +83,23 @@ class TestIntegration(unittest.TestCase):
             url = "http://%s/html/?q=%s" % (host, self.getRandomLetters(10))
             data = self.getData(url)
             self.assertTrue('No results found' in data)
+
+    def testCheckResponseHeadersApi(self):
+        urls = [
+            'api/codesearch/?q=test',
+            'api/timecodesearch/?q=test',
+            'api/repo/list/',
+            'api/repo/add/',
+            'api/repo/delete/',
+            'api/repo/reindex/',
+            'api/repo/reindex/',
+        ]
+        
+        for url in urls:
+            url = 'http://%s/%s' % (host, url)
+            data = urllib2.urlopen(url)
+            header = data.info().getheader('Content-Type')
+            self.assertEqual(header, 'application/json', url)
 
     def testFuzzyBadData(self):
         self.getData("http://%s/html/?q=test&p=100" % (host))

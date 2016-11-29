@@ -1,15 +1,12 @@
 package com.searchcode.app.dao;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 public class RepoTest extends TestCase {
     public void testRepoSaveDelete() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
 
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         RepoResult result = repo.getRepoByName("myname");
@@ -28,8 +25,8 @@ public class RepoTest extends TestCase {
     }
 
     public void testRepoSaveGetCacheBug() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         assertNotNull(repo.getRepoByName("myname"));
         assertNotNull(repo.getRepoByName("myname"));
@@ -39,8 +36,8 @@ public class RepoTest extends TestCase {
     }
 
     public void testDeleteRepoMultipleTimes() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.deleteRepoByName("myname");
         repo.deleteRepoByName("myname");
@@ -51,8 +48,8 @@ public class RepoTest extends TestCase {
     }
 
     public void testSaveRepoMultipleTimes() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
@@ -64,16 +61,16 @@ public class RepoTest extends TestCase {
     }
 
     public void testGetAllRepo() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         assertTrue(repo.getAllRepo().size() >= 1);
         repo.deleteRepoByName("myname");
     }
 
     public void testGetPagedRepo() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
@@ -90,8 +87,8 @@ public class RepoTest extends TestCase {
     }
 
     public void testSearchRepo() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
         repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
@@ -111,8 +108,8 @@ public class RepoTest extends TestCase {
     }
 
     public void testMigrationCode() {
-        Injector injector = Guice.createInjector(new InjectorConfig());
-        Repo repo = injector.getInstance(Repo.class);
+        Repo repo = Singleton.getRepo();
+
         repo.addSourceToTable();
         repo.addSourceToTable();
         repo.addBranchToTable();

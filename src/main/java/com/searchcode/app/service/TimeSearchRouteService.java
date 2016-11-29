@@ -5,14 +5,11 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.service;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.searchcode.app.config.InjectorConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeResult;
@@ -32,14 +29,11 @@ import java.util.stream.Collectors;
  */
 public class TimeSearchRouteService {
 
-    private final Injector injector;
-
     public TimeSearchRouteService() {
-        injector = Guice.createInjector(new InjectorConfig());
     }
 
     public SearchResult getTimeSearch(Request request, Response response) {
-        Data data = injector.getInstance(Data.class);
+        Data data = Singleton.getData();
 
         SearchcodeLib scl = Singleton.getSearchcodeLib(data);
         TimeCodeSearcher cs = new TimeCodeSearcher();
@@ -73,42 +67,42 @@ public class TimeSearchRouteService {
         String revisionsFilter = Values.EMPTYSTRING;
         String deletedFilter = Values.EMPTYSTRING;
 
-        if(request.queryParams().contains("repo")) {
+        if (request.queryParams().contains("repo")) {
             repos = request.queryParamsValues("repo");
             reposFilter = getRepos(repos, reposFilter);
         }
 
-        if(request.queryParams().contains("lan")) {
+        if (request.queryParams().contains("lan")) {
             langs = request.queryParamsValues("lan");
             langsFilter = getLanguages(langs, langsFilter);
         }
 
-        if(request.queryParams().contains("own")) {
+        if (request.queryParams().contains("own")) {
             owners = request.queryParamsValues("own");
             ownersFilter = getOwners(owners, ownersFilter);
         }
 
-        if(request.queryParams().contains("year")) {
+        if (request.queryParams().contains("year")) {
             year = request.queryParamsValues("year");
             yearFilter = this.getYears(year, yearFilter);
         }
 
-        if(request.queryParams().contains("ym")) {
+        if (request.queryParams().contains("ym")) {
             yearmonth = request.queryParamsValues("ym");
             yearMonthFilter = this.getYearMonths(yearmonth, yearMonthFilter);
         }
 
-        if(request.queryParams().contains("ymd")) {
+        if (request.queryParams().contains("ymd")) {
             yearmonthday = request.queryParamsValues("ymd");
             yearMonthDayFilter = this.getYearMonthDays(yearmonthday, yearMonthDayFilter);
         }
 
-        if(request.queryParams().contains("rev")) {
+        if (request.queryParams().contains("rev")) {
             revisions = request.queryParamsValues("rev");
             revisionsFilter = this.getRevisions(revisions, revisionsFilter);
         }
 
-        if(request.queryParams().contains("del")) {
+        if (request.queryParams().contains("del")) {
             deleted = request.queryParamsValues("del");
             deletedFilter = this.getDeleted(deleted, deletedFilter);
         }
@@ -134,7 +128,7 @@ public class TimeSearchRouteService {
     private int getPage(Request request) {
         int page = 0;
 
-        if(request.queryParams().contains("p")) {
+        if (request.queryParams().contains("p")) {
             try {
                 page = Integer.parseInt(request.queryParams("p"));
                 page = page > 19 ? 19 : page;

@@ -5,10 +5,12 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.config;
+
+import com.searchcode.app.util.Properties;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,9 +22,11 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
 
     public synchronized Connection getConnection() throws SQLException {
         try {
-            if(connection == null || connection.isClosed()) {
+            if (connection == null || connection.isClosed()) {
+                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE);
+
                 Class.forName("org.sqlite.JDBC");
-                connection = DriverManager.getConnection("jdbc:sqlite:./searchcode.sqlite");
+                connection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);
 
                 // WAL write ahead logging supposedly helps with performance but did not notice a difference
                 // PreparedStatement stmt = connection.prepareStatement("PRAGMA journal_mode=WAL;");

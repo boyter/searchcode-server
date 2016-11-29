@@ -5,13 +5,12 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.service;
 
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IApi;
 import com.searchcode.app.model.ApiResult;
@@ -25,6 +24,8 @@ import java.util.List;
  */
 public class ApiService implements IApiService {
 
+    public enum HmacType { SHA1, SHA512};
+
     private IApi api = null;
 
     public ApiService(IApi api) {
@@ -35,6 +36,7 @@ public class ApiService implements IApiService {
         this.api = Singleton.getApi();
     }
 
+
     /**
      * Validates a request made to the API against the public key supplied, the hmac supplied and the
      * query string itself.
@@ -43,14 +45,23 @@ public class ApiService implements IApiService {
      * http://stackoverflow.com/questions/3208160/how-to-generate-an-hmac-in-java-equivalent-to-a-python-example?rq=1
      *
      */
-    public boolean validateRequest(String publicKey, String hmac, String query) {
+    public boolean validateRequest(String publicKey, String hmac, String query, HmacType hmacType) {
         ApiResult apiResult = this.api.getApiByPublicKey(publicKey);
 
         if (apiResult == null) {
             return false;
         }
 
-        String myHmac = HmacUtils.hmacSha1Hex(apiResult.getPrivateKey(), query);
+        String myHmac;
+
+        switch(hmacType) {
+            case SHA512:
+                myHmac = HmacUtils.hmacSha512Hex(apiResult.getPrivateKey(), query);
+                break;
+            default:
+                myHmac = HmacUtils.hmacSha1Hex(apiResult.getPrivateKey(), query);
+                break;
+        }
         return myHmac.equals(hmac);
     }
 

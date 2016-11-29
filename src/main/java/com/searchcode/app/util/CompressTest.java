@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.util;
@@ -74,8 +74,8 @@ public class CompressTest {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 
-                //if(!file.toString().endsWith(".java") && !file.toString().endsWith(".xml")) {
-                //if(!file.toString().endsWith(".java") && !file.toString().endsWith(".py") && !file.toString().endsWith(".rb")) {
+                //if (!file.toString().endsWith(".java") && !file.toString().endsWith(".xml")) {
+                //if (!file.toString().endsWith(".java") && !file.toString().endsWith(".py") && !file.toString().endsWith(".rb")) {
                 //    return FileVisitResult.CONTINUE;
                 //}
 
@@ -135,7 +135,7 @@ public class CompressTest {
             blamer.setFilePath(fileName);
             BlameResult blame = blamer.call();
 
-            if(blame ==null) {
+            if (blame ==null) {
                 System.out.println("Blame is null");
                 return "";
             }

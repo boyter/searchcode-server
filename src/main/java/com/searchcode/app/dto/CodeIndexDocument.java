@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.dto;
@@ -13,10 +13,10 @@ package com.searchcode.app.dto;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class CodeIndexDocument {
-    private String repoLocationRepoNameLocationFilename;
+    private String repoLocationRepoNameLocationFilename; // Primary key and full path to file relative to where application is installed
     private String repoName;
     private String fileName;
-    private String fileLocation;
+    private String fileLocation; // Path to file relative to repo location
     private String fileLocationFilename;
     private String md5hash;
     private String languageName;

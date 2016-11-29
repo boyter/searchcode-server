@@ -5,12 +5,11 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.dao;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.LoggerWrapper;
@@ -20,7 +19,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap;
-import java.util.logging.Logger;
 
 /**
  * Provides access to all methods required to get Data details from the database.
@@ -35,7 +33,6 @@ public class Data implements IData {
 
     private AbstractMap<String, String> cache = Singleton.getDataCache();
 
-    @Inject
     public Data(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
@@ -84,7 +81,7 @@ public class Data implements IData {
 
         boolean isNew = false;
 
-        if(existing != null) {
+        if (existing != null) {
             try {
                 Connection conn = this.dbConfig.getConnection();
                 PreparedStatement stmt = conn.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
@@ -144,7 +141,7 @@ public class Data implements IData {
                 value = rs.getString("name");
             }
 
-            if(value.equals("")) {
+            if (value.equals("")) {
                 stmt = conn.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR);");
                 stmt.execute();
             }

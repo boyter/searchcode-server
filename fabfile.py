@@ -6,7 +6,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 '''
 
@@ -28,7 +28,7 @@ import hashlib
 import sys
 import datetime
 
-VERSION = "1.3.4"
+VERSION = "1.3.5"
 
 
 def setup_npm():
@@ -43,6 +43,10 @@ def package():
     local('rm -rf ./target/*')
     local("mvn package")
 
+def test_full():
+    test()
+    test_integration()
+
 def test():
     local('mvn test')
     js_test()
@@ -53,6 +57,9 @@ def js_test():
 def test_integration():
     print 'Be sure to run: "fab compile_js configure_prod run" first'
     local("python ./assets/integration_test/test.py")
+    local("python ./assets/integration_test/fuzztest.py")
+    local("python ./assets/integration_test/signed_testing.py")
+    local("python ./assets/integration_test/signed_testing_sha512.py")
 
 def run():
     package()
@@ -68,7 +75,7 @@ def build_all_release():
 
 def build_release():
     replacements = {
-        'private static final boolean ISCOMMUNITY = true;': 'private static final boolean ISCOMMUNITY = false;'
+        'public static final boolean ISCOMMUNITY = true;': 'public static final boolean ISCOMMUNITY = false;'
     }
     _python_sed(fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)
     compile_js()
@@ -85,7 +92,7 @@ def build_release():
 def build_community_release():
     # modify community flag in application
     replacements = {
-        'private static final boolean ISCOMMUNITY = false;': 'private static final boolean ISCOMMUNITY = true;'
+        'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;'
     }
     _python_sed(fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)
     compile_js()

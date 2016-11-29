@@ -5,12 +5,11 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.4
+ * Version 1.3.5
  */
 
 package com.searchcode.app.dao;
 
-import com.google.inject.Inject;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -24,7 +23,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Provides access to all methods required to get Repo details from the database.
@@ -40,7 +38,6 @@ public class Repo implements IRepo {
     private String repoCountCacheKey = "repo-repo-count";
     private String repoAllRepoCacheKey = "repo-all-repo-cache";
 
-    @Inject
     public Repo(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
@@ -250,7 +247,7 @@ public class Repo implements IRepo {
 
         boolean isNew = false;
 
-        if(existing != null) {
+        if (existing != null) {
             // Update with new details
             try {
                 Connection conn = this.dbConfig.getConnection();
@@ -318,12 +315,12 @@ public class Repo implements IRepo {
             while (rs.next()) {
                 value = rs.getString("name");
 
-                if("source".equals(value)) {
+                if ("source".equals(value)) {
                     shouldAlter = false;
                 }
             }
 
-            if(shouldAlter) {
+            if (shouldAlter) {
                 List<String> commands = Arrays.asList(
                         "ALTER TABLE \"repo\" RENAME TO \"oXHFcGcd04oXHFcGcd04_repo\"",
                         "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\" VARCHAR)",
@@ -356,14 +353,14 @@ public class Repo implements IRepo {
             while (rs.next()) {
                 value = rs.getString("name");
 
-                if("branch".equals(value)) {
+                if ("branch".equals(value)) {
                     shouldAlter = false;
                 }
             }
 
             // Python to generate random table name
             // ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(20))
-            if(shouldAlter) {
+            if (shouldAlter) {
                 List<String> commands = Arrays.asList(
                         "ALTER TABLE \"repo\" RENAME TO \"y6L0VN5j9eQSg65hWtJJ_repo\"",
                         "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)",

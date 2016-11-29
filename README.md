@@ -14,12 +14,11 @@ See https://searchcode.com/product/ for more details
 Support
 -------
 If you are building from source then you get no support and must work within the restrictions specified of the
-fair source licence (see LICENSE.txt for details). To purchase support see 
-https://searchcode.com/product/#downloadlinks
+fair source licence (see LICENSE.txt for details). To purchase support see https://searchcode.com/product/#downloadlinks
 
 Submissions/Pull Requests
 -------------------------
-If you would like to submit code to be integrated into searchcode server please specifyc that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
+If you would like to submit code to be integrated into searchcode server please specify that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
 Before making any submission be sure to run "fab test"
 
@@ -31,13 +30,36 @@ the javascript unit tests through the command line you will need to install NPM 
 npm install -g node-qunit-phantomjs but you can always run them in your browser if required by opening 
 ./src/test/javascript/index.html
 
-To test the application you can either run "mvn test" or "fab test". To build a full release IE ready
-for production you should run "fab build_release" which will test compile and build a release into
+To test the application you can either run "mvn test" or "fab test". Note that these tests will only cover unit
+some integration and javascript unit. For full coverage run "fab test_full" with the application running in the background
+to ensure everything is working as expected.
+
+To build a full release IE ready for production you should run "fab build_release" which will test compile and build a release into
 the release folder and produce the file "searchcode-server.tar.gz" which is a ready to deploy release.
 
 If you want to simply test and run then you can run "fab run" however this will be default build a package
 and run that. To run quickly just open in your IDE of choice and start running App.java
 
+There are a special bunch of tests used for verifying that indexing logic for GIT and File repositories works correctly. To perform 
+this you need to run one of all of the following shell scripts,
+
+./assets/integration_test/gitload/gitload.sh
+./assets/integration_test/gitupdate/gitupdate.sh
+./assets/integration_test/fileupdatetest/fileload.sh
+./assets/integration_test/fileload/fileload.sh
+
+Then add the git ones as GIT repositories in the application and the file ones as FILE repositories. It is also useful to 
+set the properties
+
+check_repo_chages=60
+check_filerepo_chages=60
+
+but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
+to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
+than 400 documents indexed at any time (if indexing all 4 repositories) and a minimum of 201 (the fileload.sh files + fileupdatetest files + gitupdate files). Leave things running over several hours to ensure that the logic works correctly.
+
+Before a release is made a build must pass all of the above checks, with the indexer logic tests being run for a minimum of 24 hours. To
+ensure that performance is acceptable the tests are also run on a Atom powered netbook.
 
 To Run
 ------
@@ -69,7 +91,7 @@ http://SERVER_IP:8080
 Be sure to replace SERVER_IP with the ip address if your server or localhost if running locally.
 If you see a page with a search bar then everything is fine.
 
-For further control you may want to edit the above files and include the java -Xmx arguement to specify the
+For further control you may want to edit the above files and include the java -Xmx argument to specify the
 amount of RAM to use or any other java option you wish to pass in.
 
 To administer your searchcode server instance you need to click on the Admin link in the top right.
@@ -88,7 +110,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.4.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.5.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
@@ -103,7 +125,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date NO DATE SPECIFIED YET this software version '1.3.4' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date DATE NOT SPECIFIED YET this software version '1.3.5' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -111,8 +133,16 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXXX XXXX - 1.3.4
- - 
+XX XXXXXXXX XXXX - 1.3.5
+ - Fix only_localhost to really only listen localhost not drop connections
+ - Add SHA512 hmac as option for signed API requests
+
+21 November 2016 - 1.3.4
+ - Refactor index logic to resolve removal bugs
+ - Optimise memory usage of file repositories
+ - Fix headers for API responses
+ - Change admin fields from disabled to readonly to allow copy paste
+ - Fix bug where sqlite_file property was being ignored
 
 02 November 2016 - 1.3.3
  - Add log level selection to admin logs page
