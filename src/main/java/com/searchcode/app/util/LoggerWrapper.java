@@ -112,7 +112,7 @@ public class LoggerWrapper {
         String message = "SEVERE: " + new Date().toString() + ": " + toLog;
         this.allCache.add(message);
         this.severeRecentCache.add(message);
-        this.logger.warning(toLog);
+        this.logger.severe(toLog);
     }
 
     public void searchLog(String toLog) {
