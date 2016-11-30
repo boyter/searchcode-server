@@ -118,7 +118,6 @@ public class LoggerWrapper {
     public void searchLog(String toLog) {
         String message = "SEARCH: " + new Date().toString() + ": " + toLog;
         this.searchLog.add(message);
-        this.searchLog.add(message);
     }
 
     public List<String> getAllLogs() {
