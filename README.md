@@ -136,6 +136,7 @@ Change Log
 XX XXXXXXXX XXXX - 1.3.5
  - Fix only_localhost to really only listen localhost not drop connections
  - Add SHA512 hmac as option for signed API requests
+ - Resolve XSS vulnerability issue
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs
