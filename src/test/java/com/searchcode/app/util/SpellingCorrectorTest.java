@@ -133,7 +133,7 @@ public class SpellingCorrectorTest extends TestCase {
 //            count++;
 //            sc.putWord(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1));
 //            Singleton.getLogger().info(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1));
-//            if (count % 100000 == 0) {
+//            if (count % 200000 == 0) {
 //                System.out.println(statsService.getMemoryUsage(","));
 //            }
 //        }

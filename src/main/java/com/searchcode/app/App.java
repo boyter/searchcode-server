@@ -14,21 +14,22 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.*;
-import com.searchcode.app.util.*;
-import net.jodah.expiringmap.ExpirationPolicy;
-import net.jodah.expiringmap.ExpiringMap;
+import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.JsonTransformer;
+import com.searchcode.app.util.LoggerWrapper;
+import com.searchcode.app.util.Properties;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import static spark.Spark.*;
 
@@ -41,10 +42,6 @@ public class App {
     public static final boolean ISCOMMUNITY = false;
     public static final String VERSION = "1.3.5";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
-    public static Map<String, SearchResult> cache = ExpiringMap.builder()
-                                                               .expirationPolicy(ExpirationPolicy.ACCESSED)
-                                                               .expiration(60, TimeUnit.SECONDS)
-                                                               .build();
 
     public static void main( String[] args ) {
         int server_port = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT), Values.DEFAULTSERVERPORT);
@@ -425,6 +422,35 @@ public class App {
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.CheckVersion();
         }, new JsonTransformer());
+
+        // Experimental method to restart the application
+        get("/admin/restart/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+
+            final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+            final File currentJar = new File(App.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+            if(!currentJar.getName().endsWith(".jar")) {
+                return false;
+            }
+
+            /* Build command: java -jar application.jar */
+            final ArrayList<String> command = new ArrayList<>();
+            command.add(javaBin);
+            command.add("-jar");
+            command.add(currentJar.getPath());
+
+            final ProcessBuilder builder = new ProcessBuilder(command);
+            builder.start();
+            System.exit(0);
+
+            return true;
+        }, new JsonTransformer());
+
     }
 
     /**

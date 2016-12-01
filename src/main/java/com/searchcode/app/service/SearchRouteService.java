@@ -10,7 +10,6 @@
 
 package com.searchcode.app.service;
 
-import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
@@ -93,10 +92,6 @@ public class SearchRouteService {
             // Need to pass in the filters into this query
             String cacheKey = query + page + reposFilter + langsFilter + ownersFilter;
 
-            if (App.cache.containsKey(cacheKey)) {
-                return App.cache.get(cacheKey);
-            }
-
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);
 
@@ -114,7 +109,6 @@ public class SearchRouteService {
                 codeSearchResult.setCode(null);
             }
 
-            App.cache.put(cacheKey, searchResult);
             return searchResult;
         }
 
