@@ -24,6 +24,7 @@ release/
 
 lib/
 logs/
+trash/
 searchcode.sqlite
 searchcode.properties
 assets/integration_test/gitload/*.php

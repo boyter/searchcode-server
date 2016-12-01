@@ -5,6 +5,7 @@ server_port=8080
 repository_location=./repo/
 index_location=./index/
 facets_location=./index/facet/
+trash_location=./trash/
 timeindex_location=./index/time/
 timeindex_facets_location=./index/time/facet/
 check_repo_chages=600
