@@ -3,7 +3,7 @@
 
 
 <div class="row search-count">
-    <b>${searchResult.totalHits} results:</b> <span class="grey">"${searchValue}"</span>
+    <b>${searchResult.totalHits} results:</b> <span class="grey">"${searchValue?html}"</span>
 </div>
 
 
