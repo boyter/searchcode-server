@@ -1,6 +1,8 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.App;
+import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
 import junit.framework.TestCase;
@@ -23,6 +25,12 @@ public class CodeRouteServiceTest extends TestCase {
         CodeRouteService codeRouteService = new CodeRouteService();
 
         Request request = Mockito.mock(Request.class);
+        Data mockData = Mockito.mock(Data.class);
+
+        when(mockData.getDataByName(Values.LOGO, Values.EMPTYSTRING)).thenReturn(Values.EMPTYSTRING);
+
+        Singleton.setData(mockData);
+
         ModelAndView modelAndView = codeRouteService.root(request, null);
 
         Map<String, Object> model = (Map<String, Object>)modelAndView.getModel();

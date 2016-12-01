@@ -1,5 +1,7 @@
 package com.searchcode.app.util;
 
+import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -119,4 +121,21 @@ public class SpellingCorrectorTest extends TestCase {
             sc.correct(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1));
         }
     }
+
+//    public void testSpellingCorrectorMemory() {
+//        Random rand = new Random();
+//        ISpellingCorrector sc = getSpellingCorrector();
+//
+//        StatsService statsService = new StatsService();
+//
+//        int count = 0;
+//        while(true) {
+//            count++;
+//            sc.putWord(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1));
+//            Singleton.getLogger().info(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1));
+//            if (count % 100000 == 0) {
+//                System.out.println(statsService.getMemoryUsage(","));
+//            }
+//        }
+//    }
 }
