@@ -637,6 +637,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Path to where the index will be built.</dd>
               <dt>facets_location</dt>
               <dd>Path to where the index facets will be built. This must not be the same value as index_location.</dd>
+              <dt>trash_location</dt>
+              <dd>Path to where the trash folders will be put. Sometimes files or folders will be created in the repository or index locations which searchcode cannot remove. If found they will be placed into this directory where it is up to a System Administrator to investigate and remove. Usually caused by the immutable bit being set.</dd>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
               <dt>check_filerepo_chages</dt>

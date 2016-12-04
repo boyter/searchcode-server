@@ -26,6 +26,9 @@ import org.quartz.SimpleTrigger;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import static org.quartz.JobBuilder.newJob;
@@ -49,6 +52,7 @@ public class JobService implements IJobService {
     private int NUMBERFILEPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);;
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+    private String TRASHLOCATION = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
     private boolean LOWMEMORY = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
 
@@ -307,11 +311,13 @@ public class JobService implements IJobService {
 
         while (attempt < 3) {
             try {
+                attempt++;
+                FileUtils.deleteDirectory(new File(indexLocation));
                 FileUtils.deleteDirectory(new File(repoLocation));
-                FileUtils.deleteDirectory(new File(indexLocation)); // Maybe use index.deleteAll?
+
                 successful = true;
-                Singleton.setBackgroundJobsEnabled(true);
-                Singleton.getLogger().info("Recrawl and rebuild of index sucessful");
+
+                Singleton.getLogger().info("Recrawl and rebuild of index successful");
                 break;
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
@@ -320,7 +326,40 @@ public class JobService implements IJobService {
             try { Thread.sleep(2000); } catch (InterruptedException e) {}
         }
 
+        if (successful == false) {
+            Singleton.getLogger().severe("ERROR - Was unable to remove files or folders in the index or repository. They have been moved to trash and must be removed manually.");
+            successful = true;
+
+            try {
+                if (new File(repoLocation).exists()) {
+                    this.moveDirectoryToTrash(repoLocation);
+                }
+            }
+            catch (IOException ex){
+                successful = false;
+                Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clear the folder manually and restart searchcode.");
+            }
+
+            try {
+                if (new File(repoLocation).exists()) {
+                    this.moveDirectoryToTrash(indexLocation);
+                }
+            }
+            catch (IOException ex){
+                successful = false;
+                Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clear the folder manually and restart searchcode.");
+            }
+        }
+
+        Singleton.setBackgroundJobsEnabled(true);
         return successful;
+    }
+
+    public void moveDirectoryToTrash(String troublesome) throws IOException {
+        Date date = new Date();
+        DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String newLocation = this.TRASHLOCATION + "/" + dateFormat.format(date);
+        FileUtils.moveDirectory(new File(troublesome), new File(newLocation));
     }
 
     @Override

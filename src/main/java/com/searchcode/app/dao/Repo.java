@@ -13,6 +13,7 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
@@ -48,13 +49,17 @@ public class Repo implements IRepo {
             return repoResults;
         }
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         repoResults = new ArrayList<>();
 
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc;");
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 int rowId = rs.getInt("rowid");
@@ -74,6 +79,11 @@ public class Repo implements IRepo {
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         this.genericCache.put(this.repoAllRepoCacheKey, repoResults);
@@ -114,14 +124,18 @@ public class Repo implements IRepo {
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc limit ?, ?;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc limit ?, ?;");
 
             stmt.setInt(1, offset);
             stmt.setInt(2, pageSize);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 int rowId = rs.getInt("rowid");
@@ -135,12 +149,14 @@ public class Repo implements IRepo {
 
                 repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         return repoResults;
@@ -152,22 +168,28 @@ public class Repo implements IRepo {
             return totalcount;
         }
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         totalcount = 0;
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select count(rowid) as totalcount from repo;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select count(rowid) as totalcount from repo;");
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 totalcount = rs.getInt("totalcount");
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         this.genericCache.put(this.repoCountCacheKey, totalcount);
@@ -180,14 +202,17 @@ public class Repo implements IRepo {
             return result;
         }
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where name=?;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where name=?;");
 
             stmt.setString(1, repositoryName);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 int rowId = rs.getInt("rowid");
@@ -201,12 +226,14 @@ public class Repo implements IRepo {
 
                 result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         if (result != null) {
@@ -217,16 +244,17 @@ public class Repo implements IRepo {
     }
 
     public synchronized void deleteRepoByName(String repositoryName) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("delete from repo where name=?;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("delete from repo where name=?;");
 
             stmt.setString(1, repositoryName);
 
             stmt.execute();
-
-            stmt.close();
-            conn.close();
 
             this.cache.remove(repositoryName);
             this.genericCache.remove(this.repoCountCacheKey);
@@ -234,6 +262,11 @@ public class Repo implements IRepo {
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
     }
 
@@ -247,11 +280,15 @@ public class Repo implements IRepo {
 
         boolean isNew = false;
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         if (existing != null) {
             // Update with new details
             try {
-                Connection conn = this.dbConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
+                conn = this.dbConfig.getConnection();
+                stmt = conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
 
                 stmt.setString(1, repoResult.getName());
                 stmt.setString(2, repoResult.getScm());
@@ -265,19 +302,21 @@ public class Repo implements IRepo {
                 stmt.setString(8, repoResult.getName());
 
                 stmt.execute();
-
-                stmt.close();
-                conn.close();
             }
             catch(SQLException ex) {
                 LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            }
+            finally {
+                Helpers.closeQuietly(rs);
+                Helpers.closeQuietly(stmt);
+                Helpers.closeQuietly(conn);
             }
         }
         else {
             isNew = true;
             try {
-                Connection conn = this.dbConfig.getConnection();
-                PreparedStatement stmt = conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
+                conn = this.dbConfig.getConnection();
+                stmt = conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
 
                 stmt.setString(1, repoResult.getName());
                 stmt.setString(2, repoResult.getScm());
@@ -288,12 +327,14 @@ public class Repo implements IRepo {
                 stmt.setString(7, repoResult.getBranch());
 
                 stmt.execute();
-
-                stmt.close();
-                conn.close();
             }
             catch(SQLException ex) {
                 LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            }
+            finally {
+                Helpers.closeQuietly(rs);
+                Helpers.closeQuietly(stmt);
+                Helpers.closeQuietly(conn);
             }
         }
 
@@ -304,13 +345,18 @@ public class Repo implements IRepo {
 
     // Schema Migrations below
     public void addSourceToTable() {
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
 
             boolean shouldAlter = true;
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             String value = "";
             while (rs.next()) {
                 value = rs.getString("name");
@@ -332,23 +378,29 @@ public class Repo implements IRepo {
                     stmt.execute();
                 }
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
+        }
     }
 
     public void addBranchToTable() {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
 
             boolean shouldAlter = true;
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
             String value = "";
             while (rs.next()) {
                 value = rs.getString("name");
@@ -372,12 +424,14 @@ public class Repo implements IRepo {
                     stmt.execute();
                 }
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
     }
 }

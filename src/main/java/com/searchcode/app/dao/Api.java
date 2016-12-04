@@ -13,6 +13,7 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
@@ -50,11 +51,14 @@ public class Api implements IApi {
 
         apiResults = new ArrayList<>();
 
-        try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api;");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-            ResultSet rs = stmt.executeQuery();
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api;");
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 int rowId = rs.getInt("rowid");
@@ -65,12 +69,14 @@ public class Api implements IApi {
 
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         this.genericCache.put(this.apiAllApiCacheKey, apiResults);
@@ -83,13 +89,17 @@ public class Api implements IApi {
             return result;
         }
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api where publickey=?;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api where publickey=?;");
 
             stmt.setString(1, publicKey);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 int rowId = rs.getInt("rowid");
@@ -100,12 +110,14 @@ public class Api implements IApi {
 
                 result = new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data);
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         if (result != null) {
@@ -118,9 +130,13 @@ public class Api implements IApi {
     public synchronized boolean saveApi(ApiResult apiResult) {
         boolean successful = false;
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO \"api\" (\"publickey\",\"privatekey\",\"lastused\",\"data\") VALUES (?,?,?,?)");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("INSERT INTO \"api\" (\"publickey\",\"privatekey\",\"lastused\",\"data\") VALUES (?,?,?,?)");
 
             stmt.setString(1, apiResult.getPublicKey());
             stmt.setString(2, apiResult.getPrivateKey());
@@ -129,8 +145,6 @@ public class Api implements IApi {
 
             stmt.execute();
 
-            stmt.close();
-            conn.close();
             successful = true;
 
             this.cache.remove(apiResult.getPublicKey());
@@ -140,22 +154,28 @@ public class Api implements IApi {
             successful = false;
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
+        }
 
 
         return successful;
     }
 
     public synchronized void deleteApiByPublicKey(String publicKey) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("delete from api where publickey=?;");
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("delete from api where publickey=?;");
 
             stmt.setString(1, publicKey);
 
             stmt.execute();
-
-            stmt.close();
-            conn.close();
 
             this.cache.remove(publicKey);
             this.genericCache.remove(apiAllApiCacheKey);
@@ -164,15 +184,24 @@ public class Api implements IApi {
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
+        }
     }
 
     // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
-        try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-            ResultSet rs = stmt.executeQuery();
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
+
+            rs = stmt.executeQuery();
             String value = "";
             while (rs.next()) {
                 value = rs.getString("name");
@@ -182,12 +211,14 @@ public class Api implements IApi {
                 stmt = conn.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
                 stmt.execute();
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
     }
 }

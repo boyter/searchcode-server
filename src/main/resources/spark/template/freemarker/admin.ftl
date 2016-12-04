@@ -99,6 +99,10 @@
         <td>${repository_location}</td>
     </tr>
     <tr>
+        <td><b>trash_location</b></td>
+        <td>${trash_location}</td>
+    </tr>
+    <tr>
         <td><b>check_repo_chages</b></td>
         <td>${check_repo_chages}</td>
     </tr>
