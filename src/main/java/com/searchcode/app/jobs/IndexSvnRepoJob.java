@@ -129,11 +129,13 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         CodeOwner owner = new CodeOwner("Unknown", codeLinesSize, (int)(System.currentTimeMillis() / 1000));
 
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml", fileName);
-            processBuilder.directory(new File(repoLocations + repoName));
+        ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml", fileName);
+        processBuilder.directory(new File(repoLocations + repoName));
 
-            Process process = processBuilder.start();
+        Process process = null;
+
+        try {
+            process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -169,6 +171,11 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
+        finally {
+            if (process != null) {
+                process.destroy();
+            }
+        }
 
         return owner;
     }
@@ -180,20 +187,23 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         List<String> deletedFiles = new ArrayList<>();
         Singleton.getLogger().info("SVN: attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
 
+
+        ProcessBuilder processBuilder;
+        if (useCredentials) {
+            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "update");
+        }
+        else {
+            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "update", "--username", repoUserName, "--password", repoPassword);
+        }
+
+        processBuilder.directory(new File(repoLocations + repoName));
+        Process process = null;
+
         try {
             String previousRevision = this.getCurrentRevision(repoLocations, repoName);
             Singleton.getLogger().info("SVN: update previous revision " + previousRevision);
 
-            ProcessBuilder processBuilder;
-            if (useCredentials) {
-                processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "update");
-            }
-            else {
-                processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "update", "--username", repoUserName, "--password", repoPassword);
-            }
-
-            processBuilder.directory(new File(repoLocations + repoName));
-            Process process = processBuilder.start();
+            process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -214,6 +224,9 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             changed = false;
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
+        finally {
+            process.destroy();
+        }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
     }
@@ -224,11 +237,13 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
 
-        try {
-            ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "diff", "-r", startRevision + ":HEAD", "--summarize", "--xml");
+        ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "diff", "-r", startRevision + ":HEAD", "--summarize", "--xml");
 
-            processBuilder.directory(new File(repoLocations + repoName));
-            Process process = processBuilder.start();
+        processBuilder.directory(new File(repoLocations + repoName));
+        Process process = null;
+
+        try {
+            process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -275,6 +290,9 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         catch(IOException | ParserConfigurationException | SAXException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
         }
+        finally {
+            process.destroy();
+        }
 
         return new RepositoryChanged(true, changedFiles, deletedFiles);
     }
@@ -282,10 +300,12 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     public String getCurrentRevision(String repoLocations, String repoName) {
         String currentRevision = "";
 
+        ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml");
+        processBuilder.directory(new File(repoLocations + repoName));
+        Process process = null;
+
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml");
-            processBuilder.directory(new File(repoLocations + repoName));
-            Process process = processBuilder.start();
+            process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -318,6 +338,9 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
         }
+        finally {
+            process.destroy();
+        }
 
         return currentRevision;
     }
@@ -327,26 +350,28 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         boolean successful = false;
         Singleton.getLogger().info("Attempting to checkout " + repoRemoteLocation);
 
+        ProcessBuilder processBuilder;
+
+        // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
+        // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
+        if (useCredentials) {
+            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
+        }
+        else {
+            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoUserName, "--password", repoPassword, repoRemoteLocation, repoName);
+        }
+
+        processBuilder.directory(new File(repoLocations));
+
+        Process process = null;
+
         try {
             File f = new File(repoLocations);
             if (!f.exists()) {
                 f.mkdir();
             }
 
-            ProcessBuilder processBuilder;
-
-            // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
-            // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
-            if (useCredentials) {
-                processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
-            }
-            else {
-                processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoUserName, "--password", repoPassword, repoRemoteLocation, repoName);
-            }
-
-            processBuilder.directory(new File(repoLocations));
-
-            Process process = processBuilder.start();
+            process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -361,6 +386,9 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            process.destroy();
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);
