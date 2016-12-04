@@ -17,6 +17,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -186,9 +187,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getBlameInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
         finally {
-            if (process != null) {
-                process.destroy();
-            }
+            Helpers.closeQuietly(process);
         }
 
         return codeOwners;

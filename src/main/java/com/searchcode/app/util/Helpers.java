@@ -179,4 +179,11 @@ public class Helpers {
         }
         catch (Exception ex) {}
     }
+
+    public static void closeQuietly(Process process) {
+        try {
+            process.destroy();
+        }
+        catch (Exception ex) {}
+    }
 }

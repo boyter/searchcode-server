@@ -172,9 +172,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
         finally {
-            if (process != null) {
-                process.destroy();
-            }
+            Helpers.closeQuietly(process);
         }
 
         return owner;
@@ -225,7 +223,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            process.destroy();
+            Helpers.closeQuietly(process);
         }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
@@ -291,7 +289,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            process.destroy();
+            Helpers.closeQuietly(process);
         }
 
         return new RepositoryChanged(true, changedFiles, deletedFiles);
@@ -339,7 +337,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            process.destroy();
+            Helpers.closeQuietly(process);
         }
 
         return currentRevision;
@@ -388,7 +386,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            process.destroy();
+            Helpers.closeQuietly(process);
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);
