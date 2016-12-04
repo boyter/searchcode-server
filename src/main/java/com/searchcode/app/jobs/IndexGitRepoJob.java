@@ -117,13 +117,15 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     public List<CodeOwner> getBlameInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         List<CodeOwner> codeOwners = new ArrayList<>(codeLinesSize);
 
-        try {
-            // -w is to ignore whitespace bug
-            ProcessBuilder processBuilder = new ProcessBuilder(this.GITBINARYPATH, "blame", "-c", "-w", fileName);
-            // The / part is required due to centos bug for version 1.1.1
-            processBuilder.directory(new File(repoLocations + "/" + repoName));
+        // -w is to ignore whitespace bug
+        ProcessBuilder processBuilder = new ProcessBuilder(this.GITBINARYPATH, "blame", "-c", "-w", fileName);
+        // The / part is required due to centos bug for version 1.1.1
+        processBuilder.directory(new File(repoLocations + "/" + repoName));
 
-            Process process = processBuilder.start();
+        Process process = null;
+
+        try {
+            process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
@@ -182,6 +184,11 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().info("getBlameInfoExternal repoloc: " + repoLocations + "/" + repoName);
             Singleton.getLogger().info("getBlameInfoExternal fileName: " + fileName);
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getBlameInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            if (process != null) {
+                process.destroy();
+            }
         }
 
         return codeOwners;
