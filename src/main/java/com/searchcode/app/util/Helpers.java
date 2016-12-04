@@ -16,6 +16,9 @@ import com.glaforge.i18n.io.CharsetToolkit;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -154,5 +157,26 @@ public class Helpers {
         }
 
         return path;
+    }
+
+    public static void closeQuietly(ResultSet resultSet) {
+        try {
+            resultSet.close();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(PreparedStatement preparedStatement) {
+        try {
+            preparedStatement.close();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(Connection connection) {
+        try {
+            connection.close();
+        }
+        catch (Exception ex) {}
     }
 }

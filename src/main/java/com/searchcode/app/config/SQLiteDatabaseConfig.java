@@ -10,6 +10,7 @@
 
 package com.searchcode.app.config;
 
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 
 import java.sql.Connection;
@@ -33,8 +34,8 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
                 // stmt.execute();
             }
         }
-        catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        catch (ClassNotFoundException ex) {
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
         }
 
         return connection;
