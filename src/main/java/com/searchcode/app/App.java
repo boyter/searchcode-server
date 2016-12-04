@@ -35,7 +35,6 @@ import static spark.Spark.*;
 
 /**
  * Main entry point for the application.
- * TODO add config override for the cache setting of 60
  */
 public class App {
 
