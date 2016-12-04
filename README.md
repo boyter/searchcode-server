@@ -139,6 +139,7 @@ XX XXXXXXXX XXXX - 1.3.5
  - Resolve XSS vulnerability issue
  - Add logic to deal with immutable files by moving to trash folder
  - Add log to display most recent search results
+ - Resolve several memory leak issues
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs
