@@ -329,37 +329,38 @@ public class SearchcodeLib {
         for (char c : firstReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
+
+        char[] otherReplacements = {'.'};
+        for (char c : otherReplacements) {
+            contents = contents.replace(c, ' ');
+        }
+        indexContents.append(" ").append(contents);
 
         char[] secondReplacements = {';', '{', '}', '/'};
         for (char c : secondReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         char[] forthReplacements = {'"', '\''};
         for (char c : forthReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         // Now do it for other characters
         char[] replacements = {'\'', '"', '.', ';', '=', '(', ')', '[', ']', '_', ';', '@', '#'};
         for (char c : replacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         char[] thirdReplacements = {'-'};
         for (char c : thirdReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         return indexContents.toString();
     }

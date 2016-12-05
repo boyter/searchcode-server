@@ -16,16 +16,19 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testCleanPipeline() {
         SearchcodeLib sl = new SearchcodeLib();
-
         String actual = sl.codeCleanPipeline("{AB3FBE3A-410C-4FB2-84E0-B2D3434D1995}");
-        assertEquals(" {AB3FBE3A-410C-4FB2-84E0-B2D3434D1995}  AB3FBE3A-410C-4FB2-84E0-B2D3434D1995   AB3FBE3A-410C-4FB2-84E0-B2D3434D1995   AB3FBE3A-410C-4FB2-84E0-B2D3434D1995   AB3FBE3A 410C 4FB2 84E0 B2D3434D1995 ", actual);
+        assertThat(actual).contains(" AB3FBE3A-410C-4FB2-84E0-B2D3434D1995 ");
+        assertThat(actual).contains(" {AB3FBE3A-410C-4FB2-84E0-B2D3434D1995} ");
+        assertThat(actual).contains(" AB3FBE3A 410C 4FB2 84E0 B2D3434D1995 ");
     }
 
     public void testCleanPipelineTwo() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.codeCleanPipeline("\"_updatedDate\"");
 
-        assertEquals(" \"_updatedDate\" \"_updatedDate\"  _updatedDate    updatedDate    updatedDate ", actual);
+        assertThat(actual).contains(" _updatedDate ");
+        assertThat(actual).contains(" updatedDate ");
+        assertThat(actual).contains(" \"_updatedDate\" ");
     }
 
     public void testCleanPipelineThree() {
@@ -33,6 +36,13 @@ public class SearchcodeLibTest extends TestCase {
         String actual = sl.codeCleanPipeline("'shop_order_log',");
 
         assertTrue(actual.indexOf(" 'shop_order_log' ") != -1);
+    }
+
+    public void testCleanPipelineCustom() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.codeCleanPipeline("context.config.URL_REWRITE.iteritems():");
+
+        assertThat(actual).contains(" URL_REWRITE ");
     }
 
     public void testIsBinary() {
