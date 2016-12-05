@@ -140,6 +140,7 @@ XX XXXXXXXX XXXX - 1.3.5
  - Add logic to deal with immutable files by moving to trash folder
  - Add log to display most recent search results
  - Resolve several memory leak issues
+ - Modify logic to allow matching URL_CONFIG in App.URL_CONFIG.toString()
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs
