@@ -8,11 +8,12 @@
  * Version 1.3.5
  */
 
-package com.searchcode.app.service;
+package com.searchcode.app.service.route;
 
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 
 import java.util.Calendar;

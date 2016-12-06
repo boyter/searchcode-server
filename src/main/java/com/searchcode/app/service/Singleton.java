@@ -18,6 +18,7 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.route.TimeSearchRouteService;
 import com.searchcode.app.util.*;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

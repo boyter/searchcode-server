@@ -8,20 +8,23 @@
  * Version 1.3.5
  */
 
-package com.searchcode.app.service;
+package com.searchcode.app.service.route;
 
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
-import com.jcraft.jsch.RequestSftp;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.CodeMatcher;
+import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.route.CommonRouteService;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.lang3.StringEscapeUtils;
