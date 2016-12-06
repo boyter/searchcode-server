@@ -166,9 +166,9 @@ public class CodeSearcher implements ICodeSearcher {
      * TODO maybe convert to hash so lookups are faster
      */
     public List<String> getRepoDocuments(String repoName, int page) {
-        int PAGELIMIT = 1000;
-        List<String> fileLocations = new ArrayList<>(PAGELIMIT);
-        int start = PAGELIMIT * page;
+        int REPOPAGELIMIT = 1000;
+        List<String> fileLocations = new ArrayList<>(REPOPAGELIMIT);
+        int start = REPOPAGELIMIT * page;
 
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
@@ -179,7 +179,7 @@ public class CodeSearcher implements ICodeSearcher {
             Query query = parser.parse(Values.REPONAME + ":" + repoName);
 
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-            int end = Math.min(results.totalHits, (PAGELIMIT * (page + 1)));
+            int end = Math.min(results.totalHits, (REPOPAGELIMIT * (page + 1)));
             ScoreDoc[] hits = results.scoreDocs;
 
             for (int i = start; i < end; i++) {
