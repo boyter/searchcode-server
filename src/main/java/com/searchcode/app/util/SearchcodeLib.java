@@ -325,7 +325,7 @@ public class SearchcodeLib {
 
         // Change how we replace strings
         // Modify the contents to match strings correctly
-        char[] firstReplacements = {'<', '>', ')', '(', '[', ']', '|', '=', ','};
+        char[] firstReplacements = {'<', '>', ')', '(', '[', ']', '|', '=', ',', ':'};
         for (char c : firstReplacements) {
             contents = contents.replace(c, ' ');
         }

@@ -45,6 +45,13 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).contains(" URL_REWRITE ");
     }
 
+    public void testCleanPipelineCustom2() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.codeCleanPipeline("task :install_something do");
+
+        assertThat(actual).contains(" install_something ");
+    }
+
     public void testIsBinary() {
         SearchcodeLib sl = new SearchcodeLib();
 
