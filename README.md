@@ -141,6 +141,9 @@ XX XXXXXXXX XXXX - 1.3.5
  - Add log to display most recent search results
  - Resolve several memory leak issues
  - Modify logic to allow matching URL_CONFIG in App.URL_CONFIG.toString()
+ - Modify logic to allow matching install_something in :install_something
+ - Logging level of OFF now does not even attempt to create log file
+ - Resolve uncaught exception when writing log
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs
