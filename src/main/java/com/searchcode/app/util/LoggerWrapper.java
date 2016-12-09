@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.*;
 
 /**
@@ -96,28 +97,43 @@ public class LoggerWrapper {
 
     public void info(String toLog) {
         String message = "INFO: " + new Date().toString() + ": " + toLog;
-        this.allCache.add(message);
-        this.infoRecentCache.add(message);
-        this.logger.info(toLog);
+        try {
+            this.allCache.add(message);
+            this.infoRecentCache.add(message);
+            this.logger.info(toLog);
+        }
+        catch (NoSuchElementException ex) {}
     }
 
     public void warning(String toLog) {
         String message = "WARNING: " + new Date().toString() + ": " + toLog;
-        this.allCache.add(message);
-        this.warningRecentCache.add(message);
-        this.logger.warning(toLog);
+
+        try {
+            this.allCache.add(message);
+            this.warningRecentCache.add(message);
+            this.logger.warning(toLog);
+        }
+        catch (NoSuchElementException ex) {}
     }
 
     public void severe(String toLog) {
         String message = "SEVERE: " + new Date().toString() + ": " + toLog;
-        this.allCache.add(message);
-        this.severeRecentCache.add(message);
-        this.logger.severe(toLog);
+
+        try {
+            this.allCache.add(message);
+            this.severeRecentCache.add(message);
+            this.logger.severe(toLog);
+        }
+        catch (NoSuchElementException ex) {}
     }
 
     public void searchLog(String toLog) {
         String message = "SEARCH: " + new Date().toString() + ": " + toLog;
-        this.searchLog.add(message);
+
+        try {
+            this.searchLog.add(message);
+        }
+        catch (NoSuchElementException ex) {}
     }
 
     public List<String> getAllLogs() {
