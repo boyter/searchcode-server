@@ -38,54 +38,58 @@ public class LoggerWrapper {
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
 
+    public boolean LOGSENABLED = true;
+
     public LoggerWrapper() {
         this.LOGCOUNT = Helpers.tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
-
+        String logLevel = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
         String path = Values.EMPTYSTRING;
-        try {
-            path = Helpers.getLogPath();
-            path += "searchcode-server-%g.log";
-            Handler handler = new FileHandler(path, this.BYTESLOGSIZE, this.LOGCOUNT);
 
-            String logLevel = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
+        if (logLevel.equals("OFF")) {
+            this.LOGSENABLED = false;
+        }
 
-            handler.setFormatter(new SimpleFormatter());
+        if (!logLevel.equals("OFF")) {
+            try {
+                path = Helpers.getLogPath();
+                path += "searchcode-server-%g.log";
+                Handler handler = new FileHandler(path, this.BYTESLOGSIZE, this.LOGCOUNT);
 
-            logger = Logger.getLogger(Values.EMPTYSTRING);
-            logger.addHandler(handler);
+                handler.setFormatter(new SimpleFormatter());
 
-            switch (logLevel.toUpperCase()) {
-                case "INFO":
-                    handler.setLevel(Level.INFO);
-                    logger.setLevel(Level.INFO);
-                    break;
-                case "FINE":
-                    handler.setLevel(Level.FINE);
-                    logger.setLevel(Level.FINE);
-                    break;
-                case "WARNING":
-                    handler.setLevel(Level.WARNING);
-                    logger.setLevel(Level.WARNING);
-                    break;
-                case "OFF":
-                    handler.setLevel(Level.OFF);
-                    logger.setLevel(Level.OFF);
-                    break;
-                case "SEVERE":
-                default:
-                    handler.setLevel(Level.SEVERE);
-                    logger.setLevel(Level.SEVERE);
-                    break;
+                logger = Logger.getLogger(Values.EMPTYSTRING);
+                logger.addHandler(handler);
+
+
+                switch (logLevel.toUpperCase()) {
+                    case "INFO":
+                        handler.setLevel(Level.INFO);
+                        logger.setLevel(Level.INFO);
+                        break;
+                    case "FINE":
+                        handler.setLevel(Level.FINE);
+                        logger.setLevel(Level.FINE);
+                        break;
+                    case "WARNING":
+                        handler.setLevel(Level.WARNING);
+                        logger.setLevel(Level.WARNING);
+                        break;
+                    case "SEVERE":
+                    default:
+                        handler.setLevel(Level.SEVERE);
+                        logger.setLevel(Level.SEVERE);
+                        break;
+                }
+
+            } catch (IOException ex) {
+                logger = Logger.getLogger(Values.EMPTYSTRING);
+                logger.setLevel(Level.WARNING);
+
+                logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
+                        "// Unable to write to logging file" + (!path.isEmpty() ? ": " + path : ".") + "\n" +
+                        "// Logs will be written to STDOUT.\n" +
+                        "//////////////////////////////////////////////////////////////////////\n");
             }
-
-        } catch (IOException ex) {
-            logger = Logger.getLogger(Values.EMPTYSTRING);
-            logger.setLevel(Level.WARNING);
-
-            logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
-                    "// Unable to write to logging file" + (!path.isEmpty() ? ": " + path : ".") + "\n" +
-                    "// Logs will be written to STDOUT.\n" +
-                    "//////////////////////////////////////////////////////////////////////\n");
         }
 
         this.allCache = EvictingQueue.create(1000);
@@ -100,7 +104,9 @@ public class LoggerWrapper {
         try {
             this.allCache.add(message);
             this.infoRecentCache.add(message);
-            this.logger.info(toLog);
+            if (this.LOGSENABLED) {
+                this.logger.info(toLog);
+            }
         }
         catch (NoSuchElementException ex) {}
     }
@@ -111,7 +117,9 @@ public class LoggerWrapper {
         try {
             this.allCache.add(message);
             this.warningRecentCache.add(message);
-            this.logger.warning(toLog);
+            if (this.LOGSENABLED) {
+                this.logger.warning(toLog);
+            }
         }
         catch (NoSuchElementException ex) {}
     }
@@ -122,7 +130,9 @@ public class LoggerWrapper {
         try {
             this.allCache.add(message);
             this.severeRecentCache.add(message);
-            this.logger.severe(toLog);
+            if (this.LOGSENABLED) {
+                this.logger.severe(toLog);
+            }
         }
         catch (NoSuchElementException ex) {}
     }
