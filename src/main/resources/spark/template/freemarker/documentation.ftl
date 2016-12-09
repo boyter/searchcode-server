@@ -660,7 +660,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dt>git_binary_path</dt>
               <dd>If you enable use_system_git you need to ensure that this equals the path to your git executable for your system. By default set to /usr/bin/git</dd>
               <dt>log_level</dt>
-              <dd>What level of logging is requested both to STDOUT and the default log file. Accepts the uppercase values of INFO, WARNING, SEVERE or OFF. By default set to SEVERE. Critical warnings will still be printed to STDOUT.</dd>
+              <dd>What level of logging is requested both to STDOUT and the default log file. Accepts the uppercase values of INFO, WARNING, SEVERE or OFF. A setting of OFF will not even create the log file. The last 1000 records of all logging levels are kept in memory and can be viewed on the Admin Log page. By default set to SEVERE. Critical warnings will still be printed to STDOUT.</dd>
               <dt>log_count</dt>
               <dd>How many rolling log files to keep. By default set to 10.</dd>
               <dt>api_enabled</dt>
