@@ -86,6 +86,8 @@ public class Values {
     public static String DEFAULT_LOG_LEVEL = "SEVERE";
     public static String TRASH_LOCATION = "trash_location";
     public static String DEFAULT_TRASH_LOCATION = "./trash/";
+    public static String LOG_PATH = "log_path";
+    public static String DEFAULT_LOG_PATH = "./logs/";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";

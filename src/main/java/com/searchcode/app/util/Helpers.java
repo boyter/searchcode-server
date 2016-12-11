@@ -12,6 +12,7 @@ package com.searchcode.app.util;
 
 
 import com.glaforge.i18n.io.CharsetToolkit;
+import com.searchcode.app.config.Values;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -150,7 +151,7 @@ public class Helpers {
     }
 
     public static String getLogPath() {
-        String path = (String) Properties.getProperties().getOrDefault("log_path", "./");
+        String path = (String) Properties.getProperties().getOrDefault(Values.LOG_PATH, Values.DEFAULT_LOG_PATH);
 
         if (!(path.endsWith("/") || path.endsWith("\\"))) {
             path = path + "/";

@@ -37,23 +37,24 @@ public class LoggerWrapper {
 
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
-
     public boolean LOGSENABLED = true;
+    private String LOGLEVEL = Values.DEFAULT_LOG_LEVEL;
+    private String LOGPATH = Values.DEFAULT_LOG_PATH;
 
     public LoggerWrapper() {
         this.LOGCOUNT = Helpers.tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
-        String logLevel = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
-        String path = Values.EMPTYSTRING;
+        this.LOGLEVEL = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
+        this.LOGPATH = Helpers.getLogPath();
 
-        if (logLevel.equals("OFF")) {
+
+        if (this.LOGLEVEL.equals("OFF")) {
             this.LOGSENABLED = false;
         }
 
-        if (!logLevel.equals("OFF")) {
+        if (!this.LOGLEVEL.equals("OFF")) {
             try {
-                path = Helpers.getLogPath();
-                path += "searchcode-server-%g.log";
-                Handler handler = new FileHandler(path, this.BYTESLOGSIZE, this.LOGCOUNT);
+                this.LOGPATH += "searchcode-server-%g.log";
+                Handler handler = new FileHandler(this.LOGPATH, this.BYTESLOGSIZE, this.LOGCOUNT);
 
                 handler.setFormatter(new SimpleFormatter());
 
@@ -61,7 +62,7 @@ public class LoggerWrapper {
                 logger.addHandler(handler);
 
 
-                switch (logLevel.toUpperCase()) {
+                switch (this.LOGLEVEL.toUpperCase()) {
                     case "INFO":
                         handler.setLevel(Level.INFO);
                         logger.setLevel(Level.INFO);
@@ -86,7 +87,7 @@ public class LoggerWrapper {
                 logger.setLevel(Level.WARNING);
 
                 logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
-                        "// Unable to write to logging file" + (!path.isEmpty() ? ": " + path : ".") + "\n" +
+                        "// Unable to write to logging file" + (!this.LOGPATH.isEmpty() ? ": " + this.LOGPATH : ".") + "\n" +
                         "// Logs will be written to STDOUT.\n" +
                         "//////////////////////////////////////////////////////////////////////\n");
             }

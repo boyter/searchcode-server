@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class HelpersTest extends TestCase {
 
     public void testOtherThing() throws FileNotFoundException {
@@ -24,6 +26,11 @@ public class HelpersTest extends TestCase {
         assertTrue(Helpers.isNullEmptyOrWhitespace(""));
         assertTrue(Helpers.isNullEmptyOrWhitespace("   "));
         assertFalse(Helpers.isNullEmptyOrWhitespace("test"));
+    }
+
+    public void testGetLogPath() {
+        String result = Helpers.getLogPath();
+        assertThat(result).isNotEmpty();
     }
 
     public void testSortByValue() {
