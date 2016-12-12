@@ -29,7 +29,6 @@ import java.util.logging.*;
  */
 public class LoggerWrapper {
 
-
     private Logger logger = null;
     private EvictingQueue allCache = null;
     private EvictingQueue infoRecentCache = null;
