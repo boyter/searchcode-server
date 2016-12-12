@@ -28,6 +28,7 @@ import java.util.logging.*;
  */
 public class LoggerWrapper {
 
+
     private Logger logger = null;
     private EvictingQueue allCache = null;
     private EvictingQueue infoRecentCache = null;
@@ -38,18 +39,43 @@ public class LoggerWrapper {
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
     public boolean LOGSENABLED = true;
+    public Level LOGLEVELENUM = Level.SEVERE;
     private String LOGLEVEL = Values.DEFAULT_LOG_LEVEL;
     private String LOGPATH = Values.DEFAULT_LOG_PATH;
+    private boolean LOGSTDOUT = false;
 
     public LoggerWrapper() {
         this.LOGCOUNT = Helpers.tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
         this.LOGLEVEL = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
         this.LOGPATH = Helpers.getLogPath();
 
-
         if (this.LOGLEVEL.equals("OFF")) {
             this.LOGSENABLED = false;
         }
+
+        switch (this.LOGLEVEL.toUpperCase()) {
+            case "INFO":
+                this.LOGLEVELENUM = Level.INFO;
+                break;
+            case "FINE":
+                this.LOGLEVELENUM = Level.FINE;
+                break;
+            case "WARNING":
+                this.LOGLEVELENUM = Level.WARNING;
+                break;
+            case "SEVERE":
+            default:
+                this.LOGLEVELENUM = Level.SEVERE;
+                break;
+        }
+
+        if (this.LOGPATH.equals("STDOUT")) {
+            this.LOGSTDOUT = true;
+            this.LOGSENABLED = false;
+            this.LOGLEVEL = "OFF";
+        }
+
+
 
         if (!this.LOGLEVEL.equals("OFF")) {
             try {
@@ -65,28 +91,28 @@ public class LoggerWrapper {
                 switch (this.LOGLEVEL.toUpperCase()) {
                     case "INFO":
                         handler.setLevel(Level.INFO);
-                        logger.setLevel(Level.INFO);
+                        this.logger.setLevel(Level.INFO);
                         break;
                     case "FINE":
                         handler.setLevel(Level.FINE);
-                        logger.setLevel(Level.FINE);
+                        this.logger.setLevel(Level.FINE);
                         break;
                     case "WARNING":
                         handler.setLevel(Level.WARNING);
-                        logger.setLevel(Level.WARNING);
+                        this.logger.setLevel(Level.WARNING);
                         break;
                     case "SEVERE":
                     default:
                         handler.setLevel(Level.SEVERE);
-                        logger.setLevel(Level.SEVERE);
+                        this.logger.setLevel(Level.SEVERE);
                         break;
                 }
 
             } catch (IOException ex) {
-                logger = Logger.getLogger(Values.EMPTYSTRING);
-                logger.setLevel(Level.WARNING);
+                this.logger = Logger.getLogger(Values.EMPTYSTRING);
+                this.logger.setLevel(Level.WARNING);
 
-                logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
+                this.logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
                         "// Unable to write to logging file" + (!this.LOGPATH.isEmpty() ? ": " + this.LOGPATH : ".") + "\n" +
                         "// Logs will be written to STDOUT.\n" +
                         "//////////////////////////////////////////////////////////////////////\n");
@@ -108,6 +134,10 @@ public class LoggerWrapper {
             if (this.LOGSENABLED) {
                 this.logger.info(toLog);
             }
+
+            if (this.LOGSTDOUT && this.isLoggable(Level.INFO)) {
+                System.out.println(message);
+            }
         }
         catch (NoSuchElementException ex) {}
     }
@@ -121,6 +151,10 @@ public class LoggerWrapper {
             if (this.LOGSENABLED) {
                 this.logger.warning(toLog);
             }
+
+            if (this.LOGSTDOUT && this.isLoggable(Level.WARNING)) {
+                System.out.println(message);
+            }
         }
         catch (NoSuchElementException ex) {}
     }
@@ -133,6 +167,10 @@ public class LoggerWrapper {
             this.severeRecentCache.add(message);
             if (this.LOGSENABLED) {
                 this.logger.severe(toLog);
+            }
+
+            if (this.LOGSTDOUT && this.isLoggable(Level.SEVERE)) {
+                System.out.println(message);
             }
         }
         catch (NoSuchElementException ex) {}
@@ -170,5 +208,16 @@ public class LoggerWrapper {
     public List<String> getSearchLogs() {
         List<String> values = new ArrayList(this.searchLog);
         return Lists.reverse(values);
+    }
+
+    public boolean isLoggable(Level level) {
+        int levelValue = level.intValue();
+        int mainValue = this.LOGLEVELENUM.intValue();
+
+        if (levelValue >= mainValue) {
+            return true;
+        }
+
+        return false;
     }
 }

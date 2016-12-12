@@ -153,6 +153,10 @@ public class Helpers {
     public static String getLogPath() {
         String path = (String) Properties.getProperties().getOrDefault(Values.LOG_PATH, Values.DEFAULT_LOG_PATH);
 
+        if (path.toUpperCase().equals("STDOUT")) {
+            return path.toUpperCase();
+        }
+
         if (!(path.endsWith("/") || path.endsWith("\\"))) {
             path = path + "/";
         }
