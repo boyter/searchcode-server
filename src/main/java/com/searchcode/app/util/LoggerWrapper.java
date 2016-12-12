@@ -25,6 +25,7 @@ import java.util.logging.*;
  * Wrapper around logging so that we can store the logging inside a in memory queue
  * which can then be displayed rather then hit the filesystem. Should in theory allow
  * quick filters and the like.
+ * TODO refactor this it is starting to get ugly
  */
 public class LoggerWrapper {
 
