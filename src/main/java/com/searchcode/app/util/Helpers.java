@@ -40,13 +40,16 @@ public class Helpers {
      */
     public static String calculateMd5(String filePath) {
         String md5 = "";
+        FileInputStream fis = null;
         try {
-            FileInputStream fis = new FileInputStream(new File(filePath));
+            fis = new FileInputStream(new File(filePath));
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-            fis.close();
         } // Both the below should be caught before this point
         catch(FileNotFoundException ex) {}
         catch(IOException ex) {}
+        finally {
+            IOUtils.closeQuietly(fis);
+        }
 
         return md5;
     }

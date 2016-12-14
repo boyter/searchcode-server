@@ -11,6 +11,7 @@
 package com.searchcode.app.util;
 
 import com.searchcode.app.service.Singleton;
+import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,11 +28,16 @@ public class Properties {
     public static java.util.Properties getProperties() {
         if (properties == null) {
             properties = new java.util.Properties();
+            FileInputStream fileInputStream = null;
             try {
-                properties.load(new FileInputStream("searchcode.properties"));
+                fileInputStream = new FileInputStream("searchcode.properties");
+                properties.load(fileInputStream);
             } catch (IOException e) {
                 // TODO Use second 'stdout' logger here, because ctor LoggerWrapper call this method
                 Singleton.getLogger().severe("Unable to load 'searchcode.properties' file. Will resort to defaults for all values.");
+            }
+            finally {
+                IOUtils.closeQuietly(fileInputStream);
             }
         }
 

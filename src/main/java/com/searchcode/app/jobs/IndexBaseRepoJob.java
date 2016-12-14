@@ -24,6 +24,7 @@ import com.searchcode.app.util.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -478,13 +479,16 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public String getFileMd5(String fileName) {
         String md5Hash = Values.EMPTYSTRING;
+        FileInputStream fis = null;
 
         try {
-            FileInputStream fis = new FileInputStream(new File(fileName));
+            fis = new FileInputStream(new File(fileName));
             md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-            fis.close();
         } catch (IOException ex) {
             Singleton.getLogger().warning("Unable to generate MD5 for " + fileName);
+        }
+        finally {
+            IOUtils.closeQuietly(fis);
         }
 
         return md5Hash;
