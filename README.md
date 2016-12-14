@@ -144,6 +144,8 @@ XX XXXXXXXX XXXX - 1.3.5
  - Modify logic to allow matching install_something in :install_something
  - Logging level of OFF now does not even attempt to create log file
  - Resolve uncaught exception when writing log
+ - Close resource/memory leak in opened files
+ - Changed removal logic for removed files to be less aggressive
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs
