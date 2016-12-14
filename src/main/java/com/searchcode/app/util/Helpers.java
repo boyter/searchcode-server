@@ -73,34 +73,42 @@ public class Helpers {
      */
     public static List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
-
         Scanner input = new Scanner(new File(filePath));
 
-        int counter = 0;
-        while(input.hasNextLine() && counter < maxFileLineDepth)
-        {
-            lines.add(input.nextLine());
-            counter++;
+        try {
+            int counter = 0;
+            while (input.hasNextLine() && counter < maxFileLineDepth) {
+                lines.add(input.nextLine());
+                counter++;
+            }
+        }
+        finally {
+            input.close();
         }
 
         return lines;
     }
 
     public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
-        BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream(filePath), guessCharset(new File(filePath))));
-
         List<String> fileLines = new ArrayList<>();
-        String line = "";
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
 
-        int lineCount = 0;
-        while ((line = reader.readLine()) != null) {
-            lineCount++;
+        try {
+            String line;
 
-            fileLines.add(line);
+            int lineCount = 0;
+            while ((line = reader.readLine()) != null) {
+                lineCount++;
 
-            if (lineCount == maxFileLineDepth) {
-                return fileLines;
+                fileLines.add(line);
+
+                if (lineCount == maxFileLineDepth) {
+                    return fileLines;
+                }
             }
+        }
+        finally {
+            reader.close();
         }
 
         return fileLines;

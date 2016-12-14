@@ -530,7 +530,6 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-
     /*
      * The below are are shared among all extending classes
      */
