@@ -13,6 +13,7 @@ package com.searchcode.app.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -73,17 +74,19 @@ public class Helpers {
      */
     public static List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
-        Scanner input = new Scanner(new File(filePath));
+        Scanner input = null;
+        int counter = 0;
 
         try {
-            int counter = 0;
+            input = new Scanner(new File(filePath));
+
             while (input.hasNextLine() && counter < maxFileLineDepth) {
                 lines.add(input.nextLine());
                 counter++;
             }
         }
         finally {
-            input.close();
+            IOUtils.closeQuietly(input);
         }
 
         return lines;
@@ -91,10 +94,11 @@ public class Helpers {
 
     public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
         List<String> fileLines = new ArrayList<>();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
+        BufferedReader reader = null;
+        String line;
 
         try {
-            String line;
+            reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
 
             int lineCount = 0;
             while ((line = reader.readLine()) != null) {
@@ -108,7 +112,7 @@ public class Helpers {
             }
         }
         finally {
-            reader.close();
+            IOUtils.closeQuietly(reader);
         }
 
         return fileLines;
