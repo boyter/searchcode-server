@@ -1810,21 +1810,23 @@ m.mount(document.getElementsByClassName('container')[0], m.component(SearchCompo
 
 // For when someone hits the back button in the browser
 window.onpopstate = function(event) {
-    SearchModel.searchvalue(event.state.searchvalue);
-    SearchModel.currentpage(event.state.currentpage);
-    SearchModel.activelangfilters(event.state.langfilters);
-    SearchModel.langfilters(event.state.langfilters);
-    SearchModel.activerepositoryfilters(event.state.repofilters);
-    SearchModel.repositoryfilters(event.state.repofilters);
-    SearchModel.ownfilters(event.state.ownfilters);
-    SearchModel.activeownfilters(event.state.ownfilters);
+    if (event && event.state) {
+        SearchModel.searchvalue(event.state.searchvalue);
+        SearchModel.currentpage(event.state.currentpage);
+        SearchModel.activelangfilters(event.state.langfilters);
+        SearchModel.langfilters(event.state.langfilters);
+        SearchModel.activerepositoryfilters(event.state.repofilters);
+        SearchModel.repositoryfilters(event.state.repofilters);
+        SearchModel.ownfilters(event.state.ownfilters);
+        SearchModel.activeownfilters(event.state.ownfilters);
 
-    SearchModel.search(event.state.currentpage, true);
-    popstate = true;
+        SearchModel.search(event.state.currentpage, true);
+        popstate = true;
+    }
 };
 
 // For direct links to search results 
-if (preload !== undefined) {
+if (typeof preload !== 'undefined') {
     SearchModel.searchvalue(preload.query);
     SearchModel.currentpage(preload.page);
 
