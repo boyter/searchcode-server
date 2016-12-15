@@ -380,9 +380,6 @@ public abstract class IndexBaseRepoJob implements Job {
 
                         String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
                         String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
-                        // Is used for finding the file on disk, so needs to be the path to the actual file
-                        // it is also the primary key for everything
-
 
                         String newString = getBlameFilePath(fileLocationFilename);
                         String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);

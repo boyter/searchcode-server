@@ -40,15 +40,15 @@ public class Helpers {
      */
     public static String calculateMd5(String filePath) {
         String md5 = "";
-        FileInputStream fis = null;
+        FileInputStream fileInputStream = null;
         try {
-            fis = new FileInputStream(new File(filePath));
-            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
+            fileInputStream = new FileInputStream(new File(filePath));
+            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fileInputStream);
         } // Both the below should be caught before this point
         catch(FileNotFoundException ex) {}
         catch(IOException ex) {}
         finally {
-            IOUtils.closeQuietly(fis);
+            IOUtils.closeQuietly(fileInputStream);
         }
 
         return md5;
@@ -57,7 +57,6 @@ public class Helpers {
     /**
      * Similar to the C# Int.TryParse where you pass in a string and if no good it will use the
      * default value which is also parsed... which seems odd now I think about it
-     * TODO investigate if the second argument could be an int
      */
     public static int tryParseInt(String toParse, String defaultValue) {
         int result;
@@ -77,19 +76,19 @@ public class Helpers {
      */
     public static List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
-        Scanner input = null;
+        Scanner scanner = null;
         int counter = 0;
 
         try {
-            input = new Scanner(new File(filePath));
+            scanner = new Scanner(new File(filePath));
 
-            while (input.hasNextLine() && counter < maxFileLineDepth) {
-                lines.add(input.nextLine());
+            while (scanner.hasNextLine() && counter < maxFileLineDepth) {
+                lines.add(scanner.nextLine());
                 counter++;
             }
         }
         finally {
-            IOUtils.closeQuietly(input);
+            IOUtils.closeQuietly(scanner);
         }
 
         return lines;
@@ -97,14 +96,14 @@ public class Helpers {
 
     public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
         List<String> fileLines = new ArrayList<>();
-        BufferedReader reader = null;
+        BufferedReader bufferedReader = null;
         String line;
 
         try {
-            reader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
 
             int lineCount = 0;
-            while ((line = reader.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 lineCount++;
 
                 fileLines.add(line);
@@ -115,7 +114,7 @@ public class Helpers {
             }
         }
         finally {
-            IOUtils.closeQuietly(reader);
+            IOUtils.closeQuietly(bufferedReader);
         }
 
         return fileLines;
