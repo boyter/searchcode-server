@@ -11,6 +11,8 @@
 package com.searchcode.app.service;
 
 
+import com.searchcode.app.config.Values;
+
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
@@ -23,12 +25,15 @@ import java.text.NumberFormat;
  */
 public class StatsService {
 
-    private String totalSearchKey = "statsservice-totalsearch";
-
     public void incrementSearchCount() {
-        int totalCount = (Integer) Singleton.getGenericCache().getOrDefault(totalSearchKey, 0);
+        int totalCount = (Integer) Singleton.getGenericCache().getOrDefault(Values.CACHE_TOTAL_SEARCH, 0);
+
+        if (totalCount == Integer.MAX_VALUE) {
+            totalCount = 0;
+        }
+
         totalCount++;
-        Singleton.getGenericCache().put(totalSearchKey, totalCount);
+        Singleton.getGenericCache().put(Values.CACHE_TOTAL_SEARCH, totalCount);
     }
 
     public String getLoadAverage() {
@@ -97,6 +102,6 @@ public class StatsService {
     }
 
     public int getSearchCount() {
-        return (Integer) Singleton.getGenericCache().getOrDefault(totalSearchKey, 0);
+        return (Integer) Singleton.getGenericCache().getOrDefault(Values.CACHE_TOTAL_SEARCH, 0);
     }
 }

@@ -114,6 +114,9 @@ public class Values {
     public static String USERSESSIONID = "admin_user";
     public static String EMPTYSTRING = "";
 
+    // Cache lookup values
+    public static String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
+
     // Job values used in the quartz jobs
 
     // Used for lookups from the data database table
