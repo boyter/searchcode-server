@@ -22,6 +22,15 @@ If you would like to submit code to be integrated into searchcode server please 
 
 Before making any submission be sure to run "fab test"
 
+To Build TL/DR;
+---------------
+ - Install Java 8 (Oracle or OpenJDK)
+ - Install Maven
+ - Install Python and Fabric (optional)
+ - Install NPM and run "npm install -g node-qunit-phantomjs" (optional)
+ - mvn test OR fab test (if fabric) to run unit tests
+ - fab test_full (if fabric) to run all tests (need to be running application in background first)
+
 To Build
 --------
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
@@ -60,6 +69,7 @@ than 400 documents indexed at any time (if indexing all 4 repositories) and a mi
 
 Before a release is made a build must pass all of the above checks, with the indexer logic tests being run for a minimum of 24 hours. To
 ensure that performance is acceptable the tests are also run on a Atom powered netbook.
+
 
 To Run
 ------
