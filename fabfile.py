@@ -20,6 +20,8 @@ from fabric.api import prompt
 from fabric.utils import warn
 from fabric.contrib.files import sed
 from fabric.context_managers import settings, hide, cd
+from fabric.colors import yellow
+
 
 import os
 from os import path
@@ -55,7 +57,7 @@ def js_test():
     local('node-qunit-phantomjs ./src/test/javascript/index.html')
 
 def test_integration():
-    print 'Be sure to run: "fab compile_js configure_prod run" first'
+    print(yellow('Be sure to run: "fab compile_js configure_prod run" first'))
     local("python ./assets/integration_test/test.py")
     local("python ./assets/integration_test/fuzztest.py")
     local("python ./assets/integration_test/signed_testing.py")
