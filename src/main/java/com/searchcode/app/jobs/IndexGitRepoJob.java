@@ -300,12 +300,15 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         List<String> deletedFiles = new ArrayList<>();
         Singleton.getLogger().info("Attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
 
+        Repository localRepository = null;
+        Git git = null;
+
         try {
-            Repository localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
+            localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
 
             Ref head = localRepository.getRef("HEAD");
+            git = new Git(localRepository);
 
-            Git git = new Git(localRepository);
             git.reset();
             git.clean();
 
@@ -355,6 +358,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             changed = false;
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
+        finally {
+            Helpers.closeQuietly(localRepository);
+            Helpers.closeQuietly(git);
+        }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
     }
@@ -367,6 +374,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         boolean successful = false;
         Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
 
+        Git call = null;
+
         try {
             CloneCommand cloneCommand = Git.cloneRepository();
             cloneCommand.setURI(repoRemoteLocation);
@@ -378,13 +387,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
             }
 
-            cloneCommand.call();
-
+            call = cloneCommand.call();
             successful = true;
-
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoName + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(call);
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);

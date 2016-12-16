@@ -14,6 +14,8 @@ package com.searchcode.app.util;
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Repository;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -202,6 +204,20 @@ public class Helpers {
     public static void closeQuietly(Process process) {
         try {
             process.destroy();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(Repository repository) {
+        try {
+           repository.close();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(Git git) {
+        try {
+            git.close();
         }
         catch (Exception ex) {}
     }
