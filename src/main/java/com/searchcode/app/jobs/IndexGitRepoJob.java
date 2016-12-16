@@ -244,7 +244,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 Singleton.getLogger().info("getBlameInfo blame is null for " + repoLoc + " " + fileName);
             }
 
-
             if (blame != null) {
                 // Get all the owners their number of commits and most recent commit
                 HashMap<String, CodeOwner> owners = new HashMap<>();
@@ -279,12 +278,12 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 codeOwners = new ArrayList<>(owners.values());
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Singleton.getLogger().info("IOException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+        } catch (GitAPIException ex) {
+            Singleton.getLogger().info("GitAPIException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+        } catch (IllegalArgumentException ex) {
+            Singleton.getLogger().info("IllegalArgumentException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
         }
 
         System.gc(); // Try to clean up
