@@ -88,11 +88,15 @@ public class LoggerWrapperTest extends TestCase {
         LoggerWrapper logger = new LoggerWrapper();
         Random rand = new Random();
 
-//        while(true) {
-//            logger.severe(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-//            logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-//            logger.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-//        }
+        for (int i = 0; i< 2000; i++) {
+            logger.severe(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            logger.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+        }
+
+        assertThat(logger.getInfoLogs().size()).isEqualTo(1000);
+        assertThat(logger.getSevereLogs().size()).isEqualTo(1000);
+        assertThat(logger.getWarningLogs().size()).isEqualTo(1000);
     }
 
 // TODO look into this, appears to be related to stressing the properties lookup more than anything
