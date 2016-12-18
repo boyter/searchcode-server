@@ -2,6 +2,7 @@ package com.searchcode.app.util;
 
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.assertj.core.api.AssertionsForClassTypes;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -126,6 +127,41 @@ public class LoggerWrapperTest extends TestCase {
 
         assertThat(logger.getSearchLogs().get(0)).contains("two");
         assertThat(logger.getSearchLogs().get(1)).contains("one");
+    }
+
+    public void testLoggerWithThreads() throws InterruptedException {
+        // You can only prove the presence of concurrent bugs, not their absence.
+        // Although that's true of any code. Anyway let's see if we can identify any...
+
+        LoggerWrapper loggerWrapper = new LoggerWrapper();
+        Random rand = new Random();
+
+        for(int i = 0; i < 100; i++) {
+            new Thread() {
+                public void run() {
+                    int count = 10000;
+                    while (count > 0) {
+                        loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                        loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                        loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                        count--;
+                    }
+                }
+            }.start();
+        }
+
+        int count = 10000;
+        while (count > 0) {
+            loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            count--;
+        }
+
+        AssertionsForClassTypes.assertThat(loggerWrapper.getInfoLogs().size()).isEqualTo(1000);
+        AssertionsForClassTypes.assertThat(loggerWrapper.getWarningLogs().size()).isEqualTo(1000);
+        AssertionsForClassTypes.assertThat(loggerWrapper.getAllLogs().size()).isEqualTo(1000);
+        AssertionsForClassTypes.assertThat(loggerWrapper.getSearchLogs().size()).isEqualTo(1000);
     }
 
 // TODO look into this, appears to be related to stressing the properties lookup more than anything
