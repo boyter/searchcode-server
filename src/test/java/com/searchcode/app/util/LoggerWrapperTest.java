@@ -2,7 +2,6 @@ package com.searchcode.app.util;
 
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.assertj.core.api.AssertionsForClassTypes;
 
 import java.util.Random;
 import java.util.logging.Level;
@@ -158,10 +157,10 @@ public class LoggerWrapperTest extends TestCase {
             count--;
         }
 
-        AssertionsForClassTypes.assertThat(loggerWrapper.getInfoLogs().size()).isEqualTo(1000);
-        AssertionsForClassTypes.assertThat(loggerWrapper.getWarningLogs().size()).isEqualTo(1000);
-        AssertionsForClassTypes.assertThat(loggerWrapper.getAllLogs().size()).isEqualTo(1000);
-        AssertionsForClassTypes.assertThat(loggerWrapper.getSearchLogs().size()).isEqualTo(1000);
+        assertThat(loggerWrapper.getInfoLogs().size()).isEqualTo(1000);
+        assertThat(loggerWrapper.getWarningLogs().size()).isEqualTo(1000);
+        assertThat(loggerWrapper.getAllLogs().size()).isEqualTo(1000);
+        assertThat(loggerWrapper.getSearchLogs().size()).isEqualTo(1000);
     }
 
 // TODO look into this, appears to be related to stressing the properties lookup more than anything
