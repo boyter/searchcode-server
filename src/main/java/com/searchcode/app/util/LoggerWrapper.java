@@ -126,7 +126,7 @@ public class LoggerWrapper {
         this.searchLog = EvictingQueue.create(1000);
     }
 
-    public void info(String toLog) {
+    public synchronized void info(String toLog) {
         String message = "INFO: " + new Date().toString() + ": " + toLog;
         try {
             this.allCache.add(message);
@@ -142,7 +142,7 @@ public class LoggerWrapper {
         catch (NoSuchElementException ex) {}
     }
 
-    public void warning(String toLog) {
+    public synchronized void warning(String toLog) {
         String message = "WARNING: " + new Date().toString() + ": " + toLog;
 
         try {
@@ -159,7 +159,7 @@ public class LoggerWrapper {
         catch (NoSuchElementException ex) {}
     }
 
-    public void severe(String toLog) {
+    public synchronized void severe(String toLog) {
         String message = "SEVERE: " + new Date().toString() + ": " + toLog;
 
         try {
@@ -176,7 +176,7 @@ public class LoggerWrapper {
         catch (NoSuchElementException ex) {}
     }
 
-    public void searchLog(String toLog) {
+    public synchronized void searchLog(String toLog) {
         String message = "SEARCH: " + new Date().toString() + ": " + toLog;
 
         try {
@@ -185,29 +185,59 @@ public class LoggerWrapper {
         catch (NoSuchElementException ex) {}
     }
 
-    public List<String> getAllLogs() {
-        List<String> values = new ArrayList(this.allCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getAllLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.allCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getInfoLogs() {
-        List<String> values = new ArrayList(this.infoRecentCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getInfoLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.infoRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getWarningLogs() {
-        List<String> values = new ArrayList(this.warningRecentCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getWarningLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.warningRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getSevereLogs() {
-        List<String> values = new ArrayList(this.severeRecentCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getSevereLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.severeRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getSearchLogs() {
-        List<String> values = new ArrayList(this.searchLog);
-        return Lists.reverse(values);
+    public synchronized List<String> getSearchLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.searchLog);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
     public boolean isLoggable(Level level) {

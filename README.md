@@ -157,6 +157,7 @@ XX XXXXXXXX XXXX - 1.3.5
  - Close resource/memory leak in opened files
  - Changed removal logic for removed files to be less aggressive
  - Fix potential overflow for search query count (however unlikely that is)
+ - Fix race conditions with logging
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs
