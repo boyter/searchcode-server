@@ -112,6 +112,10 @@ of every page).
 Upgrades
 --------
 
+Always keep in mind that upgrades are best done with a full reindex. You can either do this by deleting the contents
+of the index directory that you have configured in your searchcode.properties file or by clicking the "Recrawl & Rebuild Indexes" 
+button in the admin screen. 
+
 To upgrade your current instance of searchcode perform the following steps.
 
 * Stop your current instance of searchcode server
