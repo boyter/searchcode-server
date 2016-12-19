@@ -142,6 +142,21 @@ public class Helpers {
     }
 
     /**
+     * Generic file paths that should be ignored
+     */
+    public static boolean ignoreFiles(String fileParent) {
+        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/") || fileParent.contains(".git/") || fileParent.equals(".git")) {
+            return true;
+        }
+
+        if (fileParent.endsWith("/.svn") || fileParent.contains("/.svn/")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Byte order mark issue fix see
      * http://stackoverflow.com/questions/4569123/content-is-not-allowed-in-prolog-saxparserexception
      */

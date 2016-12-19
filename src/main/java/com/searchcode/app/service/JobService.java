@@ -242,6 +242,33 @@ public class JobService implements IJobService {
     }
 
     /**
+     * Starts a background job which updates the spelling corrector
+     */
+    public void startSpellingJob() {
+        try {
+            Scheduler scheduler = Singleton.getScheduler();
+
+            // Setup the indexer which runs forever adding documents to be indexed
+            JobDetail job = newJob(PopulateSpellingCorrectorJob.class)
+                    .withIdentity("spellingjob")
+                    .build();
+
+            SimpleTrigger trigger = newTrigger()
+                    .withIdentity("spellingjob")
+                    .withSchedule(simpleSchedule()
+                                    .withIntervalInSeconds(30)
+                                    .repeatForever()
+                    )
+                    .build();
+
+            scheduler.scheduleJob(job, trigger);
+            scheduler.start();
+        }  catch(SchedulerException ex) {
+            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+    }
+
+    /**
      * Starts all of the above jobs as per their unique requirements
      * TODO fix so this can only run once
      * TODO move the indexer job start into method like the above ones
@@ -274,8 +301,8 @@ public class JobService implements IJobService {
 
             // Setup the job which queues things to be downloaded and then indexed
             startEnqueueJob();
-            // Setup the job which deletes repositories
             startDeleteJob();
+            startSpellingJob();
 
             // Setup the indexer which runs forever indexing
             JobDetail job = newJob(IndexDocumentsJob.class)

@@ -17,6 +17,7 @@ import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -130,14 +131,6 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public boolean ignoreFile(String fileParent) {
-        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/") || fileParent.contains(".git/") || fileParent.equals(".git")) {
-            return true;
-        }
-
-        if (fileParent.endsWith("/.svn") || fileParent.contains("/.svn/")) {
-            return true;
-        }
-
-        return false;
+        return Helpers.ignoreFiles(fileParent);
     }
 }
