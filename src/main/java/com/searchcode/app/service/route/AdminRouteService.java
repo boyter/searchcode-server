@@ -87,6 +87,7 @@ public class AdminRouteService {
         map.put("currentdatetime", new Date().toString());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("spellingCount", Singleton.getSpellingCorrector().getWordCount());
 
         map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
 

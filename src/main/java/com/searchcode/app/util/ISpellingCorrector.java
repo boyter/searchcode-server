@@ -12,6 +12,7 @@ package com.searchcode.app.util;
 
 
 public interface ISpellingCorrector {
+    int getWordCount();
     void putWord(String word);
     String correct(String word);
     boolean containsWord(String word);

@@ -40,6 +40,11 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
     }
 
     @Override
+    public int getWordCount() {
+        return dictionary.size();
+    }
+
+    @Override
     public void putWord(String word) {
         word = word.toLowerCase();
         if (dictionary.containsKey(word)) {
