@@ -676,6 +676,7 @@ public class SearchcodeLib {
         classifier.add(new Classifier("Precompiled Header", "pch", ""));
         classifier.add(new Classifier("Opalang", "opa", ""));
         classifier.add(new Classifier("Portage Installer", "ebuild", ""));
+        classifier.add(new Classifier("Crystal", "cr", ""));
     }
 
 
