@@ -256,7 +256,7 @@ public class JobService implements IJobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("spellingjob")
                     .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(30)
+                                    .withIntervalInSeconds(360)
                                     .repeatForever()
                     )
                     .build();
