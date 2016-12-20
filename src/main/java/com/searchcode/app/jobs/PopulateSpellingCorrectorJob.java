@@ -24,9 +24,8 @@ public class PopulateSpellingCorrectorJob implements Job {
             return;
         }
 
-
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         Path path = Paths.get(Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION));
-
         Singleton.getLogger().info("Starting PopulateSpellingCorrectorJob in path " + path.toString());
 
         try {
