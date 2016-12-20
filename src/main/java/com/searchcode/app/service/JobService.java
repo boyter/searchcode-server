@@ -38,10 +38,11 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * Starts all of the quartz jobs which perform background tasks such as cloning/updating from GIT/SVN and
  * the jobs which delete repositories and which add repositories to the queue to be indexed.
+ *
+ * TODO implement using below for the stopping and starting of jobs
+ * http://stackoverflow.com/questions/7159080/how-to-interrupt-or-stop-currently-running-quartz-job#7159719
  */
 public class JobService implements IJobService {
-
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     private IRepo repo = null;
     private int UPDATETIME = 600;
@@ -98,7 +99,7 @@ public class JobService implements IJobService {
             scheduler.start();
         }
         catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
@@ -130,7 +131,7 @@ public class JobService implements IJobService {
             scheduler.start();
         }
         catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
@@ -163,7 +164,7 @@ public class JobService implements IJobService {
             scheduler.start();
         }
         catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
@@ -209,8 +210,8 @@ public class JobService implements IJobService {
 
             scheduler2.scheduleJob(job2, trigger2);
             scheduler2.start();
-        }  catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        } catch (SchedulerException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
@@ -236,8 +237,8 @@ public class JobService implements IJobService {
 
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
-        }  catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        } catch (SchedulerException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
@@ -263,8 +264,8 @@ public class JobService implements IJobService {
 
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
-        }  catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        } catch (SchedulerException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
@@ -276,51 +277,55 @@ public class JobService implements IJobService {
     @Override
     public void initialJobs() {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
-            List<RepoResult> repoResults = this.repo.getAllRepo();
-
-            // Create a pool of crawlers which read from the queue
-            for (int i = 0; i < this.NUMBERGITPROCESSORS; i++) {
-                this.startIndexGitRepoJobs("" + i);
-            }
-
-            if (SVNENABLED) {
-                for (int i = 0; i < this.NUMBERSVNPROCESSORS; i++) {
-                    this.startIndexSvnRepoJobs("" + i);
-                }
-            }
-
-            for (int i = 0; i < this.NUMBERFILEPROCESSORS; i++) {
-                this.startIndexFileRepoJobs("" + i);
-            }
-
-            if (repoResults.size() == 0) {
-                LOGGER.info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
-            }
-
-            // Setup the job which queues things to be downloaded and then indexed
+            startRepositoryJobs();
             startEnqueueJob();
             startDeleteJob();
             startSpellingJob();
+            startIndexerJob();
+        } catch (SchedulerException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+    }
 
-            // Setup the indexer which runs forever indexing
-            JobDetail job = newJob(IndexDocumentsJob.class)
-                    .withIdentity("indexerjob")
-                    .build();
+    public void startIndexerJob() throws SchedulerException {
+        Scheduler scheduler = Singleton.getScheduler();
+        // Setup the indexer which runs forever indexing
+        JobDetail job = newJob(IndexDocumentsJob.class)
+                .withIdentity("indexerjob")
+                .build();
 
-            SimpleTrigger trigger = newTrigger()
-                    .withIdentity("indexerjob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
-                    )
-                    .build();
+        SimpleTrigger trigger = newTrigger()
+                .withIdentity("indexerjob")
+                .withSchedule(simpleSchedule()
+                                .withIntervalInSeconds(this.INDEXTIME)
+                                .repeatForever()
+                )
+                .build();
 
-            scheduler.scheduleJob(job, trigger);
-            scheduler.start();
-        } catch(SchedulerException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        scheduler.scheduleJob(job, trigger);
+        scheduler.start();
+    }
+
+    public void startRepositoryJobs() {
+        List<RepoResult> repoResults = this.repo.getAllRepo();
+
+        // Create a pool of crawlers which read from the queue
+        for (int i = 0; i < this.NUMBERGITPROCESSORS; i++) {
+            this.startIndexGitRepoJobs("" + i);
+        }
+
+        if (SVNENABLED) {
+            for (int i = 0; i < this.NUMBERSVNPROCESSORS; i++) {
+                this.startIndexSvnRepoJobs("" + i);
+            }
+        }
+
+        for (int i = 0; i < this.NUMBERFILEPROCESSORS; i++) {
+            this.startIndexFileRepoJobs("" + i);
+        }
+
+        if (repoResults.size() == 0) {
+            Singleton.getLogger().info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
         }
     }
 
