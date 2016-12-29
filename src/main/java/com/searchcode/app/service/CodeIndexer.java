@@ -157,14 +157,13 @@ public class CodeIndexer {
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-        FacetsConfig facetsConfig = new FacetsConfig();
+        FacetsConfig facetsConfig;
         SearchcodeLib scl = new SearchcodeLib();
 
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
         IndexWriter writer = new IndexWriter(dir, iwc);
         TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(facetsdir);
-
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
@@ -260,7 +259,7 @@ public class CodeIndexer {
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-        FacetsConfig facetsConfig = new FacetsConfig();
+        FacetsConfig facetsConfig;
         SearchcodeLib scl = new SearchcodeLib();
 
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
