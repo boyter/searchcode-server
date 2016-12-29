@@ -195,6 +195,7 @@ public class CodeIndexer {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
 
+                // TODO Is this even required anymore?
                 scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
                 StringBuilder indexContents = new StringBuilder();
