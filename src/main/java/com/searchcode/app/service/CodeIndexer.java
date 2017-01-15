@@ -18,6 +18,9 @@ import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.facet.FacetsConfig;
 import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetField;
@@ -45,6 +48,7 @@ public class CodeIndexer {
 
     private static int MAXINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
     private static int MAXLINESINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static String ANALYZER = Properties.getProperties().getProperty(Values.ANALYZER, Values.DEFAULT_ANALYZER).toLowerCase();
 
     /**
      * Returns true if indexing should be paused, false otherwise
@@ -106,7 +110,7 @@ public class CodeIndexer {
     public static synchronized void deleteByReponame(String repoName) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
-        Analyzer analyzer = new CodeAnalyzer();
+        Analyzer analyzer = getAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
@@ -124,7 +128,7 @@ public class CodeIndexer {
     public static synchronized void deleteByCodeId(String codeId) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
-        Analyzer analyzer = new CodeAnalyzer();
+        Analyzer analyzer = getAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
@@ -155,7 +159,7 @@ public class CodeIndexer {
         Directory indexDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
         Directory facetDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
 
-        Analyzer analyzer = new CodeAnalyzer();
+        Analyzer analyzer = getAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         FacetsConfig facetsConfig;
         SearchcodeLib searchcodeLib = new SearchcodeLib();
@@ -258,7 +262,7 @@ public class CodeIndexer {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXLOCATION, Values.DEFAULTTIMEINDEXLOCATION)));
         Directory facetsdir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXFACETLOCATION, Values.DEFAULTTIMEINDEXFACETLOCATION)));
 
-        Analyzer analyzer = new CodeAnalyzer();
+        Analyzer analyzer = getAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         FacetsConfig facetsConfig;
         SearchcodeLib scl = new SearchcodeLib();
@@ -386,5 +390,27 @@ public class CodeIndexer {
         queue.add(codeIndexDocument);
         indexTimeDocuments(queue);
         queue = null;
+    }
+
+    /**
+     * Allows the configuration of the Analyzer to use for code
+     */
+    public static Analyzer getAnalyzer() {
+        Analyzer analyzer = new CodeAnalyzer();
+
+        switch(ANALYZER) {
+            case "chinese":
+                analyzer = new SmartChineseAnalyzer();
+                break;
+            case "keyword":
+                analyzer = new KeywordAnalyzer();
+                break;
+            case "standard":
+                analyzer = new StandardAnalyzer();
+            default:
+                break;
+        }
+
+        return analyzer;
     }
 }

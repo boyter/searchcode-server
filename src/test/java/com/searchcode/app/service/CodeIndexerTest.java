@@ -3,6 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.util.CodeAnalyzer;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
@@ -92,6 +93,10 @@ public class CodeIndexerTest extends TestCase {
         Singleton.setStatsService(statsServiceMock);
 
         assertThat(CodeIndexer.shouldBackOff()).isFalse();
+    }
+
+    public void testGetAnalyzer() {
+        assertThat(CodeIndexer.getAnalyzer()).isInstanceOf(CodeAnalyzer.class);
     }
 
     // TODO expand on these tests
