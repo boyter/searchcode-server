@@ -788,17 +788,15 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
         </p>
         <p>
         The format for adding follows.<br><br>
-        <code>reponame,scm,gitrepolocation,username,password,repourl</code><br><br>
+        <code>reponame,scm,gitrepolocation,username,password,repourl,branch</code><br><br>
 
         For example a public repository which does not require username or password<br><br>
 
-        <code>phindex,git,https://github.com/boyter/Phindex.git,,https://github.com/boyter/Phindex</code> <small>*</small><br><br>
+        <code>phindex,git,https://github.com/boyter/Phindex.git,,,https://github.com/boyter/Phindex,master</code> <small>*</small><br><br>
 
         For example a private repository which requires a username and password<br><br>
 
-        <code>searchcode,git,https://searchcode@bitbucket.org/searchcode/hosting.git,myusername,mypassword,</code><br><br>
-
-        Note that the trailing comma is required.<br><br>
+        <code>searchcode,git,https://searchcode@bitbucket.org/searchcode/hosting.git,myusername,mypassword,https://searchcode@bitbucket.org/searchcode/,master</code><br><br>
 
         <small>* This is a real repository can can be indexed. Copy paste into the bulk admin page to test.</small>
         </p>

@@ -35,7 +35,7 @@
     </p>
     For example a public repository which does not require username or password
     <p>
-        <pre>phindex,git,https://github.com/boyter/Phindex.git,,https://github.com/boyter/Phindex,master</pre>
+        <pre>phindex,git,https://github.com/boyter/Phindex.git,,,https://github.com/boyter/Phindex,master</pre>
     </p>
 
     For example a private repository which requires a username and password
