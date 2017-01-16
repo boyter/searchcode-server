@@ -150,6 +150,7 @@ Change Log
 XX XXXXXXXX XXXX - 1.3.6
  - Add job to scan repositories updating the spelling corrector
  - Add logic to split interesting characters such as Chinese/Korean/Japanese to allow searching
+ - Fix XSS issue on Admin Log page
 
 19 December 2016 - 1.3.5
  - Fix only_localhost to really only listen localhost not drop connections
