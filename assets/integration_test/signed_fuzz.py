@@ -79,4 +79,5 @@ for line in blns:
 
 
 cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
+cursor.execute("DELETE FROM repo")
 db.commit()
