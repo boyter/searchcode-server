@@ -517,7 +517,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     /**
-     * Fuzzy testing of the generate alt queries where we try random things to see if we can introduce an eception
+     * Fuzzy testing of the generate alt queries where we try random things to see if we can introduce an exception
      */
     public void testGenerateAltQueriesFuzz() {
         Random rand = new Random();
