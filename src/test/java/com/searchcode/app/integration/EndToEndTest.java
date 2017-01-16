@@ -1,5 +1,6 @@
 package com.searchcode.app.integration;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.SearchResult;
@@ -8,6 +9,7 @@ import com.searchcode.app.jobs.IndexGitRepoJob;
 import com.searchcode.app.jobs.IndexSvnRepoJob;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.util.Properties;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 
@@ -18,6 +20,9 @@ import java.nio.file.Paths;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class EndToEndTest extends TestCase{
+
+    public String GITPATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
+
     public void testEndToEndFilePath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
         File directoryWithFiles = createDirectoryWithFiles("EndToEndFileTest");
@@ -68,9 +73,9 @@ public class EndToEndTest extends TestCase{
         CodeSearcher cs = new CodeSearcher();
         File directoryWithFiles = createDirectoryWithFiles("EndToEndGitTest");
 
-        String result = this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "init", ".");
-        result = this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "add", ".");
-        result = this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"First commit\"");
+        String result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "init", ".");
+        result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
+        result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"First commit\"");
 
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
         indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
@@ -153,13 +158,13 @@ public class EndToEndTest extends TestCase{
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
         File directoryWithFiles = createDirectoryWithFiles("EndToEndGitTest");
 
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "init", ".");
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "add", ".");
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"First commit\"");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "init", ".");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"First commit\"");
 
         // Clone from the above into a new directory
         File tempPath = this.clearAndCreateTempPath("EndToEndGitCloneTest");
-        this.runCommand(tempPath.toString(), "/usr/bin/git", "clone", directoryWithFiles.toString(), "EndToEndGitTest");
+        this.runCommand(tempPath.toString(), this.GITPATH, "clone", directoryWithFiles.toString(), "EndToEndGitTest");
 
         // Index
         indexGitRepoJob.indexDocsByPath(Paths.get(tempPath.toString()), "EndToEndGitTest", "", tempPath.toString(), false);
@@ -168,8 +173,8 @@ public class EndToEndTest extends TestCase{
 
         // Update the source
         createFile(directoryWithFiles, "EndToEndTestFile4.cpp", "EndToEndTestFile EndToEndTestFile4");
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "add", ".");
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"Add new\"");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"Add new\"");
 
         // Index and lets dance
         RepositoryChanged repositoryChanged = indexGitRepoJob.updateExistingRepository("EndToEndGitTest", "repoRemoteLocation", "", "", tempPath.toString(), "", false);
@@ -181,8 +186,8 @@ public class EndToEndTest extends TestCase{
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(4);
 
         // Update the source
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "rm", "EndToEndTestFile4.cpp");
-        this.runCommand(directoryWithFiles.toString(), "/usr/bin/git", "commit", "-m", "\"Baleted\"");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "rm", "EndToEndTestFile4.cpp");
+        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"Baleted\"");
 
         // Index and lets dance
         repositoryChanged = indexGitRepoJob.updateExistingRepository("EndToEndGitTest", "repoRemoteLocation", "", "", tempPath.toString(), "", false);
