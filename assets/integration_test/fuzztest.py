@@ -83,7 +83,13 @@ class TestIntegration(unittest.TestCase):
             self.assertTrue('No results found for' in data)
 
     def testBigListNaughtyStrings(self):
-        for line in open('../blns/blns.txt'):
+        blns = None
+        try:
+            blns = open('./assets/blns/blns.txt')
+        except:
+            blns = open('../blns/blns.txt')
+
+        for line in blns:
             one = urllib.urlencode({'q': line})
             two = urllib.urlencode({'repo': line})
             
