@@ -48,7 +48,6 @@ public class CodeIndexer {
 
     private static int MAXINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
     private static int MAXLINESINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
-    private static String ANALYZER = Properties.getProperties().getProperty(Values.ANALYZER, Values.DEFAULT_ANALYZER).toLowerCase();
 
     /**
      * Returns true if indexing should be paused, false otherwise
@@ -110,7 +109,7 @@ public class CodeIndexer {
     public static synchronized void deleteByReponame(String repoName) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
-        Analyzer analyzer = getAnalyzer();
+        Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
@@ -128,7 +127,7 @@ public class CodeIndexer {
     public static synchronized void deleteByCodeId(String codeId) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
-        Analyzer analyzer = getAnalyzer();
+        Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
@@ -159,7 +158,7 @@ public class CodeIndexer {
         Directory indexDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
         Directory facetDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
 
-        Analyzer analyzer = getAnalyzer();
+        Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         FacetsConfig facetsConfig;
         SearchcodeLib searchcodeLib = new SearchcodeLib();
@@ -210,6 +209,7 @@ public class CodeIndexer {
                 indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
                 indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
                 indexContents.append(searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
+                indexContents.append(searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
                 String toIndex = indexContents.toString().toLowerCase();
 
                 doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName(), Field.Store.YES));
@@ -262,7 +262,7 @@ public class CodeIndexer {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXLOCATION, Values.DEFAULTTIMEINDEXLOCATION)));
         Directory facetsdir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXFACETLOCATION, Values.DEFAULTTIMEINDEXFACETLOCATION)));
 
-        Analyzer analyzer = getAnalyzer();
+        Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         FacetsConfig facetsConfig;
         SearchcodeLib scl = new SearchcodeLib();
@@ -390,27 +390,5 @@ public class CodeIndexer {
         queue.add(codeIndexDocument);
         indexTimeDocuments(queue);
         queue = null;
-    }
-
-    /**
-     * Allows the configuration of the Analyzer to use for code
-     */
-    public static Analyzer getAnalyzer() {
-        Analyzer analyzer = new CodeAnalyzer();
-
-        switch(ANALYZER) {
-            case "chinese":
-                analyzer = new SmartChineseAnalyzer();
-                break;
-            case "keyword":
-                analyzer = new KeywordAnalyzer();
-                break;
-            case "standard":
-                analyzer = new StandardAnalyzer();
-            default:
-                break;
-        }
-
-        return analyzer;
     }
 }

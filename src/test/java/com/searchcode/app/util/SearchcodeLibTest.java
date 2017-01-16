@@ -331,6 +331,12 @@ public class SearchcodeLibTest extends TestCase {
         assertEquals(" i386 linux2.7.4", actual);
     }
 
+    public void testInterestingCharacters() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.findInterestingCharacters("this 你好 chinese");
+        assertThat(actual).isEqualTo("  你 好   ");
+    }
+
     public void testLanguageGuesserText() {
         SearchcodeLib sl = new SearchcodeLib();
         String language = sl.languageGuesser("test.txt", new ArrayList<>());

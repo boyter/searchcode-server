@@ -120,6 +120,16 @@ public class SearchcodeLib {
         return indexContents.toString();
     }
 
+    public String findInterestingCharacters(String contents) {
+        String something = contents.replaceAll("\\w+", "");
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for(char c: something.toCharArray()) {
+            stringBuffer.append(c).append(" ");
+        }
+
+        return stringBuffer.toString();
+    }
 
     /**
      * List of languages to ignore displaying the cost for

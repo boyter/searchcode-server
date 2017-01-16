@@ -95,10 +95,6 @@ public class CodeIndexerTest extends TestCase {
         assertThat(CodeIndexer.shouldBackOff()).isFalse();
     }
 
-    public void testGetAnalyzer() {
-        assertThat(CodeIndexer.getAnalyzer()).isInstanceOf(CodeAnalyzer.class);
-    }
-
     // TODO expand on these tests
 //    public void testIndexTimeDocuments() {
 //        try {
