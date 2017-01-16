@@ -337,6 +337,12 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).isEqualTo("  你 好   ");
     }
 
+    public void testInterestingCharactersNullExpectEmpty() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.findInterestingCharacters(null);
+        assertThat(actual).isEqualTo("");
+    }
+
     public void testLanguageGuesserText() {
         SearchcodeLib sl = new SearchcodeLib();
         String language = sl.languageGuesser("test.txt", new ArrayList<>());

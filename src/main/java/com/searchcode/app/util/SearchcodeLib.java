@@ -121,10 +121,14 @@ public class SearchcodeLib {
     }
 
     public String findInterestingCharacters(String contents) {
-        String something = contents.replaceAll("\\w+", "");
+        if (contents == null) {
+            return Values.EMPTYSTRING;
+        }
+
+        String replaced = contents.replaceAll("\\w+", "");
 
         StringBuffer stringBuffer = new StringBuffer();
-        for(char c: something.toCharArray()) {
+        for(char c: replaced.toCharArray()) {
             stringBuffer.append(c).append(" ");
         }
 
