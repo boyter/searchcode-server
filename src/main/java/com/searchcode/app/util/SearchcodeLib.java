@@ -125,7 +125,7 @@ public class SearchcodeLib {
             return Values.EMPTYSTRING;
         }
 
-        String replaced = contents.replaceAll("\\w+", "");
+        String replaced = contents.replaceAll("\\w", "");
 
         StringBuffer stringBuffer = new StringBuffer();
         for(char c: replaced.toCharArray()) {

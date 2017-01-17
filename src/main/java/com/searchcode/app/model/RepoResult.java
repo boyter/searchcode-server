@@ -63,7 +63,11 @@ public class RepoResult {
     }
 
     public String getName() {
-        return name;
+        return this.name;
+    }
+
+    public String getDirectoryName() {
+        return this.name.replaceAll("\\W+", Values.EMPTYSTRING + this.getRowId());
     }
 
     public void setName(String name) {
