@@ -10,7 +10,7 @@ public class RepoResultTest extends TestCase {
     public void testSetNameReplacement() {
         RepoResult repoResult = new RepoResult();
         repoResult.setName(" Name");
-        String actual = repoResult.getDirectoryName();
+        String actual = repoResult.getName();
         assertThat(actual).isEqualTo("-Name");
     }
 
