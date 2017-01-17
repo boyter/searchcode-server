@@ -15,7 +15,6 @@ import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
