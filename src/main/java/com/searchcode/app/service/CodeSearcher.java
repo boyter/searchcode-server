@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.service;
@@ -35,12 +35,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Does all of the queries which happen against the Lucene index, including search queries and working out
@@ -166,9 +163,9 @@ public class CodeSearcher implements ICodeSearcher {
      * TODO maybe convert to hash so lookups are faster
      */
     public List<String> getRepoDocuments(String repoName, int page) {
-        int PAGELIMIT = 1000;
-        List<String> fileLocations = new ArrayList<>(PAGELIMIT);
-        int start = PAGELIMIT * page;
+        int REPOPAGELIMIT = 1000;
+        List<String> fileLocations = new ArrayList<>(REPOPAGELIMIT);
+        int start = REPOPAGELIMIT * page;
 
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
@@ -179,7 +176,7 @@ public class CodeSearcher implements ICodeSearcher {
             Query query = parser.parse(Values.REPONAME + ":" + repoName);
 
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-            int end = Math.min(results.totalHits, (PAGELIMIT * (page + 1)));
+            int end = Math.min(results.totalHits, (REPOPAGELIMIT * (page + 1)));
             ScoreDoc[] hits = results.scoreDocs;
 
             for (int i = start; i < end; i++) {

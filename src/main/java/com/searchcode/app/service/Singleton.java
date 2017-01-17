@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.service;
@@ -18,6 +18,7 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.route.TimeSearchRouteService;
 import com.searchcode.app.util.*;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

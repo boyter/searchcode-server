@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.jobs;
@@ -24,6 +24,7 @@ import com.searchcode.app.util.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -329,10 +330,14 @@ public abstract class IndexBaseRepoJob implements Job {
                         String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
                         String fileToString = FilenameUtils.separatorsToUnix(file.toString());
                         String fileName = file.getFileName().toString();
+                        String repoLocationRepoNameLocationFilename = fileToString;
 
                         if (ignoreFile(fileParent)) {
                             return FileVisitResult.CONTINUE;
                         }
+
+                        // This needs to be the primary key of the file
+                        fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
 
                         List<String> codeLines;
                         try {
@@ -342,6 +347,7 @@ public abstract class IndexBaseRepoJob implements Job {
                             if (LOGINDEXED) {
                                 reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
                             }
+                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -350,6 +356,7 @@ public abstract class IndexBaseRepoJob implements Job {
                             if (LOGINDEXED) {
                                 reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
                             }
+                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -358,10 +365,12 @@ public abstract class IndexBaseRepoJob implements Job {
                             if (LOGINDEXED) {
                                 reportList.add(new String[]{fileToString, "excluded", "empty file"});
                             }
+                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
                             return FileVisitResult.CONTINUE;
                         }
 
                         if (determineBinary(fileToString, fileName, codeLines, reportList)) {
+                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
                             return FileVisitResult.CONTINUE;
                         }
 
@@ -371,9 +380,6 @@ public abstract class IndexBaseRepoJob implements Job {
 
                         String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
                         String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
-                        // Is used for finding the file on disk, so needs to be the path to the actual file
-                        // it is also the primary key for everything
-                        String repoLocationRepoNameLocationFilename = fileToString;
 
                         String newString = getBlameFilePath(fileLocationFilename);
                         String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
@@ -385,8 +391,6 @@ public abstract class IndexBaseRepoJob implements Job {
                             codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                         }
 
-                        // This needs to be the primary key of the file
-                        fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
                         if (LOGINDEXED) {
                             reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
                         }
@@ -478,13 +482,16 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public String getFileMd5(String fileName) {
         String md5Hash = Values.EMPTYSTRING;
+        FileInputStream fis = null;
 
         try {
-            FileInputStream fis = new FileInputStream(new File(fileName));
+            fis = new FileInputStream(new File(fileName));
             md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-            fis.close();
         } catch (IOException ex) {
             Singleton.getLogger().warning("Unable to generate MD5 for " + fileName);
+        }
+        finally {
+            IOUtils.closeQuietly(fis);
         }
 
         return md5Hash;
@@ -529,7 +536,6 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " logIndexed for " + repoName + "\n with message: " + ex.getMessage());
         }
     }
-
 
     /*
      * The below are are shared among all extending classes

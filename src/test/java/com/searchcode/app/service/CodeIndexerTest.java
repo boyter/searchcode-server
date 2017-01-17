@@ -3,6 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.util.CodeAnalyzer;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;

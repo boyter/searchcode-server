@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 /**
@@ -1810,21 +1810,23 @@ m.mount(document.getElementsByClassName('container')[0], m.component(SearchCompo
 
 // For when someone hits the back button in the browser
 window.onpopstate = function(event) {
-    SearchModel.searchvalue(event.state.searchvalue);
-    SearchModel.currentpage(event.state.currentpage);
-    SearchModel.activelangfilters(event.state.langfilters);
-    SearchModel.langfilters(event.state.langfilters);
-    SearchModel.activerepositoryfilters(event.state.repofilters);
-    SearchModel.repositoryfilters(event.state.repofilters);
-    SearchModel.ownfilters(event.state.ownfilters);
-    SearchModel.activeownfilters(event.state.ownfilters);
+    if (event && event.state) {
+        SearchModel.searchvalue(event.state.searchvalue);
+        SearchModel.currentpage(event.state.currentpage);
+        SearchModel.activelangfilters(event.state.langfilters);
+        SearchModel.langfilters(event.state.langfilters);
+        SearchModel.activerepositoryfilters(event.state.repofilters);
+        SearchModel.repositoryfilters(event.state.repofilters);
+        SearchModel.ownfilters(event.state.ownfilters);
+        SearchModel.activeownfilters(event.state.ownfilters);
 
-    SearchModel.search(event.state.currentpage, true);
-    popstate = true;
+        SearchModel.search(event.state.currentpage, true);
+        popstate = true;
+    }
 };
 
 // For direct links to search results 
-if (preload !== undefined) {
+if (typeof preload !== 'undefined') {
     SearchModel.searchvalue(preload.query);
     SearchModel.currentpage(preload.page);
 

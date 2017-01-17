@@ -660,7 +660,9 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dt>git_binary_path</dt>
               <dd>If you enable use_system_git you need to ensure that this equals the path to your git executable for your system. By default set to /usr/bin/git</dd>
               <dt>log_level</dt>
-              <dd>What level of logging is requested both to STDOUT and the default log file. Accepts the uppercase values of INFO, WARNING, SEVERE or OFF. By default set to SEVERE. Critical warnings will still be printed to STDOUT.</dd>
+              <dd>What level of logging is requested both to STDOUT and the default log file. Accepts the uppercase values of INFO, WARNING, SEVERE or OFF. A setting of OFF will not even create the log file. The last 1000 records of all logging levels are kept in memory and can be viewed on the Admin Log page. By default set to SEVERE.</dd>
+              <dt>log_path</dt>
+              <dd>The path to where should logs be written. Can be set to STDOUT and if so all logs that would normally be written to file will be sent to standard output. By default set to ./logs/</dd>
               <dt>log_count</dt>
               <dd>How many rolling log files to keep. By default set to 10.</dd>
               <dt>api_enabled</dt>
@@ -786,17 +788,15 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
         </p>
         <p>
         The format for adding follows.<br><br>
-        <code>reponame,scm,gitrepolocation,username,password,repourl</code><br><br>
+        <code>reponame,scm,gitrepolocation,username,password,repourl,branch</code><br><br>
 
         For example a public repository which does not require username or password<br><br>
 
-        <code>phindex,git,https://github.com/boyter/Phindex.git,,https://github.com/boyter/Phindex</code> <small>*</small><br><br>
+        <code>phindex,git,https://github.com/boyter/Phindex.git,,,https://github.com/boyter/Phindex,master</code> <small>*</small><br><br>
 
         For example a private repository which requires a username and password<br><br>
 
-        <code>searchcode,git,https://searchcode@bitbucket.org/searchcode/hosting.git,myusername,mypassword,</code><br><br>
-
-        Note that the trailing comma is required.<br><br>
+        <code>searchcode,git,https://searchcode@bitbucket.org/searchcode/hosting.git,myusername,mypassword,https://searchcode@bitbucket.org/searchcode/,master</code><br><br>
 
         <small>* This is a real repository can can be indexed. Copy paste into the bulk admin page to test.</small>
         </p>

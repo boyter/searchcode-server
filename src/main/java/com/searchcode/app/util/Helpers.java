@@ -5,13 +5,17 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.util;
 
 
 import com.glaforge.i18n.io.CharsetToolkit;
+import com.searchcode.app.config.Values;
+import org.apache.commons.io.IOUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Repository;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -38,13 +42,16 @@ public class Helpers {
      */
     public static String calculateMd5(String filePath) {
         String md5 = "";
+        FileInputStream fileInputStream = null;
         try {
-            FileInputStream fis = new FileInputStream(new File(filePath));
-            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
-            fis.close();
+            fileInputStream = new FileInputStream(new File(filePath));
+            md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fileInputStream);
         } // Both the below should be caught before this point
         catch(FileNotFoundException ex) {}
         catch(IOException ex) {}
+        finally {
+            IOUtils.closeQuietly(fileInputStream);
+        }
 
         return md5;
     }
@@ -52,7 +59,6 @@ public class Helpers {
     /**
      * Similar to the C# Int.TryParse where you pass in a string and if no good it will use the
      * default value which is also parsed... which seems odd now I think about it
-     * TODO investigate if the second argument could be an int
      */
     public static int tryParseInt(String toParse, String defaultValue) {
         int result;
@@ -72,34 +78,45 @@ public class Helpers {
      */
     public static List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
-
-        Scanner input = new Scanner(new File(filePath));
-
+        Scanner scanner = null;
         int counter = 0;
-        while(input.hasNextLine() && counter < maxFileLineDepth)
-        {
-            lines.add(input.nextLine());
-            counter++;
+
+        try {
+            scanner = new Scanner(new File(filePath));
+
+            while (scanner.hasNextLine() && counter < maxFileLineDepth) {
+                lines.add(scanner.nextLine());
+                counter++;
+            }
+        }
+        finally {
+            IOUtils.closeQuietly(scanner);
         }
 
         return lines;
     }
 
     public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
-        BufferedReader reader = new BufferedReader( new InputStreamReader( new FileInputStream(filePath), guessCharset(new File(filePath))));
-
         List<String> fileLines = new ArrayList<>();
-        String line = "";
+        BufferedReader bufferedReader = null;
+        String line;
 
-        int lineCount = 0;
-        while ((line = reader.readLine()) != null) {
-            lineCount++;
+        try {
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
 
-            fileLines.add(line);
+            int lineCount = 0;
+            while ((line = bufferedReader.readLine()) != null) {
+                lineCount++;
 
-            if (lineCount == maxFileLineDepth) {
-                return fileLines;
+                fileLines.add(line);
+
+                if (lineCount == maxFileLineDepth) {
+                    return fileLines;
+                }
             }
+        }
+        finally {
+            IOUtils.closeQuietly(bufferedReader);
         }
 
         return fileLines;
@@ -118,6 +135,21 @@ public class Helpers {
         }
 
         if (test.trim().length() == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Generic file paths that should be ignored
+     */
+    public static boolean ignoreFiles(String fileParent) {
+        if (fileParent.endsWith("/.git") || fileParent.contains("/.git/") || fileParent.contains(".git/") || fileParent.equals(".git")) {
+            return true;
+        }
+
+        if (fileParent.endsWith("/.svn") || fileParent.contains("/.svn/")) {
             return true;
         }
 
@@ -150,7 +182,11 @@ public class Helpers {
     }
 
     public static String getLogPath() {
-        String path = (String) Properties.getProperties().getOrDefault("log_path", "./");
+        String path = (String) Properties.getProperties().getOrDefault(Values.LOG_PATH, Values.DEFAULT_LOG_PATH);
+
+        if (path.toUpperCase().equals("STDOUT")) {
+            return path.toUpperCase();
+        }
 
         if (!(path.endsWith("/") || path.endsWith("\\"))) {
             path = path + "/";
@@ -183,6 +219,20 @@ public class Helpers {
     public static void closeQuietly(Process process) {
         try {
             process.destroy();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(Repository repository) {
+        try {
+           repository.close();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(Git git) {
+        try {
+            git.close();
         }
         catch (Exception ex) {}
     }

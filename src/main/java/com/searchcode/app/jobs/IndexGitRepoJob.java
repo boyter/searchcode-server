@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.jobs;
@@ -244,7 +244,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 Singleton.getLogger().info("getBlameInfo blame is null for " + repoLoc + " " + fileName);
             }
 
-
             if (blame != null) {
                 // Get all the owners their number of commits and most recent commit
                 HashMap<String, CodeOwner> owners = new HashMap<>();
@@ -279,12 +278,12 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 codeOwners = new ArrayList<>(owners.values());
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (GitAPIException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Singleton.getLogger().info("IOException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+        } catch (GitAPIException ex) {
+            Singleton.getLogger().info("GitAPIException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+        } catch (IllegalArgumentException ex) {
+            Singleton.getLogger().info("IllegalArgumentException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
         }
 
         System.gc(); // Try to clean up
@@ -301,12 +300,15 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         List<String> deletedFiles = new ArrayList<>();
         Singleton.getLogger().info("Attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
 
+        Repository localRepository = null;
+        Git git = null;
+
         try {
-            Repository localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
+            localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
 
             Ref head = localRepository.getRef("HEAD");
+            git = new Git(localRepository);
 
-            Git git = new Git(localRepository);
             git.reset();
             git.clean();
 
@@ -356,6 +358,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             changed = false;
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
+        finally {
+            Helpers.closeQuietly(localRepository);
+            Helpers.closeQuietly(git);
+        }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
     }
@@ -368,6 +374,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         boolean successful = false;
         Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
 
+        Git call = null;
+
         try {
             CloneCommand cloneCommand = Git.cloneRepository();
             cloneCommand.setURI(repoRemoteLocation);
@@ -379,13 +387,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
             }
 
-            cloneCommand.call();
-
+            call = cloneCommand.call();
             successful = true;
-
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoName + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(call);
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);

@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y \
     tar
 
 RUN curl -o searchcode-server-community.tar.gz https://searchcode.com/static/searchcode-server-community.tar.gz \
-    && tar xvfz searchcode-server-community.tar.gz
+    && tar zxvf searchcode-server-community.tar.gz
 
 WORKDIR /searchcode-server-community/release
 

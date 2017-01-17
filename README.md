@@ -22,6 +22,15 @@ If you would like to submit code to be integrated into searchcode server please 
 
 Before making any submission be sure to run "fab test"
 
+To Build TL/DR;
+---------------
+ - Install Java 8 (Oracle or OpenJDK)
+ - Install Maven
+ - Install Python and Fabric (optional)
+ - Install NPM and run "npm install -g node-qunit-phantomjs" (optional)
+ - mvn test OR fab test (if fabric) to run unit tests
+ - fab test_full (if fabric) to run all tests (need to be running application in background first)
+
 To Build
 --------
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
@@ -60,6 +69,7 @@ than 400 documents indexed at any time (if indexing all 4 repositories) and a mi
 
 Before a release is made a build must pass all of the above checks, with the indexer logic tests being run for a minimum of 24 hours. To
 ensure that performance is acceptable the tests are also run on a Atom powered netbook.
+
 
 To Run
 ------
@@ -102,6 +112,10 @@ of every page).
 Upgrades
 --------
 
+Always keep in mind that upgrades are best done with a full reindex. You can either do this by deleting the contents
+of the index directory that you have configured in your searchcode.properties file or by clicking the "Recrawl & Rebuild Indexes" 
+button in the admin screen. 
+
 To upgrade your current instance of searchcode perform the following steps.
 
 * Stop your current instance of searchcode server
@@ -110,7 +124,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.5.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.6.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
@@ -125,7 +139,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED YET this software version '1.3.5' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date DATE NOT SPECIFIED YET this software version '1.3.6' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -133,13 +147,27 @@ OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 Change Log
 ==========
 
-XX XXXXXXXX XXXX - 1.3.5
+XX XXXXXXXX XXXX - 1.3.6
+ - Add job to scan repositories updating the spelling corrector
+ - Add logic to split interesting characters such as Chinese/Korean/Japanese to allow searching
+ - Fix XSS on admin log page
+ - Fix XSS on admin repo page
+
+19 December 2016 - 1.3.5
  - Fix only_localhost to really only listen localhost not drop connections
  - Add SHA512 hmac as option for signed API requests
  - Resolve XSS vulnerability issue
  - Add logic to deal with immutable files by moving to trash folder
  - Add log to display most recent search results
  - Resolve several memory leak issues
+ - Modify logic to allow matching URL_CONFIG in App.URL_CONFIG.toString()
+ - Modify logic to allow matching install_something in :install_something
+ - Logging level of OFF now does not even attempt to create log file
+ - Resolve uncaught exception when writing log
+ - Close resource/memory leak in opened files
+ - Changed removal logic for removed files to be less aggressive
+ - Fix potential overflow for search query count (however unlikely that is)
+ - Fix race conditions with logging
 
 21 November 2016 - 1.3.4
  - Refactor index logic to resolve removal bugs

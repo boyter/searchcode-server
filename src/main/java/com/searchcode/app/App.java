@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app;
@@ -16,6 +16,7 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.*;
+import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.JsonTransformer;
 import com.searchcode.app.util.LoggerWrapper;
@@ -39,7 +40,7 @@ import static spark.Spark.*;
 public class App {
 
     public static final boolean ISCOMMUNITY = false;
-    public static final String VERSION = "1.3.5";
+    public static final String VERSION = "1.3.6";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     public static void main( String[] args ) {

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.util;
@@ -120,6 +120,20 @@ public class SearchcodeLib {
         return indexContents.toString();
     }
 
+    public String findInterestingCharacters(String contents) {
+        if (contents == null) {
+            return Values.EMPTYSTRING;
+        }
+
+        String replaced = contents.replaceAll("\\w+", "");
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for(char c: replaced.toCharArray()) {
+            stringBuffer.append(c).append(" ");
+        }
+
+        return stringBuffer.toString();
+    }
 
     /**
      * List of languages to ignore displaying the cost for
@@ -325,41 +339,42 @@ public class SearchcodeLib {
 
         // Change how we replace strings
         // Modify the contents to match strings correctly
-        char[] firstReplacements = {'<', '>', ')', '(', '[', ']', '|', '=', ','};
+        char[] firstReplacements = {'<', '>', ')', '(', '[', ']', '|', '=', ',', ':'};
         for (char c : firstReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
+
+        char[] otherReplacements = {'.'};
+        for (char c : otherReplacements) {
+            contents = contents.replace(c, ' ');
+        }
+        indexContents.append(" ").append(contents);
 
         char[] secondReplacements = {';', '{', '}', '/'};
         for (char c : secondReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         char[] forthReplacements = {'"', '\''};
         for (char c : forthReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         // Now do it for other characters
         char[] replacements = {'\'', '"', '.', ';', '=', '(', ')', '[', ']', '_', ';', '@', '#'};
         for (char c : replacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         char[] thirdReplacements = {'-'};
         for (char c : thirdReplacements) {
             contents = contents.replace(c, ' ');
         }
-        indexContents.append(" ");
-        indexContents.append(contents);
+        indexContents.append(" ").append(contents);
 
         return indexContents.toString();
     }
@@ -675,6 +690,7 @@ public class SearchcodeLib {
         classifier.add(new Classifier("Precompiled Header", "pch", ""));
         classifier.add(new Classifier("Opalang", "opa", ""));
         classifier.add(new Classifier("Portage Installer", "ebuild", ""));
+        classifier.add(new Classifier("Crystal", "cr", ""));
     }
 
 

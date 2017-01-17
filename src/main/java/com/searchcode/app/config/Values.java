@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.config;
@@ -86,6 +86,8 @@ public class Values {
     public static String DEFAULT_LOG_LEVEL = "SEVERE";
     public static String TRASH_LOCATION = "trash_location";
     public static String DEFAULT_TRASH_LOCATION = "./trash/";
+    public static String LOG_PATH = "log_path";
+    public static String DEFAULT_LOG_PATH = "./logs/";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";
@@ -111,6 +113,9 @@ public class Values {
     // Random
     public static String USERSESSIONID = "admin_user";
     public static String EMPTYSTRING = "";
+
+    // Cache lookup values
+    public static String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
 
     // Job values used in the quartz jobs
 

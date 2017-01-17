@@ -82,6 +82,22 @@ class TestIntegration(unittest.TestCase):
             data = self.getData(url)
             self.assertTrue('No results found for' in data)
 
+    def testBigListNaughtyStrings(self):
+        blns = None
+        try:
+            blns = open('./assets/blns/blns.txt')
+        except:
+            blns = open('../blns/blns.txt')
+
+        for line in blns:
+            one = urllib.urlencode({'q': line})
+            two = urllib.urlencode({'repo': line})
+            
+            url = "http://%s/html/?%s&%s" % (host, one, two)
+            data = self.getData(url)
+            self.assertTrue('No results found for' in data)
+
+
 if __name__ == "__main__":
     host = "localhost:8080"
     unittest.main()

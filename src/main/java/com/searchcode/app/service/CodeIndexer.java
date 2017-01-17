@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.service;
@@ -152,19 +152,18 @@ public class CodeIndexer {
      */
     public static synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
-        Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
-        Directory facetsdir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
+        Directory indexDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
+        Directory facetDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
 
         Analyzer analyzer = new CodeAnalyzer();
-        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-        FacetsConfig facetsConfig = new FacetsConfig();
-        SearchcodeLib scl = new SearchcodeLib();
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
+        FacetsConfig facetsConfig;
+        SearchcodeLib searchcodeLib = new SearchcodeLib();
 
-        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+        indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
-        IndexWriter writer = new IndexWriter(dir, iwc);
-        TaxonomyWriter taxoWriter = new DirectoryTaxonomyWriter(facetsdir);
-
+        IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
+        TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(facetDirectory);
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
@@ -196,15 +195,15 @@ public class CodeIndexer {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
 
-                scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
+                // TODO Is this even required anymore?
+                searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
                 StringBuilder indexContents = new StringBuilder();
 
                 indexContents.append(codeIndexDocument.getFileName()).append(" ");
                 indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
                 indexContents.append(codeIndexDocument.getFileLocation());
-
-                indexContents.append(runCodeIndexPipeline(scl, codeIndexDocument.getContents()));
+                indexContents.append(runCodeIndexPipeline(searchcodeLib, codeIndexDocument.getContents()));
 
                 String toIndex = indexContents.toString().toLowerCase();
 
@@ -223,7 +222,7 @@ public class CodeIndexer {
                 // Extra metadata in this case when it was last indexed
                 doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
 
-                writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxoWriter, doc));
+                writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
 
                 count++;
                 if (count >= 1000) { // Only index 1000 documents at most each time
@@ -239,7 +238,7 @@ public class CodeIndexer {
                 writer.close();
             }
             finally {
-                taxoWriter.close();
+                taxonomyWriter.close();
             }
             Singleton.getLogger().info("Closing writers");
         }
@@ -252,6 +251,7 @@ public class CodeIndexer {
         sb.append(scl.splitKeywords(contents));
         sb.append(scl.codeCleanPipeline(contents));
         sb.append(scl.findInterestingKeywords(contents));
+        sb.append(scl.findInterestingCharacters(contents));
 
         return sb.toString();
     }
@@ -271,7 +271,7 @@ public class CodeIndexer {
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
-        FacetsConfig facetsConfig = new FacetsConfig();
+        FacetsConfig facetsConfig;
         SearchcodeLib scl = new SearchcodeLib();
 
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);

@@ -67,11 +67,13 @@
         <td>${deletionQueue}</td>
     </tr>
     <tr>
+        <td><b>Words in Spelling Corrector</b></td>
+        <td>${spellingCount}</td>
+    </tr>
+    <tr>
         <td><b>Index Status</b></td>
         <td id="pause-index-status">${index_paused}</td>
     </tr>
-
-
 
 
     <tr>

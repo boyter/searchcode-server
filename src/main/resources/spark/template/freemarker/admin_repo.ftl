@@ -67,14 +67,14 @@
     <#list repoResults>
         <#items as result>
             <div>
-                <input type="text" value="${result.name}" name="reponame" readonly="true">
-                <input type="text" value="${result.scm}" name="reposcm" readonly="true">
-                <input type="text" value="${result.url}" name="repourl" readonly="true">
-                <input type="text" value="${result.username}" name="repousername" readonly="true">
-                <input type="password" value="${result.password}" name="repopassword" readonly="true">
-                <input type="text" value="${result.source}" name="reposource" readonly="true">
-                <input type="text" value="${result.branch}" name="repobranch" readonly="true">
-                <button class="btn btn-sm btn-danger delete" data-id="${result.name}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
+                <input type="text" value="${result.name?html}" name="reponame" readonly="true">
+                <input type="text" value="${result.scm?html}" name="reposcm" readonly="true">
+                <input type="text" value="${result.url?html}" name="repourl" readonly="true">
+                <input type="text" value="${result.username?html}" name="repousername" readonly="true">
+                <input type="password" value="${result.password?html}" name="repopassword" readonly="true">
+                <input type="text" value="${result.source?html}" name="reposource" readonly="true">
+                <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
+                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
             </div>
         </#items>
     </#list>

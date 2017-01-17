@@ -5,10 +5,10 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
-package com.searchcode.app.service;
+package com.searchcode.app.service.route;
 
 
 import com.searchcode.app.App;
@@ -17,6 +17,9 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import spark.Request;
@@ -84,6 +87,7 @@ public class AdminRouteService {
         map.put("currentdatetime", new Date().toString());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("spellingCount", Singleton.getSpellingCorrector().getWordCount());
 
         map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
 

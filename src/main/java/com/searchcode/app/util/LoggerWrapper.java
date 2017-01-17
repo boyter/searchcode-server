@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
 package com.searchcode.app.util;
@@ -18,12 +18,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.*;
 
 /**
  * Wrapper around logging so that we can store the logging inside a in memory queue
  * which can then be displayed rather then hit the filesystem. Should in theory allow
  * quick filters and the like.
+ * TODO refactor this it is starting to get ugly
  */
 public class LoggerWrapper {
 
@@ -36,55 +38,85 @@ public class LoggerWrapper {
 
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
+    public boolean LOGSENABLED = true;
+    public Level LOGLEVELENUM = Level.SEVERE;
+    private String LOGLEVEL = Values.DEFAULT_LOG_LEVEL;
+    private String LOGPATH = Values.DEFAULT_LOG_PATH;
+    private boolean LOGSTDOUT = false;
 
     public LoggerWrapper() {
         this.LOGCOUNT = Helpers.tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
+        this.LOGLEVEL = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
+        this.LOGPATH = Helpers.getLogPath();
 
-        String path = Values.EMPTYSTRING;
-        try {
-            path = Helpers.getLogPath();
-            path += "searchcode-server-%g.log";
-            Handler handler = new FileHandler(path, this.BYTESLOGSIZE, this.LOGCOUNT);
+        if (this.LOGLEVEL.equals("OFF")) {
+            this.LOGSENABLED = false;
+        }
 
-            String logLevel = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
+        switch (this.LOGLEVEL.toUpperCase()) {
+            case "INFO":
+                this.LOGLEVELENUM = Level.INFO;
+                break;
+            case "FINE":
+                this.LOGLEVELENUM = Level.FINE;
+                break;
+            case "WARNING":
+                this.LOGLEVELENUM = Level.WARNING;
+                break;
+            case "SEVERE":
+            default:
+                this.LOGLEVELENUM = Level.SEVERE;
+                break;
+        }
 
-            handler.setFormatter(new SimpleFormatter());
+        if (this.LOGPATH.equals("STDOUT")) {
+            this.LOGSTDOUT = true;
+            this.LOGSENABLED = false;
+            this.LOGLEVEL = "OFF";
+        }
 
-            logger = Logger.getLogger(Values.EMPTYSTRING);
-            logger.addHandler(handler);
 
-            switch (logLevel.toUpperCase()) {
-                case "INFO":
-                    handler.setLevel(Level.INFO);
-                    logger.setLevel(Level.INFO);
-                    break;
-                case "FINE":
-                    handler.setLevel(Level.FINE);
-                    logger.setLevel(Level.FINE);
-                    break;
-                case "WARNING":
-                    handler.setLevel(Level.WARNING);
-                    logger.setLevel(Level.WARNING);
-                    break;
-                case "OFF":
-                    handler.setLevel(Level.OFF);
-                    logger.setLevel(Level.OFF);
-                    break;
-                case "SEVERE":
-                default:
-                    handler.setLevel(Level.SEVERE);
-                    logger.setLevel(Level.SEVERE);
-                    break;
+
+        if (!this.LOGLEVEL.equals("OFF")) {
+            try {
+                this.LOGPATH += "searchcode-server-%g.log";
+                Handler handler = new FileHandler(this.LOGPATH, this.BYTESLOGSIZE, this.LOGCOUNT);
+
+                handler.setFormatter(new SimpleFormatter());
+
+                logger = Logger.getLogger(Values.EMPTYSTRING);
+                logger.addHandler(handler);
+
+
+                switch (this.LOGLEVEL.toUpperCase()) {
+                    case "INFO":
+                        handler.setLevel(Level.INFO);
+                        this.logger.setLevel(Level.INFO);
+                        break;
+                    case "FINE":
+                        handler.setLevel(Level.FINE);
+                        this.logger.setLevel(Level.FINE);
+                        break;
+                    case "WARNING":
+                        handler.setLevel(Level.WARNING);
+                        this.logger.setLevel(Level.WARNING);
+                        break;
+                    case "SEVERE":
+                    default:
+                        handler.setLevel(Level.SEVERE);
+                        this.logger.setLevel(Level.SEVERE);
+                        break;
+                }
+
+            } catch (IOException ex) {
+                this.logger = Logger.getLogger(Values.EMPTYSTRING);
+                this.logger.setLevel(Level.WARNING);
+
+                this.logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
+                        "// Unable to write to logging file" + (!this.LOGPATH.isEmpty() ? ": " + this.LOGPATH : ".") + "\n" +
+                        "// Logs will be written to STDOUT.\n" +
+                        "//////////////////////////////////////////////////////////////////////\n");
             }
-
-        } catch (IOException ex) {
-            logger = Logger.getLogger(Values.EMPTYSTRING);
-            logger.setLevel(Level.WARNING);
-
-            logger.warning("\n//////////////////////////////////////////////////////////////////////\n" +
-                    "// Unable to write to logging file" + (!path.isEmpty() ? ": " + path : ".") + "\n" +
-                    "// Logs will be written to STDOUT.\n" +
-                    "//////////////////////////////////////////////////////////////////////\n");
         }
 
         this.allCache = EvictingQueue.create(1000);
@@ -94,54 +126,128 @@ public class LoggerWrapper {
         this.searchLog = EvictingQueue.create(1000);
     }
 
-    public void info(String toLog) {
+    public synchronized void info(String toLog) {
         String message = "INFO: " + new Date().toString() + ": " + toLog;
-        this.allCache.add(message);
-        this.infoRecentCache.add(message);
-        this.logger.info(toLog);
+        try {
+            this.allCache.add(message);
+            this.infoRecentCache.add(message);
+            if (this.LOGSENABLED) {
+                this.logger.info(toLog);
+            }
+
+            if (this.LOGSTDOUT && this.isLoggable(Level.INFO)) {
+                System.out.println(message);
+            }
+        }
+        catch (NoSuchElementException ex) {}
     }
 
-    public void warning(String toLog) {
+    public synchronized void warning(String toLog) {
         String message = "WARNING: " + new Date().toString() + ": " + toLog;
-        this.allCache.add(message);
-        this.warningRecentCache.add(message);
-        this.logger.warning(toLog);
+
+        try {
+            this.allCache.add(message);
+            this.warningRecentCache.add(message);
+            if (this.LOGSENABLED) {
+                this.logger.warning(toLog);
+            }
+
+            if (this.LOGSTDOUT && this.isLoggable(Level.WARNING)) {
+                System.out.println(message);
+            }
+        }
+        catch (NoSuchElementException ex) {}
     }
 
-    public void severe(String toLog) {
+    public synchronized void severe(String toLog) {
         String message = "SEVERE: " + new Date().toString() + ": " + toLog;
-        this.allCache.add(message);
-        this.severeRecentCache.add(message);
-        this.logger.severe(toLog);
+
+        try {
+            this.allCache.add(message);
+            this.severeRecentCache.add(message);
+            if (this.LOGSENABLED) {
+                this.logger.severe(toLog);
+            }
+
+            if (this.LOGSTDOUT && this.isLoggable(Level.SEVERE)) {
+                System.out.println(message);
+            }
+        }
+        catch (NoSuchElementException ex) {}
     }
 
-    public void searchLog(String toLog) {
+    public synchronized void searchLog(String toLog) {
         String message = "SEARCH: " + new Date().toString() + ": " + toLog;
-        this.searchLog.add(message);
+
+        try {
+            this.searchLog.add(message);
+        }
+        catch (NoSuchElementException ex) {}
     }
 
-    public List<String> getAllLogs() {
-        List<String> values = new ArrayList(this.allCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getAllLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.allCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getInfoLogs() {
-        List<String> values = new ArrayList(this.infoRecentCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getInfoLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.infoRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getWarningLogs() {
-        List<String> values = new ArrayList(this.warningRecentCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getWarningLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.warningRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getSevereLogs() {
-        List<String> values = new ArrayList(this.severeRecentCache);
-        return Lists.reverse(values);
+    public synchronized List<String> getSevereLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.severeRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
     }
 
-    public List<String> getSearchLogs() {
-        List<String> values = new ArrayList(this.searchLog);
-        return Lists.reverse(values);
+    public synchronized List<String> getSearchLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.searchLog);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ex) {}
+
+        return values;
+    }
+
+    public boolean isLoggable(Level level) {
+        int levelValue = level.intValue();
+        int mainValue = this.LOGLEVELENUM.intValue();
+
+        if (levelValue >= mainValue) {
+            return true;
+        }
+
+        return false;
     }
 }

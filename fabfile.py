@@ -6,7 +6,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 '''
 
@@ -20,6 +20,8 @@ from fabric.api import prompt
 from fabric.utils import warn
 from fabric.contrib.files import sed
 from fabric.context_managers import settings, hide, cd
+from fabric.colors import yellow
+
 
 import os
 from os import path
@@ -28,7 +30,7 @@ import hashlib
 import sys
 import datetime
 
-VERSION = "1.3.5"
+VERSION = "1.3.6"
 
 
 def setup_npm():
@@ -55,11 +57,12 @@ def js_test():
     local('node-qunit-phantomjs ./src/test/javascript/index.html')
 
 def test_integration():
-    print 'Be sure to run: "fab compile_js configure_prod run" first'
+    print(yellow('Be sure to run: "fab compile_js configure_prod run" first'))
     local("python ./assets/integration_test/test.py")
     local("python ./assets/integration_test/fuzztest.py")
     local("python ./assets/integration_test/signed_testing.py")
     local("python ./assets/integration_test/signed_testing_sha512.py")
+    local("python ./assets/integration_test/signed_fuzz.py")
 
 def run():
     package()

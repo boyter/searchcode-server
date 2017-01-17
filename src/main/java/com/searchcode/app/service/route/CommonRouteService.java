@@ -5,14 +5,15 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
-package com.searchcode.app.service;
+package com.searchcode.app.service.route;
 
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 
 import java.util.Calendar;

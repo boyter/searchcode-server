@@ -5,14 +5,17 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.5
+ * Version 1.3.6
  */
 
-package com.searchcode.app.service;
+package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
+import com.searchcode.app.service.CodeMatcher;
+import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
