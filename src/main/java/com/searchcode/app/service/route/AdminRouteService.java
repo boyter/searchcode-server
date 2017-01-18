@@ -22,6 +22,7 @@ import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
+import org.omg.CORBA.Environment;
 import spark.Request;
 import spark.Response;
 
@@ -90,6 +91,12 @@ public class AdminRouteService {
         map.put("spellingCount", Singleton.getSpellingCorrector().getWordCount());
 
         map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
+
+        StringBuffer stringBuffer = new StringBuffer();
+        for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
+            stringBuffer.append(key).append(" ");
+        }
+        map.put("runningJobs", stringBuffer.toString());
 
         return map;
     }
