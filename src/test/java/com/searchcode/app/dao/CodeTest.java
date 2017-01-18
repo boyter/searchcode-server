@@ -9,11 +9,10 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class CodeTest extends TestCase {
+
     public void testGetCodeBetween() {
         SearchcodeCode code = new SearchcodeCode();
         List<SearchcodeCodeResult> codeBetween = code.getCodeBetween(0, 200);
-
-        SearchcodeIndexer.indexDocuments(codeBetween);
         assertThat(codeBetween).hasAtLeastOneElementOfType(SearchcodeCodeResult.class);
     }
 

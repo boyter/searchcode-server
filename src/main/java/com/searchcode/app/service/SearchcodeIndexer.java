@@ -3,6 +3,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.model.SearchcodeCodeResult;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.SearchcodeLib;
 
 import java.sql.Connection;
@@ -27,8 +28,6 @@ public class SearchcodeIndexer {
             try {
                 stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
 
-                //CodeIndexer.getIndexContents(Singleton.getSearchCodeLib(), codeResult.getContent());
-
                 stmt.setInt(1, codeResult.getId());
                 stmt.setString(2, CodeIndexer.runCodeIndexPipeline(Singleton.getSearchCodeLib(), codeResult.getContent()));
                 stmt.setString(3, codeResult.getFilename());
@@ -41,7 +40,11 @@ public class SearchcodeIndexer {
 
                 stmt.execute();
             } catch (SQLException ex) {
-                System.out.println(ex);
+                Singleton.getLogger().warning(ex.toString());
+            }
+            finally {
+                Helpers.closeQuietly(stmt);
+                Helpers.closeQuietly(connection);
             }
         }
     }

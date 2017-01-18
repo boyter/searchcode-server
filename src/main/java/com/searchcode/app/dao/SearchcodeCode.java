@@ -14,6 +14,7 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.model.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -37,21 +38,26 @@ public class SearchcodeCode {
     public synchronized int getMaxId() {
         int maxId = 0;
 
-        try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("select id from code order by id desc limit 1;");
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-            ResultSet rs = stmt.executeQuery();
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select id from code order by id desc limit 1;");
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 maxId = rs.getInt(1);
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         return maxId;
@@ -61,9 +67,13 @@ public class SearchcodeCode {
 
         List<SearchcodeCodeResult> codeResultList = new ArrayList<>(end - start);
 
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
         try {
-            Connection conn = this.dbConfig.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("SELECT c.id, c.repoid, c.filetypeid, c.languagename, r.sourceid, " +
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("SELECT c.id, c.repoid, c.filetypeid, c.languagename, r.sourceid, " +
                     "UNCOMPRESS(c.content) AS content, " +
                     "c.filename, " +
                     "c.linescount " +
@@ -74,7 +84,7 @@ public class SearchcodeCode {
             stmt.setInt(1, start);
             stmt.setInt(2, end);
 
-            ResultSet rs = stmt.executeQuery();
+            rs = stmt.executeQuery();
 
             while (rs.next()) {
                 codeResultList.add(new SearchcodeCodeResult(
@@ -88,12 +98,14 @@ public class SearchcodeCode {
                         rs.getInt("linescount")
                 ));
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
         }
 
         return codeResultList;
