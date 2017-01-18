@@ -107,7 +107,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        while(CodeIndexer.shouldPauseAdding()) {
+        while (CodeIndexer.shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }

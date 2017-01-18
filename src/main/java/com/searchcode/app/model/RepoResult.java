@@ -71,7 +71,6 @@ public class RepoResult {
     }
 
     public void setName(String name) {
-        // should clean the name here
         name = name.replace(' ', '-');
         this.name = name;
     }

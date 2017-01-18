@@ -29,4 +29,20 @@ public class RepoResultTest extends TestCase {
         String actual = repoResult.getDirectoryName();
         assertThat(actual).isEqualTo("1test1");
     }
+
+    public void testGetNameFileWithSpace() {
+        RepoResult repoResult = new RepoResult();
+        repoResult.setName(" test社會");
+        repoResult.setRowId(1);
+        String actual = repoResult.getDirectoryName();
+        assertThat(actual).isEqualTo("1test1");
+    }
+
+    public void testGetNameFileWithMultipleSpace() {
+        RepoResult repoResult = new RepoResult();
+        repoResult.setName("      test社會");
+        repoResult.setRowId(99);
+        String actual = repoResult.getDirectoryName();
+        assertThat(actual).isEqualTo("99test99");
+    }
 }
