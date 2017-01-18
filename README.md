@@ -153,6 +153,7 @@ XX XXXXXXXX XXXX - 1.3.6
  - Fix XSS on admin log page
  - Fix XSS on admin repo page
  - Fix bug where unable to delete repositories on admin page with special characters in name
+ - Running jobs now displayed on admin page
 
 19 December 2016 - 1.3.5
  - Fix only_localhost to really only listen localhost not drop connections
