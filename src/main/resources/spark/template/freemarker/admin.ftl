@@ -222,6 +222,11 @@
         <td><b>Memory Usage</b></td>
         <td>${memoryUsage}</td>
     </tr>
+
+    <tr>
+        <td><b>Running Jobs</b></td>
+        <td>${runningJobs}</td>
+    </tr>
 </table>
     
 

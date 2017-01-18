@@ -107,7 +107,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        while(CodeIndexer.shouldPauseAdding()) {
+        while (CodeIndexer.shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }
@@ -150,8 +150,8 @@ public abstract class IndexBaseRepoJob implements Job {
 
                 String repoGitLocation = repoLocations + "/" + repoName + "/.git/";
 
-                File f = new File(repoGitLocation);
-                boolean existingRepo = f.exists();
+                File file = new File(repoGitLocation);
+                boolean existingRepo = file.exists();
                 boolean useCredentials = repoUserName != null && !repoUserName.isEmpty();
                 RepositoryChanged repositoryChanged = null;
 

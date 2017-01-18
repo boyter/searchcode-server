@@ -89,7 +89,7 @@ $(document).ready(function(){
 
         var result = confirm("Delete this repository?");
         if (result === true) {
-            $.ajax('/admin/delete/?repoName=' + thus.data('id'))
+            $.ajax('/admin/delete/?repoName=' + encodeURIComponent(thus.data('id')))
                .done(function(data, textStatus, jqXHR) {
                     thus.parent().remove();
                }).fail(function(xhr, ajaxOptions, thrownError) {
