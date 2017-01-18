@@ -52,13 +52,11 @@ for line in blns:
 
     if len(url) < 2000:
         data = urllib2.urlopen(url)
-        data = data.read()
 
-        data = json.loads(data)
-        print data['sucessful'], data['message']
+        if 200 != data.getcode():
+            print "Response not 200"
 
-
-    ################################################################
+        
 
     message = "pub=%s&reponame=%s" % (
             urllib.quote_plus(publickey),
@@ -66,15 +64,13 @@ for line in blns:
         )
 
     sig = hmac(privatekey, message, sha1).hexdigest()
-
     url = "http://localhost:8080/api/repo/delete/?sig=%s&%s" % (urllib.quote_plus(sig), message)
 
     if len(url) < 2000:
         data = urllib2.urlopen(url)
-        data = data.read()
 
-        data = json.loads(data)
-        print data['sucessful'], data['message']
+        if 200 != data.getcode():
+            print "Response not 200"
 
 
 
