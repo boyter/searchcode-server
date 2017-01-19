@@ -15,6 +15,7 @@ import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.model.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -61,6 +62,56 @@ public class SearchcodeCode {
         }
 
         return maxId;
+    }
+
+    public synchronized List<SearchcodeCodeResult> getByids(List<Integer> codeIds) {
+        List<SearchcodeCodeResult> codeResultList = new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select c.id,c.filename,c.location,\n" +
+                    "        substring(uncompress(c.content),1,500000) as content,\n" +
+                    "        c.hash, r.name, c.simhash, c.linescount,\n" +
+                    "                lt.type as languagetype,\n" +
+                    "        s.name, r.sourceurl, r.url, c.blank, c.comment, r.username\n" +
+                    "        from code c\n" +
+                    "        join repo r ON c.repoid = r.id\n" +
+                    "        join languagetype lt ON c.languagename = lt.id\n" +
+                    "        join source s ON s.id = r.sourceid\n" +
+                    "        where c.id in (?) order by field(c.id, ?);");
+
+            stmt.setString(1, StringUtils.join(",", codeIds));
+            stmt.setString(2, StringUtils.join(",", codeIds));
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                codeResultList.add(new SearchcodeCodeResult(
+                        rs.getInt("id"),
+                        rs.getInt("repoid"),
+                        rs.getInt("filetypeid"),
+                        rs.getInt("languagename"),
+                        rs.getInt("sourceid"),
+                        rs.getString("content"),
+                        rs.getString("filename"),
+                        rs.getInt("linescount")
+                ));
+            }
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
+        }
+
+        return codeResultList;
     }
 
     public synchronized List<SearchcodeCodeResult> getCodeBetween(int start, int end) {
