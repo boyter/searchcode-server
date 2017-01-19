@@ -84,8 +84,14 @@ public class SearchcodeCode {
                     "        join source s ON s.id = r.sourceid\n" +
                     "        where c.id in (?) order by field(c.id, ?);");
 
-            stmt.setString(1, StringUtils.join(",", codeIds));
-            stmt.setString(2, StringUtils.join(",", codeIds));
+            StringBuffer stringBuffer = new StringBuffer();
+            for (Integer codeId: codeIds) {
+                stringBuffer.append(codeId).append(",");
+            }
+            String codeIdsString = StringUtils.substring(stringBuffer.toString(), 0, -1);
+
+            stmt.setString(1, codeIdsString);
+            stmt.setString(2, codeIdsString);
 
             rs = stmt.executeQuery();
 
