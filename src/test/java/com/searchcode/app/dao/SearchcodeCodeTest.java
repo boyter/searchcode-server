@@ -1,5 +1,6 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.dto.SearchcodeSearchResult;
 import com.searchcode.app.model.SearchcodeCodeResult;
 import junit.framework.TestCase;
 
@@ -14,10 +15,19 @@ public class SearchcodeCodeTest extends TestCase {
         SearchcodeCode searchcodeCode = new SearchcodeCode();
 
         List<Integer> ids = new ArrayList<>();
+
         ids.add(1);
         ids.add(2);
+        ids.add(3);
 
-        List<SearchcodeCodeResult> searchcodeCodeResults = searchcodeCode.getByids(ids);
-        assertThat(searchcodeCodeResults.size()).isEqualTo(2);
+        List<SearchcodeSearchResult> searchcodeCodeResults = searchcodeCode.getByIds(ids);
+        assertThat(searchcodeCodeResults.size()).isEqualTo(3);
+    }
+
+    public void testGetCodeBetween() {
+        SearchcodeCode searchcodeCode = new SearchcodeCode();
+
+        List<SearchcodeCodeResult> codeBetween = searchcodeCode.getCodeBetween(0, 1000);
+        assertThat(codeBetween.size()).isGreaterThan(10);
     }
 }

@@ -12,6 +12,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
+import com.searchcode.app.dto.SearchcodeSearchResult;
 import com.searchcode.app.model.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -64,47 +65,55 @@ public class SearchcodeCode {
         return maxId;
     }
 
-    public synchronized List<SearchcodeCodeResult> getByids(List<Integer> codeIds) {
-        List<SearchcodeCodeResult> codeResultList = new ArrayList<>();
+    public synchronized List<SearchcodeSearchResult> getByIds(List<Integer> codeIds) {
+        List<SearchcodeSearchResult> codeResultList = new ArrayList<>();
 
         Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
+        StringBuffer stringBuffer = new StringBuffer();
+        for (Integer codeId: codeIds) {
+            stringBuffer.append(codeId).append(",");
+        }
+        String codeIdsString = StringUtils.substring(stringBuffer.toString(), 0, -1);
+
         try {
             conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select c.id,c.filename,c.location,\n" +
-                    "        substring(uncompress(c.content),1,500000) as content,\n" +
-                    "        c.hash, r.name, c.simhash, c.linescount,\n" +
-                    "                lt.type as languagetype,\n" +
-                    "        s.name, r.sourceurl, r.url, c.blank, c.comment, r.username\n" +
-                    "        from code c\n" +
-                    "        join repo r ON c.repoid = r.id\n" +
-                    "        join languagetype lt ON c.languagename = lt.id\n" +
-                    "        join source s ON s.id = r.sourceid\n" +
-                    "        where c.id in (?) order by field(c.id, ?);");
-
-            StringBuffer stringBuffer = new StringBuffer();
-            for (Integer codeId: codeIds) {
-                stringBuffer.append(codeId).append(",");
-            }
-            String codeIdsString = StringUtils.substring(stringBuffer.toString(), 0, -1);
-
-            stmt.setString(1, codeIdsString);
-            stmt.setString(2, codeIdsString);
+            stmt = conn.prepareStatement("select c.id,c.filename,c.location," +
+                    "substring(uncompress(c.content),1,500000) as content," +
+                    "c.hash, r.name as reponame, c.simhash, c.linescount," +
+                    "lt.type as languagetype," +
+                    "s.name as sourcename, r.sourceurl, r.url, c.blank, c.comment, r.username " +
+                    "from code c " +
+                    "join repo r ON c.repoid = r.id " +
+                    "join languagetype lt ON c.languagename = lt.id " +
+                    "join source s ON s.id = r.sourceid " +
+                    "where c.id in (" +
+                    codeIdsString +
+                    ") order by field(c.id, " +
+                    codeIdsString +
+                    ");");
 
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                codeResultList.add(new SearchcodeCodeResult(
+                codeResultList.add(new SearchcodeSearchResult(
                         rs.getInt("id"),
-                        rs.getInt("repoid"),
-                        rs.getInt("filetypeid"),
-                        rs.getInt("languagename"),
-                        rs.getInt("sourceid"),
-                        rs.getString("content"),
                         rs.getString("filename"),
-                        rs.getInt("linescount")
+                        rs.getString("location"),
+                        rs.getString("content"),
+                        rs.getString("hash"),
+                        rs.getString("reponame"),
+                        rs.getString("simhash"),
+                        rs.getInt("linescount"),
+                        rs.getString("languagetype"),
+                        rs.getString("sourcename"),
+                        rs.getString("sourceurl"),
+                        rs.getString("url"),
+                        rs.getInt("blank"),
+                        rs.getInt("comment"),
+                        rs.getString("username")
                 ));
             }
         }
