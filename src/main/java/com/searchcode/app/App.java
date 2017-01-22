@@ -101,6 +101,12 @@ public class App {
             return new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl");
         }, new FreeMarkerEngine());
 
+        get("/project/:reponame/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return new ModelAndView(codeRouteService.getProject(request, response), "coderesult.ftl");
+        }, new FreeMarkerEngine());
+
         ////////////////////////////////////////////////////
         //              Page Routes Below
         ////////////////////////////////////////////////////
