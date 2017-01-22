@@ -25,6 +25,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Responsible for getting data out of the MySQL searchcode database
+ */
 public class SearchcodeCode {
 
     private IDatabaseConfig dbConfig;
