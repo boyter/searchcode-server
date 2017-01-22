@@ -1,8 +1,10 @@
-package com.searchcode.app.service;
+package com.searchcode.app.service.searchcode;
 
 
 import com.searchcode.app.config.SphinxSearchConfig;
-import com.searchcode.app.model.SearchcodeCodeResult;
+import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
+import com.searchcode.app.service.CodeIndexer;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 
 import java.sql.Connection;

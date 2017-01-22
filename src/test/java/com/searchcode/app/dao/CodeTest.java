@@ -1,7 +1,7 @@
 package com.searchcode.app.dao;
 
-import com.searchcode.app.model.SearchcodeCodeResult;
-import com.searchcode.app.service.SearchcodeIndexer;
+import com.searchcode.app.dao.searchcode.SearchcodeCode;
+import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import junit.framework.TestCase;
 
 import java.util.List;

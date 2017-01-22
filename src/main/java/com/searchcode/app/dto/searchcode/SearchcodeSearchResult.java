@@ -1,4 +1,4 @@
-package com.searchcode.app.dto;
+package com.searchcode.app.dto.searchcode;
 
 
 public class SearchcodeSearchResult {
@@ -31,9 +31,9 @@ public class SearchcodeSearchResult {
         this.sourcename = sourcename;
         this.sourceurl = sourceurl;
         this.url = url;
-        this.blankLines = blankLines;
-        this.commentLines = commentLines;
-        this.username = username;
+        this.setBlankLines(blankLines);
+        this.setCommentLines(commentLines);
+        this.setUsername(username);
     }
 
     public int getId() {
@@ -82,5 +82,29 @@ public class SearchcodeSearchResult {
 
     public String getUrl() {
         return url;
+    }
+
+    public int getBlankLines() {
+        return blankLines;
+    }
+
+    public void setBlankLines(int blankLines) {
+        this.blankLines = blankLines;
+    }
+
+    public int getCommentLines() {
+        return commentLines;
+    }
+
+    public void setCommentLines(int commentLines) {
+        this.commentLines = commentLines;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }

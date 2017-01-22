@@ -8,7 +8,7 @@
  * Version 1.3.6
  */
 
-package com.searchcode.app.service;
+package com.searchcode.app.service.searchcode;
 
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.util.Helpers;

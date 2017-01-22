@@ -1,4 +1,4 @@
-package com.searchcode.app.model;
+package com.searchcode.app.model.searchcode;
 
 public class SearchcodeCodeResult {
     private int id;

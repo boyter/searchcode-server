@@ -8,12 +8,12 @@
  * Version 1.3.4
  */
 
-package com.searchcode.app.dao;
+package com.searchcode.app.dao.searchcode;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
-import com.searchcode.app.dto.SearchcodeSearchResult;
-import com.searchcode.app.model.SearchcodeCodeResult;
+import com.searchcode.app.dto.searchcode.SearchcodeSearchResult;
+import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import org.apache.commons.lang3.StringUtils;
