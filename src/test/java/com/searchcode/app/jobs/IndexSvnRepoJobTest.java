@@ -1,5 +1,6 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import junit.framework.TestCase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

@@ -1,5 +1,6 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.jobs.repository.IndexGitHistoryJob;
 import junit.framework.TestCase;
 import org.eclipse.jgit.api.errors.GitAPIException;
 

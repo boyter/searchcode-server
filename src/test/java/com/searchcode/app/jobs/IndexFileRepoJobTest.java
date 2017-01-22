@@ -1,6 +1,7 @@
 package com.searchcode.app.jobs;
 
 
+import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import junit.framework.TestCase;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;

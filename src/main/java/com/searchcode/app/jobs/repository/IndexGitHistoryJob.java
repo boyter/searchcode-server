@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;

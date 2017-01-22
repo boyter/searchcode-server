@@ -8,7 +8,7 @@
  * Version 1.3.6
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;

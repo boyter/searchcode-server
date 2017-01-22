@@ -1,5 +1,6 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;

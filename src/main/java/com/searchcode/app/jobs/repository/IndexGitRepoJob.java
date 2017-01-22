@@ -8,7 +8,7 @@
  * Version 1.3.6
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 // Useful for the future
 // http://stackoverflow.com/questions/1685228/how-to-cat-a-file-in-jgit

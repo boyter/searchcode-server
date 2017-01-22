@@ -8,23 +8,16 @@
  * Version 1.3.6
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
-import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
-import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.*;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -39,7 +32,6 @@ import org.xml.sax.SAXException;
 
 import java.io.*;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 /**
