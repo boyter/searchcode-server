@@ -157,6 +157,41 @@ public class CodeSearcher implements ICodeSearcher {
     }
 
 
+    public ProjectStats getProjectStats(String repoName) {
+        int totalCodeLines = 0;
+        int totalFiles = 0;
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
+
+        try {
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(CODEFIELD, analyzer);
+            Query query = parser.parse(Values.REPONAME + ":" + repoName);
+
+            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            for (int i = 0; i < results.totalHits; i++) {
+                Document doc = searcher.doc(hits[i].doc);
+                totalCodeLines += Helpers.tryParseInt(doc.get(Values.CODELINES), "0");
+            }
+
+            totalFiles = results.totalHits;
+            codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
+            repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
+
+            reader.close();
+        }
+        catch(Exception ex) {
+            LOGGER.severe("CodeSearcher getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+
+        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, repoFacetOwners);
+    }
+
     /**
      * Due to very large repositories (500,000 files) this needs to support
      * paging. Also need to consider the fact that is a list of strings

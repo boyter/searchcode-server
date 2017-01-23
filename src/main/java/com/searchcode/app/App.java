@@ -104,7 +104,7 @@ public class App {
         get("/project/:reponame/", (request, response) -> {
             response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
-            return new ModelAndView(codeRouteService.getProject(request, response), "coderesult.ftl");
+            return new ModelAndView(codeRouteService.getProject(request, response), "project_overview.ftl");
         }, new FreeMarkerEngine());
 
         ////////////////////////////////////////////////////

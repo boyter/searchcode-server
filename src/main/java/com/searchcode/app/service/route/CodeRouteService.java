@@ -224,101 +224,33 @@ public class CodeRouteService {
     public Map<String, Object> getProject(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
-        Repo repo = Singleton.getRepo();
-        Data data = Singleton.getData();
-
-        SearchcodeLib scl = Singleton.getSearchcodeLib(data);
-        OWASPClassifier owaspClassifier = new OWASPClassifier();
-
+        String repoName = request.params(":reponame");
+        RepoResult repository = Singleton.getRepo().getRepoByName(repoName);
         Cocomo2 coco = new Cocomo2();
 
-        String codeId = request.params(":codeid");
-        CodeResult codeResult = this.codeSearcher.getByCodeId(codeId);
-
-        if (codeResult == null) {
+        if (repository == null) {
             response.redirect("/404/");
             halt();
         }
 
-        List<String> codeLines = codeResult.code;
-        StringBuilder code = new StringBuilder();
-        StringBuilder lineNos = new StringBuilder();
-        String padStr = "";
-        for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
-            padStr += " ";
-        }
-        for (int i=1, d=10, len=codeLines.size(); i<=len; i++) {
-            if (i/d > 0)
-            {
-                d *= 10;
-                padStr = padStr.substring(0, padStr.length()-1);  // Del last char
-            }
-            code.append("<span id=\"")
-                    .append(i)
-                    .append("\"></span>")
-                    .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
-                    .append("\n");
-            lineNos.append(padStr)
-                    .append("<a href=\"#")
-                    .append(i)
-                    .append("\">")
-                    .append(i)
-                    .append("</a>")
-                    .append("\n");
-        }
+        ProjectStats projectStats = this.codeSearcher.getProjectStats(repository.getName());
 
-        List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
-        if (CommonRouteService.owaspAdvisoriesEnabled()) {
-            if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
-                owaspResults = owaspClassifier.classifyCode(codeLines, codeResult.languageName);
-            }
-        }
+        map.put("repoLocation", repository.getUrl());
+        map.put("repoBranch", repository.getBranch());
 
-        int limit = Integer.parseInt(
-                Properties.getProperties().getProperty(
-                        Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-        boolean highlight = Helpers.tryParseInt(codeResult.codeLines, "0") <= limit;
+        map.put("totalFiles", projectStats.getTotalFiles());
+        map.put("totalCodeLines", projectStats.getTotalCodeLines());
+        map.put("languageFacet", projectStats.getCodeFacetLanguages());
+        map.put("ownerFacet", projectStats.getRepoFacetOwner());
 
-        RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
+        double estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
+        map.put("estimatedEffort", estimatedEffort);
+        map.put("estimatedCost", (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary()));
 
-        if (repoResult != null) {
-            map.put("source", repoResult.getSource());
-        }
+        map.put("totalOwners", projectStats.getRepoFacetOwner().size());
+        map.put("totalLanguages", projectStats.getCodeFacetLanguages().size());
 
-        map.put("fileName", codeResult.fileName);
-
-        // TODO fix this properly code path includes the repo name and should be removed
-        String codePath = codeResult.codePath;
-
-        if (codeResult.codePath.contains("/")) {
-            codePath = codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length());
-        }
-
-        if (!codePath.startsWith("/")) {
-            codePath = "/" + codePath;
-        }
-        map.put("codePath", codePath);
-        map.put("codeLength", codeResult.codeLines);
-
-        map.put("linenos", lineNos.toString());
-
-        map.put("languageName", codeResult.languageName);
-        map.put("md5Hash", codeResult.md5hash);
-        map.put("repoName", codeResult.repoName);
-        map.put("highlight", highlight);
-        map.put("repoLocation", codeResult.getRepoLocation());
-
-        map.put("codeValue", code.toString());
-        map.put("highligher", CommonRouteService.getSyntaxHighlighter());
-        map.put("codeOwner", codeResult.getCodeOwner());
-        map.put("owaspResults", owaspResults);
-
-        double estimatedEffort = coco.estimateEffort(scl.countFilteredLines(codeResult.getCode()));
-        int estimatedCost = (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
-        if (estimatedCost != 0 && !scl.languageCostIgnore(codeResult.getLanguageName())) {
-            map.put("estimatedCost", estimatedCost);
-        }
-
+        map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
 
