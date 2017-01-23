@@ -227,6 +227,7 @@ public class CodeRouteService {
         String repoName = request.params(":reponame");
         RepoResult repository = Singleton.getRepo().getRepoByName(repoName);
         Cocomo2 coco = new Cocomo2();
+        Gson gson = new Gson();
 
         if (repository == null) {
             response.redirect("/404/");
@@ -249,6 +250,9 @@ public class CodeRouteService {
 
         map.put("totalOwners", projectStats.getRepoFacetOwner().size());
         map.put("totalLanguages", projectStats.getCodeFacetLanguages().size());
+
+        map.put("ownerFacetJson", gson.toJson(projectStats.getRepoFacetOwner()));
+        map.put("languageFacetJson", gson.toJson(projectStats.getCodeFacetLanguages()));
 
         map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());

@@ -12,10 +12,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.*;
-import com.searchcode.app.util.CodeAnalyzer;
-import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
-import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -162,6 +159,7 @@ public class CodeSearcher implements ICodeSearcher {
         int totalFiles = 0;
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
+        SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
 
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
@@ -176,7 +174,10 @@ public class CodeSearcher implements ICodeSearcher {
 
             for (int i = 0; i < results.totalHits; i++) {
                 Document doc = searcher.doc(hits[i].doc);
-                totalCodeLines += Helpers.tryParseInt(doc.get(Values.CODELINES), "0");
+
+                if (!searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
+                    totalCodeLines += Helpers.tryParseInt(doc.get(Values.CODELINES), "0");
+                }
             }
 
             totalFiles = results.totalHits;
