@@ -183,4 +183,19 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(map.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
         assertThat(map.get("estimatedCost")).isNull();
     }
+
+    ///////////////////////////////////////////////////////////////////////
+
+    public void testGetProject() {
+        CodeRouteService codeRouteService = new CodeRouteService();
+        Request request = Mockito.mock(Request.class);
+        Response response = Mockito.mock(Response.class);
+
+        try {
+            codeRouteService.getProject(request, response);
+        }
+        catch(HaltException ex) {}
+
+        verify(response, times(1)).redirect("/404/");
+    }
 }

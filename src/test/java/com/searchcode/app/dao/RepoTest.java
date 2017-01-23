@@ -4,7 +4,10 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class RepoTest extends TestCase {
+
     public void testRepoSaveDelete() {
         Repo repo = Singleton.getRepo();
 
@@ -114,6 +117,12 @@ public class RepoTest extends TestCase {
         repo.addSourceToTable();
         repo.addBranchToTable();
         repo.addBranchToTable();
+    }
+
+    public void testGetRepoByNameUsingNull() {
+        Repo repo = Singleton.getRepo();
+        RepoResult repoResult = repo.getRepoByName(null);
+        assertThat(repoResult).isNull();
     }
 }
 

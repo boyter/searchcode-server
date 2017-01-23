@@ -197,6 +197,10 @@ public class Repo implements IRepo {
     }
 
     public synchronized RepoResult getRepoByName(String repositoryName) {
+        if (repositoryName == null) {
+            return null;
+        }
+
         RepoResult result = this.cache.get(repositoryName);
         if (result != null) {
             return result;
