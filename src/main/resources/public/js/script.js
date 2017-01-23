@@ -1766,11 +1766,14 @@ var SearchResultsComponent = {
             gethref: function(result) {
                 return '/file/' + result.codeId + '/' + result.codePath;
             },
+            getrepositoryhref: function(result) {
+                return '/repository/overview/' + result.repoName + '/';
+            },
             gethreflineno: function(result, lineNumber) {
                 return '/file/' + result.codeId + '/' + result.codePath + '#' + lineNumber;
             },
             getatag: function(result) {
-                return result.fileName + ' in ' + result.repoName;
+                return result.fileName;
             },
             getsmallvalue: function(result){
                 var fixedCodePath = '/' + result.codePath.split('/').slice(1,100000).join('/');
@@ -1784,7 +1787,12 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-                                m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
+                                m('div', [
+                                    m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
+                                    m('span', ' in '),
+                                    m('a', { href: ctrl.getrepositoryhref(res) }, res.repoName),
+                                ]),
+
                                 m('small', ctrl.getsmallvalue(res))  
                             ])
                         ),
