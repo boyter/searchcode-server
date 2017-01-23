@@ -2,6 +2,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.ProjectStats;
 import junit.framework.TestCase;
 
 import java.io.IOException;
@@ -37,5 +38,20 @@ public class CodeSearcherTest extends TestCase {
 
         testGetRepoDocuments = cs.getRepoDocuments("testGetRepoDocuments", 1);
         assertThat(testGetRepoDocuments).hasSize(0);
+    }
+
+    public void testGetProjectStats() throws IOException {
+        CodeIndexDocument codeIndexDocument = new CodeIndexDocument("/", "testGetRepoDocuments", "/", "/", "/", "md5hash", "Java", 10, "", "/", "/");
+        CodeIndexer.indexDocument(codeIndexDocument);
+        CodeSearcher cs = new CodeSearcher();
+
+        ProjectStats projectStats = cs.getProjectStats("testGetRepoDocuments");
+
+        assertThat(projectStats.getTotalFiles()).isEqualTo(1);
+        assertThat(projectStats.getTotalCodeLines()).isEqualTo(10);
+        assertThat(projectStats.getCodeFacetLanguages().get(0).getLanguageName()).isEqualTo("Java");
+        assertThat(projectStats.getCodeFacetLanguages().get(0).getCount()).isEqualTo(1);
+        assertThat(projectStats.getRepoFacetOwner().get(0).getOwner()).isEqualTo("/");
+        assertThat(projectStats.getRepoFacetOwner().get(0).getCount()).isEqualTo(1);
     }
 }
