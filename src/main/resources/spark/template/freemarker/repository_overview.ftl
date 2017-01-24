@@ -4,6 +4,7 @@
 <div class="row">
     <br />
     <h4>Repository Overview for ${repoName}</h4>
+    <p>${busBlurb}</p>
     <table class="table">
         <tbody>
           <tr>

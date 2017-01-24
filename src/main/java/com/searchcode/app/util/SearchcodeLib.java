@@ -17,8 +17,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
-import com.searchcode.app.dto.BinaryFinding;
-import com.searchcode.app.dto.CodeOwner;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -513,6 +512,58 @@ public class SearchcodeLib {
         return altQueries;
     }
 
+
+    public String generateBusBlurb(ProjectStats projectStats) {
+
+        StringBuffer stringBuffer = new StringBuffer();
+        stringBuffer.append("In this repository ").append(projectStats.getRepoFacetOwner().size());
+        stringBuffer.append(" individual(s) have contributed to ").append(projectStats.getTotalFiles());
+        stringBuffer.append(" file(s). ");
+        stringBuffer.append("The most important language(s) in this repository are ");
+
+        List<CodeFacetLanguage> codeFacetLanguages = projectStats.getCodeFacetLanguages();
+        if (codeFacetLanguages.size() > 3) {
+            codeFacetLanguages = codeFacetLanguages.subList(0, 3);
+        }
+        for(int i = 0; i < codeFacetLanguages.size() - 1; i++) {
+            stringBuffer.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
+        }
+        stringBuffer.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
+
+        if (projectStats.getRepoFacetOwner().size() < 5) {
+            stringBuffer.append("The project has a low bus factor of ").append(projectStats.getRepoFacetOwner().size());
+            stringBuffer.append(" and will be in trouble if ").append(projectStats.getRepoFacetOwner().get(0).getOwner()).append(" is hit by a bus. ");
+        }
+        else if (projectStats.getRepoFacetOwner().size() < 15) {
+            stringBuffer.append("The project has bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+        }
+        else {
+            stringBuffer.append("The project has high bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+        }
+
+        List<String> highKnowledge = new ArrayList<>();
+        double sumAverageFilesWorked = 0;
+        for (CodeFacetOwner codeFacetOwner: projectStats.getRepoFacetOwner()) {
+            double currentAverage = (double)codeFacetOwner.getCount() / (double)projectStats.getTotalFiles();
+            sumAverageFilesWorked += currentAverage;
+
+            if (currentAverage > 0.1) {
+                highKnowledge.add(codeFacetOwner.getOwner());
+            }
+        }
+
+        int averageFilesWorked = (int)(sumAverageFilesWorked / projectStats.getRepoFacetOwner().size() * 100);
+
+        stringBuffer.append("The average person who commits this project has knowledge of ");
+        stringBuffer.append(averageFilesWorked).append("% of files. ");
+
+        if (!highKnowledge.isEmpty()) {
+            stringBuffer.append("The project relies on the following people; ");
+            stringBuffer.append(StringUtils.join(highKnowledge, ", ")).append(". ");
+        }
+
+        return stringBuffer.toString().replace(",  and", " and");
+    }
 
     /**
      * Currently not used but meant to replicate the searchcode.com hash which is used to identify duplicate files

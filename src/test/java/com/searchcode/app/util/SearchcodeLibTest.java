@@ -1,7 +1,6 @@
 package com.searchcode.app.util;
 
-import com.searchcode.app.dto.BinaryFinding;
-import com.searchcode.app.dto.CodeOwner;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -514,6 +513,39 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltNeverEmptyString() {
         SearchcodeLib scl = new SearchcodeLib();
         assertEquals(0, scl.generateAltQueries("+").size());
+    }
+
+    public void testGenerateBusBlurb() {
+        SearchcodeLib scl = new SearchcodeLib();
+
+        List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
+        codeFacetOwners.add(new CodeFacetOwner("Ben", 1));
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        codeFacetLanguages.add(new CodeFacetLanguage("Java", 10));
+        codeFacetLanguages.add(new CodeFacetLanguage("Javascript", 8));
+        codeFacetLanguages.add(new CodeFacetLanguage("C#", 7));
+
+        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 1, codeFacetLanguages, codeFacetOwners));
+        assertThat(busBlurb).contains("In this repository 1 individual(s) have contributed to 1 file(s).");
+        assertThat(busBlurb).contains("The most important language(s) in this repository are Java, Javascript and C#.");
+        assertThat(busBlurb).contains("The project has a low bus factor of 1 and will be in trouble if Ben is hit by a bus.");
+    }
+
+    public void testGenerateBusBlurbMore() {
+        SearchcodeLib scl = new SearchcodeLib();
+
+        List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
+        codeFacetOwners.add(new CodeFacetOwner("Ben", 6));
+        codeFacetOwners.add(new CodeFacetOwner("Terry", 4));
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        codeFacetLanguages.add(new CodeFacetLanguage("Java", 7));
+        codeFacetLanguages.add(new CodeFacetLanguage("Javascript", 2));
+        codeFacetLanguages.add(new CodeFacetLanguage("C#", 1));
+
+        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 10, codeFacetLanguages, codeFacetOwners));
+        assertThat(busBlurb).contains("In this repository 2 individual(s) have contributed to 10 file(s).");
+        assertThat(busBlurb).contains("The average person who commits this project has knowledge of 50% of files.");
+        assertThat(busBlurb).contains("The project relies on the following people; Ben, Terry.");
     }
 
     /**

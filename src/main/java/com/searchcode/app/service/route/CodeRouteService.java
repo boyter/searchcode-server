@@ -226,6 +226,7 @@ public class CodeRouteService {
 
         String repoName = request.params(":reponame");
         RepoResult repository = Singleton.getRepo().getRepoByName(repoName);
+        SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
         Cocomo2 coco = new Cocomo2();
         Gson gson = new Gson();
 
@@ -236,6 +237,8 @@ public class CodeRouteService {
 
         ProjectStats projectStats = this.codeSearcher.getProjectStats(repository.getName());
 
+
+        map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
         map.put("repoLocation", repository.getUrl());
         map.put("repoBranch", repository.getBranch());
 
