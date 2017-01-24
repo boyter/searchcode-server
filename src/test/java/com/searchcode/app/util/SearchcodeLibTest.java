@@ -548,6 +548,26 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(busBlurb).contains("The project relies on the following people; Ben, Terry.");
     }
 
+    public void testGenerateBusBlurbStress() {
+        SearchcodeLib scl = new SearchcodeLib();
+
+        for (int i=0; i < 1000; i++) {
+
+            List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                codeFacetOwners.add(new CodeFacetOwner("" + j, j));
+            }
+
+
+            List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                codeFacetLanguages.add(new CodeFacetLanguage("" + j, j));
+            }
+
+            scl.generateBusBlurb(new ProjectStats(i, i, codeFacetLanguages, codeFacetOwners));
+        }
+    }
+
     /**
      * Fuzzy testing of the generate alt queries where we try random things to see if we can introduce an exception
      */

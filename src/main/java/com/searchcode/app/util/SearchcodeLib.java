@@ -521,24 +521,27 @@ public class SearchcodeLib {
         stringBuffer.append(" file(s). ");
         stringBuffer.append("The most important language(s) in this repository are ");
 
-        List<CodeFacetLanguage> codeFacetLanguages = projectStats.getCodeFacetLanguages();
-        if (codeFacetLanguages.size() > 3) {
-            codeFacetLanguages = codeFacetLanguages.subList(0, 3);
-        }
-        for(int i = 0; i < codeFacetLanguages.size() - 1; i++) {
-            stringBuffer.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
-        }
-        stringBuffer.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
 
-        if (projectStats.getRepoFacetOwner().size() < 5) {
-            stringBuffer.append("The project has a low bus factor of ").append(projectStats.getRepoFacetOwner().size());
-            stringBuffer.append(" and will be in trouble if ").append(projectStats.getRepoFacetOwner().get(0).getOwner()).append(" is hit by a bus. ");
+        List<CodeFacetLanguage> codeFacetLanguages = projectStats.getCodeFacetLanguages();
+        if (!codeFacetLanguages.isEmpty()) {
+            if (codeFacetLanguages.size() > 3) {
+                codeFacetLanguages = codeFacetLanguages.subList(0, 3);
+            }
+            for (int i = 0; i < codeFacetLanguages.size() - 1; i++) {
+                stringBuffer.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
+            }
+            stringBuffer.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
         }
-        else if (projectStats.getRepoFacetOwner().size() < 15) {
-            stringBuffer.append("The project has bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
-        }
-        else {
-            stringBuffer.append("The project has high bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+
+        if (!projectStats.getRepoFacetOwner().isEmpty()) {
+            if (projectStats.getRepoFacetOwner().size() < 5) {
+                stringBuffer.append("The project has a low bus factor of ").append(projectStats.getRepoFacetOwner().size());
+                stringBuffer.append(" and will be in trouble if ").append(projectStats.getRepoFacetOwner().get(0).getOwner()).append(" is hit by a bus. ");
+            } else if (projectStats.getRepoFacetOwner().size() < 15) {
+                stringBuffer.append("The project has bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+            } else {
+                stringBuffer.append("The project has high bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+            }
         }
 
         List<String> highKnowledge = new ArrayList<>();
