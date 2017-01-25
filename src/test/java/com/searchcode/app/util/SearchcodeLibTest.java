@@ -544,7 +544,7 @@ public class SearchcodeLibTest extends TestCase {
 
         String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 10, codeFacetLanguages, codeFacetOwners));
         assertThat(busBlurb).contains("In this repository 2 individual(s) have contributed to 10 file(s).");
-        assertThat(busBlurb).contains("The average person who commits this project has knowledge of 50% of files.");
+        assertThat(busBlurb).contains("The average person who commits this project has ownership of 50% of files.");
         assertThat(busBlurb).contains("The project relies on the following people; Ben, Terry.");
     }
 

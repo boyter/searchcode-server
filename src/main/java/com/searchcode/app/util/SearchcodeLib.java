@@ -557,7 +557,7 @@ public class SearchcodeLib {
 
         int averageFilesWorked = (int)(sumAverageFilesWorked / projectStats.getRepoFacetOwner().size() * 100);
 
-        stringBuffer.append("The average person who commits this project has knowledge of ");
+        stringBuffer.append("The average person who commits this project has ownership of ");
         stringBuffer.append(averageFilesWorked).append("% of files. ");
 
         if (!highKnowledge.isEmpty()) {
