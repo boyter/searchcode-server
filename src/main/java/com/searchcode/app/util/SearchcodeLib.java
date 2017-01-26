@@ -517,20 +517,38 @@ public class SearchcodeLib {
 
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append("In this repository ").append(projectStats.getRepoFacetOwner().size());
-        stringBuffer.append(" individual(s) have contributed to ").append(projectStats.getTotalFiles());
-        stringBuffer.append(" file(s). ");
-        stringBuffer.append("The most important language(s) in this repository are ");
 
+        if (projectStats.getRepoFacetOwner().size() == 1) {
+            stringBuffer.append(" committer has contributed to ");
+        }
+        else {
+            stringBuffer.append(" committers have contributed to ");
+        }
+
+        if (projectStats.getTotalFiles() == 1) {
+            stringBuffer.append(projectStats.getTotalFiles()).append(" file. ");
+        }
+        else {
+            stringBuffer.append(projectStats.getTotalFiles()).append(" files. ");
+        }
 
         List<CodeFacetLanguage> codeFacetLanguages = projectStats.getCodeFacetLanguages();
-        if (!codeFacetLanguages.isEmpty()) {
-            if (codeFacetLanguages.size() > 3) {
-                codeFacetLanguages = codeFacetLanguages.subList(0, 3);
+
+        if (codeFacetLanguages.size() == 1) {
+            stringBuffer.append("The most important language in this repository is ").append(codeFacetLanguages.get(0).getLanguageName()).append(". ");
+        }
+        else {
+            stringBuffer.append("The most important language(s) in this repository are ");
+
+            if (!codeFacetLanguages.isEmpty()) {
+                if (codeFacetLanguages.size() > 3) {
+                    codeFacetLanguages = codeFacetLanguages.subList(0, 3);
+                }
+                for (int i = 0; i < codeFacetLanguages.size() - 1; i++) {
+                    stringBuffer.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
+                }
+                stringBuffer.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
             }
-            for (int i = 0; i < codeFacetLanguages.size() - 1; i++) {
-                stringBuffer.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
-            }
-            stringBuffer.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
         }
 
         if (!projectStats.getRepoFacetOwner().isEmpty()) {

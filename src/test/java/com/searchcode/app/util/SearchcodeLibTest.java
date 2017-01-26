@@ -526,7 +526,7 @@ public class SearchcodeLibTest extends TestCase {
         codeFacetLanguages.add(new CodeFacetLanguage("C#", 7));
 
         String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 1, codeFacetLanguages, codeFacetOwners));
-        assertThat(busBlurb).contains("In this repository 1 individual(s) have contributed to 1 file(s).");
+        assertThat(busBlurb).contains("In this repository 1 committer has contributed to 1 file.");
         assertThat(busBlurb).contains("The most important language(s) in this repository are Java, Javascript and C#.");
         assertThat(busBlurb).contains("The project has a low bus factor of 1 and will be in trouble if Ben is hit by a bus.");
     }
@@ -538,12 +538,11 @@ public class SearchcodeLibTest extends TestCase {
         codeFacetOwners.add(new CodeFacetOwner("Ben", 6));
         codeFacetOwners.add(new CodeFacetOwner("Terry", 4));
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
-        codeFacetLanguages.add(new CodeFacetLanguage("Java", 7));
-        codeFacetLanguages.add(new CodeFacetLanguage("Javascript", 2));
-        codeFacetLanguages.add(new CodeFacetLanguage("C#", 1));
+        codeFacetLanguages.add(new CodeFacetLanguage("Java", 10));
 
         String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 10, codeFacetLanguages, codeFacetOwners));
-        assertThat(busBlurb).contains("In this repository 2 individual(s) have contributed to 10 file(s).");
+        assertThat(busBlurb).contains("In this repository 2 committers have contributed to 10 files.");
+        assertThat(busBlurb).contains("The most important language in this repository is Java");
         assertThat(busBlurb).contains("The average person who commits this project has ownership of 50% of files.");
         assertThat(busBlurb).contains("The project relies on the following people; Ben, Terry.");
     }
