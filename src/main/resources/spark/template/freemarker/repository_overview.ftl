@@ -26,7 +26,7 @@
               <td>
                   <#list languageFacet>
                   <#items as result>
-                      ${result.languageName} <small>${result.count} files ${result.count / totalFiles * 100}% of project</small><br />
+                      ${result.languageName} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
                   </#items>
                   </#list>
               </td>
@@ -34,7 +34,7 @@
               <td>
                   <#list ownerFacet>
                   <#items as result>
-                      ${result.owner} <small>${result.count} files ${result.count / totalFiles * 100}% of project</small><br />
+                      ${result.owner} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
                   </#items>
                   </#list>
               </td>

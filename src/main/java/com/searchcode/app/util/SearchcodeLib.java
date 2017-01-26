@@ -538,7 +538,7 @@ public class SearchcodeLib {
             stringBuffer.append("The most important language in this repository is ").append(codeFacetLanguages.get(0).getLanguageName()).append(". ");
         }
         else {
-            stringBuffer.append("The most important language(s) in this repository are ");
+            stringBuffer.append("The most important languages in this repository are ");
 
             if (!codeFacetLanguages.isEmpty()) {
                 if (codeFacetLanguages.size() > 3) {

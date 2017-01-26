@@ -527,7 +527,7 @@ public class SearchcodeLibTest extends TestCase {
 
         String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 1, codeFacetLanguages, codeFacetOwners));
         assertThat(busBlurb).contains("In this repository 1 committer has contributed to 1 file.");
-        assertThat(busBlurb).contains("The most important language(s) in this repository are Java, Javascript and C#.");
+        assertThat(busBlurb).contains("The most important languages in this repository are Java, Javascript and C#.");
         assertThat(busBlurb).contains("The project has a low bus factor of 1 and will be in trouble if Ben is hit by a bus.");
     }
 
