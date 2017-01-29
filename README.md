@@ -20,7 +20,11 @@ Submissions/Pull Requests
 -------------------------
 If you would like to submit code to be integrated into searchcode server please specify that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
-Before making any submission be sure to run "fab test"
+Before making any submission be sure to run 
+
+	fab test
+
+All tests must pass before any submission will be accepted.
 
 To Build TL/DR;
 ---------------
@@ -43,15 +47,31 @@ but you can always run them in your browser if required by opening
 
 	./src/test/javascript/index.html
 
-To test the application you can either run "mvn test" or "fab test". Note that these tests will only cover unit
-some integration and javascript unit. For full coverage run "fab test_full" with the application running in the background
-to ensure everything is working as expected.
+To test the application you can either run
+	mvn test 
 
-To build a full release IE ready for production you should run "fab build_release" which will test compile and build a release into
+or
+
+	fab test
+
+Note that these tests will only cover unit some integration and javascript unit. For full coverage run 
+
+	fab test_full 
+
+with the application running in the background to ensure everything is working as expected.
+
+To build a full release IE ready for production you should run 
+
+	fab build_release 
+
+which will test compile and build a release into
 the release folder and produce the file "searchcode-server.tar.gz" which is a ready to deploy release.
 
-If you want to simply test and run then you can run "fab run" however this will be default build a package
-and run that. To run quickly just open in your IDE of choice and start running App.java
+If you want to simply test and run then you can run 
+
+	fab run 
+
+however this will be default build a package and run that. To run quickly just open in your IDE of choice and start running App.java
 
 There are a special bunch of tests used for verifying that indexing logic for GIT and File repositories works correctly. To perform 
 this you need to run one of all of the following shell scripts,
