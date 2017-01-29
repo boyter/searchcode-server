@@ -36,8 +36,12 @@ To Build
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
 maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement. To run 
 the javascript unit tests through the command line you will need to install NPM and then run
-npm install -g node-qunit-phantomjs but you can always run them in your browser if required by opening 
-./src/test/javascript/index.html
+
+	npm install -g node-qunit-phantomjs 
+
+but you can always run them in your browser if required by opening 
+
+	./src/test/javascript/index.html
 
 To test the application you can either run "mvn test" or "fab test". Note that these tests will only cover unit
 some integration and javascript unit. For full coverage run "fab test_full" with the application running in the background
@@ -52,16 +56,16 @@ and run that. To run quickly just open in your IDE of choice and start running A
 There are a special bunch of tests used for verifying that indexing logic for GIT and File repositories works correctly. To perform 
 this you need to run one of all of the following shell scripts,
 
-./assets/integration_test/gitload/gitload.sh
-./assets/integration_test/gitupdate/gitupdate.sh
-./assets/integration_test/fileupdatetest/fileload.sh
-./assets/integration_test/fileload/fileload.sh
+	./assets/integration_test/gitload/gitload.sh
+	./assets/integration_test/gitupdate/gitupdate.sh
+	./assets/integration_test/fileupdatetest/fileload.sh
+	./assets/integration_test/fileload/fileload.sh
 
 Then add the git ones as GIT repositories in the application and the file ones as FILE repositories. It is also useful to 
 set the properties
 
-check_repo_chages=60
-check_filerepo_chages=60
+	check_repo_chages=60
+	check_filerepo_chages=60
 
 but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
 to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
