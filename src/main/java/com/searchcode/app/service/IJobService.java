@@ -11,8 +11,11 @@
 package com.searchcode.app.service;
 
 
+import com.searchcode.app.model.RepoResult;
+
 public interface IJobService {
     void initialJobs();
     boolean rebuildAll();
     boolean forceEnqueue();
+    boolean forceEnqueue(RepoResult repoResult);
 }

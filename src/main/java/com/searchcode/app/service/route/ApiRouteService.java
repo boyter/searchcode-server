@@ -91,6 +91,26 @@ public class ApiRouteService {
         return new ApiResponse(false, "was unable to force the index");
     }
 
+    public ApiResponse repositoryIndex(Request request, Response response) {
+        if (!this.apiEnabled) {
+            return new ApiResponse(false, "API not enabled");
+        }
+
+        String repoUrl = request.queryParams("repoUrl");
+
+        
+
+
+//        boolean result = this.jobService.rebuildAll();
+//        if (result) {
+//            this.jobService.forceEnqueue();
+//            return new ApiResponse(true, "reindex forced");
+//        }
+
+//        return new ApiResponse(false, "was unable to force the index");
+        return null;
+    }
+
     public RepoResultApiResponse repoList(Request request, Response response) {
         if (!this.apiEnabled) {
             return new RepoResultApiResponse(false, "API not enabled", null);

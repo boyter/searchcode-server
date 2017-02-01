@@ -18,6 +18,7 @@ public interface IRepo {
     List<RepoResult> getAllRepo();
     List<RepoResult> getPagedRepo(int offset, int pageSize);
     RepoResult getRepoByName(String repositoryName);
+    RepoResult getRepoByUrl(String repositoryUrl);
     boolean saveRepo(RepoResult repoResult);
     void deleteRepoByName(String repositoryName);
 }

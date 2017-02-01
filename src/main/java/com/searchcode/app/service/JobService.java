@@ -405,30 +405,45 @@ public class JobService implements IJobService {
             return false;
         }
 
-        UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
-        UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
-        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
-
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
         Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
         for(RepoResult rr: repoResultList) {
-            switch (rr.getScm().toLowerCase()) {
-                case "git":
-                    Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
-                    repoGitQueue.add(rr);
-                    break;
-                case "svn":
-                    Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
-                    repoSvnQueue.add(rr);
-                    break;
-                case "file":
-                    Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
-                    repoFileQueue.add(rr);
-                    break;
-            }
+            enqueueRepository(rr);
         }
 
         return true;
+    }
+
+    @Override
+    public boolean forceEnqueue(RepoResult repoResult) {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return false;
+        }
+
+        enqueueRepository(repoResult);
+
+        return true;
+    }
+
+    private void enqueueRepository(RepoResult rr) {
+        UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
+        UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
+
+        switch (rr.getScm().toLowerCase()) {
+            case "git":
+                Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
+                repoGitQueue.add(rr);
+                break;
+            case "svn":
+                Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
+                repoSvnQueue.add(rr);
+                break;
+            case "file":
+                Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
+                repoFileQueue.add(rr);
+                break;
+        }
     }
 }

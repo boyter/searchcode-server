@@ -169,6 +169,12 @@ public class App {
             return apiRouteService.repositoryReindex(request, response);
         }, new JsonTransformer());
 
+        get("/api/repo/index/", "application/json", (request, response) -> {
+            addJsonHeaders(response);
+            ApiRouteService apiRouteService = new ApiRouteService();
+            return apiRouteService.repositoryIndex(request, response);
+        }, new JsonTransformer());
+
         ////////////////////////////////////////////////////
         //              Admin Routes Below
         ////////////////////////////////////////////////////

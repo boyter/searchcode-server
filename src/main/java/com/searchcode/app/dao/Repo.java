@@ -247,6 +247,50 @@ public class Repo implements IRepo {
         return result;
     }
 
+    public synchronized RepoResult getRepoByUrl(String repositoryUrl) {
+        if (repositoryUrl == null) {
+            return null;
+        }
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        RepoResult result = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where url=?;");
+
+            stmt.setString(1, repositoryUrl);
+
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                int rowId = rs.getInt("rowid");
+                String repoName = rs.getString("name");
+                String repoScm = rs.getString("scm");
+                String repoUrl = rs.getString("url");
+                String repoUsername = rs.getString("username");
+                String repoPassword = rs.getString("password");
+                String repoSource = rs.getString("source");
+                String repoBranch = rs.getString("branch");
+
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+            }
+        }
+        catch(SQLException ex) {
+            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
+            Helpers.closeQuietly(conn);
+        }
+
+        return result;
+    }
+
     public synchronized void deleteRepoByName(String repositoryName) {
         Connection conn = null;
         PreparedStatement stmt = null;

@@ -38,6 +38,22 @@ public class RepoTest extends TestCase {
         repo.deleteRepoByName("myname");
     }
 
+    public void testRepoByUrl() {
+        Repo repo = Singleton.getRepo();
+
+        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        assertNotNull(repo.getRepoByUrl("myurl"));
+        repo.deleteRepoByName("myname");
+    }
+
+    public void testRepoByUrlMemoryLeak() {
+        Repo repo = Singleton.getRepo();
+
+        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        assertNotNull(repo.getRepoByUrl("myurl"));
+        repo.deleteRepoByName("myname");
+    }
+
     public void testDeleteRepoMultipleTimes() {
         Repo repo = Singleton.getRepo();
 

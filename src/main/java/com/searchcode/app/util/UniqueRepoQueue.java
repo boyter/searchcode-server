@@ -49,4 +49,8 @@ public class UniqueRepoQueue {
     public synchronized int size() {
         return repoIndexQueue.size();
     }
+
+    public synchronized void clear() {
+        this.repoIndexQueue.clear();
+    }
 }
