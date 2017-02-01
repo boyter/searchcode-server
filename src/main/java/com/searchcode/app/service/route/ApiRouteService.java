@@ -97,18 +97,14 @@ public class ApiRouteService {
         }
 
         String repoUrl = request.queryParams("repoUrl");
+        RepoResult repoByUrl = this.repo.getRepoByUrl(repoUrl);
 
-        
+        if (repoByUrl != null) {
+            this.jobService.forceEnqueue(repoByUrl);
+            return new ApiResponse(true, "Enqueued repository " + repoByUrl.getUrl());
+        }
 
-
-//        boolean result = this.jobService.rebuildAll();
-//        if (result) {
-//            this.jobService.forceEnqueue();
-//            return new ApiResponse(true, "reindex forced");
-//        }
-
-//        return new ApiResponse(false, "was unable to force the index");
-        return null;
+        return new ApiResponse(false, "was unable to find repository " + repoUrl);
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {
