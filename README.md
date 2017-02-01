@@ -98,7 +98,13 @@ ensure that performance is acceptable the tests are also run on a Atom powered n
 To Run
 ------
 
-To run searchcode server you will need to have any Windows, Linux or OSX machine with Java 8 installed.
+To run using Docker download the image
+
+https://hub.docker.com/r/searchcode/searchcode-server-community/
+
+and then simply run it. Note that this instance is not production ready, as all configuration and storage is done inside the container, but it is the fastest way to get started.
+
+To run searchcode server locally you will need to have any Windows, Linux or OSX machine with Java 8 installed.
 Testing and packaging was done using the below version.
 
 	java version "1.8.0_65"
