@@ -101,10 +101,10 @@ public class ApiRouteService {
 
         if (repoByUrl != null) {
             this.jobService.forceEnqueue(repoByUrl);
-            return new ApiResponse(true, "Enqueued repository " + repoByUrl.getUrl());
+            return new ApiResponse(true, "Enqueued repository " + repoUrl);
         }
 
-        return new ApiResponse(false, "was unable to find repository " + repoUrl);
+        return new ApiResponse(false, "Was unable to find repository " + repoUrl);
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {

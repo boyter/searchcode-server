@@ -53,5 +53,4 @@ public class JobServiceTest extends TestCase {
         assertThat(repoSvnQueue.poll().getRowId()).isEqualTo(1);
         assertThat(repoFileQueue.poll().getRowId()).isEqualTo(2);
     }
-
 }

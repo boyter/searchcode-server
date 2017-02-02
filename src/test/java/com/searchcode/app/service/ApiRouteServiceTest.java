@@ -137,6 +137,66 @@ public class ApiRouteServiceTest extends TestCase {
 
     /////////////////////////////////////////////////////////////////////
 
+    public void testRepositoryIndexApiNotEnabled() {
+        ApiRouteService apiRouteService = new ApiRouteService();
+        apiRouteService.apiEnabled = false;
+
+        ApiResponse apiResponse = apiRouteService.repositoryIndex(null, null);
+
+        assertThat(apiResponse.getMessage()).isEqualTo("API not enabled");
+        assertThat(apiResponse.isSucessful()).isFalse();
+    }
+
+    public void testRepositoryIndexApiNoRepositorySupplied() {
+        JobService mockJobService = Mockito.mock(JobService.class);
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+
+        ApiResponse apiResponse = apiRouteService.repositoryIndex(mockRequest, null);
+        assertThat(apiResponse.getMessage()).isEqualTo("Was unable to find repository null");
+        assertThat(apiResponse.isSucessful()).isEqualTo(false);
+    }
+
+    public void testRepositoryIndexApiNoMatchinRepo() {
+        JobService mockJobService = Mockito.mock(JobService.class);
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
+        when(mockRequest.queryParams("repoUrl")).thenReturn("test");
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+
+        ApiResponse apiResponse = apiRouteService.repositoryIndex(mockRequest, null);
+        assertThat(apiResponse.getMessage()).isEqualTo("Was unable to find repository test");
+        assertThat(apiResponse.isSucessful()).isEqualTo(false);
+    }
+
+    public void testRepositoryIndexMatchingRepo() {
+        JobService mockJobService = Mockito.mock(JobService.class);
+        Request mockRequest = Mockito.mock(Request.class);
+        Repo mockRepo = Mockito.mock(Repo.class);
+
+        when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
+        when(mockRequest.queryParams("repoUrl")).thenReturn("http://test/");
+        when(mockRepo.getRepoByUrl("http://test/")).thenReturn(new RepoResult());
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null);
+        apiRouteService.apiEnabled = true;
+
+        ApiResponse apiResponse = apiRouteService.repositoryIndex(mockRequest, null);
+        assertThat(apiResponse.getMessage()).isEqualTo("Enqueued repository http://test/");
+        assertThat(apiResponse.isSucessful()).isEqualTo(true);
+    }
+
+    /////////////////////////////////////////////////////////////////////
+
     public void testRepoListApiNotEnabled() {
         ApiRouteService apiRouteService = new ApiRouteService();
         apiRouteService.apiEnabled = false;
