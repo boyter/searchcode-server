@@ -4,6 +4,17 @@ Installation
 
 All searchcode server requires is a Java 8 version of the JRE. Both the Oracle JRE and OpenJDK are known to work.
 
+Hardware Requirements
+---------------------
+
+The hardware requirements of searchcode server depend on what you are planning to index. The main factors are the number of files you plan to index and the physical size of those files on disk.
+
+You will need at least as much disk space as the total size of the repositories you want to index on disk take up plus approx 25% overhead for searchcode server to store its indexes and itself.
+
+For example if you have 100 gigabytes of repositories to index you would need at least 125 gigabytes of storage space allocated to searchcode server.
+
+It is reccomended to have at least 2 CPU cores dedicated to searchcode server, but it can work in a multi tennancy envrionment.
+
 Docker
 ------
 
@@ -88,3 +99,15 @@ To upgrade your current instance of searchcode perform the following steps.
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
+
+
+Multi Tennancy
+--------------
+
+Sometimes you may want to run searchcode server on a shared machine where it will need to yield resources to other applications running on the same machine. If this is the case you need consider changing the following settings.
+
+ - Set the Backoff Value in the Admin settings page (not available in community edition). This is used to control how much CPU searchcode server will consume by monitoring the load average on the box and if it is over a certain threshhold pause indexing operations till this number is below this value.
+ - Lower the number of processing threads by changing the values of number_git_processors, number_svn_processors and number_file_processors inside the searchcode.properties file. Setting a value of 1 for each will ensure that only a single background indexing process can run at any time and reduce disk and CPU contention.
+ - Set the Java heap value using the Xmx command line option when starting searchcode server. Keep in mind that the JVM will use addtional memory behind the heap, and as such searchcode server can still use more RAM then allocated with this option. If you have an upper limit of 1000MB of RAM consider setting this to 800MB.
+
+
