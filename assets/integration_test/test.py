@@ -84,6 +84,12 @@ class TestIntegration(unittest.TestCase):
             data = self.getData(url)
             self.assertTrue('No results found' in data)
 
+    def test_index_suggest(self):
+        for x in xrange(1000):
+            url = "http://%s/api/repo/index/?repoUrl=http://test.com/" % (host)
+            data = self.getData(url)
+            self.assertTrue('Was unable to find repository' in data)
+
     def testCheckResponseHeadersApi(self):
         urls = [
             'api/codesearch/?q=test',
@@ -92,7 +98,7 @@ class TestIntegration(unittest.TestCase):
             'api/repo/add/',
             'api/repo/delete/',
             'api/repo/reindex/',
-            'api/repo/reindex/',
+            'api/repo/index/',
         ]
         
         for url in urls:
