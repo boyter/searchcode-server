@@ -101,8 +101,8 @@ To upgrade your current instance of searchcode perform the following steps.
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
 
 
-Multi Tennancy
---------------
+Multitenancy
+------------
 
 Sometimes you may want to run searchcode server on a shared machine where it will need to yield resources to other applications running on the same machine. If this is the case you need consider changing the following settings.
 
