@@ -1,0 +1,17 @@
+FROM ubuntu:16.04
+
+RUN apt-get update && apt-get install -y \
+    openjdk-8* \
+    maven \
+    maven* \
+    python-pip \
+    python-dev \
+    build-essential \
+    libffi-dev \
+    libssl-dev
+
+RUN pip install fabric
+
+COPY ./ /opt/app/
+WORKDIR /opt/app/
+RUN fab test
