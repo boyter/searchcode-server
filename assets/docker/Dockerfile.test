@@ -1,4 +1,6 @@
 FROM ubuntu:16.04
+ENV http_proxy ${http_proxy}
+ENV https_proxy ${https_proxy}
 
 RUN apt-get update && apt-get install -y \
     openjdk-8* \

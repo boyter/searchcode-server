@@ -1,0 +1,19 @@
+resources:
+- name: searchcode-server
+  type: git
+  source:
+    uri: https://github.com/boyter/searchcode-server.git
+    branch: master
+    username: {{username}}
+    password: {{password}}
+
+jobs:
+- name: unit-test
+  public: true
+  build_logs_to_retain: 10
+  plan:
+  - get: searchcode-server
+    trigger: true
+  - task: tests
+    file: searchcode-server/ci/tasks/run_unit_tests.yml
+
