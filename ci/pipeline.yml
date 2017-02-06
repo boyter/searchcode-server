@@ -13,5 +13,6 @@ jobs:
   - get: searchcodeserver
     trigger: true
   - task: tests
-    file: searchcodeserver/ci/tasks/run_unit_tests.yml
+    # file: searchcodeserver/ci/tasks/run_unit_tests.yml
+    build: searchcodeserver/assets/docker/test
 
