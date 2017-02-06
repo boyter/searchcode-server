@@ -7,7 +7,7 @@ image_resource:
     tag: 3.3.9-jdk-8-alpine
 
 inputs:
-- name: searchcode-server
+- name: searchcodeserver
 
 run:
-  path: searchcode-server/unit_test.sh
+  path: searchcodeserver/unit_test.sh
