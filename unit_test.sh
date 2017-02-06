@@ -6,4 +6,4 @@ if [ $# -eq 0 ]
     pushd searchcodeserver 2> /dev/null || true
 fi
 
-mvn test
+mvn test-compile
