@@ -1791,9 +1791,9 @@ var SearchResultsComponent = {
                                     m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
                                     m('span', ' in '),
                                     m('a', { href: ctrl.getrepositoryhref(res) }, res.repoName),
+                                    m('small', ctrl.getsmallvalue(res))  
                                 ]),
-
-                                m('small', ctrl.getsmallvalue(res))  
+                                
                             ])
                         ),
                         m('ol.code-result', [
@@ -1863,4 +1863,3 @@ else {
     SearchModel.filterinstantly(true);
     SearchModel.searchhistory(false);
 }
-

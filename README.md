@@ -178,6 +178,8 @@ Change Log
 ==========
 
 XX XXXXXXXX XXXX - 1.3.8
+ - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
+ - Small CSS display issues on search pages
 
 
 01 February 2017 - 1.3.7
