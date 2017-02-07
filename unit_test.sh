@@ -6,5 +6,5 @@ if [ $# -eq 0 ]
     pushd searchcodeserver 2> /dev/null || true
 fi
 
-#mvn test-compile
-sudo docker build -t searchcode-server-test -f ./assets/docker/test/Dockerfile .
+mvn test
+#docker build -t searchcode-server-test -f ./assets/docker/test/Dockerfile .
