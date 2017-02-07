@@ -7,4 +7,4 @@ if [ $# -eq 0 ]
 fi
 
 #mvn test-compile
-/usr/bin/docker build -t searchcode-server-test -f ./assets/docker/test/Dockerfile .
+sudo docker build -t searchcode-server-test -f ./assets/docker/test/Dockerfile .
