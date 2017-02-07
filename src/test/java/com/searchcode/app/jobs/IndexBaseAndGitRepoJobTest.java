@@ -4,6 +4,7 @@ import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
+import com.searchcode.app.util.Properties;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 

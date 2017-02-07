@@ -21,6 +21,7 @@ import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.*;
+import com.searchcode.app.util.Properties;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -43,8 +44,8 @@ public abstract class IndexBaseRepoJob implements Job {
 
     protected boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
-    public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
-    public boolean LOGINDEXED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty("only_localhost", "false")); // TODO make this configurable
+    public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+    public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
 
     /**
      * This method to be implemented by the extending class
