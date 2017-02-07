@@ -6,7 +6,7 @@ platform: linux
 #     repository: maven 
 #     tag: 3.3.9-jdk-8-alpine
 
-image: docker:///searchcodeserver/assets/docker/test
+ image_resource: docker:///searchcodeserver/assets/docker/test
 
 inputs:
 - name: searchcodeserver
