@@ -17,5 +17,6 @@ RUN apt-get update && apt-get install -y \
 RUN pip install fabric
 
 COPY ./ /opt/app/
+COPY ./searchcode.sqlite.empty /opt/app/searchcode.sqlite
 WORKDIR /opt/app/
 RUN fab test

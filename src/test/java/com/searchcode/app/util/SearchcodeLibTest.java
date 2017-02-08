@@ -343,7 +343,8 @@ public class SearchcodeLibTest extends TestCase {
     public void testInterestingCharacters() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.findInterestingCharacters("this 你好 chinese");
-        assertThat(actual).isEqualTo("  你 好   ");
+        assertThat(actual).contains(" 你 ");
+        assertThat(actual).contains(" 好 ");
     }
 
     public void testInterestingCharactersNullExpectEmpty() {
