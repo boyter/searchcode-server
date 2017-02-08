@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
     python-dev \
     build-essential \
     libffi-dev \
-    libssl-dev
+    libssl-dev \
+    subversion \
+    git
 
 RUN pip install fabric
 
