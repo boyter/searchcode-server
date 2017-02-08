@@ -89,7 +89,6 @@ public class LoggerWrapperTest extends TestCase {
         Random rand = new Random();
 
         for (int i = 0; i< 1100; i++) {
-            logger.severe(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
@@ -97,7 +96,7 @@ public class LoggerWrapperTest extends TestCase {
 
 
         assertThat(logger.getInfoLogs().size()).isEqualTo(1000);
-        assertThat(logger.getSevereLogs().size()).isEqualTo(1000);
+        assertThat(logger.getSevereLogs().size()).isEqualTo(0);
         assertThat(logger.getWarningLogs().size()).isEqualTo(1000);
         assertThat(logger.getAllLogs().size()).isEqualTo(1000);
         assertThat(logger.getSearchLogs().size()).isEqualTo(1000);
