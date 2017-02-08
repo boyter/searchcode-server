@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Build & Test') {
             steps {
-                sh 'docker build -t searchcode-server-test -f ./assets/docker/test/Dockerfile .'
+                sh 'docker build -t searchcode-server-test -f ./assets/docker/Dockerfile.test .'
             }
         }
     }
