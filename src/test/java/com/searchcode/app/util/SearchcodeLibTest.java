@@ -109,7 +109,6 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryWhiteListedPropertyExtension() {
-        // Assumes that java is in the properties whitelist
         SearchcodeLib sl = new SearchcodeLib();
         sl.WHITELIST = new String[1];
         sl.WHITELIST[0] = "java";
@@ -121,8 +120,11 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryBlackListedPropertyExtension() {
-        // Assumes that java is in the properties whitelist
         SearchcodeLib sl = new SearchcodeLib();
+
+        sl.BLACKLIST = new String[1];
+        sl.BLACKLIST[0] = "png";
+
         sl.classifier = new ArrayList<>();
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
