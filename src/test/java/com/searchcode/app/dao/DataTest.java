@@ -6,6 +6,13 @@ import junit.framework.TestCase;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class DataTest extends TestCase {
+
+    public DataTest() {
+        // Tests need to bootstrap themselves
+        Data data = Singleton.getData();
+        data.createTableIfMissing();
+    }
+
     public void testDataSaveUpdate() {
         Data data = Singleton.getData();
 

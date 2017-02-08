@@ -8,7 +8,23 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class RepoTest extends TestCase {
 
+    public RepoTest() {
+        // Tests need to bootstrap themselves
+        Repo repo = Singleton.getRepo();
+        repo.addSourceToTable();
+    }
+
+    public void testMigrationCode() {
+        Repo repo = Singleton.getRepo();
+
+        repo.addSourceToTable();
+        repo.addSourceToTable();
+        repo.addBranchToTable();
+        repo.addBranchToTable();
+    }
+
     public void testRepoSaveDelete() {
+
         Repo repo = Singleton.getRepo();
 
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
@@ -126,14 +142,7 @@ public class RepoTest extends TestCase {
         repo.deleteRepoByName("testGetPagedRepo5");
     }
 
-    public void testMigrationCode() {
-        Repo repo = Singleton.getRepo();
 
-        repo.addSourceToTable();
-        repo.addSourceToTable();
-        repo.addBranchToTable();
-        repo.addBranchToTable();
-    }
 
     public void testGetRepoByNameUsingNull() {
         Repo repo = Singleton.getRepo();

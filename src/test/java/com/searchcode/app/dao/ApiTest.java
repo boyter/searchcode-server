@@ -5,6 +5,13 @@ import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 public class ApiTest extends TestCase {
+
+    public ApiTest() {
+        // Tests need to bootstrap themselves
+        Api api = Singleton.getApi();
+        api.createTableIfMissing();
+    }
+
     public void testMultipleCreateTable() {
         Api api = Singleton.getApi();
 
