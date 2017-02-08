@@ -268,32 +268,32 @@ public class CodeMatcherTest extends TestCase {
      * Included because findMatchingLines is the slowest method and drags down the user experience if too slow
      * The longest the worst possible case should take to run is 1 wall clock second
      */
-    public void testFindMatchingLinesPerformance() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
-        matchTerms.add("code");
-        matchTerms.add("this");
-
-        // Simulates the worst possible case where the matching lines are right
-        // at the end
-        List<String> code = new ArrayList<>();
-        for (int i = 0; i < 9999; i++) {
-            String addString = "some additional stuff that random stuff that should not match but force it to work a bit harder then it normally would";
-
-            for(int j = 0; j< 5; j++) {
-                addString += addString;
-            }
-
-            code.add(addString);
-        }
-        code.add("this is some code");
-
-        Instant start = Instant.now();
-        List<CodeMatchResult> result = cm.findMatchingLines(code, matchTerms, true);
-
-        assertTrue(result != null); // Force no optimisations by the JVM
-        assertTrue(Duration.between(start, Instant.now()).getSeconds() <= 1);
-    }
+//    public void testFindMatchingLinesPerformance() {
+//        CodeMatcher cm = new CodeMatcher();
+//        List<String> matchTerms = new ArrayList<String>();
+//        matchTerms.add("code");
+//        matchTerms.add("this");
+//
+//        // Simulates the worst possible case where the matching lines are right
+//        // at the end
+//        List<String> code = new ArrayList<>();
+//        for (int i = 0; i < 9999; i++) {
+//            String addString = "some additional stuff that random stuff that should not match but force it to work a bit harder then it normally would";
+//
+//            for(int j = 0; j< 5; j++) {
+//                addString += addString;
+//            }
+//
+//            code.add(addString);
+//        }
+//        code.add("this is some code");
+//
+//        Instant start = Instant.now();
+//        List<CodeMatchResult> result = cm.findMatchingLines(code, matchTerms, true);
+//
+//        assertTrue(result != null); // Force no optimisations by the JVM
+//        assertTrue(Duration.between(start, Instant.now()).getSeconds() <= 1);
+//    }
 
     public void testFindMatchingLines() {
         CodeMatcher cm = new CodeMatcher();
