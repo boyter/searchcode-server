@@ -3,17 +3,19 @@ package com.searchcode.app.dao;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class DataTest extends TestCase {
-    public void testRepoSaveUpdate() {
+    public void testDataSaveUpdate() {
         Data data = Singleton.getData();
 
         String expected = "" + System.currentTimeMillis();
         String actual = data.getDataByName("test_case_data_ignore");
-        assertFalse(expected.equals(actual));
+        assertThat(actual).isNotEqualTo(expected);
 
         data.saveData("test_case_data_ignore", expected);
         actual = data.getDataByName("test_case_data_ignore");
-        assertEquals(expected, actual);
+        assertThat(actual).isEqualTo(expected);
     }
 
     public void testManyGetCacheOk() {
