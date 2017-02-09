@@ -181,6 +181,7 @@ XX XXXXXXXX XXXX - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
  - Small CSS display issues on search pages
  - Resolve issues with some unit tests being inconsistent
+ - Setup CI pipeline to shake out issues and IWOMM
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline
