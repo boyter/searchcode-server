@@ -2,8 +2,11 @@ package com.searchcode.app.util;
 
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.classifier.Classifier;
+import com.searchcode.app.util.classifier.FileClassifier;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.ibex.nestedvm.util.Seekable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +103,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
-        for(SearchcodeLib.Classifier classifier: sl.classifier) {
+        for(Classifier classifier: FileClassifier.classifier) {
             for(String extension: classifier.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
@@ -112,7 +115,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchcodeLib sl = new SearchcodeLib();
         sl.WHITELIST = new String[1];
         sl.WHITELIST[0] = "java";
-        sl.classifier = new ArrayList<>();
+        FileClassifier.classifier = new ArrayList<>();
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
@@ -125,7 +128,7 @@ public class SearchcodeLibTest extends TestCase {
         sl.BLACKLIST = new String[1];
         sl.BLACKLIST[0] = "png";
 
-        sl.classifier = new ArrayList<>();
+        FileClassifier.classifier = new ArrayList<>();
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
 
