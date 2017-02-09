@@ -12,9 +12,11 @@ RUN apt-get update && apt-get install -y \
     libffi-dev \
     libssl-dev \
     subversion \
-    git
+    git \
+    npm
 
 RUN pip install fabric
+RUN npm install -g node-qunit-phantomjs
 
 COPY ./ /opt/app/
 COPY ./searchcode.sqlite.empty /opt/app/searchcode.sqlite
