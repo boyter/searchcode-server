@@ -160,6 +160,7 @@ public class FileClassifier {
         classifier.add(new Classifier("Portage Installer", "ebuild", ""));
         classifier.add(new Classifier("Crystal", "cr", ""));
         classifier.add(new Classifier("Jenkins Buildfile", "jenkinsfile", ""));
+        classifier.add(new Classifier("Kotlin", "kt", ""));
     }
 
     public List<Classifier> getClassifier() {

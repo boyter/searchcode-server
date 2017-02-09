@@ -398,6 +398,12 @@ public class SearchcodeLibTest extends TestCase {
         assertEquals("Jenkins Buildfile", language);
     }
 
+    public void testLanguageGuesseKotlin() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String language = sl.languageGuesser("test.kt", new ArrayList<>());
+        assertEquals("Kotlin", language);
+    }
+
     // TODO update this with actual conflicting type and check that it classifies correctly
     public void testLanguageGuesserMake() {
         SearchcodeLib sl = new SearchcodeLib();
