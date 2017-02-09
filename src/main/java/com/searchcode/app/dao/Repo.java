@@ -41,7 +41,6 @@ public class Repo implements IRepo {
 
     public Repo(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
-        this.addSourceToTable();
     }
 
     public synchronized List<RepoResult> getAllRepo() {

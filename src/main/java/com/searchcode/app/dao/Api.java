@@ -40,7 +40,6 @@ public class Api implements IApi {
 
     public Api(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
-        this.createTableIfMissing();
     }
 
     public synchronized List<ApiResult> getAllApi() {
