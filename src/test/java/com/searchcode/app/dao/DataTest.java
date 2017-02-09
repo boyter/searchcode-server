@@ -1,5 +1,6 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
@@ -16,13 +17,13 @@ public class DataTest extends TestCase {
     public void testDataSaveUpdate() {
         Data data = Singleton.getData();
 
-        String expected = "" + System.currentTimeMillis();
+        String expected = Values.EMPTYSTRING + System.currentTimeMillis();
         String actual = data.getDataByName("test_case_data_ignore");
-        assertThat(actual).isNotEqualTo(expected);
+        assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
 
         data.saveData("test_case_data_ignore", expected);
         actual = data.getDataByName("test_case_data_ignore");
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).as("Checking value after saving").isEqualTo(expected);
     }
 
     public void testManyGetCacheOk() {
@@ -32,8 +33,8 @@ public class DataTest extends TestCase {
         data.saveData("test_case_data_ignore", expected);
 
         for(int i=0; i<10000; i++) {
-            assertEquals(expected, data.getDataByName("test_case_data_ignore"));
-            assertEquals(expected, data.getDataByName("test_case_data_ignore", "default"));
+            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("test_case_data_ignore"));
+            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("test_case_data_ignore", "default"));
         }
     }
 
