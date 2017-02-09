@@ -11,6 +11,7 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -23,12 +24,9 @@ import java.util.AbstractMap;
 
 /**
  * Provides access to all methods required to get Data details from the database.
- * Note that we use an in memory cache to avoid hitting the database too much. This was because when hit really hard
- * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
 public class Data implements IData {
     private IDatabaseConfig dbConfig;
-    private AbstractMap<String, String> cache = Singleton.getDataCache();
 
     public Data(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
@@ -43,10 +41,7 @@ public class Data implements IData {
     }
 
     public synchronized String getDataByName(String key) {
-        String value = this.cache.get(key);
-        if (value != null) {
-            return value;
-        }
+        String value = null;
 
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -70,10 +65,6 @@ public class Data implements IData {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
             Helpers.closeQuietly(connection);
-        }
-
-        if (value != null) {
-            this.cache.put(key, value);
         }
 
         return value;
@@ -112,18 +103,9 @@ public class Data implements IData {
             Helpers.closeQuietly(connection);
         }
 
-        // Update cache with new value
-        if (value != null) {
-            this.cache.put(key, value);
-        }
-        else {
-            this.cache.remove(key);
-        }
-
         return isNew;
     }
 
-    // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
 
         Connection connection = null;

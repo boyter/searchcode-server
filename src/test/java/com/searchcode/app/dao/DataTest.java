@@ -26,16 +26,37 @@ public class DataTest extends TestCase {
         assertThat(actual).as("Checking value after saving isNew=%s", isNew).isEqualTo(expected);
     }
 
-    public void testManyGetCacheOk() {
+    public void testSingleSaveManyGet() {
         Data data = Singleton.getData();
 
         String expected = "" + System.currentTimeMillis();
         data.saveData("test_case_data_ignore", expected);
 
-        for(int i=0; i<10000; i++) {
+        for(int i=0; i<200; i++) {
             assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("test_case_data_ignore"));
             assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("test_case_data_ignore", "default"));
         }
+    }
+
+    /**
+     * Stress test the saving to check if we are closing connections properly
+     */
+    public void testManySaveAndGet() {
+        Data data = Singleton.getData();
+
+        for(int i=0; i < 200; i++) {
+            String expected = "" + System.currentTimeMillis();
+            data.saveData("test_case_data_ignore", expected);
+
+            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("test_case_data_ignore"));
+            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("test_case_data_ignore", "default"));
+        }
+    }
+
+    public void testDefaultReturns() {
+        Data data = Singleton.getData();
+        double actual = Double.parseDouble(data.getDataByName("THISSHOULDNEVEREXISTIHOPE", "0"));
+        assertThat(actual).isEqualTo(0);
     }
 
     public void testCreateTable() {
