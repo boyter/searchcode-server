@@ -385,7 +385,7 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testLanguageGuesserNoExtension() {
         SearchcodeLib sl = new SearchcodeLib();
-        String language = sl.languageGuesser("Jenkins", new ArrayList<>());
+        String language = sl.languageGuesser("Jenkinsfile", new ArrayList<>());
         assertEquals("Jenkins Buildfile", language);
     }
 

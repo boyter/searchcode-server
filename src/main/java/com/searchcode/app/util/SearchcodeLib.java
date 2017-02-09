@@ -763,7 +763,7 @@ public class SearchcodeLib {
         classifier.add(new Classifier("Opalang", "opa", ""));
         classifier.add(new Classifier("Portage Installer", "ebuild", ""));
         classifier.add(new Classifier("Crystal", "cr", ""));
-        classifier.add(new Classifier("Jenkins Buildfile", "jenkins", ""));
+        classifier.add(new Classifier("Jenkins Buildfile", "jenkinsfile", ""));
     }
 
 
