@@ -27,11 +27,7 @@ import java.util.AbstractMap;
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
 public class Data implements IData {
-
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
-
     private IDatabaseConfig dbConfig;
-
     private AbstractMap<String, String> cache = Singleton.getDataCache();
 
     public Data(IDatabaseConfig dbConfig) {
@@ -39,7 +35,7 @@ public class Data implements IData {
     }
 
     public synchronized String getDataByName(String key, String defaultValue) {
-        String value = getDataByName(key);
+        String value = this.getDataByName(key);
         if (value == null) {
             return defaultValue;
         }
@@ -52,28 +48,28 @@ public class Data implements IData {
             return value;
         }
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select key,value from \"data\" where key = ?;");
-            stmt.setString(1, key);
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select key,value from \"data\" where key = ?;");
+            preparedStatement.setString(1, key);
 
-            rs = stmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                value = rs.getString("value");
+            while (resultSet.next()) {
+                value = resultSet.getString("value");
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get " + key);
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get " + key);
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
 
         if (value != null) {
@@ -85,52 +81,35 @@ public class Data implements IData {
 
     public synchronized boolean saveData(String key, String value) {
         String existing = this.getDataByName(key);
-
         boolean isNew = false;
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
 
-        if (existing != null) {
-            try {
-                conn = this.dbConfig.getConnection();
-                stmt = conn.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
+        try {
+            connection = this.dbConfig.getConnection();
 
-                stmt.setString(1, key);
-                stmt.setString(2, value);
-                stmt.setString(3, key);
+            if (existing != null) {
+                preparedStatement = connection.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
+                preparedStatement.setString(1, key);
+                preparedStatement.setString(2, value);
+                preparedStatement.setString(3, key);
+            }
+            else {
+                isNew = true;
+                preparedStatement = connection.prepareStatement("INSERT INTO data(\"key\",\"value\") VALUES (?,?)");
+                preparedStatement.setString(1, key);
+                preparedStatement.setString(2, value);
+            }
 
-                stmt.execute();
-            }
-            catch(SQLException ex) {
-                LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-            }
-            finally {
-                Helpers.closeQuietly(rs);
-                Helpers.closeQuietly(stmt);
-                Helpers.closeQuietly(conn);
-            }
+            preparedStatement.execute();
         }
-        else {
-            isNew = true;
-            try {
-                conn = this.dbConfig.getConnection();
-                stmt = conn.prepareStatement("INSERT INTO data(\"key\",\"value\") VALUES (?,?)");
-
-                stmt.setString(1, key);
-                stmt.setString(2, value);
-
-                stmt.execute();
-            }
-            catch(SQLException ex) {
-                LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-            }
-            finally {
-                Helpers.closeQuietly(rs);
-                Helpers.closeQuietly(stmt);
-                Helpers.closeQuietly(conn);
-            }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
 
         // Update cache with new value
@@ -147,32 +126,32 @@ public class Data implements IData {
     // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='data';");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='data';");
 
-            rs = stmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             String value = "";
-            while (rs.next()) {
-                value = rs.getString("name");
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
             }
 
             if (value.equals("")) {
-                stmt = conn.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR);");
-                stmt.execute();
+                preparedStatement = connection.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR);");
+                preparedStatement.execute();
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
     }
 }

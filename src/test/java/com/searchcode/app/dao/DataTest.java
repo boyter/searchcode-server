@@ -21,9 +21,9 @@ public class DataTest extends TestCase {
         String actual = data.getDataByName("test_case_data_ignore");
         assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
 
-        data.saveData("test_case_data_ignore", expected);
+        boolean isNew = data.saveData("test_case_data_ignore", expected);
         actual = data.getDataByName("test_case_data_ignore");
-        assertThat(actual).as("Checking value after saving").isEqualTo(expected);
+        assertThat(actual).as("Checking value after saving isNew=%s", isNew).isEqualTo(expected);
     }
 
     public void testManyGetCacheOk() {
