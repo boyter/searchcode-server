@@ -15,6 +15,8 @@
         <hsqldb.version>2.3.3</hsqldb.version>
         <dbcp.version>2.1.1</dbcp.version>
         <jbcrypt.version>0.4</jbcrypt.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <dependencies>
         <!-- Spark Java -->
