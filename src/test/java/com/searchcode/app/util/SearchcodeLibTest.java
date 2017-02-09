@@ -103,7 +103,9 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
-        for(Classifier classifier: FileClassifier.classifier) {
+        FileClassifier fileClassifier = new FileClassifier();
+
+        for(Classifier classifier: fileClassifier.getClassifier()) {
             for(String extension: classifier.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
@@ -115,7 +117,8 @@ public class SearchcodeLibTest extends TestCase {
         SearchcodeLib sl = new SearchcodeLib();
         sl.WHITELIST = new String[1];
         sl.WHITELIST[0] = "java";
-        FileClassifier.classifier = new ArrayList<>();
+        FileClassifier fileClassifier = new FileClassifier();
+        sl.fileClassifier = fileClassifier;
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
@@ -128,7 +131,10 @@ public class SearchcodeLibTest extends TestCase {
         sl.BLACKLIST = new String[1];
         sl.BLACKLIST[0] = "png";
 
-        FileClassifier.classifier = new ArrayList<>();
+        FileClassifier fileClassifier = new FileClassifier();
+        fileClassifier.setClassifier(new ArrayList<>());
+        sl.fileClassifier = fileClassifier;
+
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
 

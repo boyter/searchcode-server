@@ -41,14 +41,18 @@ public class SearchcodeLib {
     public String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
     private boolean GUESSBINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
     private boolean ANDMATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
+    public FileClassifier fileClassifier = null;
 
-    public SearchcodeLib() {}
+    public SearchcodeLib() {
+        fileClassifier = new FileClassifier();
+    }
 
     public SearchcodeLib(Data data) {
         this.MINIFIEDLENGTH = Helpers.tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
         if (this.MINIFIEDLENGTH <= 0) {
             this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
         }
+        fileClassifier = new FileClassifier();
     }
 
     /**
@@ -257,7 +261,7 @@ public class SearchcodeLib {
         }
 
         // Check if whitelisted extention IE what we know about
-        for (Classifier classifier: FileClassifier.classifier) {
+        for (Classifier classifier: fileClassifier.getClassifier()) {
             for (String extention: classifier.extensions) {
                 if (lowerFileName.endsWith("." + extention)) {
                     return new BinaryFinding(false, "appears in internal extension whitelist");
@@ -634,7 +638,8 @@ public class SearchcodeLib {
         }
 
         // Find all languages that might be this one
-        Object[] matching = FileClassifier.classifier.stream().filter(x -> ArrayUtils.contains(x.extensions, extension)).toArray();
+        FileClassifier fileClassifier = new FileClassifier();
+        Object[] matching = fileClassifier.getClassifier().stream().filter(x -> ArrayUtils.contains(x.extensions, extension)).toArray();
         if (matching.length == 0) {
             // Check against all using the pattern and see if we can guess
             return "Unknown";

@@ -19,7 +19,7 @@ public class FileClassifier {
      * A list containing all the known file types, their extensions and a selection of commonly used keywords inside
      * that file type. Used to identify files.
      */
-    public static List<Classifier> classifier = new ArrayList<>();
+    private List<Classifier> classifier = new ArrayList<>();
     {
         classifier.add(new Classifier("Text", "text,txt", ""));
         classifier.add(new Classifier("XAML", "xaml", "setter,value,style,margin,sstring,textblock,height,offset,gradientstop,stackpanel,width,propertymargin,trigger,lineargradientbrush,storyboard,image,duration,rectangle,settervalue,doubleanimation"));
@@ -160,5 +160,13 @@ public class FileClassifier {
         classifier.add(new Classifier("Portage Installer", "ebuild", ""));
         classifier.add(new Classifier("Crystal", "cr", ""));
         classifier.add(new Classifier("Jenkins Buildfile", "jenkinsfile", ""));
+    }
+
+    public List<Classifier> getClassifier() {
+        return this.classifier;
+    }
+
+    public void setClassifier(List<Classifier> classifier) {
+        this.classifier = classifier;
     }
 }
