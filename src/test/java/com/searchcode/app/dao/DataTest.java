@@ -23,7 +23,7 @@ public class DataTest extends TestCase {
 
         boolean isNew = data.saveData("testDataSaveUpdate", expected);
         actual = data.getDataByName("testDataSaveUpdate");
-        assertThat(actual).as("Checking value after saving isNew=%s", isNew).isEqualTo(expected);
+        assertThat(actual).as("Checking value after saving isNew=%s, actual=%s, expected=%s", isNew, actual, expected).isEqualTo(expected);
     }
 
     public void testSingleSaveManyGet() {
