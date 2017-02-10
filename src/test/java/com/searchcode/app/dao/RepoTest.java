@@ -29,18 +29,19 @@ public class RepoTest extends TestCase {
 
         repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
         RepoResult result = repo.getRepoByName("myname");
-        assertNotNull(result);
-        assertEquals("myname", result.getName());
-        assertEquals("git", result.getScm());
-        assertEquals("myurl", result.getUrl());
-        assertEquals("username", result.getUsername());
-        assertEquals("password", result.getPassword());
-        assertEquals("mysource", result.getSource());
-        assertEquals("mybranch", result.getBranch());
+
+        assertThat(result.getName()).isEqualTo("myname");
+        assertThat(result.getScm()).isEqualTo("git");
+        assertThat(result.getUrl()).isEqualTo("myurl");
+        assertThat(result.getUsername()).isEqualTo("username");
+        assertThat(result.getPassword()).isEqualTo("password");
+        assertThat(result.getSource()).isEqualTo("mysource");
+        assertThat(result.getBranch()).isEqualTo("mybranch");
+
         repo.deleteRepoByName("myname");
 
         result = repo.getRepoByName("myname");
-        assertNull(result);
+        assertThat(result).isNull();
     }
 
     public void testRepoSaveGetCacheBug() {

@@ -18,11 +18,11 @@ public class DataTest extends TestCase {
         Data data = Singleton.getData();
 
         String expected = Values.EMPTYSTRING + System.currentTimeMillis();
-        String actual = data.getDataByName("test_case_data_ignore");
+        String actual = data.getDataByName("testDataSaveUpdate");
         assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
 
-        boolean isNew = data.saveData("test_case_data_ignore", expected);
-        actual = data.getDataByName("test_case_data_ignore");
+        boolean isNew = data.saveData("testDataSaveUpdate", expected);
+        actual = data.getDataByName("testDataSaveUpdate");
         assertThat(actual).as("Checking value after saving isNew=%s", isNew).isEqualTo(expected);
     }
 
@@ -30,11 +30,11 @@ public class DataTest extends TestCase {
         Data data = Singleton.getData();
 
         String expected = "" + System.currentTimeMillis();
-        data.saveData("test_case_data_ignore", expected);
+        data.saveData("testSingleSaveManyGet", expected);
 
         for(int i=0; i<200; i++) {
-            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("test_case_data_ignore"));
-            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("test_case_data_ignore", "default"));
+            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("testSingleSaveManyGet"));
+            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("testSingleSaveManyGet", "default"));
         }
     }
 
@@ -46,10 +46,10 @@ public class DataTest extends TestCase {
 
         for(int i=0; i < 200; i++) {
             String expected = "" + System.currentTimeMillis();
-            data.saveData("test_case_data_ignore", expected);
+            data.saveData("testManySaveAndGet", expected);
 
-            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("test_case_data_ignore"));
-            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("test_case_data_ignore", "default"));
+            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("testManySaveAndGet"));
+            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("testManySaveAndGet", "default"));
         }
     }
 
