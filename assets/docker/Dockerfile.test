@@ -3,9 +3,8 @@ ENV http_proxy ${http_proxy}
 ENV https_proxy ${https_proxy}
 
 RUN apt-get update && apt-get install -y \
-    openjdk-8* \
+    openjdk-8-jdk \
     maven \
-    maven* \
     python-pip \
     python-dev \
     build-essential \
