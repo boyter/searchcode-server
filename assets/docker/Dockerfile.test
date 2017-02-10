@@ -18,6 +18,10 @@ RUN apt-get update && apt-get install -y \
 RUN pip install fabric
 # RUN npm install -g node-qunit-phantomjs
 
+COPY ./pom.xml /opt/app/pom.xml
+WORKDIR /opt/app/
+RUN mvn install
+
 COPY ./ /opt/app/
 COPY ./searchcode.sqlite.empty /opt/app/searchcode.sqlite
 COPY ./searchcode.properties.example /opt/app/searchcode.properties
