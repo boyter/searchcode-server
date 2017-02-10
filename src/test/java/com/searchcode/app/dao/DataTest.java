@@ -14,7 +14,7 @@ public class DataTest extends TestCase {
         data.createTableIfMissing();
     }
 
-    public void testDataSaveUpdate() throws InterruptedException {
+    public void testDataSaveUpdate() {
         Data data = Singleton.getData();
 
         String expected = Values.EMPTYSTRING + System.currentTimeMillis();
@@ -22,7 +22,6 @@ public class DataTest extends TestCase {
         assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
 
         boolean isNew = data.saveData("testDataSaveUpdate", expected);
-        Thread.sleep(10000);
         actual = data.getDataByName("testDataSaveUpdate");
         assertThat(actual).as("Checking value after saving isNew=%s, actual=%s, expected=%s", isNew, actual, expected).isEqualTo(expected);
     }
