@@ -318,8 +318,6 @@ public class Repo implements IRepo {
         }
     }
 
-    // Anything which updates or saves should be syncronized to avoid
-    // SQLite issues with such operations
     // TODO add retry logic here as this can fail and as such should just trigger again
     @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
@@ -328,62 +326,37 @@ public class Repo implements IRepo {
 
         boolean isNew = false;
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
 
-        if (existing != null) {
-            // Update with new details
-            try {
-                conn = this.dbConfig.getConnection();
-                stmt = conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
-
-                stmt.setString(1, repoResult.getName());
-                stmt.setString(2, repoResult.getScm());
-                stmt.setString(3, repoResult.getUrl());
-                stmt.setString(4, repoResult.getUsername());
-                stmt.setString(5, repoResult.getPassword());
-                stmt.setString(6, repoResult.getSource());
-                stmt.setString(7, repoResult.getBranch());
-
-                // Target the row
-                stmt.setString(8, repoResult.getName());
-
-                stmt.execute();
+        // Update with new details
+        try {
+            connection = this.dbConfig.getConnection();
+            if (existing != null) {
+                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
+                preparedStatement.setString(8, repoResult.getName());
             }
-            catch(SQLException ex) {
-                LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            else {
+                isNew = true;
+                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
             }
-            finally {
-                Helpers.closeQuietly(rs);
-                Helpers.closeQuietly(stmt);
-                Helpers.closeQuietly(conn);
-            }
+
+            preparedStatement.setString(1, repoResult.getName());
+            preparedStatement.setString(2, repoResult.getScm());
+            preparedStatement.setString(3, repoResult.getUrl());
+            preparedStatement.setString(4, repoResult.getUsername());
+            preparedStatement.setString(5, repoResult.getPassword());
+            preparedStatement.setString(6, repoResult.getSource());
+            preparedStatement.setString(7, repoResult.getBranch());
+
+            preparedStatement.execute();
         }
-        else {
-            isNew = true;
-            try {
-                conn = this.dbConfig.getConnection();
-                stmt = conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
-
-                stmt.setString(1, repoResult.getName());
-                stmt.setString(2, repoResult.getScm());
-                stmt.setString(3, repoResult.getUrl());
-                stmt.setString(4, repoResult.getUsername());
-                stmt.setString(5, repoResult.getPassword());
-                stmt.setString(6, repoResult.getSource());
-                stmt.setString(7, repoResult.getBranch());
-
-                stmt.execute();
-            }
-            catch(SQLException ex) {
-                LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-            }
-            finally {
-                Helpers.closeQuietly(rs);
-                Helpers.closeQuietly(stmt);
-                Helpers.closeQuietly(conn);
-            }
+        catch(SQLException ex) {
+            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
 
         this.genericCache.remove(this.repoCountCacheKey);
