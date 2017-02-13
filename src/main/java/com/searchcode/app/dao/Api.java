@@ -11,6 +11,7 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -30,98 +31,78 @@ import java.util.List;
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
 public class Api implements IApi {
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
-
     private IDatabaseConfig dbConfig;
-
-    private AbstractMap<String, ApiResult> cache = Singleton.getApiCache();
-    private AbstractMap<String, Object> genericCache = Singleton.getGenericCache();
-    private String apiAllApiCacheKey = "api-all-api-cache";
 
     public Api(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
 
     public synchronized List<ApiResult> getAllApi() {
-        List<ApiResult> apiResults = (ArrayList<ApiResult>)this.genericCache.get(this.apiAllApiCacheKey);
+        List<ApiResult> apiResults = new ArrayList<>();
 
-        if (apiResults != null) {
-            return apiResults;
-        }
-
-        apiResults = new ArrayList<>();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api;");
-            rs = stmt.executeQuery();
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select rowid,publickey,privatekey,lastused,data from api;");
+            resultSet = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                int rowId = rs.getInt("rowid");
-                String d_publicKey = rs.getString("publickey");
-                String privateKey = rs.getString("privatekey");
-                String lastUsed = rs.getString("lastused");
-                String data = rs.getString("data");
+            while (resultSet.next()) {
+                int rowId = resultSet.getInt("rowid");
+                String d_publicKey = resultSet.getString("publickey");
+                String privateKey = resultSet.getString("privatekey");
+                String lastUsed = resultSet.getString("lastused");
+                String data = resultSet.getString("data");
 
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
 
-        this.genericCache.put(this.apiAllApiCacheKey, apiResults);
         return apiResults;
     }
 
     public synchronized ApiResult getApiByPublicKey(String publicKey) {
-        ApiResult result = this.cache.get(publicKey);
-        if (result != null) {
-            return result;
-        }
+        ApiResult result = null;
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api where publickey=?;");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select rowid,publickey,privatekey,lastused,data from api where publickey=?;");
 
-            stmt.setString(1, publicKey);
+            preparedStatement.setString(1, publicKey);
 
-            rs = stmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                int rowId = rs.getInt("rowid");
-                String d_publicKey = rs.getString("publickey");
-                String privateKey = rs.getString("privatekey");
-                String lastUsed = rs.getString("lastused");
-                String data = rs.getString("data");
+            while (resultSet.next()) {
+                int rowId = resultSet.getInt("rowid");
+                String d_publicKey = resultSet.getString("publickey");
+                String privateKey = resultSet.getString("privatekey");
+                String lastUsed = resultSet.getString("lastused");
+                String data = resultSet.getString("data");
 
                 result = new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data);
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
-        }
-
-        if (result != null) {
-            this.cache.put(publicKey, result);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
 
         return result;
@@ -130,95 +111,86 @@ public class Api implements IApi {
     public synchronized boolean saveApi(ApiResult apiResult) {
         boolean successful = false;
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO \"api\" (\"publickey\",\"privatekey\",\"lastused\",\"data\") VALUES (?,?,?,?)");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("INSERT INTO \"api\" (\"publickey\",\"privatekey\",\"lastused\",\"data\") VALUES (?,?,?,?)");
 
-            stmt.setString(1, apiResult.getPublicKey());
-            stmt.setString(2, apiResult.getPrivateKey());
-            stmt.setString(3, apiResult.getLastUsed());
-            stmt.setString(4, apiResult.getData());
+            preparedStatement.setString(1, apiResult.getPublicKey());
+            preparedStatement.setString(2, apiResult.getPrivateKey());
+            preparedStatement.setString(3, apiResult.getLastUsed());
+            preparedStatement.setString(4, apiResult.getData());
 
-            stmt.execute();
+            preparedStatement.execute();
 
             successful = true;
-
-            this.cache.remove(apiResult.getPublicKey());
-            this.genericCache.remove(apiAllApiCacheKey);
         }
         catch(SQLException ex) {
-            successful = false;
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
-
 
         return successful;
     }
 
     public synchronized void deleteApiByPublicKey(String publicKey) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("delete from api where publickey=?;");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("delete from api where publickey=?;");
 
-            stmt.setString(1, publicKey);
+            preparedStatement.setString(1, publicKey);
 
-            stmt.execute();
-
-            this.cache.remove(publicKey);
-            this.genericCache.remove(apiAllApiCacheKey);
-
+            preparedStatement.execute();
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
     }
 
     // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
 
-            rs = stmt.executeQuery();
-            String value = "";
-            while (rs.next()) {
-                value = rs.getString("name");
+            resultSet = preparedStatement.executeQuery();
+            String value = Values.EMPTYSTRING;
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
             }
 
-            if (value.equals("")) {
-                stmt = conn.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
-                stmt.execute();
+            if (Helpers.isNullEmptyOrWhitespace(value)) {
+                preparedStatement = connection.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
+                preparedStatement.execute();
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+            Helpers.closeQuietly(connection);
         }
     }
 }
