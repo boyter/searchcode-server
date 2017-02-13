@@ -6,7 +6,6 @@ import com.searchcode.app.util.classifier.Classifier;
 import com.searchcode.app.util.classifier.FileClassifier;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.ibex.nestedvm.util.Seekable;
 
 import java.util.ArrayList;
 import java.util.List;
