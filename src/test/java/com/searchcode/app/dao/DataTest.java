@@ -43,6 +43,19 @@ public class DataTest extends TestCase {
         }
     }
 
+    public void testSaveWithRandomValuesAndGet() {
+        Data data = Singleton.getData();
+        Random random = new Random();
+
+        for(int i = 0; i < 200; i++) {
+            String randomString = RandomStringUtils.randomAscii(random.nextInt(5) + 1);
+            data.saveData(randomString, randomString);
+            String actual = data.getDataByName(randomString);
+
+            assertThat(actual).isEqualTo(randomString);
+        }
+    }
+
     public void testSingleSaveManyGet() {
         Data data = Singleton.getData();
 
