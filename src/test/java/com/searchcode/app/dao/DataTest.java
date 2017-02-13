@@ -11,9 +11,13 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class DataTest extends TestCase {
 
-    public void testDataSaveUpdate() {
-        Data data = Singleton.getData();
+    Data data = null;
 
+    public DataTest() {
+        this.data = Singleton.getData();
+    }
+
+    public void testDataSaveUpdate() {
         String expected = Values.EMPTYSTRING + System.currentTimeMillis();
         String actual = data.getDataByName("testDataSaveUpdate");
         assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
@@ -24,8 +28,6 @@ public class DataTest extends TestCase {
     }
 
     public void testGetWithoutSave() {
-        Data data = Singleton.getData();
-
         String actual = data.getDataByName("testSingleSaveManyGet");
         for(int i = 0; i < 200; i++) {
             assertThat(actual).as("Get without save").isEqualTo(data.getDataByName("testSingleSaveManyGet"));
@@ -34,7 +36,6 @@ public class DataTest extends TestCase {
     }
 
     public void testGetWithRandomValuesExpectingNull() {
-        Data data = Singleton.getData();
         Random random = new Random();
 
         for(int i = 0; i < 200; i++) {
@@ -44,7 +45,6 @@ public class DataTest extends TestCase {
     }
 
     public void testSaveWithRandomValuesAndGet() {
-        Data data = Singleton.getData();
         Random random = new Random();
 
         for(int i = 0; i < 200; i++) {
@@ -57,8 +57,6 @@ public class DataTest extends TestCase {
     }
 
     public void testSingleSaveManyGet() {
-        Data data = Singleton.getData();
-
         String expected = "" + System.currentTimeMillis();
         data.saveData("testSingleSaveManyGet", expected);
 
@@ -72,8 +70,6 @@ public class DataTest extends TestCase {
      * Stress test the saving to check if we are closing connections properly
      */
     public void testManySaveAndGet() {
-        Data data = Singleton.getData();
-
         for(int i=0; i < 200; i++) {
             String expected = "" + System.currentTimeMillis();
             data.saveData("testManySaveAndGet", expected);
@@ -84,13 +80,11 @@ public class DataTest extends TestCase {
     }
 
     public void testDefaultReturns() {
-        Data data = Singleton.getData();
         double actual = Double.parseDouble(data.getDataByName("THISSHOULDNEVEREXISTIHOPE", "0"));
         assertThat(actual).isEqualTo(0);
     }
 
     public void testCreateTable() {
-        Data data = Singleton.getData();
 
         data.createTableIfMissing();
         data.createTableIfMissing();
