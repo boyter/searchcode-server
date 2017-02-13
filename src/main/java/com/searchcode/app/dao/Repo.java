@@ -32,13 +32,7 @@ import java.util.List;
  */
 public class Repo implements IRepo {
 
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
-    private AbstractMap<String, RepoResult> cache = Singleton.getRepoCache();
     private IDatabaseConfig dbConfig;
-    private AbstractMap<String, Object> genericCache = Singleton.getGenericCache();
-    private String repoCountCacheKey = "repo-repo-count";
-    private String repoAllRepoCacheKey = "repo-all-repo-cache";
-
     public Repo(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
@@ -73,7 +67,7 @@ public class Repo implements IRepo {
             connection.close();
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(resultSet);
@@ -145,7 +139,7 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(rs);
@@ -174,7 +168,7 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(resultSet);
@@ -217,7 +211,7 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(resultSet);
@@ -261,7 +255,7 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(resultSet);
@@ -286,7 +280,7 @@ public class Repo implements IRepo {
             preparedStatement.execute();
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(resultSet);
@@ -299,7 +293,6 @@ public class Repo implements IRepo {
     @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
         RepoResult existing = this.getRepoByName(repoResult.getName());
-        this.cache.remove(repoResult.getName());
 
         boolean isNew = false;
 
@@ -329,15 +322,13 @@ public class Repo implements IRepo {
             preparedStatement.execute();
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(preparedStatement);
             Helpers.closeQuietly(connection);
         }
 
-        this.genericCache.remove(this.repoCountCacheKey);
-        this.genericCache.remove(this.repoAllRepoCacheKey);
         return isNew;
     }
 
@@ -378,7 +369,7 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(rs);
@@ -424,7 +415,7 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(rs);

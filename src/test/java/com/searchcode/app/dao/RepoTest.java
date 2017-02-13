@@ -8,27 +8,26 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class RepoTest extends TestCase {
 
+    Repo repo = null;
+
     public RepoTest() {
         // Tests need to bootstrap themselves
-        Repo repo = Singleton.getRepo();
-        repo.addSourceToTable();
+        this.repo = Singleton.getRepo();
+        this.repo.addSourceToTable();
+        this.repo.addBranchToTable();
     }
 
     public void testMigrationCode() {
-        Repo repo = Singleton.getRepo();
-
-        repo.addSourceToTable();
-        repo.addSourceToTable();
-        repo.addBranchToTable();
-        repo.addBranchToTable();
+        for (int i = 0; i < 100; i++) {
+            this.repo.addBranchToTable();
+            this.repo.addSourceToTable();
+        }
     }
 
     public void testRepoSaveDelete() {
 
-        Repo repo = Singleton.getRepo();
-
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        RepoResult result = repo.getRepoByName("myname");
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        RepoResult result = this.repo.getRepoByName("myname");
 
         assertThat(result.getName()).isEqualTo("myname");
         assertThat(result.getScm()).isEqualTo("git");
@@ -38,116 +37,98 @@ public class RepoTest extends TestCase {
         assertThat(result.getSource()).isEqualTo("mysource");
         assertThat(result.getBranch()).isEqualTo("mybranch");
 
-        repo.deleteRepoByName("myname");
+        this.repo.deleteRepoByName("myname");
 
-        result = repo.getRepoByName("myname");
+        result = this.repo.getRepoByName("myname");
         assertThat(result).isNull();
     }
 
     public void testRepoSaveGetCacheBug() {
-        Repo repo = Singleton.getRepo();
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
 
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        assertNotNull(repo.getRepoByName("myname"));
-        assertNotNull(repo.getRepoByName("myname"));
-        assertNotNull(repo.getRepoByName("myname"));
-        assertNotNull(repo.getRepoByName("myname"));
-        repo.deleteRepoByName("myname");
+        for (int i = 0 ; i< 200; i++) {
+            assertThat(repo.getRepoByName("myname")).isNotNull();
+        }
+
+        this.repo.deleteRepoByName("myname");
     }
 
     public void testRepoByUrl() {
-        Repo repo = Singleton.getRepo();
-
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        assertNotNull(repo.getRepoByUrl("myurl"));
-        repo.deleteRepoByName("myname");
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
+        this.repo.deleteRepoByName("myname");
     }
 
     public void testRepoByUrlMemoryLeak() {
-        Repo repo = Singleton.getRepo();
-
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        assertNotNull(repo.getRepoByUrl("myurl"));
-        repo.deleteRepoByName("myname");
+        for (int i = 0; i < 200; i++) {
+            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+            assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
+            this.repo.deleteRepoByName("myname");
+        }
     }
 
     public void testDeleteRepoMultipleTimes() {
-        Repo repo = Singleton.getRepo();
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
 
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.deleteRepoByName("myname");
-        repo.deleteRepoByName("myname");
-        repo.deleteRepoByName("myname");
-        repo.deleteRepoByName("myname");
-        repo.deleteRepoByName("myname");
-        repo.deleteRepoByName("myname");
+        for (int i = 0 ; i < 200; i++) {
+            this.repo.deleteRepoByName("myname");
+        }
     }
 
     public void testSaveRepoMultipleTimes() {
-        Repo repo = Singleton.getRepo();
+        for (int i = 0 ; i < 200; i++) {
+            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        }
 
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.deleteRepoByName("myname");
+        this.repo.deleteRepoByName("myname");
     }
 
     public void testGetAllRepo() {
-        Repo repo = Singleton.getRepo();
-
-        repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        assertTrue(repo.getAllRepo().size() >= 1);
-        repo.deleteRepoByName("myname");
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        assertThat(this.repo.getAllRepo().size()).isGreaterThanOrEqualTo(1);
+        this.repo.deleteRepoByName("myname");
     }
 
     public void testGetPagedRepo() {
-        Repo repo = Singleton.getRepo();
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "git", "myurl", "username", "password", "mysource", "mybranch"));
 
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        assertEquals(2, repo.getPagedRepo(0, 2).size());
-        assertEquals(4, repo.getPagedRepo(0, 4).size());
-        assertEquals(2, repo.getPagedRepo(2, 2).size());
-        repo.deleteRepoByName("testGetPagedRepo1");
-        repo.deleteRepoByName("testGetPagedRepo2");
-        repo.deleteRepoByName("testGetPagedRepo3");
-        repo.deleteRepoByName("testGetPagedRepo4");
-        repo.deleteRepoByName("testGetPagedRepo5");
+        assertThat(this.repo.getPagedRepo(0, 2).size()).isEqualTo(2);
+        assertThat(this.repo.getPagedRepo(0, 4).size()).isEqualTo(4);
+        assertThat(this.repo.getPagedRepo(2, 2).size()).isEqualTo(2);
+
+        this.repo.deleteRepoByName("testGetPagedRepo1");
+        this.repo.deleteRepoByName("testGetPagedRepo2");
+        this.repo.deleteRepoByName("testGetPagedRepo3");
+        this.repo.deleteRepoByName("testGetPagedRepo4");
+        this.repo.deleteRepoByName("testGetPagedRepo5");
     }
 
     public void testSearchRepo() {
-        Repo repo = Singleton.getRepo();
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "svn", "myurl", "username", "password", "mysource", "mybranch"));
 
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "svn", "myurl", "username", "password", "mysource", "mybranch"));
+        assertThat(this.repo.searchRepo("PassworD").size()).isEqualTo(5);
+        assertThat(this.repo.searchRepo("TESTGetPagedRepo1").size()).isEqualTo(1);
+        assertThat(this.repo.searchRepo("svn testGetPagedRepo5").size()).isEqualTo(1);
+        assertThat(this.repo.searchRepo("svn   testGetPagedRepo5").size()).isEqualTo(1);
 
-        assertEquals(5, repo.searchRepo("PassworD").size());
-        assertEquals(1, repo.searchRepo("TESTGetPagedRepo1").size());
-        assertEquals(1, repo.searchRepo("svn testGetPagedRepo5").size());
-        assertEquals(1, repo.searchRepo("svn   testGetPagedRepo5").size());
-
-        repo.deleteRepoByName("testGetPagedRepo1");
-        repo.deleteRepoByName("testGetPagedRepo2");
-        repo.deleteRepoByName("testGetPagedRepo3");
-        repo.deleteRepoByName("testGetPagedRepo4");
-        repo.deleteRepoByName("testGetPagedRepo5");
+        this.repo.deleteRepoByName("testGetPagedRepo1");
+        this.repo.deleteRepoByName("testGetPagedRepo2");
+        this.repo.deleteRepoByName("testGetPagedRepo3");
+        this.repo.deleteRepoByName("testGetPagedRepo4");
+        this.repo.deleteRepoByName("testGetPagedRepo5");
     }
 
 
-
     public void testGetRepoByNameUsingNull() {
-        Repo repo = Singleton.getRepo();
-        RepoResult repoResult = repo.getRepoByName(null);
+        RepoResult repoResult = this.repo.getRepoByName(null);
         assertThat(repoResult).isNull();
     }
 }
