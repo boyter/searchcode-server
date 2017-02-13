@@ -11,7 +11,6 @@ public class RepoTest extends TestCase {
     Repo repo = null;
 
     public RepoTest() {
-        // Tests need to bootstrap themselves
         this.repo = Singleton.getRepo();
         this.repo.addSourceToTable();
         this.repo.addBranchToTable();
