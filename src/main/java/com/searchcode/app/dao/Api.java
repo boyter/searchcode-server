@@ -65,7 +65,6 @@ public class Api implements IApi {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return apiResults;
@@ -102,7 +101,6 @@ public class Api implements IApi {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return result;
@@ -134,7 +132,6 @@ public class Api implements IApi {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return successful;
@@ -159,7 +156,6 @@ public class Api implements IApi {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
     }
 
@@ -190,7 +186,6 @@ public class Api implements IApi {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
     }
 }

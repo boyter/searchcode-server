@@ -1,5 +1,6 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
@@ -14,16 +15,17 @@ public class DataTest extends TestCase {
     Data data = null;
 
     public DataTest() {
-        this.data = Singleton.getData();
+        this.data = new Data(new SQLiteMemoryDatabaseConfig());
+        this.data.createTableIfMissing();
     }
 
     public void testDataSaveUpdate() {
         String expected = Values.EMPTYSTRING + System.currentTimeMillis();
-        String actual = data.getDataByName("testDataSaveUpdate");
+        String actual = this.data.getDataByName("testDataSaveUpdate");
         assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
 
-        boolean isNew = data.saveData("testDataSaveUpdate", expected);
-        actual = data.getDataByName("testDataSaveUpdate");
+        boolean isNew = this.data.saveData("testDataSaveUpdate", expected);
+        actual = this.data.getDataByName("testDataSaveUpdate");
         assertThat(actual).as("Checking value after saving isNew=%s, actual=%s, expected=%s", isNew, actual, expected).isEqualTo(expected);
     }
 

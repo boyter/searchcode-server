@@ -62,9 +62,6 @@ public class Repo implements IRepo {
 
                 repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
             }
-
-            preparedStatement.close();
-            connection.close();
         }
         catch(SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
@@ -72,7 +69,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return repoResults;
@@ -144,7 +140,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(rs);
             Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
         }
 
         return repoResults;
@@ -173,7 +168,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return totalCount;
@@ -216,7 +210,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return result;
@@ -260,7 +253,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return result;
@@ -285,7 +277,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
     }
 
@@ -326,7 +317,6 @@ public class Repo implements IRepo {
         }
         finally {
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return isNew;
@@ -374,7 +364,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(rs);
             Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
         }
     }
 
@@ -420,7 +409,6 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(rs);
             Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
         }
     }
 }

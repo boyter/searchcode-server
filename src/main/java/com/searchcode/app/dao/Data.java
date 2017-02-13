@@ -64,7 +64,6 @@ public class Data implements IData {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return value;
@@ -100,7 +99,6 @@ public class Data implements IData {
         }
         finally {
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
 
         return isNew;
@@ -122,8 +120,8 @@ public class Data implements IData {
                 value = resultSet.getString("name");
             }
 
-            if (value.equals("")) {
-                preparedStatement = connection.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR);");
+            if (Helpers.isNullEmptyOrWhitespace(value)) {
+                preparedStatement = connection.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR)");
                 preparedStatement.execute();
             }
         }
@@ -133,7 +131,6 @@ public class Data implements IData {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
-            Helpers.closeQuietly(connection);
         }
     }
 }
