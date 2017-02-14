@@ -1,6 +1,28 @@
 <#import "masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="Admin">
 
+
+<div class="row inside-container">
+    <div class="col-md-2">
+        <nav>
+          <ul class="nav nav-pills nav-stacked span2">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Repository Admin</a></li>
+            <li><a href="#">Repository Bulk Admin</a></li>
+            <li><a href="#">API Keys</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Logs</a></li>
+            <li><a href="#">Logout</a></li>
+          </ul>
+        </nav>
+    </div>
+
+    <div class="col-md-10">
+        <h3><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> Dashboard</h3>
+        Something to go in here
+    </div>
+</div>
+
 <div class="row inside-container">
 <ul class="nav nav-tabs nav-justified">
     <li role="presentation" class="active"><a href="/admin/">Admin</a></li>
@@ -14,28 +36,9 @@
 </div>
 <br>
 
+
+
 <div class="row">
-
-<div class="col-md-2">
-    <nav>
-      <ul class="nav nav-pills nav-stacked span2">
-        <li><a href="#">Dashboard</a></li>
-        <li><a href="#">Repository Admin</a></li>
-        <li><a href="#">Repository Bulk Admin</a></li>
-        <li><a href="#">API Keys</a></li>
-        <li><a href="#">Settings</a></li>
-        <li><a href="#">Logs</a></li>
-        <li><a href="#">Logout</a></li>
-      </ul>
-    </nav>
-</div>
-
-<div class="col-md-10">
-Something to go in here
-
-</div>
-
-<br>
 
 <table width="100%">
 
@@ -85,7 +88,7 @@ Something to go in here
     </tr>
     <tr>
         <td><b>Number of Repositories Queued for Deletion</b></td>
-        <td>${deletionQueue}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</td>
     </tr>
     <tr>
         <td><b>Words in Spelling Corrector</b></td>

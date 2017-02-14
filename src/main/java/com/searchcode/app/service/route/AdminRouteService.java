@@ -38,33 +38,40 @@ public class AdminRouteService {
     public String GetStat(Request request, Response response) {
         if (request.queryParams().contains("statname")) {
             String statname = request.queryParams("statname");
-            switch (statname) {
-                case "memoryusage":
-                    return Singleton.getStatsService().getMemoryUsage("<br>");
-                case "loadaverage":
-                    return Singleton.getStatsService().getLoadAverage();
-                case "uptime":
-                    return Singleton.getStatsService().getUptime();
-                case "searchcount":
-                    return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
-                case "runningjobs":
-                    StringBuilder stringBuffer = new StringBuilder();
-                    for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-                        stringBuffer.append(key).append(" ");
-                    }
-                    return stringBuffer.toString();
-                case "spellingcount":
-                    return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
-                case "repocount":
-                    return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
-                case "numdocs":
-                    CodeSearcher codeSearcher = new CodeSearcher();
-                    return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
-                case "servertime":
-                    return new Date().toString();
-            }
+            return this.getStat(statname);
         }
 
+        return Values.EMPTYSTRING;
+    }
+
+    private String getStat(String statname) {
+        switch (statname.toLowerCase()) {
+            case "memoryusage":
+                return Singleton.getStatsService().getMemoryUsage("<br>");
+            case "loadaverage":
+                return Singleton.getStatsService().getLoadAverage();
+            case "uptime":
+                return Singleton.getStatsService().getUptime();
+            case "searchcount":
+                return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
+            case "runningjobs":
+                StringBuilder stringBuffer = new StringBuilder();
+                for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
+                    stringBuffer.append(key).append(" ");
+                }
+                return stringBuffer.toString();
+            case "spellingcount":
+                return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
+            case "repocount":
+                return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
+            case "numdocs":
+                CodeSearcher codeSearcher = new CodeSearcher();
+                return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+            case "servertime":
+                return new Date().toString();
+            case "deletionqueue":
+                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
+        }
         return Values.EMPTYSTRING;
     }
 
@@ -107,29 +114,25 @@ public class AdminRouteService {
         map.put(Values.TRASH_LOCATION, Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION));
 
 
-        map.put("repoCount", repo.getRepoCount());
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-        map.put("numSearches", statsService.getSearchCount());
-        map.put("uptime", statsService.getUptime());
-        map.put("loadAverage", statsService.getLoadAverage());
+        map.put("repoCount", this.getStat("repoCount"));
+        map.put("numDocs", this.getStat("numDocs"));
+        map.put("numSearches", this.getStat("numSearches"));
+        map.put("uptime", this.getStat("uptime"));
+        map.put("loadAverage", this.getStat("loadAverage"));
+        map.put("memoryUsage", this.getStat("memoryUsage"));
+        map.put("currentdatetime", this.getStat("servertime"));
+        map.put("spellingCount", this.getStat("spellingCount"));
+        map.put("runningJobs", this.getStat("runningJobs"));
+
+
         map.put("sysArch", statsService.getArch());
         map.put("sysVersion", statsService.getOsVersion());
         map.put("processorCount", statsService.getProcessorCount());
-        map.put("memoryUsage", statsService.getMemoryUsage("<br>"));
         map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
         map.put("version", App.VERSION);
-        map.put("currentdatetime", new Date().toString());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put("spellingCount", Singleton.getSpellingCorrector().getWordCount());
-
         map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
-
-        StringBuffer stringBuffer = new StringBuffer();
-        for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-            stringBuffer.append(key).append(" ");
-        }
-        map.put("runningJobs", stringBuffer.toString());
 
         return map;
     }
