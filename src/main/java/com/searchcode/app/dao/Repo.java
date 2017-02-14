@@ -411,4 +411,34 @@ public class Repo implements IRepo {
             Helpers.closeQuietly(stmt);
         }
     }
+
+    public synchronized void createTableIfMissing() {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
+
+            resultSet = preparedStatement.executeQuery();
+            String value = "";
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
+            }
+
+            if (Helpers.isNullEmptyOrWhitespace(value)) {
+                preparedStatement = connection.prepareStatement("CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)");
+                preparedStatement.execute();
+            }
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+        }
+    }
 }

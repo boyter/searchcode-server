@@ -1,5 +1,6 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
@@ -11,9 +12,8 @@ public class RepoTest extends TestCase {
     Repo repo = null;
 
     public RepoTest() {
-        this.repo = Singleton.getRepo();
-        this.repo.addSourceToTable();
-        this.repo.addBranchToTable();
+        this.repo = new Repo(new SQLiteMemoryDatabaseConfig());
+        this.repo.createTableIfMissing();
     }
 
     public void testMigrationCode() {

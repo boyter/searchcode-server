@@ -1,5 +1,6 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
@@ -14,7 +15,7 @@ public class ApiTest extends TestCase {
     Api api = null;
 
     public ApiTest() {
-        this.api = Singleton.getApi();
+        this.api = new Api(new SQLiteMemoryDatabaseConfig());
         this.api.createTableIfMissing();
     }
 
