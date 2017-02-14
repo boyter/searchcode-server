@@ -60,6 +60,8 @@ public class AdminRouteService {
                 case "numdocs":
                     CodeSearcher codeSearcher = new CodeSearcher();
                     return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+                case "servertime":
+                    return new Date().toString();
             }
         }
 

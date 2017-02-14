@@ -16,6 +16,27 @@
 
 <div class="row">
 
+<div class="col-md-2">
+    <nav>
+      <ul class="nav nav-pills nav-stacked span2">
+        <li><a href="#">Dashboard</a></li>
+        <li><a href="#">Repository Admin</a></li>
+        <li><a href="#">Repository Bulk Admin</a></li>
+        <li><a href="#">API Keys</a></li>
+        <li><a href="#">Settings</a></li>
+        <li><a href="#">Logs</a></li>
+        <li><a href="#">Logout</a></li>
+      </ul>
+    </nav>
+</div>
+
+<div class="col-md-10">
+Something to go in here
+
+</div>
+
+<br>
+
 <table width="100%">
 
     <tr>
@@ -36,7 +57,7 @@
     </tr>
     <tr>
         <td><b>Current Server Time</b></td>
-        <td>${currentdatetime}</td>
+        <td ic-trigger-on="load" ic-poll="60s" ic-src="/admin/api/getstat/?statname=servertime">${currentdatetime}</td>
     </tr>
     <tr>
         <td><b>Repositories Tracked</b></td>

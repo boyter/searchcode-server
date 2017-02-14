@@ -180,11 +180,11 @@ public class App {
         ////////////////////////////////////////////////////
 
         get("/admin/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+//            if (getAuthenticatedUser(request) == null) {
+//                response.redirect("/login/");
+//                halt();
+//                return null;
+//            }
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminPage(request, response);
