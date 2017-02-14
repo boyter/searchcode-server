@@ -1,5 +1,7 @@
 package com.searchcode.app.service;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
+import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
@@ -209,14 +211,16 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoListApiEnabledNoAuth() {
         Request mockRequest = Mockito.mock(Request.class);
+        Repo repo = new Repo(new SQLiteMemoryDatabaseConfig());
+        repo.createTableIfMissing();
 
-        ApiRouteService apiRouteService = new ApiRouteService();
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, repo, null);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
         RepoResultApiResponse apiResponse = apiRouteService.repoList(mockRequest, null);
 
-        assertThat(apiResponse.getMessage()).isEqualTo("");
+        assertThat(apiResponse.getMessage()).isEmpty();
         assertThat(apiResponse.getRepoResultList()).hasSize(0);
         assertThat(apiResponse.isSucessful()).isTrue();
     }
