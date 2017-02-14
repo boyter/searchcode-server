@@ -161,6 +161,10 @@ public class FileClassifier {
         classifier.add(new Classifier("Crystal", "cr", ""));
         classifier.add(new Classifier("Jenkins Buildfile", "jenkinsfile", ""));
         classifier.add(new Classifier("Kotlin", "kt", ""));
+        classifier.add(new Classifier("Properties File", "properties", ""));
+        classifier.add(new Classifier("Tag Library Descriptor", "tld", ""));
+        classifier.add(new Classifier("Syntactically Awesome StyleSheets", "scss", ""));
+        //
     }
 
     public List<Classifier> getClassifier() {
