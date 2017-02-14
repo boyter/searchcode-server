@@ -6,7 +6,7 @@
     <div class="col-md-2">
         <nav>
           <ul class="nav nav-pills nav-stacked span2">
-            <li><a href="#">Dashboard</a></li>
+            <li class="active"><a href="/admin/">Dashboard</a></li>
             <li><a href="#">Repository Admin</a></li>
             <li><a href="#">Repository Bulk Admin</a></li>
             <li><a href="#">API Keys</a></li>
@@ -18,8 +18,65 @@
     </div>
 
     <div class="col-md-10">
-        <h3><span class="glyphicon glyphicon-equalizer" aria-hidden="true"></span> Dashboard</h3>
-        Something to go in here
+        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Dashboard</h3>
+
+        <div style="width:100%; display: inline-block;">
+            <div class="col-md-4">
+                <div>
+                    <h4><span class="glyphicon glyphicon-fire" aria-hidden="true"></span> System Load Average</h4>
+                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div>
+                    <h4><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Memory Usage</h4>
+                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div>
+                    <h4><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Currently Running Jobs</h4>
+                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="width:100%; display: inline-block;">
+            <h4>System Properties <small>(from searchcode.properties file)</small></h4>
+
+<textarea readonly="true" style="width:100%; font-family: monospace; height: 200px;">sqlite_file=${sqlite_file}
+server_port=${server_port}
+index_location=${index_location}
+facets_location=${facets_location}
+repository_location=${repository_location}
+trash_location=${trash_location}
+check_repo_chages=${check_repo_chages}
+check_filerepo_chages=${check_filerepo_chages}
+spelling_corrector_size=${spelling_corrector_size}
+max_document_queue_size=${max_document_queue_size}
+max_document_queue_line_size=${max_document_queue_line_size}
+max_file_line_depth=${max_file_line_depth}
+only_localhost=${only_localhost}
+low_memory=${low_memory}
+git_binary_path=${git_binary_path}
+use_system_git=${use_system_git}
+api_enabled=${api_enabled}
+api_key_authentication=${api_key_authentication}
+svn_enabled=${svn_enabled}
+svn_binary_path=${svn_binary_path}
+owasp_database_location=${owasp_database_location}
+highlight_lines_limit=${highlight_lines_limit}
+binary_extension_white_list=${binary_extension_white_list}
+binary_extension_black_list=${binary_extension_black_list}
+number_git_processors=${number_git_processors}
+number_svn_processors=${number_svn_processors}
+number_file_processors=${number_file_processors}
+default_and_match=${default_and_match}
+log_indexed=${log_indexed}</textarea>
+
+
+        </div>
+
     </div>
 </div>
 
