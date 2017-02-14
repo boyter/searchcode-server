@@ -35,6 +35,37 @@ public class AdminRouteService {
     public AdminRouteService() {
     }
 
+    public String GetStat(Request request, Response response) {
+        if (request.queryParams().contains("statname")) {
+            String statname = request.queryParams("statname");
+            switch (statname) {
+                case "memoryusage":
+                    return Singleton.getStatsService().getMemoryUsage("<br>");
+                case "loadaverage":
+                    return Singleton.getStatsService().getLoadAverage();
+                case "uptime":
+                    return Singleton.getStatsService().getUptime();
+                case "searchcount":
+                    return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
+                case "runningjobs":
+                    StringBuilder stringBuffer = new StringBuilder();
+                    for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
+                        stringBuffer.append(key).append(" ");
+                    }
+                    return stringBuffer.toString();
+                case "spellingcount":
+                    return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
+                case "repocount":
+                    return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
+                case "numdocs":
+                    CodeSearcher codeSearcher = new CodeSearcher();
+                    return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+            }
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
     public Map<String, Object> AdminPage(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 

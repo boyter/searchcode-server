@@ -15,7 +15,9 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.*;
+import com.searchcode.app.service.ApiService;
+import com.searchcode.app.service.JobService;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.JsonTransformer;
@@ -27,8 +29,6 @@ import spark.Response;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -435,34 +435,16 @@ public class App {
             return adminRouteService.CheckVersion();
         }, new JsonTransformer());
 
-        // Experimental method to restart the application
-        get("/admin/restart/", "application/json", (request, response) -> {
+        get("/admin/api/getstat/", "application/json", (request, response) -> {
             if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
                 halt();
                 return false;
             }
 
-            final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            final File currentJar = new File(App.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-
-            if(!currentJar.getName().endsWith(".jar")) {
-                return false;
-            }
-
-            /* Build command: java -jar application.jar */
-            final ArrayList<String> command = new ArrayList<>();
-            command.add(javaBin);
-            command.add("-jar");
-            command.add(currentJar.getPath());
-
-            final ProcessBuilder builder = new ProcessBuilder(command);
-            builder.start();
-            System.exit(0);
-
-            return true;
-        }, new JsonTransformer());
-
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.GetStat(request, response);
+        });
     }
 
     /**

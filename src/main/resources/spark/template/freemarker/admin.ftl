@@ -40,19 +40,19 @@
     </tr>
     <tr>
         <td><b>Repositories Tracked</b></td>
-        <td>${repoCount}</td>
+        <td ic-trigger-on="load" ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</td>
     </tr>
     <tr>
         <td><b>Documents Indexed</b></td>
-        <td>${numDocs}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</td>
     </tr>
     <tr>
         <td><b>Number of Searches</b></td>
-        <td>${numSearches}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</td>
     </tr>
     <tr>
         <td><b>Uptime</b></td>
-        <td>${uptime}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</td>
     </tr>
     <tr>
         <td><b>Edition</b></td>
@@ -68,7 +68,7 @@
     </tr>
     <tr>
         <td><b>Words in Spelling Corrector</b></td>
-        <td>${spellingCount}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</td>
     </tr>
     <tr>
         <td><b>Index Status</b></td>
@@ -215,17 +215,17 @@
     </tr>
     <tr>
         <td><b>System Load Average</b></td>
-        <td>${loadAverage}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</td>
     </tr>
 
     <tr>
         <td><b>Memory Usage</b></td>
-        <td>${memoryUsage}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</td>
     </tr>
 
     <tr>
         <td><b>Running Jobs</b></td>
-        <td>${runningJobs}</td>
+        <td ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</td>
     </tr>
 </table>
     
@@ -233,6 +233,7 @@
 
 
 <script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/intercooler-1.0.3.min.js"></script>
 <style>
 td {
     word-break: break-all;
