@@ -2,19 +2,21 @@
 <@layout.masterTemplate title="Admin">
 
 <div class="row inside-container">
-<ul class="nav nav-tabs nav-justified">
-    <li role="presentation"><a href="/admin/">Admin</a></li>
-    <li role="presentation" class="active"><a href="/admin/repo/">Repository Admin</a></li>
-    <li role="presentation"><a href="/admin/bulk/">Repository Bulk Admin</a></li>
-    <li role="presentation"><a href="/admin/api/">API</a></li>
-    <li role="presentation"><a href="/admin/settings/">Settings</a></li>
-    <li role="presentation"><a href="/admin/logs/">Logs</a></li>
-    <li role="presentation"><a href="/logout/">Logout</a></li>
-</ul>
-</div>
-<br>
-
-<div class="row">
+    <div class="col-md-2">
+        <nav>
+          <ul class="nav nav-pills nav-stacked span2">
+            <li><a href="/admin/">Dashboard</a></li>
+            <li class="active"><a href="/admin/repo/">Repository Admin</a></li>
+            <li><a href="/admin/bulk/">Repository Bulk Admin</a></li>
+            <li><a href="/admin/api/">API Keys</a></li>
+            <li><a href="/admin/settings/">Settings</a></li>
+            <li><a href="/admin/logs/">Logs</a></li>
+            <li><a href="/logout/">Logout</a></li>
+          </ul>
+        </nav>
+    </div>
+    <div class="col-md-10">
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Repository Admin</h3>
 
 <p>You can use this page to insert and delete repositories. Please note that updates are not supported.</p>
 <p>If you need to maintain more than 1,000 repositories is is advised to use the <a href="/documentation/#api">API</a>.
@@ -78,7 +80,8 @@
             </div>
         </#items>
     </#list>
-
+</div>
+</div>
 
 
 <script>
@@ -100,6 +103,5 @@ $(document).ready(function(){
 });
 </script>
 
-</div>
 
 </@layout.masterTemplate>

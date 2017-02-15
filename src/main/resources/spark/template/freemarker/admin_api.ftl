@@ -2,19 +2,21 @@
 <@layout.masterTemplate title="Admin Settings">
 
 <div class="row inside-container">
-<ul class="nav nav-tabs nav-justified">
-    <li role="presentation"><a href="/admin/">Admin</a></li>
-    <li role="presentation"><a href="/admin/repo/">Repository Admin</a></li>
-    <li role="presentation"><a href="/admin/bulk/">Repository Bulk Admin</a></li>
-    <li role="presentation" class="active"><a href="/admin/api/">API</a></li>
-    <li role="presentation"><a href="/admin/settings/">Settings</a></li>
-    <li role="presentation"><a href="/admin/logs/">Logs</a></li>
-    <li role="presentation"><a href="/logout/">Logout</a></li>
-</ul>
-</div>
-<br>
-
-<div class="row">
+    <div class="col-md-2">
+        <nav>
+          <ul class="nav nav-pills nav-stacked span2">
+            <li><a href="/admin/">Dashboard</a></li>
+            <li><a href="/admin/repo/">Repository Admin</a></li>
+            <li><a href="/admin/bulk/">Repository Bulk Admin</a></li>
+            <li class="active"><a href="/admin/api/">API Keys</a></li>
+            <li><a href="/admin/settings/">Settings</a></li>
+            <li><a href="/admin/logs/">Logs</a></li>
+            <li><a href="/logout/">Logout</a></li>
+          </ul>
+        </nav>
+    </div>
+    <div class="col-md-10">
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> API Keys</h3>
 <script src="/js/jquery-1.11.1.min.js"></script>
 
 
@@ -53,7 +55,7 @@
         <ol>Change <code>api_key_authentication</code> to <code>true</code> in the searchcode.properties file</ol>
     </ul>
     </#if>
-
+    </div>
 </div>
 
 <script>
