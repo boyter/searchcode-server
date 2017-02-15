@@ -182,6 +182,7 @@ XX XXXXXXXX XXXX - 1.3.8
  - Small CSS display issues on search pages
  - Resolve issues with some unit tests being inconsistent
  - Setup CI pipeline to shake out issues and IWOMM
+ - New admin pages which expose information in a better way
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline
