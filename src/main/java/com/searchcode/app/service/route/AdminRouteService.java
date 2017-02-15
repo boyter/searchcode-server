@@ -20,6 +20,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.omg.CORBA.Environment;
@@ -116,7 +117,7 @@ public class AdminRouteService {
 
         map.put("repoCount", this.getStat("repoCount"));
         map.put("numDocs", this.getStat("numDocs"));
-        map.put("numSearches", this.getStat("numSearches"));
+        map.put("numSearches", this.getStat("searchcount"));
         map.put("uptime", this.getStat("uptime"));
         map.put("loadAverage", this.getStat("loadAverage"));
         map.put("memoryUsage", this.getStat("memoryUsage"));

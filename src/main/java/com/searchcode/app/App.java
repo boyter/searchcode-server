@@ -180,11 +180,11 @@ public class App {
         ////////////////////////////////////////////////////
 
         get("/admin/", (request, response) -> {
-//            if (getAuthenticatedUser(request) == null) {
-//                response.redirect("/login/");
-//                halt();
-//                return null;
-//            }
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return null;
+            }
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminPage(request, response);
@@ -433,14 +433,14 @@ public class App {
 
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.CheckVersion();
-        }, new JsonTransformer());
+        });
 
         get("/admin/api/getstat/", "application/json", (request, response) -> {
-//            if (getAuthenticatedUser(request) == null) {
-//                response.redirect("/login/");
-//                halt();
-//                return false;
-//            }
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
 
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.GetStat(request, response);
