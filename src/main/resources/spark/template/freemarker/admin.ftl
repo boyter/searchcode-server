@@ -77,7 +77,7 @@
                     <h4><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Repositories</h4>
                     <p>
                     Total: <span ic-trigger-on="load" ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span><br />
-                    Queued for Deletion: <span ic-trigger-on="load" ic-poll="60s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
+                    Queued for Deletion: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
                     </p>
                 </div>
             </div>
@@ -145,12 +145,6 @@ log_indexed=${log_indexed}</textarea>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script src="/js/intercooler-1.0.3.min.js"></script>
-<style>
-td {
-    word-break: break-all;
-    vertical-align: top;
-}
-</style>
 
 <script>
 $(document).ready(function(){

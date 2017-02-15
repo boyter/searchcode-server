@@ -24,10 +24,10 @@
         </p>
         <p>Displaying <strong>${level}</strong> logs</p>
 
-        <textarea style="width: 100%; height: 100%; font-family: monospace;" rows="20" readonly="true"><#list logs><#items as result>${result?html}
-        </#items></#list>
+        <textarea ic-poll="10s" ic-src="/admin/api/getstat/?statname=${level}logs" style="width: 100%; height: 100%; font-family: monospace;" rows="20" readonly="true">${logs?html}
         </textarea>
     </div>
 </div>
-
+<script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/intercooler-1.0.3.min.js"></script>
 </@layout.masterTemplate>

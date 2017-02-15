@@ -23,6 +23,7 @@ import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.omg.CORBA.Environment;
 import spark.Request;
 import spark.Response;
@@ -42,37 +43,6 @@ public class AdminRouteService {
             return this.getStat(statname);
         }
 
-        return Values.EMPTYSTRING;
-    }
-
-    private String getStat(String statname) {
-        switch (statname.toLowerCase()) {
-            case "memoryusage":
-                return Singleton.getStatsService().getMemoryUsage("<br>");
-            case "loadaverage":
-                return Singleton.getStatsService().getLoadAverage();
-            case "uptime":
-                return Singleton.getStatsService().getUptime();
-            case "searchcount":
-                return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
-            case "runningjobs":
-                StringBuilder stringBuffer = new StringBuilder();
-                for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-                    stringBuffer.append(key).append(" ");
-                }
-                return stringBuffer.toString();
-            case "spellingcount":
-                return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
-            case "repocount":
-                return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
-            case "numdocs":
-                CodeSearcher codeSearcher = new CodeSearcher();
-                return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
-            case "servertime":
-                return new Date().toString();
-            case "deletionqueue":
-                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
-        }
         return Values.EMPTYSTRING;
     }
 
@@ -223,28 +193,28 @@ public class AdminRouteService {
             level = request.queryParams("level").trim().toUpperCase();
         }
 
-        List<String> logs = new ArrayList<>();
+        String logs;
         switch(level) {
             case "INFO":
-                logs = Singleton.getLogger().getInfoLogs();
+                logs = this.getStat("infologs");
                 break;
             case "WARNING":
-                logs = Singleton.getLogger().getWarningLogs();
+                logs = this.getStat("warninglogs");
                 break;
             case "ALL":
-                logs = Singleton.getLogger().getAllLogs();
+                logs = this.getStat("alllogs");
                 break;
             case "SEARCH":
-                logs = Singleton.getLogger().getSearchLogs();
+                logs = this.getStat("searchlogs");
                 break;
             case "SEVERE":
             default:
-                logs = Singleton.getLogger().getSevereLogs();
+                logs = this.getStat("severelogs");
                 break;
         }
 
         map.put("level", level);
-        map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
+        map.put("logs", logs);
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
@@ -376,5 +346,48 @@ public class AdminRouteService {
         else {
             return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version + ".";
         }
+    }
+
+    private String getStat(String statname) {
+        List<String> logs;
+
+        switch (statname.toLowerCase()) {
+            case "memoryusage":
+                return Singleton.getStatsService().getMemoryUsage("<br>");
+            case "loadaverage":
+                return Singleton.getStatsService().getLoadAverage();
+            case "uptime":
+                return Singleton.getStatsService().getUptime();
+            case "searchcount":
+                return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
+            case "runningjobs":
+                StringBuilder stringBuffer = new StringBuilder();
+                for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
+                    stringBuffer.append(key).append(" ");
+                }
+                return stringBuffer.toString();
+            case "spellingcount":
+                return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
+            case "repocount":
+                return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
+            case "numdocs":
+                CodeSearcher codeSearcher = new CodeSearcher();
+                return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+            case "servertime":
+                return new Date().toString();
+            case "deletionqueue":
+                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
+            case "alllogs":
+                return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
+            case "infologs":
+                return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
+            case "warninglogs":
+                return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
+            case "severelogs":
+                return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
+            case "searchlogs":
+                return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+        }
+        return Values.EMPTYSTRING;
     }
 }
