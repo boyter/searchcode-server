@@ -8,6 +8,7 @@ import spark.Request;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 public class AdminRouteServiceTest extends TestCase {
@@ -20,8 +21,9 @@ public class AdminRouteServiceTest extends TestCase {
         returnSet.add("reponame");
 
         when(mockRequest.queryParams()).thenReturn(returnSet);
-        when(mockRequest.queryParams("reponame")).thenReturn("pystacks");
+        when(mockRequest.queryParams("reponame")).thenReturn("hopefullyarandomnamethatdoesnotexist");
 
-        adminRouteService.CheckIndexStatus(mockRequest, null);
+        String result = adminRouteService.CheckIndexStatus(mockRequest, null);
+        assertThat(result).isEmpty();
     }
 }
