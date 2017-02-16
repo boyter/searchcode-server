@@ -445,6 +445,17 @@ public class App {
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.GetStat(request, response);
         });
+
+        get("/admin/api/checkindexstatus/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.CheckIndexStatus(request, response);
+        });
     }
 
     /**

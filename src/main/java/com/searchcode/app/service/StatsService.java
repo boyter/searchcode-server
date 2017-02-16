@@ -47,7 +47,7 @@ public class StatsService {
 
     public String getLoadAverage() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return "" + osBean.getSystemLoadAverage();
+        return Values.EMPTYSTRING + osBean.getSystemLoadAverage();
     }
 
     public String getArch() {
@@ -62,7 +62,7 @@ public class StatsService {
 
     public String getProcessorCount() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return "" + osBean.getAvailableProcessors();
+        return Values.EMPTYSTRING + osBean.getAvailableProcessors();
     }
 
     public String getMemoryUsage(String seperator) {

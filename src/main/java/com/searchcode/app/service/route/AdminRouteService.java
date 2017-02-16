@@ -16,6 +16,8 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
+import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
@@ -41,6 +43,21 @@ public class AdminRouteService {
         if (request.queryParams().contains("statname")) {
             String statname = request.queryParams("statname");
             return this.getStat(statname);
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
+    public String CheckIndexStatus(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            String reponame = request.queryParams("reponame");
+            String reposLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+
+            IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
+
+            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame)) {
+                return "Indexed ✓";
+            }
         }
 
         return Values.EMPTYSTRING;

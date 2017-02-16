@@ -137,6 +137,7 @@
                 <input type="text" value="${result.source?html}" name="reposource" readonly="true">
                 <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
                 <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
+                <span ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/checkindexstatus/?reponame=${result.name?html}"></span>
             </div>
         </#items>
     </#list>
@@ -144,6 +145,7 @@
 </div>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/intercooler-1.0.3.min.js"></script>
 <script>
 $(document).ready(function(){
     $('button.delete').click(function(e) {
