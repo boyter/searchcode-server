@@ -48,6 +48,10 @@ public class StatsService {
         data.saveData(Values.CACHE_TOTAL_SEARCH, Values.EMPTYSTRING + totalCount);
     }
 
+    public void clearSearchCount() {
+        data.saveData(Values.CACHE_TOTAL_SEARCH, "0");
+    }
+
     public int getSearchCount() {
         int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
         return totalCount;

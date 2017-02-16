@@ -90,6 +90,47 @@
         </div>
 
         <div style="width:100%; display: inline-block;">
+            <table>
+                <tr>
+                    <td>
+                    Add all repositories into the index processing queue.
+                    </td>
+                    <td>
+                    <a ic-post-to="/admin/forcequeue/" ic-indicator="#force-spinner" ic-target="#force-target" class="btn-block btn btn-danger btn-xs" role="button">Force Index Queue</a>
+                    <i id="force-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    Reset the search count to 0
+                    </td>
+                    <td>
+                    <a ic-post-to="/admin/clearsearchcount/" ic-indicator="#clearsearchcount-spinner" ic-target="#force-target" class="btn-block btn btn-danger btn-xs" role="button">Clear Search Count</a>
+                    <i id="clearsearchcount-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    Reset the spelling corrector.
+                    </td>
+                    <td>
+                    <a ic-post-to="/admin/resetspellingcorrector/" ic-indicator="#resetspellingcorrector-spinner" ic-target="#rebuild-target" class="btn-block btn btn-danger btn-xs" role="button">Reset Spelling</a>
+                    <i id="resetspellingcorrector-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                    Delete the entire index, all checked out code and then queue everything to be re-indexed.
+                    </td>
+                    <td>
+                    <a ic-post-to="/admin/rebuild/" ic-indicator="#rebuild-spinner" ic-target="#rebuild-target" class="btn-block btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
+                    <i id="rebuild-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="width:100%; display: inline-block;">
             <h4>System Properties <small>(from searchcode.properties file)</small></h4>
 
 <textarea readonly="true" style="width:100%; font-family: monospace; height: 200px;">sqlite_file=${sqlite_file}

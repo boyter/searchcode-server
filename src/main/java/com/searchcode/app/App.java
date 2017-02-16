@@ -424,6 +424,27 @@ public class App {
             return Singleton.getPauseBackgroundJobs();
         }, new JsonTransformer());
 
+        post("/admin/clearsearchcount/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+            Singleton.getStatsService().clearSearchCount();
+
+            return Values.EMPTYSTRING;
+        }, new JsonTransformer());
+
+        post("/admin/resetspellingcorrector/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+            Singleton.getSpellingCorrector().reset();
+            return Values.EMPTYSTRING;
+        }, new JsonTransformer());
+
         get("/admin/checkversion/", "application/json", (request, response) -> {
             if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");

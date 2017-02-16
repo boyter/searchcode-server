@@ -45,6 +45,12 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
     }
 
     @Override
+    public boolean reset() {
+        this.dictionary.clear();
+        return true;
+    }
+
+    @Override
     public void putWord(String word) {
         word = word.toLowerCase();
         if (dictionary.containsKey(word)) {
