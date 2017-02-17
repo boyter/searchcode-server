@@ -90,44 +90,14 @@
         </div>
 
         <div style="width:100%; display: inline-block;">
-            <table>
-                <tr>
-                    <td>
-                    Add all repositories into the index processing queue.
-                    </td>
-                    <td>
-                    <a ic-post-to="/admin/forcequeue/" ic-indicator="#force-spinner" ic-target="#force-target" class="btn-block btn btn-danger btn-xs" role="button">Force Index Queue</a>
-                    <i id="force-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                    Reset the search count to 0
-                    </td>
-                    <td>
-                    <a ic-post-to="/admin/clearsearchcount/" ic-indicator="#clearsearchcount-spinner" ic-target="#force-target" class="btn-block btn btn-danger btn-xs" role="button">Clear Search Count</a>
-                    <i id="clearsearchcount-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                    Reset the spelling corrector.
-                    </td>
-                    <td>
-                    <a ic-post-to="/admin/resetspellingcorrector/" ic-indicator="#resetspellingcorrector-spinner" ic-target="#rebuild-target" class="btn-block btn btn-danger btn-xs" role="button">Reset Spelling</a>
-                    <i id="resetspellingcorrector-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                    Delete the entire index, all checked out code and then queue everything to be re-indexed.
-                    </td>
-                    <td>
-                    <a ic-post-to="/admin/rebuild/" ic-indicator="#rebuild-spinner" ic-target="#rebuild-target" class="btn-block btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
-                    <i id="rebuild-spinner" style="display:none"><img src="/img/loading_small.gif" /></i>
-                    </td>
-                </tr>
-            </table>
+
+            <a data-text="Add all repositories into the index processing queue." style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" class="btn-function btn btn-danger btn-xs" role="button">Force Index Queue <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
+            <a data-text="Reset the search count to zero." style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
+            <a data-text="Reset the spelling corrector." style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
+            <a data-text="Delete the entire index, all checked out code and then queue everything to be re-indexed." style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
+
+            <p id="function-description">&nbsp;</p>
+
         </div>
 
         <div style="width:100%; display: inline-block;">
@@ -183,64 +153,19 @@ log_indexed=${log_indexed}</textarea>
 -->
 
 
-
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script src="/js/intercooler-1.0.3.min.js"></script>
 
 <script>
 $(document).ready(function(){
-
-
-    $('#force-queue').click(function(e) {
-            e.preventDefault();
-            var thus = $(this);
-
-            $.post('/admin/forcequeue/')
-               .done(function(data, textStatus, jqXHR) {
-                    $('#admin-message').html('<i>Queue forced successfully.</i>');
-               }).fail(function(xhr, ajaxOptions, thrownError) {
-                    $('#admin-message').html('<i>Queue force failed. Please try again later.</i>');
-               });
-    });
-
-    $('#pause-indexing').click(function(e) {
-            e.preventDefault();
-            var thus = $(this);
-
-            $.post('/admin/togglepause/')
-               .done(function(data, textStatus, jqXHR) {
-                    if (data === 'true') {
-                        $('#admin-message').html('<i>Indexing is now paused.</i>');
-                        $('#pause-index-status').html('paused');
-                    }
-                    else {
-                        $('#admin-message').html('<i>Indexing is running.</i>');
-                        $('#pause-index-status').html('running');
-                    }
-               }).fail(function(xhr, ajaxOptions, thrownError) {
-                    $('#admin-message').html('<i>Pause indexing failed. Please try again later.</i>');
-               });
-    });
-
-
-    $('#recrawl-reindex').click(function(e) {
-        e.preventDefault();
-        var thus = $(this);
-
-        var result = confirm("Rebuild everything? Searches will be unreliable until finished.");
-        if (result === true) {
-            $('#admin-message').html('<i>Please wait...</i>');
-
-            $.post('/admin/rebuild/')
-               .done(function(data, textStatus, jqXHR) {
-                    $('#admin-message').html('<i>Rebuild reindex run successfully.</i>');
-               }).fail(function(xhr, ajaxOptions, thrownError) {
-                    $('#admin-message').html('<i>Rebuild reindex failed. Please try again later.</i>');
-               });
+    $('.btn-function').hover(
+        function(e){
+            $('#function-description').html($(this).data('text'));
+        },
+        function(e) {
+            $('#function-description').html('&nbsp;');
         }
-    });
-
-
+    );
 });
 </script>
 
