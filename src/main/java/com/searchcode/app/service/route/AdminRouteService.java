@@ -318,7 +318,7 @@ public class AdminRouteService {
                 RepoResult rr = repo.getRepoByName(repoparams[0]);
 
                 if (rr == null) {
-                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch));
+                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}"));
                 }
             }
         }
@@ -343,7 +343,7 @@ public class AdminRouteService {
                     branch = "master";
                 }
 
-                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch));
+                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
             }
         }
     }

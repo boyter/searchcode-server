@@ -21,10 +21,11 @@ public class RepoResult {
     private String password = "";
     private String source = "";
     private String branch = "";
+    private String data = "";
 
     public RepoResult() {}
 
-    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch) {
+    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
         this.setRowId(rowId);
         this.setName(name);
         this.setScm(scm);
@@ -33,6 +34,7 @@ public class RepoResult {
         this.setPassword(password);
         this.setSource(source);
         this.setBranch(branch);
+        this.setData(data);
     }
 
     /**
@@ -135,5 +137,13 @@ public class RepoResult {
     @Override
     public String toString() {
         return String.format("%s %s %s %s %s %s %s", this.getName(), this.getScm(), this.getUrl(), this.getUsername(), this.getPassword(), this.getSource(), this.getBranch());
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 }

@@ -278,7 +278,7 @@ public class ApiRouteService {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch));
+        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}"));
 
         return new ApiResponse(true, "added repository successfully");
     }

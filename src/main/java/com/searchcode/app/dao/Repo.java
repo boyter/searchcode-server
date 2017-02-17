@@ -11,6 +11,7 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -46,7 +47,7 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc;");
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc;");
 
             resultSet = preparedStatement.executeQuery();
 
@@ -59,8 +60,9 @@ public class Repo implements IRepo {
                 String repoPassword = resultSet.getString("password");
                 String repoSource = resultSet.getString("source");
                 String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
         catch(SQLException ex) {
@@ -114,7 +116,7 @@ public class Repo implements IRepo {
 
         try {
             conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc limit ?, ?;");
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc limit ?, ?;");
 
             stmt.setInt(1, offset);
             stmt.setInt(2, pageSize);
@@ -130,8 +132,9 @@ public class Repo implements IRepo {
                 String repoPassword = rs.getString("password");
                 String repoSource = rs.getString("source");
                 String repoBranch = rs.getString("branch");
+                String repoData = rs.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
         catch(SQLException ex) {
@@ -186,7 +189,7 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where name=?;");
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where name=?;");
 
             preparedStatement.setString(1, repositoryName);
             resultSet = preparedStatement.executeQuery();
@@ -200,8 +203,9 @@ public class Repo implements IRepo {
                 String repoPassword = resultSet.getString("password");
                 String repoSource = resultSet.getString("source");
                 String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
             }
         }
         catch(SQLException ex) {
@@ -228,7 +232,7 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where url=?;");
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
 
             preparedStatement.setString(1, repositoryUrl);
 
@@ -243,8 +247,9 @@ public class Repo implements IRepo {
                 String repoPassword = resultSet.getString("password");
                 String repoSource = resultSet.getString("source");
                 String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
             }
         }
         catch(SQLException ex) {
@@ -439,6 +444,41 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
+        }
+    }
+
+    public void addDataToTable() {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+
+            boolean shouldAlter = true;
+
+            rs = stmt.executeQuery();
+            String value = Values.EMPTYSTRING;
+            while (rs.next()) {
+                value = rs.getString("name");
+
+                if ("data".equals(value)) {
+                    shouldAlter = false;
+                }
+            }
+
+            if (shouldAlter) {
+                stmt = conn.prepareStatement("ALTER TABLE repo ADD COLUMN data text;");
+                stmt.execute();
+            }
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
         }
     }
 }
