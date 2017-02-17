@@ -3,6 +3,8 @@ package com.searchcode.app.dto;
 import com.searchcode.app.model.RepoResult;
 import junit.framework.TestCase;
 
+import java.time.Instant;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class RepoResultTest extends TestCase {
@@ -44,5 +46,20 @@ public class RepoResultTest extends TestCase {
         repoResult.setRowId(99);
         String actual = repoResult.getDirectoryName();
         assertThat(actual).isEqualTo("99test99");
+    }
+
+    public void testGetJSONCheck() {
+        RepoResult repoResult = new RepoResult();
+
+        RepoData repoData = new RepoData();
+        repoData.averageIndexTimeSeconds = 20;
+        repoData.currentIndexTimeSeconds = 99;
+        repoData.indexStatus = "Running";
+        repoData.lastJobStartInstant = Instant.MIN;
+
+        repoResult.setData(repoData);
+        String actual = repoResult.getDataAsJson();
+
+        assertThat(actual).isEqualTo("{\"indexStatus\":\"Running\",\"averageIndexTimeSeconds\":20,\"currentIndexTimeSeconds\":99,\"lastJobStartInstant\":{\"seconds\":-31557014167219200,\"nanos\":0}}");
     }
 }

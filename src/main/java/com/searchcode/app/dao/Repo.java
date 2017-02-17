@@ -15,13 +15,11 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -320,7 +318,7 @@ public class Repo implements IRepo {
             preparedStatement.setString(5, repoResult.getPassword());
             preparedStatement.setString(6, repoResult.getSource());
             preparedStatement.setString(7, repoResult.getBranch());
-            preparedStatement.setString(8, repoResult.getData());
+            preparedStatement.setString(8, repoResult.getDataAsJson());
 
             preparedStatement.execute();
         }

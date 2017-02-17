@@ -128,6 +128,7 @@ public abstract class IndexBaseRepoJob implements Job {
             String repoBranch = repoResult.getBranch();
             Singleton.getLogger().info("Indexing " + repoName);
 
+
             try {
                 runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
 
