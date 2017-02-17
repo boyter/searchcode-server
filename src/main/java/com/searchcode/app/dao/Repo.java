@@ -38,6 +38,7 @@ public class Repo implements IRepo {
         this.dbConfig = dbConfig;
     }
 
+    @Override
     public synchronized List<RepoResult> getAllRepo() {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -76,6 +77,7 @@ public class Repo implements IRepo {
         return repoResults;
     }
 
+    @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         List<RepoResult> repoResults = this.getAllRepo();
         List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
@@ -106,7 +108,7 @@ public class Repo implements IRepo {
         return matchRepoResults;
     }
 
-
+    @Override
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -148,6 +150,7 @@ public class Repo implements IRepo {
         return repoResults;
     }
 
+    @Override
     public synchronized int getRepoCount() {
         int totalCount = 0;
 
@@ -176,6 +179,7 @@ public class Repo implements IRepo {
         return totalCount;
     }
 
+    @Override
     public synchronized RepoResult getRepoByName(String repositoryName) {
         if (repositoryName == null) {
             return null;
@@ -219,6 +223,7 @@ public class Repo implements IRepo {
         return result;
     }
 
+    @Override
     public synchronized RepoResult getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
             return null;
@@ -263,6 +268,7 @@ public class Repo implements IRepo {
         return result;
     }
 
+    @Override
     public synchronized void deleteRepoByName(String repositoryName) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -299,12 +305,12 @@ public class Repo implements IRepo {
         try {
             connection = this.dbConfig.getConnection();
             if (existing != null) {
-                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
-                preparedStatement.setString(8, repoResult.getName());
+                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
+                preparedStatement.setString(9, repoResult.getName());
             }
             else {
                 isNew = true;
-                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
+                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"data\") VALUES (?,?,?,?,?,?,?,?)");
             }
 
             preparedStatement.setString(1, repoResult.getName());
@@ -314,6 +320,7 @@ public class Repo implements IRepo {
             preparedStatement.setString(5, repoResult.getPassword());
             preparedStatement.setString(6, repoResult.getSource());
             preparedStatement.setString(7, repoResult.getBranch());
+            preparedStatement.setString(8, repoResult.getData());
 
             preparedStatement.execute();
         }
@@ -326,6 +333,7 @@ public class Repo implements IRepo {
 
         return isNew;
     }
+
 
     // Schema Migrations below
     public void addSourceToTable() {

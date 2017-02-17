@@ -38,6 +38,7 @@ public class RepoTest extends TestCase {
         assertThat(result.getPassword()).isEqualTo("password");
         assertThat(result.getSource()).isEqualTo("mysource");
         assertThat(result.getBranch()).isEqualTo("mybranch");
+        assertThat(result.getData()).isEqualTo("{}");
 
         this.repo.deleteRepoByName("myname");
 
