@@ -135,4 +135,8 @@ public class Values {
     public static String DEFAULTMAXLINEDEPTH = "10000";
     public static String DEFAULTMINIFIEDLENGTH = "255";
     public static String DEFAULTBACKOFFVALUE = "0";
+
+    // Used for job status
+    public static String REPO_STATUS_INDEXING = "INDEXING";
+    public static String REPO_STATUS_FINISHED = "FINISHED";
 }

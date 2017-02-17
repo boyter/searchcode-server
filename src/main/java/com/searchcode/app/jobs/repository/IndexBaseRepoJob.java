@@ -15,6 +15,7 @@ import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.BinaryFinding;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.RepoData;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
@@ -38,6 +39,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
@@ -128,6 +130,9 @@ public abstract class IndexBaseRepoJob implements Job {
             String repoBranch = repoResult.getBranch();
             Singleton.getLogger().info("Indexing " + repoName);
 
+            repoResult.getData().lastJobStartInstant = Instant.now();
+            repoResult.getData().indexStatus = Values.REPO_STATUS_INDEXING;
+            Singleton.getRepo().saveRepo(repoResult);
 
             try {
                 runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
@@ -171,6 +176,9 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (repositoryChanged.isChanged() || indexsuccess == false) {
                     Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
                     this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
+
+                    repoResult.getData().indexStatus = Values.REPO_STATUS_FINISHED;
+                    Singleton.getRepo().saveRepo(repoResult);
                 }
             }
             finally {

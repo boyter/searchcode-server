@@ -488,10 +488,11 @@ public class App {
         Repo repo = Singleton.getRepo();
         Api api = Singleton.getApi();
 
-        data.createTableIfMissing(); // Added data key/value table
-        repo.addSourceToTable(); // Added source to repo
-        repo.addBranchToTable(); // Add branch to repo
+        data.createTableIfMissing();
         api.createTableIfMissing();
+        repo.addSourceToTable();
+        repo.addBranchToTable();
+        repo.addDataToTable();
     }
 
     private static void addJsonHeaders(Response response) {
