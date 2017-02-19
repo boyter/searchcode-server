@@ -12,6 +12,7 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
@@ -42,7 +43,6 @@ public class DeleteRepositoryJob implements Job {
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            AbstractMap<String, Integer> runningProcesses = Singleton.getRunningIndexRepoJobs();
             Repo repo = Singleton.getRepo();
 
             rr = deleteRepoQueue.poll();
@@ -52,7 +52,7 @@ public class DeleteRepositoryJob implements Job {
 
             Singleton.getUniqueGitRepoQueue().delete(rr);
 
-            if (runningProcesses.containsKey(rr.getName())) {
+            if (Singleton.getRunningIndexRepoJobs().containsKey(rr.getName())) {
                 // Put back into delete queue and quit
                 deleteRepoQueue.add(rr);
                 return;

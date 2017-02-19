@@ -53,9 +53,6 @@ public class RepoResultTest extends TestCase {
 
         RepoData repoData = new RepoData();
         repoData.averageIndexTimeSeconds = 20;
-        repoData.currentIndexTimeSeconds = 99;
-        repoData.indexStatus = "Running";
-        repoData.lastJobStartInstant = Instant.MIN;
 
         repoResult.setData(repoData);
         String actual = repoResult.getDataAsJson();

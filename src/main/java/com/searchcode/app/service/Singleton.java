@@ -16,6 +16,7 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.route.TimeSearchRouteService;
@@ -38,7 +39,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Singleton {
 
-    private static AbstractMap<String, Integer> runningIndexRepoJobs = null; // Used to know which jobs are currently running
+    private static AbstractMap<String, RunningIndexJob> runningIndexRepoJobs = null; // Used to know which jobs are currently running
     private static ISpellingCorrector spellingCorrectorInstance = null;
     private static Queue<CodeIndexDocument> codeIndexQueue = null; // Documents ready to be indexed
     private static int codeIndexLinesCount = 0; // Used to store how many lines we have ready to index for throttling
@@ -121,9 +122,9 @@ public final class Singleton {
      * and should be resolved at some point
      * TODO investigate usage and resolve race conditions
      */
-    public static synchronized AbstractMap<String, Integer> getRunningIndexRepoJobs() {
+    public static synchronized AbstractMap<String, RunningIndexJob> getRunningIndexRepoJobs() {
         if (runningIndexRepoJobs == null) {
-            runningIndexRepoJobs = new ConcurrentHashMap<String, Integer>();
+            runningIndexRepoJobs = new ConcurrentHashMap<>();
         }
 
         return runningIndexRepoJobs;

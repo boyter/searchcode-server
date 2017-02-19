@@ -37,10 +37,7 @@ public class RepoTest extends TestCase {
         assertThat(result.getPassword()).isEqualTo("password");
         assertThat(result.getSource()).isEqualTo("mysource");
         assertThat(result.getBranch()).isEqualTo("mybranch");
-        assertThat(result.getData().indexStatus).isNull();
         assertThat(result.getData().averageIndexTimeSeconds).isEqualTo(0);
-        assertThat(result.getData().currentIndexTimeSeconds).isEqualTo(0);
-        assertThat(result.getData().lastJobStartInstant).isNull();
 
         this.repo.deleteRepoByName("myname");
 

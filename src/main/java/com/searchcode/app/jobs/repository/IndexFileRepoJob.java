@@ -12,6 +12,7 @@
 package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
@@ -58,12 +59,13 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
         UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
 
         RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
 
-        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
+
+        if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
             try {
-                runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
+                Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
+                        new RunningIndexJob("Indexing", (int) (System.currentTimeMillis() / 1000)));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -77,10 +79,15 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 Path docDir = Paths.get(repoRemoteLocation);
 
                 this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
+                
+                int runningTime = (int) (System.currentTimeMillis() / 1000) -
+                        Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+                repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+                Singleton.getRepo().saveRepo(repoResult);
             }
             finally {
                 // Clean up the job
-                runningIndexRepoJobs.remove(repoResult.getName());
+                Singleton.getRunningIndexRepoJobs().remove(repoResult.getName());
             }
         }
     }

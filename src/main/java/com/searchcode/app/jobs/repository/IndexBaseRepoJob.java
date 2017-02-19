@@ -13,10 +13,7 @@ package com.searchcode.app.jobs.repository;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.BinaryFinding;
-import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.dto.RepoData;
-import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
@@ -119,9 +116,8 @@ public abstract class IndexBaseRepoJob implements Job {
         UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
 
         RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
 
-        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
+        if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
 
             String repoName = repoResult.getName();
             String repoRemoteLocation = repoResult.getUrl();
@@ -130,12 +126,9 @@ public abstract class IndexBaseRepoJob implements Job {
             String repoBranch = repoResult.getBranch();
             Singleton.getLogger().info("Indexing " + repoName);
 
-            repoResult.getData().lastJobStartInstant = Instant.now();
-            repoResult.getData().indexStatus = Values.REPO_STATUS_INDEXING;
-            Singleton.getRepo().saveRepo(repoResult);
-
             try {
-                runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
+                Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
+                        new RunningIndexJob("Indexing", (int) (System.currentTimeMillis() / 1000)));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -177,13 +170,15 @@ public abstract class IndexBaseRepoJob implements Job {
                     Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
                     this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
-                    repoResult.getData().indexStatus = Values.REPO_STATUS_FINISHED;
+                    int runningTime = (int) (System.currentTimeMillis() / 1000) -
+                            Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+                    repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
                     Singleton.getRepo().saveRepo(repoResult);
                 }
             }
             finally {
                 // Clean up the job
-                runningIndexRepoJobs.remove(repoResult.getName());
+                Singleton.getRunningIndexRepoJobs().remove(repoResult.getName());
             }
         }
     }

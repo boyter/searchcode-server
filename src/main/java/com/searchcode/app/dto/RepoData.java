@@ -11,15 +11,8 @@
 package com.searchcode.app.dto;
 
 
-import java.time.Instant;
-
 public class RepoData {
-
-    public String indexStatus;
     public int averageIndexTimeSeconds;
-    public int currentIndexTimeSeconds;
-    public Instant lastJobStartInstant;
-
 
     public RepoData() {}
 }
