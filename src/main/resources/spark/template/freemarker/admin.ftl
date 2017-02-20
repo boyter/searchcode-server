@@ -35,7 +35,7 @@
             </div>
             <div class="col-md-4">
                 <div>
-                    <h4><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Currently Running Jobs</h4>
+                    <h4><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Running Index Jobs</h4>
                     <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p>
                 </div>
             </div>

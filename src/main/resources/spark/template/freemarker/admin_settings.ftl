@@ -18,7 +18,7 @@
     </div>
     <div class="col-md-10">
 
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span></span> Settings</h3>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Settings</h3>
 
     <form method="POST" class="form-inline">
 
