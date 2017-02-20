@@ -172,6 +172,7 @@ In order to deal with the case of my death or this software becoming abandoned i
 After the following date DATE NOT SPECIFIED YET this software version '1.3.8' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
+File Classifier Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 
 
 Change Log
@@ -182,6 +183,7 @@ XX XXXXXXXX XXXX - 1.3.8
  - Small CSS display issues on search pages
  - Resolve issues with some unit tests being inconsistent
  - Setup CI pipeline to shake out issues and IWOMM
+ - File classification moved into JSON database similar to OWASP
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline
