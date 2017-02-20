@@ -8,15 +8,15 @@
  * Version 1.3.8
  */
 
-package com.searchcode.app.util.classifier;
+package com.searchcode.app.dto;
 
 
-public class Classifier {
+public class FileClassifierResult {
     public String language = null;
     public String[] extensions = {};
     public String[] keywords = {};
 
-    public Classifier(String language, String extensions, String keywords) {
+    public FileClassifierResult(String language, String extensions, String keywords) {
         this.language = language;
         this.extensions = extensions.toLowerCase().split(",");
         this.keywords = keywords.toLowerCase().split(",");

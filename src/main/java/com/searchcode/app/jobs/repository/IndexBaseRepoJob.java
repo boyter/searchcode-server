@@ -265,7 +265,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
             md5Hash = this.getFileMd5(changedFile);
 
-            String languageName = scl.languageGuesser(changedFile, codeLines);
+            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLines);
 
             String fileLocation = getRelativeToProjectPath(path.toString(), changedFile);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
@@ -384,7 +384,7 @@ public abstract class IndexBaseRepoJob implements Job {
                     }
 
                     String md5Hash = getFileMd5(fileToString);
-                    String languageName = scl.languageGuesser(fileName, codeLines);
+                    String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLines);
 
 
                     String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);

@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OWASPClassifierTest extends TestCase {
+public class OWASPFileClassifierResultTest extends TestCase {
 
     public void testOWASPLoader() {
         OWASPClassifier oc = new OWASPClassifier();
