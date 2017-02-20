@@ -62,6 +62,8 @@ public class Values {
     public static String DEFAULTMAXFILELINEDEPTH = "10000";
     public static String OWASPDATABASELOCATION = "owasp_database_location";
     public static String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
+    public static String CLASSIFIER_DATABASE_LOCATION = "classifier_database_location";
+    public static String DEFAULT_CLASSIFIER_DATABASE_LOCATION = "./include/classifier/database.json";
     public static String HIGHLIGHT_LINE_LIMIT = "highlight_lines_limit";
     public static String DEFAULT_HIGHLIGHT_LINE_LIMIT = "3000";
     public static String BINARY_WHITE_LIST = "binary_extension_white_list";

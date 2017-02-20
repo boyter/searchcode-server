@@ -14,13 +14,11 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.classifier.Classifier;
-import com.searchcode.app.util.classifier.FileClassifier;
+import com.searchcode.app.dto.FileClassifierResult;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -261,8 +259,8 @@ public class SearchcodeLib {
         }
 
         // Check if whitelisted extention IE what we know about
-        for (Classifier classifier: fileClassifier.getClassifier()) {
-            for (String extention: classifier.extensions) {
+        for (FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
+            for (String extention: fileClassifierResult.extensions) {
                 if (lowerFileName.endsWith("." + extention)) {
                     return new BinaryFinding(false, "appears in internal extension whitelist");
                 }
@@ -622,60 +620,6 @@ public class SearchcodeLib {
         }
 
         return "";
-    }
-
-
-    /**
-     * Given a filename and the lines inside the file attempts to guess the type of the file.
-     * TODO When no match attempt to identify using the file keywords
-     */
-    public String languageGuesser(String fileName, List<String> codeLines) {
-        String[] split = fileName.split("\\.");
-        String extension = split[split.length - 1].toLowerCase();
-
-        if ("txt".equals(extension)) {
-            return "Text";
-        }
-
-        // Find all languages that might be this one
-        FileClassifier fileClassifier = new FileClassifier();
-        Object[] matching = fileClassifier.getClassifier().stream().filter(x -> ArrayUtils.contains(x.extensions, extension)).toArray();
-        if (matching.length == 0) {
-            // Check against all using the pattern and see if we can guess
-            return "Unknown";
-        }
-
-        if (matching.length == 1) {
-            return ((Classifier)matching[0]).language;
-        }
-
-        // More then one possible match, check which one is most likely is and return that
-        String languageGuess = "";
-        int bestKeywords = 0;
-
-        // This is hideous, need to look at performance at some point
-        // but should be acceptable for now since it only runs when we have
-        // multiple entries
-        for(Object c: matching) {
-            Classifier classifier = (Classifier)c;
-            int matchingKeywords = 0;
-            for(String line: codeLines) {
-                for(String keyword: classifier.keywords) {
-                    matchingKeywords += StringUtils.countMatches(line, keyword);
-                }
-            }
-
-            if (matchingKeywords > bestKeywords) {
-                bestKeywords = matchingKeywords;
-                languageGuess = classifier.language;
-            }
-        }
-
-        if (languageGuess == null || languageGuess.trim().equals("")) {
-            languageGuess = "Unknown";
-        }
-
-        return languageGuess;
     }
 }
 

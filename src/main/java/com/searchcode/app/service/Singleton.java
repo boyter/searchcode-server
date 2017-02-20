@@ -45,6 +45,7 @@ public final class Singleton {
     private static int codeIndexLinesCount = 0; // Used to store how many lines we have ready to index for throttling
 
     private static SearchcodeLib searchcodeLib = null;
+    private static FileClassifier fileClassifier = null;
     private static AbstractMap<String, String> dataCache = null;
     private static AbstractMap<String, ApiResult> apiCache = null;
     private static AbstractMap<String, RepoResult> repoCache = null;
@@ -305,6 +306,14 @@ public final class Singleton {
         }
 
         return jobService;
+    }
+
+    public static FileClassifier getFileClassifier() {
+        if (fileClassifier == null) {
+            fileClassifier = new FileClassifier();
+        }
+
+        return fileClassifier;
     }
 
     public static IDatabaseConfig getDatabaseConfig() {
