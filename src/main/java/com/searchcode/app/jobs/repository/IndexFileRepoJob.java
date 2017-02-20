@@ -60,6 +60,8 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
         RepoResult repoResult = repoQueue.poll();
 
+        repoResult.getData().indexStatus = "indexing";
+        Singleton.getRepo().saveRepo(repoResult);
 
         if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
@@ -79,10 +81,11 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 Path docDir = Paths.get(repoRemoteLocation);
 
                 this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
-                
+
                 int runningTime = (int) (System.currentTimeMillis() / 1000) -
                         Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                 repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+                repoResult.getData().indexStatus = "success";
                 Singleton.getRepo().saveRepo(repoResult);
             }
             finally {

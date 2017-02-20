@@ -24,19 +24,19 @@
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-fire" aria-hidden="true"></span> System Load Average</h4>
-                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</p>
+                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Memory Usage</h4>
-                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</p>
+                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Currently Running Jobs</h4>
-                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p>
+                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p>
                 </div>
             </div>
         </div>
@@ -57,7 +57,7 @@
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Words in Spelling Corrector</h4>
-                    <p ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p>
+                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p>
                 </div>
             </div>
         </div>

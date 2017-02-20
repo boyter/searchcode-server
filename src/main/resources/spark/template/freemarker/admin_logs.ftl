@@ -24,7 +24,7 @@
         </p>
         <p>Displaying <strong>${level}</strong> logs</p>
 
-        <textarea ic-poll="10s" ic-src="/admin/api/getstat/?statname=${level}logs" style="width: 100%; height: 100%; font-family: monospace;" rows="20" readonly="true">${logs?html}
+        <textarea ic-poll="30s" ic-src="/admin/api/getstat/?statname=${level}logs" style="width: 100%; height: 100%; font-family: monospace;" rows="20" readonly="true">${logs?html}
         </textarea>
     </div>
 </div>

@@ -10,9 +10,11 @@
 
 package com.searchcode.app.dto;
 
+import com.searchcode.app.config.Values;
 
 public class RepoData {
-    public int averageIndexTimeSeconds;
+    public int averageIndexTimeSeconds = 0;
+    public String indexStatus = Values.EMPTYSTRING;
 
     public RepoData() {}
 }
