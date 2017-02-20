@@ -16,8 +16,7 @@
         </nav>
     </div>
     <div class="col-md-10">
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> API Keys</h3>
-<script src="/js/jquery-1.11.1.min.js"></script>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">API Keys</h3>
 
 
     <#if apiAuthentication == true>
@@ -58,6 +57,7 @@
     </div>
 </div>
 
+<script src="/js/jquery-1.11.1.min.js"></script>
 <script>
 $(document).ready(function(){
     $('button.delete').click(function(e) {

@@ -21,4 +21,6 @@ public interface IRepo {
     RepoResult getRepoByUrl(String repositoryUrl);
     boolean saveRepo(RepoResult repoResult);
     void deleteRepoByName(String repositoryName);
+    List<RepoResult> searchRepo(String searchTerms);
+    int getRepoCount();
 }

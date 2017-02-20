@@ -41,9 +41,9 @@ public class JobServiceTest extends TestCase {
         JobService jobService = new JobService();
         Singleton.setBackgroundJobsEnabled(true);
 
-        assertThat(jobService.forceEnqueue(new RepoResult(0, "name", "git", "url", "username", "password", "source", "branch"))).isTrue();
-        assertThat(jobService.forceEnqueue(new RepoResult(1, "name", "svn", "url", "username", "password", "source", "branch"))).isTrue();
-        assertThat(jobService.forceEnqueue(new RepoResult(2, "name", "file", "url", "username", "password", "source", "branch"))).isTrue();
+        assertThat(jobService.forceEnqueue(new RepoResult(0, "name", "git", "url", "username", "password", "source", "branch", ""))).isTrue();
+        assertThat(jobService.forceEnqueue(new RepoResult(1, "name", "svn", "url", "username", "password", "source", "branch", ""))).isTrue();
+        assertThat(jobService.forceEnqueue(new RepoResult(2, "name", "file", "url", "username", "password", "source", "branch", ""))).isTrue();
 
         assertThat(repoGitQueue.size()).isEqualTo(1);
         assertThat(repoSvnQueue.size()).isEqualTo(1);

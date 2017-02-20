@@ -39,7 +39,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    public static final boolean ISCOMMUNITY = true;
+    public static final boolean ISCOMMUNITY = false;
     public static final String VERSION = "1.3.8";
     private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
@@ -424,6 +424,27 @@ public class App {
             return Singleton.getPauseBackgroundJobs();
         }, new JsonTransformer());
 
+        post("/admin/clearsearchcount/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+            Singleton.getStatsService().clearSearchCount();
+
+            return Values.EMPTYSTRING;
+        }, new JsonTransformer());
+
+        post("/admin/resetspellingcorrector/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+            Singleton.getSpellingCorrector().reset();
+            return Values.EMPTYSTRING;
+        }, new JsonTransformer());
+
         get("/admin/checkversion/", "application/json", (request, response) -> {
             if (getAuthenticatedUser(request) == null) {
                 response.redirect("/login/");
@@ -445,6 +466,17 @@ public class App {
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.GetStat(request, response);
         });
+
+        get("/admin/api/checkindexstatus/", "application/json", (request, response) -> {
+            if (getAuthenticatedUser(request) == null) {
+                response.redirect("/login/");
+                halt();
+                return false;
+            }
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.CheckIndexStatus(request, response);
+        });
     }
 
     /**
@@ -456,10 +488,11 @@ public class App {
         Repo repo = Singleton.getRepo();
         Api api = Singleton.getApi();
 
-        data.createTableIfMissing(); // Added data key/value table
-        repo.addSourceToTable(); // Added source to repo
-        repo.addBranchToTable(); // Add branch to repo
+        data.createTableIfMissing();
         api.createTableIfMissing();
+        repo.addSourceToTable();
+        repo.addBranchToTable();
+        repo.addDataToTable();
     }
 
     private static void addJsonHeaders(Response response) {

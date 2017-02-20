@@ -16,6 +16,9 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.RunningIndexJob;
+import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
+import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
@@ -41,6 +44,31 @@ public class AdminRouteService {
         if (request.queryParams().contains("statname")) {
             String statname = request.queryParams("statname");
             return this.getStat(statname);
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
+    public String CheckIndexStatus(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            String reponame = request.queryParams("reponame");
+            String reposLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+
+            IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
+
+            RepoResult repoResult = Singleton.getRepo().getRepoByName(reponame);
+            String indexStatus = Values.EMPTYSTRING;
+            if (repoResult != null) {
+                indexStatus = repoResult.getData().indexStatus;
+            }
+
+            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
+                return "Indexed ✓";
+            }
+
+            if("indexing".equals(indexStatus)) {
+                return "Indexing...";
+            }
         }
 
         return Values.EMPTYSTRING;
@@ -301,7 +329,7 @@ public class AdminRouteService {
                 RepoResult rr = repo.getRepoByName(repoparams[0]);
 
                 if (rr == null) {
-                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch));
+                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}"));
                 }
             }
         }
@@ -326,7 +354,7 @@ public class AdminRouteService {
                     branch = "master";
                 }
 
-                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch));
+                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
             }
         }
     }
@@ -363,7 +391,14 @@ public class AdminRouteService {
             case "runningjobs":
                 StringBuilder stringBuffer = new StringBuilder();
                 for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-                    stringBuffer.append(key).append(" ");
+                    RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
+                    if (indexJob != null) {
+                        int runningTime = Helpers.getCurrentTimeSeconds() - indexJob.startTime;
+                        stringBuffer.append(key).append(" <small>(").append(runningTime).append(" seconds)</small>").append(" ");
+                    }
+                    else {
+                        stringBuffer.append(key).append(" ");
+                    }
                 }
                 return stringBuffer.toString();
             case "spellingcount":

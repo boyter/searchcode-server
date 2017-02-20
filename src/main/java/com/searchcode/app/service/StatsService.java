@@ -12,6 +12,8 @@ package com.searchcode.app.service;
 
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
+import com.searchcode.app.util.Helpers;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
@@ -25,20 +27,39 @@ import java.text.NumberFormat;
  */
 public class StatsService {
 
+    Data data;
+
+    public StatsService() {
+        this.data = Singleton.getData();
+    }
+
+    public StatsService(Data data) {
+        this.data = data;
+    }
+
     public void incrementSearchCount() {
-        int totalCount = (Integer) Singleton.getGenericCache().getOrDefault(Values.CACHE_TOTAL_SEARCH, 0);
+        int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
 
         if (totalCount == Integer.MAX_VALUE) {
             totalCount = 0;
         }
 
         totalCount++;
-        Singleton.getGenericCache().put(Values.CACHE_TOTAL_SEARCH, totalCount);
+        data.saveData(Values.CACHE_TOTAL_SEARCH, Values.EMPTYSTRING + totalCount);
+    }
+
+    public void clearSearchCount() {
+        data.saveData(Values.CACHE_TOTAL_SEARCH, "0");
+    }
+
+    public int getSearchCount() {
+        int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        return totalCount;
     }
 
     public String getLoadAverage() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return "" + osBean.getSystemLoadAverage();
+        return Values.EMPTYSTRING + osBean.getSystemLoadAverage();
     }
 
     public String getArch() {
@@ -53,7 +74,7 @@ public class StatsService {
 
     public String getProcessorCount() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return "" + osBean.getAvailableProcessors();
+        return Values.EMPTYSTRING + osBean.getAvailableProcessors();
     }
 
     public String getMemoryUsage(String seperator) {
@@ -99,9 +120,5 @@ public class StatsService {
         }
 
         return hours + " hours";
-    }
-
-    public int getSearchCount() {
-        return (Integer) Singleton.getGenericCache().getOrDefault(Values.CACHE_TOTAL_SEARCH, 0);
     }
 }

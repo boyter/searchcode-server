@@ -11,16 +11,15 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -37,6 +36,7 @@ public class Repo implements IRepo {
         this.dbConfig = dbConfig;
     }
 
+    @Override
     public synchronized List<RepoResult> getAllRepo() {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc;");
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc;");
 
             resultSet = preparedStatement.executeQuery();
 
@@ -59,8 +59,9 @@ public class Repo implements IRepo {
                 String repoPassword = resultSet.getString("password");
                 String repoSource = resultSet.getString("source");
                 String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
         catch(SQLException ex) {
@@ -74,6 +75,7 @@ public class Repo implements IRepo {
         return repoResults;
     }
 
+    @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         List<RepoResult> repoResults = this.getAllRepo();
         List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
@@ -104,7 +106,7 @@ public class Repo implements IRepo {
         return matchRepoResults;
     }
 
-
+    @Override
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -114,7 +116,7 @@ public class Repo implements IRepo {
 
         try {
             conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc limit ?, ?;");
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc limit ?, ?;");
 
             stmt.setInt(1, offset);
             stmt.setInt(2, pageSize);
@@ -130,8 +132,9 @@ public class Repo implements IRepo {
                 String repoPassword = rs.getString("password");
                 String repoSource = rs.getString("source");
                 String repoBranch = rs.getString("branch");
+                String repoData = rs.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
         catch(SQLException ex) {
@@ -145,6 +148,7 @@ public class Repo implements IRepo {
         return repoResults;
     }
 
+    @Override
     public synchronized int getRepoCount() {
         int totalCount = 0;
 
@@ -173,6 +177,7 @@ public class Repo implements IRepo {
         return totalCount;
     }
 
+    @Override
     public synchronized RepoResult getRepoByName(String repositoryName) {
         if (repositoryName == null) {
             return null;
@@ -186,7 +191,7 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where name=?;");
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where name=?;");
 
             preparedStatement.setString(1, repositoryName);
             resultSet = preparedStatement.executeQuery();
@@ -200,8 +205,9 @@ public class Repo implements IRepo {
                 String repoPassword = resultSet.getString("password");
                 String repoSource = resultSet.getString("source");
                 String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
             }
         }
         catch(SQLException ex) {
@@ -215,6 +221,7 @@ public class Repo implements IRepo {
         return result;
     }
 
+    @Override
     public synchronized RepoResult getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
             return null;
@@ -228,7 +235,7 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where url=?;");
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
 
             preparedStatement.setString(1, repositoryUrl);
 
@@ -243,8 +250,9 @@ public class Repo implements IRepo {
                 String repoPassword = resultSet.getString("password");
                 String repoSource = resultSet.getString("source");
                 String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
             }
         }
         catch(SQLException ex) {
@@ -258,6 +266,7 @@ public class Repo implements IRepo {
         return result;
     }
 
+    @Override
     public synchronized void deleteRepoByName(String repositoryName) {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
@@ -294,12 +303,12 @@ public class Repo implements IRepo {
         try {
             connection = this.dbConfig.getConnection();
             if (existing != null) {
-                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
-                preparedStatement.setString(8, repoResult.getName());
+                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
+                preparedStatement.setString(9, repoResult.getName());
             }
             else {
                 isNew = true;
-                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
+                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"data\") VALUES (?,?,?,?,?,?,?,?)");
             }
 
             preparedStatement.setString(1, repoResult.getName());
@@ -309,6 +318,7 @@ public class Repo implements IRepo {
             preparedStatement.setString(5, repoResult.getPassword());
             preparedStatement.setString(6, repoResult.getSource());
             preparedStatement.setString(7, repoResult.getBranch());
+            preparedStatement.setString(8, repoResult.getDataAsJson());
 
             preparedStatement.execute();
         }
@@ -321,6 +331,7 @@ public class Repo implements IRepo {
 
         return isNew;
     }
+
 
     // Schema Migrations below
     public void addSourceToTable() {
@@ -439,6 +450,41 @@ public class Repo implements IRepo {
         finally {
             Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
+        }
+    }
+
+    public void addDataToTable() {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+
+            boolean shouldAlter = true;
+
+            rs = stmt.executeQuery();
+            String value = Values.EMPTYSTRING;
+            while (rs.next()) {
+                value = rs.getString("name");
+
+                if ("data".equals(value)) {
+                    shouldAlter = false;
+                }
+            }
+
+            if (shouldAlter) {
+                stmt = conn.prepareStatement("ALTER TABLE repo ADD COLUMN data text;");
+                stmt.execute();
+            }
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
         }
     }
 }

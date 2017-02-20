@@ -8,13 +8,13 @@
  * Version 1.3.8
  */
 
-package com.searchcode.app.util;
+package com.searchcode.app.dto;
 
+import com.searchcode.app.config.Values;
 
-public interface ISpellingCorrector {
-    int getWordCount();
-    void putWord(String word);
-    String correct(String word);
-    boolean containsWord(String word);
-    boolean reset();
+public class RepoData {
+    public int averageIndexTimeSeconds = 0;
+    public String indexStatus = Values.EMPTYSTRING;
+
+    public RepoData() {}
 }

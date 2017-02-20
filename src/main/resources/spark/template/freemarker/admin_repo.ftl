@@ -16,11 +16,11 @@
         </nav>
     </div>
     <div class="col-md-10">
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Repository Admin</h3>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Admin</h3>
     <p>You can use this page to add repositories to index or find and remove them from the index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
     <p>Please note that deleting a repository adds it to queue for deletion and as such may not be removed immediately.</p>
 
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Repository Add</h3>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Add</h3>
     <form class="form-horizontal" method="POST">
       <div class="form-group">
         <label for="reponame" class="col-sm-2 control-label">Repository Name</label>
@@ -80,26 +80,10 @@
       </div>
     </form>
 
-
-     <!--<form method="POST">
-        <input type="text" value="" name="reponame" placeholder="Repo Name" />
-        <select name="reposcm">
-            <option value="git">GIT</option>
-            <option value="svn">SVN</option>
-            <option value="file">File</option>
-        </select>
-        <input type="text" value="" name="repourl" placeholder="Repo URL or File Path" />
-        <input type="text" value="" name="repousername" placeholder="Repo Username" />
-        <input type="password" value="" name="repopassword" placeholder="Repo Password" />
-        <input type="text" value="" name="reposource" placeholder="Repo Source" />
-        <input type="text" value="master" name="repobranch" placeholder="Repo Branch" />
-        
-        <input class="btn btn-sm btn-primary" tabindex="1" type="submit" name="Add Repo" value="Add Repository" />
-    </form>-->
     <br>
     <br>
 
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Repository List</h3>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository List</h3>
 
     <div class="center">
 
@@ -137,6 +121,7 @@
                 <input type="text" value="${result.source?html}" name="reposource" readonly="true">
                 <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
                 <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
+                <span ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/checkindexstatus/?reponame=${result.name?html}"></span>
             </div>
         </#items>
     </#list>
@@ -144,6 +129,7 @@
 </div>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/intercooler-1.0.3.min.js"></script>
 <script>
 $(document).ready(function(){
     $('button.delete').click(function(e) {

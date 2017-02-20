@@ -2,7 +2,6 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -14,18 +13,21 @@ public class RepoTest extends TestCase {
     public RepoTest() {
         this.repo = new Repo(new SQLiteMemoryDatabaseConfig());
         this.repo.createTableIfMissing();
+        this.repo.addBranchToTable();
+        this.repo.addSourceToTable();
+        this.repo.addDataToTable();
     }
 
     public void testMigrationCode() {
         for (int i = 0; i < 100; i++) {
             this.repo.addBranchToTable();
             this.repo.addSourceToTable();
+            this.repo.addDataToTable();
         }
     }
 
     public void testRepoSaveDelete() {
-
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
         RepoResult result = this.repo.getRepoByName("myname");
 
         assertThat(result.getName()).isEqualTo("myname");
@@ -35,6 +37,7 @@ public class RepoTest extends TestCase {
         assertThat(result.getPassword()).isEqualTo("password");
         assertThat(result.getSource()).isEqualTo("mysource");
         assertThat(result.getBranch()).isEqualTo("mybranch");
+        assertThat(result.getData().averageIndexTimeSeconds).isEqualTo(0);
 
         this.repo.deleteRepoByName("myname");
 
@@ -43,7 +46,7 @@ public class RepoTest extends TestCase {
     }
 
     public void testRepoSaveGetCacheBug() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
 
         for (int i = 0 ; i< 200; i++) {
             assertThat(repo.getRepoByName("myname")).isNotNull();
@@ -53,21 +56,21 @@ public class RepoTest extends TestCase {
     }
 
     public void testRepoByUrl() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
         assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
         this.repo.deleteRepoByName("myname");
     }
 
     public void testRepoByUrlMemoryLeak() {
         for (int i = 0; i < 200; i++) {
-            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
             assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
             this.repo.deleteRepoByName("myname");
         }
     }
 
     public void testDeleteRepoMultipleTimes() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
 
         for (int i = 0 ; i < 200; i++) {
             this.repo.deleteRepoByName("myname");
@@ -76,24 +79,24 @@ public class RepoTest extends TestCase {
 
     public void testSaveRepoMultipleTimes() {
         for (int i = 0 ; i < 200; i++) {
-            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
         }
 
         this.repo.deleteRepoByName("myname");
     }
 
     public void testGetAllRepo() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
         assertThat(this.repo.getAllRepo().size()).isGreaterThanOrEqualTo(1);
         this.repo.deleteRepoByName("myname");
     }
 
     public void testGetPagedRepo() {
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "git", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
 
         assertThat(this.repo.getPagedRepo(0, 2).size()).isEqualTo(2);
         assertThat(this.repo.getPagedRepo(0, 4).size()).isEqualTo(4);
@@ -107,11 +110,11 @@ public class RepoTest extends TestCase {
     }
 
     public void testSearchRepo() {
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "svn", "myurl", "username", "password", "mysource", "mybranch"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "svn", "myurl", "username", "password", "mysource", "mybranch", "{}"));
 
         assertThat(this.repo.searchRepo("PassworD").size()).isEqualTo(5);
         assertThat(this.repo.searchRepo("TESTGetPagedRepo1").size()).isEqualTo(1);

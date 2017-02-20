@@ -16,7 +16,7 @@
         </nav>
     </div>
     <div class="col-md-10">
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Repository Bulk API</h3>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Bulk API</h3>
 
 <form method="POST">
 
