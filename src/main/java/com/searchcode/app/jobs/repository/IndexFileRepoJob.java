@@ -60,11 +60,12 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
         RepoResult repoResult = repoQueue.poll();
 
-        repoResult.getData().indexStatus = "indexing";
-        Singleton.getRepo().saveRepo(repoResult);
-
         if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
+
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
+            repoResult.getData().indexStatus = "indexing";
+            Singleton.getRepo().saveRepo(repoResult);
+
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
                         new RunningIndexJob("Indexing", (int) (System.currentTimeMillis() / 1000)));

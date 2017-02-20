@@ -55,7 +55,13 @@ public class AdminRouteService {
 
             IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
 
-            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame)) {
+            RepoResult repoResult = Singleton.getRepo().getRepoByName(reponame);
+            String indexStatus = Values.EMPTYSTRING;
+            if (repoResult != null) {
+                indexStatus = repoResult.getData().indexStatus;
+            }
+
+            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
                 return "Indexed ✓";
             }
         }

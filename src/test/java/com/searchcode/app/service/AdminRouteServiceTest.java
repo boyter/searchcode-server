@@ -12,7 +12,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 public class AdminRouteServiceTest extends TestCase {
-    public void testRepositoryReindexApiNotEnabled() {
+    public void testCheckIndexStatus() {
         AdminRouteService adminRouteService = new AdminRouteService();
 
         Request mockRequest = Mockito.mock(Request.class);
