@@ -96,6 +96,10 @@ public class Helpers {
         return lines;
     }
 
+    public static int getCurrentTimeSeconds() {
+        return (int) (System.currentTimeMillis() / 1000);
+    }
+
     public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
         List<String> fileLines = new ArrayList<>();
         BufferedReader bufferedReader = null;

@@ -18,7 +18,7 @@
     </div>
 
     <div class="col-md-10">
-        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;"><span class="label label-default"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span></span> Dashboard <small>(Arch:${sysArch} Version:${sysVersion} Cores:${processorCount})</small></h3>
+        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Dashboard <small>(Arch:${sysArch} Version:${sysVersion} Cores:${processorCount})</small></h3>
 
         <div style="width:100%; display: inline-block;">
             <div class="col-md-4">
@@ -45,19 +45,19 @@
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Number of Searches</h4>
-                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</p>
+                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Uptime</h4>
-                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</p>
+                    <p ic-poll="60s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</p>
                 </div>
             </div>
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Words in Spelling Corrector</h4>
-                    <p ic-poll="10s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p>
+                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p>
                 </div>
             </div>
         </div>
@@ -76,7 +76,7 @@
                 <div>
                     <h4><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Repositories</h4>
                     <p>
-                    Total: <span ic-trigger-on="load" ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span><br />
+                    Total: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span><br />
                     Queued for Deletion: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
                     </p>
                 </div>
@@ -84,7 +84,7 @@
             <div class="col-md-4">
                 <div>
                     <h4><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Documents Indexed</h4>
-                    <td ic-poll="10s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</td>
+                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</p>
                 </div>
             </div>
         </div>
@@ -139,19 +139,6 @@ log_indexed=${log_indexed}</textarea>
 
     </div>
 </div>
-<!--
-
-
-    <tr>
-    <td width="50%"><b>Admin Functions</b></td>
-    <td width="50%">
-        <a id="recrawl-reindex" href="#" class="btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
-        <a id="force-queue" href="#" class="btn btn-danger btn-xs" role="button">Force Index Queue</a>
-        <a id="pause-indexing" href="#" class="btn btn-danger btn-xs" role="button">Pause/Unpause Indexing</a>
-        <span id="admin-message"></span></td>
-    </tr>
--->
-
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script src="/js/intercooler-1.0.3.min.js"></script>

@@ -16,6 +16,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
@@ -63,6 +64,10 @@ public class AdminRouteService {
 
             if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
                 return "Indexed ✓";
+            }
+
+            if("indexing".equals(indexStatus)) {
+                return "Indexing...";
             }
         }
 
@@ -386,7 +391,14 @@ public class AdminRouteService {
             case "runningjobs":
                 StringBuilder stringBuffer = new StringBuilder();
                 for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-                    stringBuffer.append(key).append(" ");
+                    RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
+                    if (indexJob != null) {
+                        int runningTime = Helpers.getCurrentTimeSeconds() - indexJob.startTime;
+                        stringBuffer.append(key).append(" <small>(").append(runningTime).append(" seconds)</small>").append(" ");
+                    }
+                    else {
+                        stringBuffer.append(key).append(" ");
+                    }
                 }
                 return stringBuffer.toString();
             case "spellingcount":

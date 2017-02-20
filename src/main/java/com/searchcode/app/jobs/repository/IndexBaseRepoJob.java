@@ -129,9 +129,10 @@ public abstract class IndexBaseRepoJob implements Job {
             repoResult.getData().indexStatus = "indexing";
             Singleton.getRepo().saveRepo(repoResult);
 
+
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
-                        new RunningIndexJob("Indexing", (int) (System.currentTimeMillis() / 1000)));
+                        new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -165,7 +166,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 }
 
                 // Write file indicating we have sucessfully cloned
-                createCloneUpdateSuccess(repoLocations + "/" + repoName);
+                this.createCloneUpdateSuccess(repoLocations + "/" + repoName);
                 // If the last index was not sucessful, then trigger full index
                 boolean indexsuccess = checkIndexSucess(repoGitLocation);
 
@@ -173,8 +174,7 @@ public abstract class IndexBaseRepoJob implements Job {
                     Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
                     this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
-                    int runningTime = (int) (System.currentTimeMillis() / 1000) -
-                            Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+                    int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                     repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
                     repoResult.getData().indexStatus = "success";
                     Singleton.getRepo().saveRepo(repoResult);
