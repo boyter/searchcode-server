@@ -675,6 +675,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>If svn_enabled is set to true you need to ensure that this equals the path to your svn executable for your system. By default set to /usr/bin/svn</dd>
               <dt>owasp_database_location</dt>
               <dd>The location of the JSON owasp database. By default set to ./include/owasp/database.json</dd>
+              <dt>classifier_database_location</dt>
+              <dd>The location of the JSON file classifier database. By default set to ./include/classifier/database.json</dd>
               <dt>highlight_lines_limit</dt>
               <dd>The maximum number of lines that will be highlighted by the JavaScript highlighter. Defaults to 3000.</dd>
               <dt>binary_guess</dt>
