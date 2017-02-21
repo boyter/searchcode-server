@@ -73,6 +73,9 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         Singleton.setPauseBackgroundJobs(true);
         Singleton.setBackgroundJobsEnabled(false);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
+
+        // Reset
+        Singleton.setStatsService(new StatsService());
     }
 
     public void testGetFileMd5() {

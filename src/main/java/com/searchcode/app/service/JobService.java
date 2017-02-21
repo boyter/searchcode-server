@@ -374,7 +374,7 @@ public class JobService implements IJobService {
             }
             catch (IOException ex){
                 successful = false;
-                Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clear the folder manually and restart searchcode.");
+                Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
             }
 
             try {
@@ -384,7 +384,7 @@ public class JobService implements IJobService {
             }
             catch (IOException ex){
                 successful = false;
-                Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clear the folder manually and restart searchcode.");
+                Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
             }
         }
 

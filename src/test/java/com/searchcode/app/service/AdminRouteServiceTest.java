@@ -32,7 +32,7 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testGetStatValuesExpectEmpty() {
         AdminRouteService adminRouteService = new AdminRouteService();
-
+        Singleton.getLogger().clearAllLogs();
         List<String> statValue = Arrays.asList(null,  "", "runningjobs","alllogs", "infologs", "warninglogs", "severelogs", "searchlogs");
 
         for(String stat: statValue) {
@@ -52,6 +52,8 @@ public class AdminRouteServiceTest extends TestCase {
     public void testGetStatValuesExpectValue() {
         AdminRouteService adminRouteService = new AdminRouteService();
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
+
+        //Singleton.setStatsService(new StatsService());
 
         for(String stat: statValue) {
             Request mockRequest = Mockito.mock(Request.class);

@@ -126,6 +126,14 @@ public class LoggerWrapper {
         this.searchLog = EvictingQueue.create(1000);
     }
 
+    public synchronized void clearAllLogs() {
+        this.allCache.clear();
+        this.infoRecentCache.clear();
+        this.warningRecentCache.clear();
+        this.severeRecentCache.clear();
+        this.searchLog.clear();
+    }
+
     public synchronized void info(String toLog) {
         String message = "INFO: " + new Date().toString() + ": " + toLog;
         try {

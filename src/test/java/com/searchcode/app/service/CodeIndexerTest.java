@@ -37,6 +37,9 @@ public class CodeIndexerTest extends TestCase {
         Singleton.setPauseBackgroundJobs(false);
 
         assertThat(CodeIndexer.shouldPauseAdding()).isFalse();
+
+        // Reset
+        Singleton.setStatsService(new StatsService());
     }
 
     // TODO actually assert something in here
@@ -81,6 +84,8 @@ public class CodeIndexerTest extends TestCase {
         Singleton.setData(dataMock);
 
         assertThat(CodeIndexer.shouldBackOff()).isTrue();
+        // Reset
+        Singleton.setStatsService(new StatsService());
     }
 
     public void testShouldBackOffWhenLoadZero() {
@@ -89,6 +94,9 @@ public class CodeIndexerTest extends TestCase {
         Singleton.setStatsService(statsServiceMock);
 
         assertThat(CodeIndexer.shouldBackOff()).isFalse();
+
+        // Reset
+        Singleton.setStatsService(new StatsService());
     }
 
     // TODO expand on these tests
