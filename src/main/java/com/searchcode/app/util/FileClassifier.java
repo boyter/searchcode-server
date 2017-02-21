@@ -25,6 +25,9 @@ public class FileClassifier {
         this.database = this.loadDatabase();
     }
 
+    public FileClassifier(List<FileClassifierResult> database) {
+        this.database = database;
+    }
 
     public List<FileClassifierResult> getDatabase() {
         return this.database;

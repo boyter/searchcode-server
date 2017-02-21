@@ -1,26 +1,23 @@
 package com.searchcode.app.util;
 
 
-import com.google.gson.Gson;
 import com.searchcode.app.dto.FileClassifierResult;
 import junit.framework.TestCase;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class FileFileClassifierResultTest extends TestCase {
     public void testSomething() {
-        FileClassifier fileClassifier = new FileClassifier();
+        FileClassifier fileClassifier = new FileClassifier(new ArrayList<>());
 
-//
-//        List<FileClassifierResult> fileClassifierResult = fileClassifier.getFileClassifierResult();
-//
-//        for(FileClassifierResult cl: fileClassifierResult) {
-//            cl.keywords = new String[0];
-//        }
-//
-//        Gson gson = new Gson();
-//
-//        System.out.println(gson.toJson(fileClassifierResult));
+        assertThat(fileClassifier.getDatabase()).isEmpty();
+        List<FileClassifierResult> database = new ArrayList<>();
 
+        database.add(new FileClassifierResult("", "", ""));
+        fileClassifier.setDatabase(database);
+        assertThat(fileClassifier.getDatabase().size()).isEqualTo(1);
     }
 }
