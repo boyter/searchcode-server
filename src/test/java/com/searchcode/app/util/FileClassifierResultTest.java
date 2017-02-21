@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class FileFileClassifierResultTest extends TestCase {
+public class FileClassifierResultTest extends TestCase {
     public void testDatabaseControl() {
         FileClassifier fileClassifier = new FileClassifier(new ArrayList<>());
 
