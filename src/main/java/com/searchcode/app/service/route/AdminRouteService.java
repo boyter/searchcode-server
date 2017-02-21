@@ -379,6 +379,10 @@ public class AdminRouteService {
     private String getStat(String statname) {
         List<String> logs;
 
+        if (statname == null) {
+            return Values.EMPTYSTRING;
+        }
+
         switch (statname.toLowerCase()) {
             case "memoryusage":
                 return Singleton.getStatsService().getMemoryUsage("<br>");
