@@ -184,8 +184,6 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(map.get("estimatedCost")).isNull();
     }
 
-    ///////////////////////////////////////////////////////////////////////
-
     public void testGetProject() {
         CodeRouteService codeRouteService = new CodeRouteService();
         Request request = Mockito.mock(Request.class);

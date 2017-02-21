@@ -382,8 +382,6 @@ public class AdminRouteService {
     }
 
     private String getStat(String statname) {
-        List<String> logs;
-
         if (statname == null) {
             return Values.EMPTYSTRING;
         }
