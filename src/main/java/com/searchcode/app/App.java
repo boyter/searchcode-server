@@ -184,11 +184,7 @@ public class App {
         ////////////////////////////////////////////////////
 
         get("/admin/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminPage(request, response);
@@ -197,11 +193,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/repo/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminRepo(request, response);
@@ -210,11 +202,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/bulk/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             Map<String, Object> map = new HashMap<>();
 
@@ -224,11 +212,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/api/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminApi(request, response);
@@ -237,11 +221,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/admin/api/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             apiService.createKeys();
 
@@ -264,11 +244,7 @@ public class App {
         }, new JsonTransformer());
 
         get("/admin/settings/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminSettings(request, response);
@@ -277,11 +253,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/logs/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             Map<String, Object> map = adminRouteService.AdminLogs(request, response);
@@ -290,11 +262,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/admin/settings/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             if (ISCOMMUNITY) {
                 response.redirect("/admin/settings/");
@@ -310,11 +278,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/admin/bulk/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             adminRouteService.PostBulk(request, response);
@@ -325,11 +289,7 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/admin/repo/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             adminRouteService.PostRepo(request, response);
@@ -377,11 +337,7 @@ public class App {
         });
 
         get("/admin/delete/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null || !request.queryParams().contains("repoName")) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             String repoName = request.queryParams("repoName");
             Repo repo = Singleton.getRepo();
@@ -395,11 +351,7 @@ public class App {
         }, new JsonTransformer());
 
         post("/admin/rebuild/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             boolean result = js.rebuildAll();
             if (result) {
@@ -409,79 +361,61 @@ public class App {
         }, new JsonTransformer());
 
         post("/admin/forcequeue/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             return js.forceEnqueue();
         }, new JsonTransformer());
 
         post("/admin/togglepause/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
+
             Singleton.setPauseBackgroundJobs(!Singleton.getPauseBackgroundJobs());
             return Singleton.getPauseBackgroundJobs();
         }, new JsonTransformer());
 
         post("/admin/clearsearchcount/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
-            Singleton.getStatsService().clearSearchCount();
+            checkLoggedIn(request, response);
 
+            Singleton.getStatsService().clearSearchCount();
             return Values.EMPTYSTRING;
         }, new JsonTransformer());
 
         post("/admin/resetspellingcorrector/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
+
             Singleton.getSpellingCorrector().reset();
             return Values.EMPTYSTRING;
         }, new JsonTransformer());
 
         get("/admin/checkversion/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.CheckVersion();
         });
 
         get("/admin/api/getstat/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.GetStat(request, response);
         });
 
+        get("/admin/api/getstatjson/", "application/json", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.GetStat(request, response);
+        }, new JsonTransformer());
+
         get("/admin/api/checkindexstatus/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
             return adminRouteService.CheckIndexStatus(request, response);
         });
     }
+
 
     /**
      * Called on startup to run all the DAO object table creation/migration logic. Slight overhead using this technique.
@@ -497,6 +431,13 @@ public class App {
         repo.addSourceToTable();
         repo.addBranchToTable();
         repo.addDataToTable();
+    }
+
+    private static void checkLoggedIn(Request request, Response response) {
+        if (getAuthenticatedUser(request) == null) {
+            response.redirect("/login/");
+            halt();
+        }
     }
 
     private static void addJsonHeaders(Response response) {
