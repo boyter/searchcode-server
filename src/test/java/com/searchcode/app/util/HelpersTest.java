@@ -13,7 +13,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class HelpersTest extends TestCase {
 
-    public void testOtherThing() throws FileNotFoundException {
+    public void testReadFileLines() throws FileNotFoundException {
         List<String> result = Helpers.readFileLines("./README.md", 10);
         assertEquals(10, result.size());
 
