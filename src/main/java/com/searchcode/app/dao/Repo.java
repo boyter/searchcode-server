@@ -390,7 +390,7 @@ public class Repo implements IRepo {
             boolean shouldAlter = true;
 
             rs = stmt.executeQuery();
-            String value = "";
+            String value = Values.EMPTYSTRING;
             while (rs.next()) {
                 value = rs.getString("name");
 

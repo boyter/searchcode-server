@@ -37,7 +37,14 @@ import java.util.*;
 
 public class AdminRouteService {
 
+    private Repo repo;
+
     public AdminRouteService() {
+        this.repo = Singleton.getRepo();
+    }
+
+    public AdminRouteService(Repo repo) {
+        this.repo = repo;
     }
 
     public String GetStat(Request request, Response response) {
@@ -344,8 +351,6 @@ public class AdminRouteService {
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
 
-        Repo repo = Singleton.getRepo();
-
         for(int i=0;i<reponames.length; i++) {
             if (reponames[i].trim().length() != 0) {
 
@@ -354,7 +359,7 @@ public class AdminRouteService {
                     branch = "master";
                 }
 
-                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
+                this.repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
             }
         }
     }
