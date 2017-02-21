@@ -526,75 +526,28 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
 }</pre>
 
 
-        <!--<p>
 
-        <h4>Code Search API</h4>
-        <pre><code>{
-    "totalHits": 1,
-    "page": 0,
-    "query": "test",
-    "altQuery": ["tests", "testing"],
-    "codeResultList": [{
-        "matchingResults": [{
-            "line": "",
-            "matching": false,
-            "addBreak": false,
-            "lineMatches": 0,
-            "lineNumber": 10
-        }, {
-            "line": "import test",
-            "matching": true,
-            "addBreak": false,
-            "lineMatches": 1,
-            "lineNumber": 11
-        }, {
-            "line": "# mycomment",
-            "matching": false,
-            "addBreak": false,
-            "lineMatches": 0,
-            "lineNumber": 12
-        }],
-        "codePath": "my-cool-repository/tests/test_config.py",
-        "fileName": "test_config.py",
-        "fileLocation": "",
-        "md5hash": "3d08d3e0286eb5fc6c65316fafdd7ef7",
-        "languageName": "Python",
-        "codeLines": "31",
-        "documentId": 212,
-        "repoName": "my-cool-repository",
-        "repoLocation": "https://github.com/my-cool-repository/my-cool-repository.git",
-        "codeOwner": "Bob Secret"
-    }],
-    "pages": [0, 1],
-    "languageFacetResults": [{
-        "languageName": "Python",
-        "count": 5,
-        "selected": false
-    }, {
-        "languageName": "Java",
-        "count": 3,
-        "selected": false
-    }],
-    "repoFacetResults": [{
-        "repoName": "my-cool-repository",
-        "count": 5,
-        "selected": false
-    }, {
-        "repoName": "test",
-        "count": 3,
-        "selected": false
-    }]
-    "repoOwnerResults": [{
-        "owner": "Bob Secret",
-        "count": 5,
-        "selected": false
-    }, {
-        "owner": "Alice Secret",
-        "count": 3,
-        "selected": false
-    }]
-}</code></pre>
-        <p>-->
+        <h5>Post commit hook index</h5>
+          <pre>/api/repo/index/</pre>
+          <p>Successful calls to this endpoint will suggest to searchcode that a repository has been updated and add it to the
+          index queue. If already on the queue this method does nothing. The queue is a first in first out queue and repositories
+          will be processed in order.<p>
+          <h5>Params</h5>
+            <ul>
+              <li>repoUrl: the repository url you wish to index (required)</li>
+            </ul>
+           <h5>Examples</h5>
+           <pre>http://localhost/api/repo/index/?repoUrl=https://github.com/boyter/searchcode-server.git</pre>
+           <pre>http://localhost/api/repo/index/?repoUrl=/disk/location/</pre>
+          <h5>Sample Response</h5>
+          <pre>{
+    sucessful: true,
+    message: "Enqueued repository https://github.com/boyter/searchcode-server.git"
+}</pre>
+
+
+
+
       </div>
 
       <hr>

@@ -169,6 +169,10 @@ public class App {
             return apiRouteService.repositoryReindex(request, response);
         }, new JsonTransformer());
 
+        ////////////////////////////////////////////////////
+        //          Unsecured API Routes Below
+        ////////////////////////////////////////////////////
+
         get("/api/repo/index/", "application/json", (request, response) -> {
             addJsonHeaders(response);
             ApiRouteService apiRouteService = new ApiRouteService();
