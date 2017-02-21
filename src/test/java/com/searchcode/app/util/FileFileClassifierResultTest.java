@@ -10,7 +10,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class FileFileClassifierResultTest extends TestCase {
-    public void testSomething() {
+    public void testDatabaseControl() {
         FileClassifier fileClassifier = new FileClassifier(new ArrayList<>());
 
         assertThat(fileClassifier.getDatabase()).isEmpty();
@@ -19,5 +19,15 @@ public class FileFileClassifierResultTest extends TestCase {
         database.add(new FileClassifierResult("", "", ""));
         fileClassifier.setDatabase(database);
         assertThat(fileClassifier.getDatabase().size()).isEqualTo(1);
+    }
+
+    public void testIdentifyLanguage() {
+        List<FileClassifierResult> database = new ArrayList<>();
+        database.add(new FileClassifierResult("boyterlang", "boyter", ""));
+
+        FileClassifier fileClassifier = new FileClassifier(database);
+        String languageGuess = fileClassifier.languageGuesser("test.boyter", new ArrayList<>());
+
+        assertThat(languageGuess).isEqualTo("boyterlang");
     }
 }
