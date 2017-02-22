@@ -164,6 +164,10 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
+    /**
+     * Determines if anything has changed or if the last index operation faild and if so
+     * triggers the index process.
+     */
     private void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         // If the last index was not sucessful, then trigger full index
         boolean indexsuccess = this.checkIndexSucess(repoGitLocation);
@@ -179,6 +183,10 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
+    /**
+     * Checks if a clone operation of a repository was successful. If not
+     * then it will delete the folder to start again
+     */
     public boolean checkCloneSuccess(String repoName, String repoLocations) {
         if (Helpers.isNullEmptyOrWhitespace(repoName) && Helpers.isNullEmptyOrWhitespace(repoLocations)) {
             Singleton.getLogger().warning("Repository Location is set to nothing, this can cause searchcode to modify the root file system!");
@@ -186,7 +194,7 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         // Check if sucessfully cloned, and if not delete and restart
-        boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
+        boolean cloneSucess = this.checkCloneUpdateSucess(repoLocations + repoName);
         if (cloneSucess == false) {
             // Delete the folder and delete from the index
             try {
@@ -199,11 +207,17 @@ public abstract class IndexBaseRepoJob implements Job {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
             }
         }
+        // TODO is this correct?!
         this.deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
 
         return true;
     }
 
+    /**
+     * Checks if the repository has changed, or if the last index failed for some reason
+     * and if either condition is true triggers a full index otherwise triggers a delta
+     * index of the files.
+     */
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         String repoGitLocation = repoLocations + "/" + repoName;
         Path docDir = Paths.get(repoGitLocation);
@@ -226,7 +240,7 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         // Write file indicating that the index was sucessful
-        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoName);
+        Singleton.getLogger().info("Successfully processed writing index success for " + repoName);
         createIndexSuccess(repoGitLocation);
     }
 
