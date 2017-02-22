@@ -155,18 +155,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
                 // Write file indicating we have sucessfully cloned
                 this.createCloneUpdateSuccess(repoLocations + "/" + repoName);
-                // If the last index was not sucessful, then trigger full index
-                boolean indexsuccess = checkIndexSucess(repoGitLocation);
-
-                if (repositoryChanged.isChanged() || indexsuccess == false) {
-                    Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-                    this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
-
-                    int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
-                    repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
-                    repoResult.getData().indexStatus = "success";
-                    Singleton.getRepo().saveRepo(repoResult);
-                }
+                this.triggerIndex(repoResult, repoName, repoRemoteLocation, repoLocations, repoGitLocation, existingRepo, repositoryChanged);
             }
             finally {
                 // Clean up the job
@@ -175,8 +164,22 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    public boolean checkCloneSuccess(String repoName, String repoLocations) {
+    private void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+        // If the last index was not sucessful, then trigger full index
+        boolean indexsuccess = this.checkIndexSucess(repoGitLocation);
 
+        if (repositoryChanged.isChanged() || indexsuccess == false) {
+            Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
+            this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
+
+            int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+            repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+            repoResult.getData().indexStatus = "success";
+            Singleton.getRepo().saveRepo(repoResult);
+        }
+    }
+
+    public boolean checkCloneSuccess(String repoName, String repoLocations) {
         if (Helpers.isNullEmptyOrWhitespace(repoName) && Helpers.isNullEmptyOrWhitespace(repoLocations)) {
             Singleton.getLogger().warning("Repository Location is set to nothing, this can cause searchcode to modify the root file system!");
             return false;
