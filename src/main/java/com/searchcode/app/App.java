@@ -15,13 +15,10 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.ApiService;
-import com.searchcode.app.service.JobService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.JsonTransformer;
-import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import spark.ModelAndView;
 import spark.Request;
@@ -41,7 +38,6 @@ public class App {
 
     public static final boolean ISCOMMUNITY = false;
     public static final String VERSION = "1.3.8";
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
 
     public static void main (String[] args) {
         int server_port = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT), Values.DEFAULTSERVERPORT);
@@ -50,20 +46,17 @@ public class App {
         // Database migrations happen before we start
         databaseMigrations();
 
-        LOGGER.info("Starting searchcode server on port " + server_port);
+        Singleton.getLogger().info("Starting searchcode server on port " + server_port);
 
         if (onlyLocalhost) {
-            LOGGER.info("Only listening on 127.0.0.1 ");
+            Singleton.getLogger().info("Only listening on 127.0.0.1 ");
             Spark.ipAddress("127.0.0.1");
         }
         Spark.port(server_port);
-
-        JobService js = new JobService();
-
-        ApiService apiService = Singleton.getApiService();
-        js.initialJobs();
-
         Spark.staticFileLocation("/public");
+
+        Singleton.getJobService().initialJobs();
+
 
         before((request, response) -> {
             if (onlyLocalhost) {
@@ -223,7 +216,7 @@ public class App {
         post("/admin/api/", (request, response) -> {
             checkLoggedIn(request, response);
 
-            apiService.createKeys();
+            Singleton.getApiService().createKeys();
 
             response.redirect("/admin/api/");
             halt();
@@ -238,7 +231,7 @@ public class App {
             }
 
             String publicKey = request.queryParams("publicKey");
-            apiService.deleteKey(publicKey);
+            Singleton.getApiService().deleteKey(publicKey);
 
             return true;
         }, new JsonTransformer());
@@ -353,9 +346,9 @@ public class App {
         post("/admin/rebuild/", "application/json", (request, response) -> {
             checkLoggedIn(request, response);
 
-            boolean result = js.rebuildAll();
+            boolean result = Singleton.getJobService().rebuildAll();
             if (result) {
-                js.forceEnqueue();
+                Singleton.getJobService().forceEnqueue();
             }
             return result;
         }, new JsonTransformer());
@@ -363,7 +356,7 @@ public class App {
         post("/admin/forcequeue/", "application/json", (request, response) -> {
             checkLoggedIn(request, response);
 
-            return js.forceEnqueue();
+            return Singleton.getJobService().forceEnqueue();
         }, new JsonTransformer());
 
         post("/admin/togglepause/", "application/json", (request, response) -> {
