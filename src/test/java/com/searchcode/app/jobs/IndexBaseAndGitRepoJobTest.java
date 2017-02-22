@@ -1,5 +1,6 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.TestHelpers;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
@@ -11,6 +12,8 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.*;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -156,10 +159,22 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 2);
     }
 
-    public void testCheckCloneSuccess() {
+    public void testCheckCloneSuccessEmptyReturnsFalse() {
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        boolean actual = indexGitRepoJob.checkCloneSuccess("", "");
+        assertThat(actual).isFalse();
+    }
 
-        indexGitRepoJob.checkCloneSuccess("", "");
+    public void testCheckCloneSuccessEmptyReturnsTrue() throws IOException {
+        File location = TestHelpers.clearAndCreateTempPath("testCheckCloneSuccessEmptyReturnsTrue");
+        File projectLocation = TestHelpers.createDirectory(location, "myawesomeproject");
+        TestHelpers.createFile(projectLocation, "myfile.java", "some file content");
 
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        boolean actual = indexGitRepoJob.checkCloneSuccess("myawesomeproject", location.getAbsolutePath());
+        assertThat(actual).isTrue();
+
+        File toCheck = new File(projectLocation.getAbsolutePath());
+        assertThat(toCheck.exists()).isFalse();
     }
 }

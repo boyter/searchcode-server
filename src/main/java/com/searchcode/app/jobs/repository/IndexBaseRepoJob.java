@@ -175,21 +175,30 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    public void checkCloneSuccess(String repoName, String repoLocations) {
+    public boolean checkCloneSuccess(String repoName, String repoLocations) {
+
+        if (Helpers.isNullEmptyOrWhitespace(repoName) && Helpers.isNullEmptyOrWhitespace(repoLocations)) {
+            Singleton.getLogger().warning("Repository Location is set to nothing, this can cause searchcode to modify the root file system!");
+            return false;
+        }
+
         // Check if sucessfully cloned, and if not delete and restart
         boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
         if (cloneSucess == false) {
             // Delete the folder and delete from the index
             try {
-                //FileUtils.deleteDirectory(new File(repoLocations + "/" + repoName + "/"));
-                File file = new File(repoLocations + "/" + repoName + "");
-                file.getAbsolutePath()
+                File filePath = new File(repoLocations + "/" + repoName + "/");
+                if (!filePath.getAbsolutePath().equals("/")) { // Lets really be sure....
+                    FileUtils.deleteDirectory(filePath);
+                }
                 CodeIndexer.deleteByReponame(repoName);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
             }
         }
         this.deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
+
+        return true;
     }
 
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
