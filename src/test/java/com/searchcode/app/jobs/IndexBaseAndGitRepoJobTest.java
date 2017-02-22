@@ -2,12 +2,15 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.TestHelpers;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
+import org.quartz.JobExecutionException;
 
 import static org.mockito.Mockito.*;
 
@@ -177,4 +180,28 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         File toCheck = new File(projectLocation.getAbsolutePath());
         assertThat(toCheck.exists()).isFalse();
     }
+
+    public void testExecuteNothingInQueue() throws JobExecutionException {
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        IndexGitRepoJob spy = spy(indexGitRepoJob);
+
+        when(spy.getNextQueuedRepo()).thenReturn(new UniqueRepoQueue());
+        spy.execute(null);
+        assertThat(spy.haveRepoResult).isFalse();
+    }
+
+//    public void testExecuteHasMethodInQueue() throws JobExecutionException {
+//        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+//        IndexGitRepoJob spy = spy(indexGitRepoJob);
+//
+//        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue();
+//        uniqueRepoQueue.add(new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "{}"));
+//
+//        when(spy.getNextQueuedRepo()).thenReturn(uniqueRepoQueue);
+//
+//        spy.execute(null);
+//
+//        assertThat(spy.haveRepoResult).isTrue();
+//        verify(spy).getNextQueuedRepo();
+//    }
 }

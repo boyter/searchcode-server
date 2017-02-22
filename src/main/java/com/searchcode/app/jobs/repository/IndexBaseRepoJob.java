@@ -49,6 +49,7 @@ public abstract class IndexBaseRepoJob implements Job {
     protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
     public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
+    public boolean haveRepoResult = false;
 
     /**
      * This method to be implemented by the extending class
@@ -101,27 +102,22 @@ public abstract class IndexBaseRepoJob implements Job {
      * The main method used for finding jobs to index and actually doing the work
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (isEnabled() == false) {
-            return;
-        }
-
-        if (Singleton.getBackgroundJobsEnabled() == false) {
-            return;
-        }
-
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        while (CodeIndexer.shouldPauseAdding()) {
+        if (!isEnabled() || !Singleton.getBackgroundJobsEnabled()) {
+            return;
+        }
+
+        if (CodeIndexer.shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }
 
         // Pull the next repo to index from the queue
-        UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
+        RepoResult repoResult = this.getNextQueuedRepo().poll();
 
-        RepoResult repoResult = repoQueue.poll();
-
-        if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
+        if (repoResult != null && Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName()) == false) {
+            this.haveRepoResult = true;
 
             String repoName = repoResult.getName();
             String repoRemoteLocation = repoResult.getUrl();
@@ -149,7 +145,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 File file = new File(repoGitLocation);
                 boolean existingRepo = file.exists();
                 boolean useCredentials = repoUserName != null && !repoUserName.isEmpty();
-                RepositoryChanged repositoryChanged = null;
+                RepositoryChanged repositoryChanged;
 
                 if (existingRepo) {
                     repositoryChanged = this.updateExistingRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
