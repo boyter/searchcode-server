@@ -155,4 +155,11 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 1);
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 2);
     }
+
+    public void testCheckCloneSuccess() {
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+
+        indexGitRepoJob.checkCloneSuccess("", "");
+
+    }
 }

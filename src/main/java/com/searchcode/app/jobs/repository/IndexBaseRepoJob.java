@@ -134,23 +134,11 @@ public abstract class IndexBaseRepoJob implements Job {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
                         new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
 
-                JobDataMap data = context.getJobDetail().getJobDataMap();
+                JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 
-                String repoLocations = data.get("REPOLOCATIONS").toString();
-                this.LOWMEMORY = Boolean.parseBoolean(data.get("LOWMEMORY").toString());
-
-                // Check if sucessfully cloned, and if not delete and restart
-                boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
-                if (cloneSucess == false) {
-                    // Delete the folder and delete from the index
-                    try {
-                        FileUtils.deleteDirectory(new File(repoLocations + "/" + repoName + "/"));
-                        CodeIndexer.deleteByReponame(repoName);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
-                    }
-                }
-                deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
+                String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
+                this.LOWMEMORY = Boolean.parseBoolean(jobDataMap.get("LOWMEMORY").toString());
+                this.checkCloneSuccess(repoName, repoLocations);
 
                 String repoGitLocation = repoLocations + "/" + repoName + "/.git/";
 
@@ -185,6 +173,23 @@ public abstract class IndexBaseRepoJob implements Job {
                 Singleton.getRunningIndexRepoJobs().remove(repoResult.getName());
             }
         }
+    }
+
+    public void checkCloneSuccess(String repoName, String repoLocations) {
+        // Check if sucessfully cloned, and if not delete and restart
+        boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
+        if (cloneSucess == false) {
+            // Delete the folder and delete from the index
+            try {
+                //FileUtils.deleteDirectory(new File(repoLocations + "/" + repoName + "/"));
+                File file = new File(repoLocations + "/" + repoName + "");
+                file.getAbsolutePath()
+                CodeIndexer.deleteByReponame(repoName);
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            }
+        }
+        this.deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
     }
 
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
