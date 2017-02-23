@@ -1,6 +1,7 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.TestHelpers;
+import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
@@ -10,6 +11,9 @@ import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
 import static org.mockito.Mockito.*;
@@ -59,7 +63,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
     public void testDeleteNoFile() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
 
-        for(int i=0; i< 100; i++) {
+        for(int i = 0; i < 100; i++) {
             gitRepoJob.deleteIndexSuccess("/tmp/");
             gitRepoJob.deleteCloneUpdateSuccess("/tmp/");
         }
@@ -190,18 +194,30 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         assertThat(spy.haveRepoResult).isFalse();
     }
 
-//    public void testExecuteHasMethodInQueue() throws JobExecutionException {
-//        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-//        IndexGitRepoJob spy = spy(indexGitRepoJob);
-//
-//        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue();
-//        uniqueRepoQueue.add(new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "{}"));
-//
-//        when(spy.getNextQueuedRepo()).thenReturn(uniqueRepoQueue);
-//
-//        spy.execute(null);
-//
-//        assertThat(spy.haveRepoResult).isTrue();
-//        verify(spy).getNextQueuedRepo();
-//    }
+    public void testExecuteHasMethodInQueue() throws JobExecutionException {
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        IndexGitRepoJob spy = spy(indexGitRepoJob);
+
+        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue();
+        uniqueRepoQueue.add(new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "{}"));
+
+        when(spy.getNextQueuedRepo()).thenReturn(uniqueRepoQueue);
+        when(spy.getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
+                .thenReturn(new RepositoryChanged(false, null, null));
+
+        JobExecutionContext mockContext = Mockito.mock(JobExecutionContext.class);
+        JobDetail mockDetail = Mockito.mock(JobDetail.class);
+        JobDataMap mockJobDataMap = Mockito.mock(JobDataMap.class);
+
+        when(mockJobDataMap.get("REPOLOCATIONS")).thenReturn("");
+        when(mockJobDataMap.get("LOWMEMORY")).thenReturn("true");
+        when(mockDetail.getJobDataMap()).thenReturn(mockJobDataMap);
+        when(mockContext.getJobDetail()).thenReturn(mockDetail);
+        
+        spy.execute(mockContext);
+
+        assertThat(spy.haveRepoResult).isTrue();
+        verify(spy).getNextQueuedRepo();
+        verify(spy).getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
+    }
 }
