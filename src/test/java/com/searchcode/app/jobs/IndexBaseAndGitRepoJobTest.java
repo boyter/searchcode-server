@@ -8,17 +8,15 @@ import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
-import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import static org.mockito.Mockito.*;
-
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.*;
 
 public class IndexBaseAndGitRepoJobTest extends TestCase {
     public void testGetBlameFilePath() {
@@ -184,62 +183,5 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
 
         File toCheck = new File(projectLocation.getAbsolutePath());
         assertThat(toCheck.exists()).isFalse();
-    }
-
-    public void testExecuteNothingInQueue() throws JobExecutionException {
-        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-        IndexGitRepoJob spy = spy(indexGitRepoJob);
-
-        when(spy.getNextQueuedRepo()).thenReturn(new UniqueRepoQueue());
-
-        JobExecutionContext mockContext = Mockito.mock(JobExecutionContext.class);
-        JobDetail mockDetail = Mockito.mock(JobDetail.class);
-        JobDataMap mockJobDataMap = Mockito.mock(JobDataMap.class);
-        CodeIndexer mockCodeIndexer = Mockito.mock(CodeIndexer.class);
-
-        when(mockJobDataMap.get("REPOLOCATIONS")).thenReturn("");
-        when(mockJobDataMap.get("LOWMEMORY")).thenReturn("true");
-        when(mockDetail.getJobDataMap()).thenReturn(mockJobDataMap);
-        when(mockContext.getJobDetail()).thenReturn(mockDetail);
-        when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
-
-        spy.codeIndexer = mockCodeIndexer;
-
-        spy.execute(mockContext);
-        assertThat(spy.haveRepoResult).isFalse();
-    }
-
-    public void testExecuteHasMethodInQueueNewRepository() throws JobExecutionException {
-        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-        IndexGitRepoJob spy = spy(indexGitRepoJob);
-        spy.haveRepoResult = false;
-
-        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue();
-        uniqueRepoQueue.add(new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "{}"));
-
-        when(spy.getNextQueuedRepo()).thenReturn(uniqueRepoQueue);
-        when(spy.isEnabled()).thenReturn(true);
-        when(spy.getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
-                .thenReturn(new RepositoryChanged(false, null, null));
-        Singleton.setBackgroundJobsEnabled(true);
-
-        CodeIndexer mockCodeIndexer = Mockito.mock(CodeIndexer.class);
-        JobExecutionContext mockContext = Mockito.mock(JobExecutionContext.class);
-        JobDetail mockDetail = Mockito.mock(JobDetail.class);
-        JobDataMap mockJobDataMap = Mockito.mock(JobDataMap.class);
-
-        when(mockJobDataMap.get("REPOLOCATIONS")).thenReturn("");
-        when(mockJobDataMap.get("LOWMEMORY")).thenReturn("true");
-        when(mockDetail.getJobDataMap()).thenReturn(mockJobDataMap);
-        when(mockContext.getJobDetail()).thenReturn(mockDetail);
-        when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
-        spy.codeIndexer = mockCodeIndexer;
-
-        spy.execute(mockContext);
-
-        assertThat(spy.haveRepoResult).isTrue();
-        assertThat(spy.LOWMEMORY).isTrue();
-        verify(spy).getNextQueuedRepo();
-        //verify(spy).getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
     }
 }
