@@ -191,7 +191,21 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         IndexGitRepoJob spy = spy(indexGitRepoJob);
 
         when(spy.getNextQueuedRepo()).thenReturn(new UniqueRepoQueue());
-        spy.execute(null);
+
+        JobExecutionContext mockContext = Mockito.mock(JobExecutionContext.class);
+        JobDetail mockDetail = Mockito.mock(JobDetail.class);
+        JobDataMap mockJobDataMap = Mockito.mock(JobDataMap.class);
+        CodeIndexer mockCodeIndexer = Mockito.mock(CodeIndexer.class);
+
+        when(mockJobDataMap.get("REPOLOCATIONS")).thenReturn("");
+        when(mockJobDataMap.get("LOWMEMORY")).thenReturn("true");
+        when(mockDetail.getJobDataMap()).thenReturn(mockJobDataMap);
+        when(mockContext.getJobDetail()).thenReturn(mockDetail);
+        when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
+
+        spy.codeIndexer = mockCodeIndexer;
+
+        spy.execute(mockContext);
         assertThat(spy.haveRepoResult).isFalse();
     }
 
