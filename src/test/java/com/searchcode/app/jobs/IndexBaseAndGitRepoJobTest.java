@@ -224,6 +224,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         spy.execute(mockContext);
 
         assertThat(spy.haveRepoResult).isTrue();
+        assertThat(spy.LOWMEMORY).isTrue();
         verify(spy).getNextQueuedRepo();
         //verify(spy).getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
     }

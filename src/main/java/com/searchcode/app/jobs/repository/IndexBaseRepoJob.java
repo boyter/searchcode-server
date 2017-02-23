@@ -45,7 +45,7 @@ import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
 
-    protected boolean LOWMEMORY = true;
+    public boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
     public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
@@ -104,6 +104,10 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+
+        this.LOWMEMORY = Boolean.parseBoolean(jobDataMap.get("LOWMEMORY").toString());
+        String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
 
         if (!isEnabled() || !Singleton.getBackgroundJobsEnabled()) {
             return;
@@ -119,44 +123,32 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (repoResult != null && Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName()) == false) {
             this.haveRepoResult = true;
-
-            String repoName = repoResult.getName();
-            String repoRemoteLocation = repoResult.getUrl();
-            String repoUserName = repoResult.getUsername();
-            String repoPassword = repoResult.getPassword();
-            String repoBranch = repoResult.getBranch();
-            Singleton.getLogger().info("Indexing " + repoName);
-
+            Singleton.getLogger().info("Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
             Singleton.getRepo().saveRepo(repoResult);
-
 
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
                         new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
 
-                JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+                this.checkCloneSuccess(repoResult.getName(), repoLocations);
 
-                String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
-                this.LOWMEMORY = Boolean.parseBoolean(jobDataMap.get("LOWMEMORY").toString());
-                this.checkCloneSuccess(repoName, repoLocations);
-
-                String repoGitLocation = repoLocations + "/" + repoName + "/.git/";
+                String repoGitLocation = repoLocations + "/" + repoResult.getName() + "/.git/";
 
                 File file = new File(repoGitLocation);
                 boolean existingRepo = file.exists();
-                boolean useCredentials = repoUserName != null && !repoUserName.isEmpty();
+                boolean useCredentials = repoResult.getUsername() != null && !repoResult.getUsername().isEmpty();
                 RepositoryChanged repositoryChanged;
 
                 if (existingRepo) {
-                    repositoryChanged = this.updateExistingRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+                    repositoryChanged = this.updateExistingRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
                 } else {
-                    repositoryChanged = this.getNewRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+                    repositoryChanged = this.getNewRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
                 }
 
                 // Write file indicating we have sucessfully cloned
-                this.createCloneUpdateSuccess(repoLocations + "/" + repoName);
-                this.triggerIndex(repoResult, repoName, repoRemoteLocation, repoLocations, repoGitLocation, existingRepo, repositoryChanged);
+                this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getName());
+                this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
             }
             finally {
                 // Clean up the job
