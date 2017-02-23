@@ -50,7 +50,7 @@ public class CodeIndexer {
      * Returns true if indexing should be paused, false otherwise
      * used by the parsers to know if they should continue processing or not
      */
-    public static synchronized boolean shouldPauseAdding() {
+    public synchronized boolean shouldPauseAdding() {
 
         if (Singleton.getPauseBackgroundJobs()) {
             return true;
@@ -80,7 +80,7 @@ public class CodeIndexer {
      * Checks to see how much CPU we are using and if its higher then the limit set
      * inside the settings page mute the index for a while
      */
-    public static synchronized boolean shouldBackOff() {
+    public synchronized boolean shouldBackOff() {
         Data data = Singleton.getData();
         StatsService statsService = Singleton.getStatsService();
 
@@ -103,7 +103,7 @@ public class CodeIndexer {
      * Deletes all files that belong to a repository.
      * TODO I don't think this clears anything from the facets, which it should
      */
-    public static synchronized void deleteByReponame(String repoName) throws IOException {
+    public synchronized void deleteByReponame(String repoName) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
         Analyzer analyzer = new CodeAnalyzer();
@@ -121,7 +121,7 @@ public class CodeIndexer {
      * the most reliable way of doing it
      * TODO Update the record and set the facets to a value we can ignore
      */
-    public static synchronized void deleteByCodeId(String codeId) throws IOException {
+    public synchronized void deleteByCodeId(String codeId) throws IOException {
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
 
         Analyzer analyzer = new CodeAnalyzer();
@@ -150,7 +150,7 @@ public class CodeIndexer {
      * TODO investigate how Lucene deals with multiple writes
      * TODO make the 1000 limit configurable
      */
-    public static synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
+    public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
         Directory indexDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
         Directory facetDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
@@ -254,7 +254,7 @@ public class CodeIndexer {
      * TODO make the 1000 limit configurable
      * TODO there appears to be something in here causing some serious slowdowns
      */
-    public static synchronized void indexTimeDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
+    public synchronized void indexTimeDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
         Directory dir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXLOCATION, Values.DEFAULTTIMEINDEXLOCATION)));
         Directory facetsdir = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.TIMEINDEXFACETLOCATION, Values.DEFAULTTIMEINDEXFACETLOCATION)));
@@ -371,7 +371,7 @@ public class CodeIndexer {
      * Possibly better in ultra low memory environments? Reuses the above method by creating a queue with one
      * element and passes it in.
      */
-    public static synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
+    public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(codeIndexDocument);
         indexDocuments(queue);
@@ -382,7 +382,7 @@ public class CodeIndexer {
      * Possibly better in ultra low memory environments? Reuses the above method by creating a queue with one
      * element and passes it in.
      */
-    public static synchronized void indexTimeDocument(CodeIndexDocument codeIndexDocument) throws IOException {
+    public synchronized void indexTimeDocument(CodeIndexDocument codeIndexDocument) throws IOException {
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
         queue.add(codeIndexDocument);
         indexTimeDocuments(queue);

@@ -50,7 +50,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        while(CodeIndexer.shouldPauseAdding()) {
+        while(Singleton.getCodeIndexer().shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }

@@ -121,7 +121,7 @@ public class IndexGitHistoryJob implements Job {
                 cd.setYear(cd.getYearMonthDay().substring(0, 4));
                 cd.setMessage(oldRevison.getMessage());
                 cd.setDeleted("TRUE");
-                CodeIndexer.indexTimeDocument(cd);
+                Singleton.getCodeIndexer().indexTimeDocument(cd);
             }
             else {
                 System.out.println("ADD " + entry.getNewPath());
@@ -134,7 +134,7 @@ public class IndexGitHistoryJob implements Job {
                 cd.setYear(cd.getYearMonthDay().substring(0, 4));
                 cd.setMessage(newRevision.getMessage());
                 cd.setDeleted("FALSE");
-                CodeIndexer.indexTimeDocument(cd);
+                Singleton.getCodeIndexer().indexTimeDocument(cd);
             }
         }
     }

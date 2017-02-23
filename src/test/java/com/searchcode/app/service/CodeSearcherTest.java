@@ -30,7 +30,7 @@ public class CodeSearcherTest extends TestCase {
     // Integration Test
     public void testGetRepoDocuments() throws IOException {
         CodeIndexDocument codeIndexDocument = new CodeIndexDocument("/", "testGetRepoDocuments", "/", "/", "/", "md5hash", "Java", 10, "", "/", "/");
-        CodeIndexer.indexDocument(codeIndexDocument);
+        Singleton.getCodeIndexer().indexDocument(codeIndexDocument);
         CodeSearcher cs = new CodeSearcher();
 
         List<String> testGetRepoDocuments = cs.getRepoDocuments("testGetRepoDocuments", 0);
@@ -42,7 +42,7 @@ public class CodeSearcherTest extends TestCase {
 
     public void testGetProjectStats() throws IOException {
         CodeIndexDocument codeIndexDocument = new CodeIndexDocument("/", "testGetRepoDocuments", "/", "/", "/", "md5hash", "Java", 10, "", "/", "/");
-        CodeIndexer.indexDocument(codeIndexDocument);
+        Singleton.getCodeIndexer().indexDocument(codeIndexDocument);
         CodeSearcher cs = new CodeSearcher();
 
         ProjectStats projectStats = cs.getProjectStats("testGetRepoDocuments");

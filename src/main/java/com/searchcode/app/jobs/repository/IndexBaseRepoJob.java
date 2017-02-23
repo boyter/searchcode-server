@@ -50,6 +50,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
     public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
     public boolean haveRepoResult = false;
+    public CodeIndexer codeIndexer = Singleton.getCodeIndexer();
 
     /**
      * This method to be implemented by the extending class
@@ -108,7 +109,7 @@ public abstract class IndexBaseRepoJob implements Job {
             return;
         }
 
-        if (CodeIndexer.shouldPauseAdding()) {
+        if (this.codeIndexer.shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }
@@ -202,7 +203,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!filePath.getAbsolutePath().equals("/")) { // Lets really be sure....
                     FileUtils.deleteDirectory(filePath);
                 }
-                CodeIndexer.deleteByReponame(repoName);
+                Singleton.getCodeIndexer().deleteByReponame(repoName);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
             }
@@ -310,7 +311,7 @@ public abstract class IndexBaseRepoJob implements Job {
             if (codeLines != null) {
                 if (this.LOWMEMORY) {
                     try {
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                        Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                     }
@@ -330,7 +331,7 @@ public abstract class IndexBaseRepoJob implements Job {
             deletedFile = deletedFile.replace("//", "/");
             Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
             try {
-                CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(deletedFile));
+                Singleton.getCodeIndexer().deleteByCodeId(DigestUtils.sha1Hex(deletedFile));
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
@@ -425,7 +426,7 @@ public abstract class IndexBaseRepoJob implements Job {
                     String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
 
                     if (lowMemory) { // TODO this should be inside the indexer class not in here
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                        Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
                     } else {
                         Singleton.incrementCodeIndexLinesCount(codeLines.size());
                         codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
@@ -475,7 +476,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!fileLocations.containsKey(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
-                        CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(file));
+                        Singleton.getCodeIndexer().deleteByCodeId(DigestUtils.sha1Hex(file));
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }
@@ -546,7 +547,7 @@ public abstract class IndexBaseRepoJob implements Job {
             return true;
         }
 
-        while (CodeIndexer.shouldPauseAdding()) {
+        while (Singleton.getCodeIndexer().shouldPauseAdding()) {
             if (Singleton.getBackgroundJobsEnabled() == false) {
                 return true;
             }
