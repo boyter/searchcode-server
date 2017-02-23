@@ -195,7 +195,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         assertThat(spy.haveRepoResult).isFalse();
     }
 
-    public void testExecuteHasMethodInQueue() throws JobExecutionException {
+    public void testExecuteHasMethodInQueueNewRepository() throws JobExecutionException {
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
         IndexGitRepoJob spy = spy(indexGitRepoJob);
         spy.haveRepoResult = false;
