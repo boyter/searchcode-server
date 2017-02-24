@@ -161,7 +161,7 @@ public abstract class IndexBaseRepoJob implements Job {
      * Determines if anything has changed or if the last index operation faild and if so
      * triggers the index process.
      */
-    private void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+    public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         // If the last index was not sucessful, then trigger full index
         boolean indexsuccess = this.checkIndexSucess(repoGitLocation);
 

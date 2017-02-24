@@ -7,8 +7,9 @@
         <nav>
           <ul class="nav nav-pills nav-stacked span2">
             <li class="active"><a href="/admin/">Dashboard</a></li>
-            <li><a href="/admin/repo/">Repository Admin</a></li>
-            <li><a href="/admin/bulk/">Repository Bulk Admin</a></li>
+            <li><a href="/admin/repo/">Repository Add</a></li>
+            <li><a href="/admin/repolist/">Repository List</a></li>
+            <li><a href="/admin/bulk/">Repository Bulk Add</a></li>
             <li><a href="/admin/api/">API Keys</a></li>
             <li><a href="/admin/settings/">Settings</a></li>
             <li><a href="/admin/logs/">Logs</a></li>
@@ -91,10 +92,12 @@
 
         <div style="width:100%; display: inline-block;">
 
-            <a data-text="Add all repositories into the index processing queue. Click this if you want to force the index to be updated with newly added repositories." style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" class="btn-function btn btn-danger btn-xs" role="button">Force Index Queue <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
-            <a data-text="Reset the search count to zero." style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
-            <a data-text="Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results." style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
-            <a data-text="Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results." style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes <i class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></a>
+            <a data-text="Add all repositories into the index processing queue. Click this if you want to force the index to be updated with newly added repositories." style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Force Index Queue</a>
+            <a data-text="Reset the search count to zero." style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count</a>
+            <a data-text="Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results." style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling</a>
+            <a data-text="Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results." style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
+
+            <i id="action-spinner" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i>
 
             <p><strong id="function-description">&nbsp;</strong></p>
 

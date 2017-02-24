@@ -1,22 +1,12 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.TestHelpers;
-import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
-import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
-import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
-import org.junit.Before;
-import org.junit.Test;
 import org.mockito.Mockito;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 
 import java.io.File;
 import java.io.IOException;

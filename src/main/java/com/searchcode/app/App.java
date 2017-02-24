@@ -194,6 +194,15 @@ public class App {
             return new ModelAndView(map, "admin_repo.ftl");
         }, new FreeMarkerEngine());
 
+        get("/admin/repolist/", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            Map<String, Object> map = adminRouteService.AdminRepo(request, response);
+
+            return new ModelAndView(map, "admin_repolist.ftl");
+        }, new FreeMarkerEngine());
+
         get("/admin/bulk/", (request, response) -> {
             checkLoggedIn(request, response);
 
