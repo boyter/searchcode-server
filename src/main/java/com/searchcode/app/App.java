@@ -56,15 +56,7 @@ public class App {
         Spark.staticFileLocation("/public");
 
         Singleton.getJobService().initialJobs();
-
-
-        before((request, response) -> {
-            if (onlyLocalhost) {
-                if (!request.ip().equals("127.0.0.1")) {
-                    halt(204);
-                }
-            }
-        });
+        
 
         ////////////////////////////////////////////////////
         //          Search/Code Routes Below
