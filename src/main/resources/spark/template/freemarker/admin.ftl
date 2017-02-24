@@ -21,74 +21,72 @@
     <div class="col-md-10">
         <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Dashboard <small>(Arch:${sysArch} Version:${sysVersion} Cores:${processorCount})</small></h3>
 
+        <style>
+        .panel {
+            height:180px !important;
+        }
+        </style>
+
         <div style="width:100%; display: inline-block;">
             <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-fire" aria-hidden="true"></span> System Load Average</h4>
-                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-fire" aria-hidden="true"></span> System Statistics</h3>
+                    </div>
+                    <div class="panel-body">
+                        System Load Average: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</span>
+                        <br>Uptime: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</span>
+                        <br>Version: ${version} <a ic-get-from="/admin/checkversion/" ic-indicator="#demo-spinner">(check if latest version)</a>
+                                            <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"><img src="/img/loading_small.gif" /></i>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Memory Usage</h4>
-                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Memory Usage</h3>
+                    </div>
+                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</p></div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Running Index Jobs</h4>
-                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Words in Spelling Corrector</h3>
+                    </div>
+                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p></div>
                 </div>
             </div>
         </div>
 
         <div style="width:100%; display: inline-block;">
             <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Number of Searches</h4>
-                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Index Status</h3>
+                    </div>
+                    <div class="panel-body">
+                    Number of Searches: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</span>
+                    <br>Documents Indexed: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</span>
+                    <br>
+                    <br>Total Repositories: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span>
+                    <br>Queued for Deletion: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-time" aria-hidden="true"></span> Uptime</h4>
-                    <p ic-poll="60s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</p>
-                </div>
+
             </div>
             <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Words in Spelling Corrector</h4>
-                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Running Index Jobs</h3>
+                    </div>
+                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p></div>
                 </div>
             </div>
         </div>
 
-        <div style="width:100%; display: inline-block;">
-            <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> Version</h4>
-                    <p>
-                    ${version} <a ic-get-from="/admin/checkversion/" ic-indicator="#demo-spinner">(check if latest version)</a>
-                               <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"><img src="/img/loading_small.gif" /></i>
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Repositories</h4>
-                    <p>
-                    Total: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span><br />
-                    Queued for Deletion: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
-                    </p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div>
-                    <h4><span class="glyphicon glyphicon-cog" aria-hidden="true"></span> Documents Indexed</h4>
-                    <p ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</p>
-                </div>
-            </div>
-        </div>
 
         <div style="width:100%; display: inline-block;">
 
