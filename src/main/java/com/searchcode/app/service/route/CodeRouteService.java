@@ -105,7 +105,7 @@ public class CodeRouteService {
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
-            return new ModelAndView(map, "search_test.ftl");
+            return new ModelAndView(map, "search_ajax.ftl");
         }
 
         CodeSearcher cs = new CodeSearcher();

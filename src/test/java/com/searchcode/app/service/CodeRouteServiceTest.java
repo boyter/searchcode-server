@@ -68,7 +68,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
 
-        assertThat(viewName).isEqualTo("search_test.ftl");
+        assertThat(viewName).isEqualTo("search_ajax.ftl");
     }
 
     public void testHtmlNoQueryString() {
