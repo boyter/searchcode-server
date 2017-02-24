@@ -56,7 +56,7 @@ public class App {
         Spark.staticFileLocation("/public");
 
         Singleton.getJobService().initialJobs();
-        
+
 
         ////////////////////////////////////////////////////
         //          Search/Code Routes Below
