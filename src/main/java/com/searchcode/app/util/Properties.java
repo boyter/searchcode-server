@@ -10,12 +10,12 @@
 
 package com.searchcode.app.util;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 
 /**
@@ -30,7 +30,7 @@ public class Properties {
             properties = new java.util.Properties();
             FileInputStream fileInputStream = null;
             try {
-                fileInputStream = new FileInputStream("searchcode.properties");
+                fileInputStream = new FileInputStream(Values.PROPERTIES_FILE_NAME);
                 properties.load(fileInputStream);
             } catch (IOException e) {
                 // TODO Use second 'stdout' logger here, because ctor LoggerWrapper call this method

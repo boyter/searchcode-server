@@ -54,7 +54,7 @@
             <artifactId>commons-dbcp2</artifactId>
             <version>${dbcp.version}</version>
         </dependency>
-        <!-- Password hashes -->
+        <!-- Password hashes / Security -->
         <dependency>
             <groupId>de.svenkubiak</groupId>
             <artifactId>jBCrypt</artifactId>
@@ -126,19 +126,6 @@
             <artifactId>opencsv</artifactId>
             <version>2.3</version>
         </dependency>
-        <!-- Mocking framework -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.5.2</version>
-            <scope>test</scope>
-        </dependency>
         <!-- Search Library -->
         <dependency>
             <groupId>org.apache.lucene</groupId>
@@ -165,6 +152,19 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Mocking framework -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>1.9.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.5.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

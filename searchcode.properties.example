@@ -38,3 +38,4 @@ log_indexed=false
 # The below will probably be moved into the settings page at some point in the
 # future.
 password=Adm1n234
+encryption_key=39dc5f2168e412be3a9faf9d08482114

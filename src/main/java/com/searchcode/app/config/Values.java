@@ -18,6 +18,7 @@ public class Values {
 
     // Property values used for looking up values
     // in the properties file
+    public static String PROPERTIES_FILE_NAME = "searchcode.properties";
     public static String SQLITEFILE = "sqlite_file";
     public static String DEFAULTSQLITEFILE = "searchcode.sqlite";
     public static String SERVERPORT = "server_port";
@@ -90,6 +91,8 @@ public class Values {
     public static String DEFAULT_TRASH_LOCATION = "./trash/";
     public static String LOG_PATH = "log_path";
     public static String DEFAULT_LOG_PATH = "./logs/";
+    public static String ENCRYPTION_KEY = "encryption_key";
+    public static String DEFAULT_ENCRYPTION_KEY = "39dc5f2168e412be3a9faf9d08482114";
 
     // Lucene stored values for indexing / searching
     public static String CONTENTS = "contents";

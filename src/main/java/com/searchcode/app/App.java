@@ -44,7 +44,7 @@ public class App {
         boolean onlyLocalhost = Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
 
         // Database migrations happen before we start
-        databaseMigrations();
+        preStart();
 
         Singleton.getLogger().info("Starting searchcode server on port " + server_port);
 
@@ -415,7 +415,8 @@ public class App {
      * Called on startup to run all the DAO object table creation/migration logic. Slight overhead using this technique.
      * TODO Do the migrations inside the sqlite database so the application does not need to
      */
-    public static void databaseMigrations() {
+    public static void preStart() {
+        // Database migrations
         Data data = Singleton.getData();
         Repo repo = Singleton.getRepo();
         Api api = Singleton.getApi();

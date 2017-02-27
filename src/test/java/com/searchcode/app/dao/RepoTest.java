@@ -2,6 +2,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.util.AESEncryptor;
 import junit.framework.TestCase;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
