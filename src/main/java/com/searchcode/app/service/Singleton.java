@@ -253,7 +253,7 @@ public final class Singleton {
         Singleton.pauseBackgroundJobs = pauseBackgroundJobs;
     }
 
-    public static StatsService getStatsService() {
+    public static synchronized StatsService getStatsService() {
         if (statsService == null) {
             statsService = new StatsService();
         }
@@ -261,7 +261,7 @@ public final class Singleton {
         return statsService;
     }
 
-    public static void setStatsService(StatsService statsService) {
+    public static synchronized void setStatsService(StatsService statsService) {
         Singleton.statsService = statsService;
     }
 
@@ -273,7 +273,7 @@ public final class Singleton {
         return data;
     }
 
-    public static void setData(Data data) {
+    public static synchronized void setData(Data data) {
         Singleton.data = data;
     }
 
@@ -285,7 +285,7 @@ public final class Singleton {
         return api;
     }
 
-    public static void setApi(Api api) {
+    public static synchronized void setApi(Api api) {
         Singleton.api = api;
     }
 
@@ -297,7 +297,7 @@ public final class Singleton {
         return apiService;
     }
 
-    public static void setJobService(JobService jobService) {
+    public static synchronized void setJobService(JobService jobService) {
         Singleton.jobService = jobService;
     }
 
@@ -309,7 +309,7 @@ public final class Singleton {
         return jobService;
     }
 
-    public static FileClassifier getFileClassifier() {
+    public static synchronized FileClassifier getFileClassifier() {
         if (fileClassifier == null) {
             fileClassifier = new FileClassifier();
         }
@@ -317,7 +317,7 @@ public final class Singleton {
         return fileClassifier;
     }
 
-    public static IDatabaseConfig getDatabaseConfig() {
+    public static synchronized IDatabaseConfig getDatabaseConfig() {
         if (databaseConfig == null) {
             databaseConfig = new SQLiteDatabaseConfig();
         }
@@ -325,7 +325,7 @@ public final class Singleton {
         return databaseConfig;
     }
 
-    public static CodeIndexer getCodeIndexer() {
+    public static synchronized CodeIndexer getCodeIndexer() {
         if (codeIndexer == null) {
             codeIndexer = new CodeIndexer();
         }
@@ -333,7 +333,7 @@ public final class Singleton {
         return codeIndexer;
     }
 
-    public static void setDatabaseConfig(IDatabaseConfig databaseConfig) {
+    public static synchronized void setDatabaseConfig(IDatabaseConfig databaseConfig) {
         Singleton.databaseConfig = databaseConfig;
     }
 }
