@@ -227,6 +227,13 @@ public class Helpers {
         catch (Exception ex) {}
     }
 
+    public static void closeQuietly(BufferedReader bufferedReader) {
+        try {
+            bufferedReader.close();
+        }
+        catch (Exception ex) {}
+    }
+
     public static void closeQuietly(Repository repository) {
         try {
            repository.close();

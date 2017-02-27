@@ -120,7 +120,7 @@ public class App {
         get("/api/codesearch/", (request, response) -> {
             addJsonHeaders(response);
             SearchRouteService searchRouteService = new SearchRouteService();
-            return searchRouteService.CodeSearch(request, response);
+            return searchRouteService.codeSearch(request, response);
         }, new JsonTransformer());
 
 
@@ -172,7 +172,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminPage(request, response);
+            Map<String, Object> map = adminRouteService.adminPage(request, response);
 
             return new ModelAndView(map, "admin.ftl");
         }, new FreeMarkerEngine());
@@ -181,7 +181,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminRepo(request, response);
+            Map<String, Object> map = adminRouteService.adminRepo(request, response);
 
             return new ModelAndView(map, "admin_repo.ftl");
         }, new FreeMarkerEngine());
@@ -190,7 +190,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminRepo(request, response);
+            Map<String, Object> map = adminRouteService.adminRepo(request, response);
 
             return new ModelAndView(map, "admin_repolist.ftl");
         }, new FreeMarkerEngine());
@@ -209,7 +209,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminApi(request, response);
+            Map<String, Object> map = adminRouteService.adminApi(request, response);
 
             return new ModelAndView(map, "admin_api.ftl");
         }, new FreeMarkerEngine());
@@ -241,7 +241,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminSettings(request, response);
+            Map<String, Object> map = adminRouteService.adminSettings(request, response);
 
             return new ModelAndView(map, "admin_settings.ftl");
         }, new FreeMarkerEngine());
@@ -250,7 +250,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminLogs(request, response);
+            Map<String, Object> map = adminRouteService.adminLogs(request, response);
 
             return new ModelAndView(map, "admin_logs.ftl");
         }, new FreeMarkerEngine());
@@ -264,7 +264,7 @@ public class App {
             }
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.PostSettings(request, response);
+            adminRouteService.postSettings(request, response);
 
             response.redirect("/admin/settings/");
             halt();
@@ -275,7 +275,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.PostBulk(request, response);
+            adminRouteService.postBulk(request, response);
 
             response.redirect("/admin/bulk/");
             halt();
@@ -286,7 +286,7 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.PostRepo(request, response);
+            adminRouteService.postRepo(request, response);
 
             response.redirect("/admin/repo/");
             halt();
@@ -385,28 +385,28 @@ public class App {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.CheckVersion();
+            return adminRouteService.checkVersion();
         });
 
         get("/admin/api/getstat/", "application/json", (request, response) -> {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.GetStat(request, response);
+            return adminRouteService.getStat(request, response);
         });
 
         get("/admin/api/getstatjson/", "application/json", (request, response) -> {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.GetStat(request, response);
+            return adminRouteService.getStat(request, response);
         }, new JsonTransformer());
 
         get("/admin/api/checkindexstatus/", "application/json", (request, response) -> {
             checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.CheckIndexStatus(request, response);
+            return adminRouteService.checkIndexStatus(request, response);
         });
     }
 

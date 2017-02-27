@@ -60,6 +60,12 @@ public class RepoResult {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not designed";
+        return 42;
+    }
+
     public int getRowId() {
         return rowId;
     }

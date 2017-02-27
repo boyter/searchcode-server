@@ -151,7 +151,7 @@ def configure_local():
 
     }
     _python_sed(
-        fileloc='./src/main/resources/spark/template/freemarker/search_test.ftl', replacements=replacements)
+        fileloc='./src/main/resources/spark/template/freemarker/search_ajax.ftl', replacements=replacements)
 
 
 def configure_prod():
@@ -160,7 +160,7 @@ def configure_prod():
             '<script src="/js/script.min.js"></script>'
     }
     _python_sed(
-        fileloc='./src/main/resources/spark/template/freemarker/search_test.ftl', replacements=replacements)
+        fileloc='./src/main/resources/spark/template/freemarker/search_ajax.ftl', replacements=replacements)
 
 
 def _build_package():

@@ -580,11 +580,20 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     public void createCloneUpdateSuccess(String repoLocation) {
-        createFile(repoLocation, "cloneupdate");
+
+        try {
+            this.createFile(repoLocation, "cloneupdate");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to write clone success file. This will cause this repository to re-indexed fresh every time.");
+        }
     }
 
     public void deleteCloneUpdateSuccess(String repoLocation) {
-        deleteFile(repoLocation, "cloneupdate");
+        try {
+            this.deleteFile(repoLocation, "cloneupdate");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to delete clone update sucess file.");
+        }
     }
 
     public boolean checkCloneUpdateSucess(String repoLocation) {
@@ -592,11 +601,19 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     public void createIndexSuccess(String repoLocation) {
-        createFile(repoLocation, "index");
+        try {
+            this.createFile(repoLocation, "index");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to create index success file.");
+        }
     }
 
     public void deleteIndexSuccess(String repoLocation) {
-        deleteFile(repoLocation, "index");
+        try {
+            this.deleteFile(repoLocation, "index");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to delete index success file.");
+        }
     }
 
     public boolean checkIndexSucess(String repoLocation) {
@@ -608,14 +625,21 @@ public abstract class IndexBaseRepoJob implements Job {
         return f.exists();
     }
 
-    private void createFile(String repoLocation, String type) {
+    private void createFile(String repoLocation, String type) throws IOException {
         File file = new File(repoLocation, "/searchcode." + type + ".success");
-        file.mkdir();
+        boolean success = file.mkdir();
+
+        if (!success) {
+            throw new IOException("Unable to create directory " + file.getAbsolutePath());
+        }
     }
 
-    private void deleteFile(String repoLocation, String type) {
+    private void deleteFile(String repoLocation, String type) throws IOException {
         File file = new File(repoLocation, "/searchcode." + type + ".success");
+        boolean success = file.delete();
 
-        file.delete();
+        if (!success) {
+            throw new IOException("Unable to delete directory " + file.getAbsolutePath());
+        }
     }
 }

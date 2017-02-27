@@ -27,7 +27,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParams()).thenReturn(returnSet);
         when(mockRequest.queryParams("reponame")).thenReturn("hopefullyarandomnamethatdoesnotexist");
 
-        String result = adminRouteService.CheckIndexStatus(mockRequest, null);
+        String result = adminRouteService.checkIndexStatus(mockRequest, null);
         assertThat(result).isEmpty();
     }
 
@@ -46,7 +46,7 @@ public class AdminRouteServiceTest extends TestCase {
             when(mockRequest.queryParams()).thenReturn(returnSet);
             when(mockRequest.queryParams("statname")).thenReturn(stat);
 
-            String result = adminRouteService.GetStat(mockRequest, null);
+            String result = adminRouteService.getStat(mockRequest, null);
             assertThat(result).as("For value %s", stat).isEmpty();
         }
     }
@@ -64,7 +64,7 @@ public class AdminRouteServiceTest extends TestCase {
             when(mockRequest.queryParams()).thenReturn(returnSet);
             when(mockRequest.queryParams("statname")).thenReturn(stat);
 
-            String result = adminRouteService.GetStat(mockRequest, null);
+            String result = adminRouteService.getStat(mockRequest, null);
             assertThat(result).as("For value %s", stat).isNotEmpty();
         }
     }
@@ -84,7 +84,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("reposource")).thenReturn(new String[0]);
         when(mockRequest.queryParamsValues("repobranch")).thenReturn(new String[0]);
 
-        adminRouteService.PostRepo(mockRequest, null);
+        adminRouteService.postRepo(mockRequest, null);
     }
 
     public void testPostRepoMultipleRepo() {
@@ -105,7 +105,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("repobranch")).thenReturn("master,master".split(","));
 
 
-        adminRouteService.PostRepo(mockRequest, null);
+        adminRouteService.postRepo(mockRequest, null);
         verify(mockRepo, times(2)).saveRepo(any());
         verify(mockJobService, times(2)).forceEnqueue(any());
     }

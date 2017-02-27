@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 
 public class SearchRouteService {
 
-    public SearchResult CodeSearch(Request request, Response response) {
+    public SearchResult codeSearch(Request request, Response response) {
         CodeSearcher cs = new CodeSearcher();
         CodeMatcher cm = new CodeMatcher(Singleton.getData());
         SearchcodeLib scl = Singleton.getSearchcodeLib(Singleton.getData());
 
-        if (request.queryParams().contains("q") && request.queryParams("q").trim() != Values.EMPTYSTRING) {
+        if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
             String query = request.queryParams("q").trim();
 
             int page = 0;

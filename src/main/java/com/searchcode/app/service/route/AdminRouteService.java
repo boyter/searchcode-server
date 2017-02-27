@@ -52,7 +52,7 @@ public class AdminRouteService {
         this.jobService = jobService;
     }
 
-    public String GetStat(Request request, Response response) {
+    public String getStat(Request request, Response response) {
         if (request.queryParams().contains("statname")) {
             String statname = request.queryParams("statname");
             return this.getStat(statname);
@@ -61,7 +61,7 @@ public class AdminRouteService {
         return Values.EMPTYSTRING;
     }
 
-    public String CheckIndexStatus(Request request, Response response) {
+    public String checkIndexStatus(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
             String reponame = request.queryParams("reponame");
             String reposLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
@@ -86,7 +86,7 @@ public class AdminRouteService {
         return Values.EMPTYSTRING;
     }
 
-    public Map<String, Object> AdminPage(Request request, Response response) {
+    public Map<String, Object> adminPage(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
         CodeSearcher cs = new CodeSearcher();
@@ -148,7 +148,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminRepo(Request request, Response response) {
+    public Map<String, Object> adminRepo(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
         Repo repo = Singleton.getRepo();
@@ -189,7 +189,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminApi(Request request, Response response) {
+    public Map<String, Object> adminApi(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
         Api api = Singleton.getApi();
@@ -206,7 +206,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminSettings(Request request, Response response) {
+    public Map<String, Object> adminSettings(Request request, Response response) {
         String[] highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
 
         Map<String, Object> map = new HashMap<>();
@@ -225,7 +225,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminLogs(Request request, Response response) {
+    public Map<String, Object> adminLogs(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
         String level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
 
@@ -262,7 +262,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public void PostSettings(Request request, Response response) {
+    public void postSettings(Request request, Response response) {
         Data data = Singleton.getData();
 
         String logo = request.queryParams("logo").trim();
@@ -318,7 +318,7 @@ public class AdminRouteService {
         Singleton.getSearchcodeLib(data);
     }
 
-    public void PostBulk(Request request, Response response) {
+    public void postBulk(Request request, Response response) {
         String repos = request.queryParams("repos");
         String repolines[] = repos.split("\\r?\\n");
         Repo repo = Singleton.getRepo();
@@ -348,7 +348,7 @@ public class AdminRouteService {
         }
     }
 
-    public void PostRepo(Request request, Response response) {
+    public void postRepo(Request request, Response response) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -371,7 +371,7 @@ public class AdminRouteService {
         }
     }
 
-    public String CheckVersion() {
+    public String checkVersion() {
         String version;
         try {
             version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);

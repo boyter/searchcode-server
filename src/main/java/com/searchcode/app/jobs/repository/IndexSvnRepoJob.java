@@ -125,18 +125,19 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         processBuilder.directory(new File(repoLocations + repoName));
 
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            bufferedReader = new BufferedReader(isr);
             String line;
             StringBuilder bf = new StringBuilder();
 
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 bf.append(Helpers.removeUTF8BOM(line));
             }
 
@@ -165,6 +166,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         return owner;
@@ -188,6 +190,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         processBuilder.directory(new File(repoLocations + repoName));
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
             String previousRevision = this.getCurrentRevision(repoLocations, repoName);
@@ -197,10 +200,10 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            bufferedReader = new BufferedReader(isr);
             String line;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("svn update: " + line);
             }
 
@@ -216,6 +219,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
@@ -231,17 +235,18 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         processBuilder.directory(new File(repoLocations + repoName));
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            bufferedReader = new BufferedReader(isr);
             String line;
             StringBuffer sb = new StringBuffer();
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("svn diff: " + line);
                 sb.append(Helpers.removeUTF8BOM(line));
             }
@@ -282,6 +287,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         return new RepositoryChanged(true, changedFiles, deletedFiles);
@@ -293,17 +299,18 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml");
         processBuilder.directory(new File(repoLocations + repoName));
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            bufferedReader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             String line;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 sb.append(Helpers.removeUTF8BOM(line));
             }
 
@@ -330,6 +337,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         return currentRevision;
@@ -354,21 +362,25 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         processBuilder.directory(new File(repoLocations));
 
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
-            File f = new File(repoLocations);
-            if (!f.exists()) {
-                f.mkdir();
+            File file = new File(repoLocations);
+            if (!file.exists()) {
+                boolean success = file.mkdir();
+                if (!success) {
+                    throw new IOException("Was unable to create directory " + repoLocations);
+                }
             }
 
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            bufferedReader = new BufferedReader(isr);
             String line;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info(line);
             }
 
@@ -379,6 +391,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);

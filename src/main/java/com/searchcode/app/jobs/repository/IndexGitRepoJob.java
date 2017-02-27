@@ -124,13 +124,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         processBuilder.directory(new File(repoLocations + "/" + repoName));
 
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
             InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            bufferedReader = new BufferedReader(isr);
             String line;
             DateFormat df = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss");
 
@@ -138,7 +139,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
             boolean foundSomething = false;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("Blame line " + repoName + fileName + ": " + line);
                 String[] split = line.split("\t");
 
@@ -188,6 +189,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         return codeOwners;
