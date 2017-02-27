@@ -71,7 +71,9 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testPostRepoRepoNamesEmptyNothing() {
         Repo mockRepo = Mockito.mock(Repo.class);
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo);
+        JobService mockJobService = Mockito.mock(JobService.class);
+
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn(new String[0]);
@@ -87,10 +89,11 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testPostRepoMultipleRepo() {
         Repo mockRepo = Mockito.mock(Repo.class);
+        JobService mockJobService = Mockito.mock(JobService.class);
 
         when(mockRepo.saveRepo(any())).thenReturn(true);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
@@ -104,5 +107,6 @@ public class AdminRouteServiceTest extends TestCase {
 
         adminRouteService.PostRepo(mockRequest, null);
         verify(mockRepo, times(2)).saveRepo(any());
+        verify(mockJobService, times(2)).forceEnqueue(any());
     }
 }

@@ -21,30 +21,35 @@ import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.JobService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.CORBA.Environment;
 import spark.Request;
 import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdminRouteService {
 
     private Repo repo;
+    private JobService jobService;
 
     public AdminRouteService() {
         this.repo = Singleton.getRepo();
+        this.jobService = Singleton.getJobService();
     }
 
-    public AdminRouteService(Repo repo) {
+    public AdminRouteService(Repo repo, JobService jobService) {
         this.repo = repo;
+        this.jobService = jobService;
     }
 
     public String GetStat(Request request, Response response) {
@@ -337,6 +342,7 @@ public class AdminRouteService {
 
                 if (rr == null) {
                     repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}"));
+                    this.jobService.forceEnqueue(this.repo.getRepoByUrl(repoparams[3]));
                 }
             }
         }
@@ -360,6 +366,7 @@ public class AdminRouteService {
                 }
 
                 this.repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
+                this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
             }
         }
     }
