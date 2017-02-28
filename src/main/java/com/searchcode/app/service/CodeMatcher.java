@@ -92,7 +92,7 @@ public class CodeMatcher {
             }
         }
 
-        newResultLines.sort((p1, p2) -> new Integer(p1.getLineNumber()).compareTo(p2.getLineNumber()));
+        newResultLines.sort((p1, p2) -> Integer.valueOf(p1.getLineNumber()).compareTo(p2.getLineNumber()));
 
         if (!newResultLines.isEmpty()) {
             newResultLines.get(0).addBreak = false;

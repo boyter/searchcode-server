@@ -2,7 +2,6 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
-import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -12,12 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import org.mockito.Mockito;
-
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 public class CodeMatcherTest extends TestCase {
 
