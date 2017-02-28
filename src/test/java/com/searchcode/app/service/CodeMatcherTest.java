@@ -2,6 +2,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -11,7 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.mockito.Mockito;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class CodeMatcherTest extends TestCase {
 
@@ -58,6 +64,37 @@ public class CodeMatcherTest extends TestCase {
 
         assertEquals(2, codeMatchResults.size());
         assertEquals("fatal-error\n", codeMatchResults.get(1).line);
+    }
+
+    public void testMatchResultsVerifySorting() {
+        CodeMatcher codeMatcher = new CodeMatcher();
+        codeMatcher.MATCHLINES = 2;
+
+        List<String> matchTerms = new ArrayList<>();
+        matchTerms.add("test");
+        matchTerms.add("test1");
+        matchTerms.add("test2");
+
+        List<String> code = new ArrayList<>();
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test test1\n");
+        code.add("test test1 test2\n");
+
+        List<CodeMatchResult> codeMatchResults = codeMatcher.matchResults(code, matchTerms, true);
+        assertThat(codeMatchResults.get(0).getLine()).isEqualTo("<strong>test</strong> <strong>test1</strong>\n");
+        assertThat(codeMatchResults.get(1).getLine()).isEqualTo("<strong>test</strong> <strong>test1</strong> <strong>test2</strong>\n");
     }
 
     public void testHighlightLineMultiNonOverlapping() {
@@ -353,7 +390,7 @@ public class CodeMatcherTest extends TestCase {
     }
 
 
-    public void testFindBestMatchingLines1000Limit() {
+    public void testFindBestMatchingLinesOver1000Limit() {
         CodeMatcher cm = new CodeMatcher();
         List<String> matchTerms = new ArrayList<>();
         matchTerms.add("re.compile");
@@ -379,7 +416,7 @@ public class CodeMatcherTest extends TestCase {
             }
         }
 
-        assertFalse(found);
+        assertThat(found).isTrue();
     }
 
     public void testSplitTerms() {

@@ -66,7 +66,7 @@ public class CodeMatcher {
         List<CodeMatchResult> newResultLines = new ArrayList<>();
 
         // get the top matching lines for this result
-        resultLines.sort((p1, p2) -> new Integer(p2.getLineMatches()).compareTo(p1.getLineMatches()));
+        resultLines.sort((p1, p2) -> Integer.valueOf(p2.getLineMatches()).compareTo(p1.getLineMatches()));
 
         // gets the best snippets based on number of matches
         for(int i = 0; i < resultLines.size(); i++) {
@@ -130,9 +130,9 @@ public class CodeMatcher {
                 resultLines.add(new CodeMatchResult(code.get(i), true, false, matching, i));
             }
 
-            if (resultLines.size() >= MATCHLINES) {
-                break;
-            }
+//            if (resultLines.size() >= MATCHLINES) {
+//                break;
+//            }
         }
 
         // Get the adjacent lines
