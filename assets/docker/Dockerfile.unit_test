@@ -4,4 +4,4 @@ COPY ./ /opt/app/
 COPY ./searchcode.sqlite.empty /opt/app/searchcode.sqlite
 COPY ./searchcode.properties.example /opt/app/searchcode.properties
 WORKDIR /opt/app/
-RUN mvn test
+RUN mvn test --batch-mode --quiet
