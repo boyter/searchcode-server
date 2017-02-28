@@ -5,10 +5,10 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -16,11 +16,15 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.BinaryFinding;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.*;
+import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -41,10 +45,12 @@ import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
 
-    protected boolean LOWMEMORY = true;
+    public boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
-    public int MAXFILELINEDEPTH = Helpers.tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
-    public boolean LOGINDEXED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty("only_localhost", "false")); // TODO make this configurable
+    public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+    public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
+    public boolean haveRepoResult = false;
+    public CodeIndexer codeIndexer = Singleton.getCodeIndexer();
 
     /**
      * This method to be implemented by the extending class
@@ -97,87 +103,114 @@ public abstract class IndexBaseRepoJob implements Job {
      * The main method used for finding jobs to index and actually doing the work
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (isEnabled() == false) {
-            return;
-        }
-
-        if (Singleton.getBackgroundJobsEnabled() == false) {
-            return;
-        }
-
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 
-        while (CodeIndexer.shouldPauseAdding()) {
+        this.LOWMEMORY = Boolean.parseBoolean(jobDataMap.get("LOWMEMORY").toString());
+        String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
+
+        if (!isEnabled() || !Singleton.getBackgroundJobsEnabled()) {
+            return;
+        }
+
+        if (this.codeIndexer.shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }
 
         // Pull the next repo to index from the queue
-        UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
+        RepoResult repoResult = this.getNextQueuedRepo().poll();
 
-        RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
-
-        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
-
-            String repoName = repoResult.getName();
-            String repoRemoteLocation = repoResult.getUrl();
-            String repoUserName = repoResult.getUsername();
-            String repoPassword = repoResult.getPassword();
-            String repoBranch = repoResult.getBranch();
-            Singleton.getLogger().info("Indexing " + repoName);
+        if (repoResult != null && Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName()) == false) {
+            this.haveRepoResult = true;
+            Singleton.getLogger().info("Indexing " + repoResult.getName());
+            repoResult.getData().indexStatus = "indexing";
+            Singleton.getRepo().saveRepo(repoResult);
 
             try {
-                runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
+                Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
+                        new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
 
-                JobDataMap data = context.getJobDetail().getJobDataMap();
+                this.checkCloneSuccess(repoResult.getName(), repoLocations);
 
-                String repoLocations = data.get("REPOLOCATIONS").toString();
-                this.LOWMEMORY = Boolean.parseBoolean(data.get("LOWMEMORY").toString());
-
-                // Check if sucessfully cloned, and if not delete and restart
-                boolean cloneSucess = checkCloneUpdateSucess(repoLocations + repoName);
-                if (cloneSucess == false) {
-                    // Delete the folder and delete from the index
-                    try {
-                        FileUtils.deleteDirectory(new File(repoLocations + "/" + repoName + "/"));
-                        CodeIndexer.deleteByReponame(repoName);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
-                    }
-                }
-                deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
-
-                String repoGitLocation = repoLocations + "/" + repoName + "/.git/";
+                String repoGitLocation = repoLocations + "/" + repoResult.getName() + "/.git/";
 
                 File file = new File(repoGitLocation);
                 boolean existingRepo = file.exists();
-                boolean useCredentials = repoUserName != null && !repoUserName.isEmpty();
-                RepositoryChanged repositoryChanged = null;
+                boolean useCredentials = repoResult.getUsername() != null && !repoResult.getUsername().isEmpty();
+                RepositoryChanged repositoryChanged;
 
                 if (existingRepo) {
-                    repositoryChanged = this.updateExistingRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+                    repositoryChanged = this.updateExistingRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
                 } else {
-                    repositoryChanged = this.getNewRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+                    repositoryChanged = this.getNewRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
                 }
 
                 // Write file indicating we have sucessfully cloned
-                createCloneUpdateSuccess(repoLocations + "/" + repoName);
-                // If the last index was not sucessful, then trigger full index
-                boolean indexsuccess = checkIndexSucess(repoGitLocation);
-
-                if (repositoryChanged.isChanged() || indexsuccess == false) {
-                    Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-                    this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
-                }
+                this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getName());
+                this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
             }
             finally {
                 // Clean up the job
-                runningIndexRepoJobs.remove(repoResult.getName());
+                Singleton.getRunningIndexRepoJobs().remove(repoResult.getName());
             }
         }
     }
 
+    /**
+     * Determines if anything has changed or if the last index operation faild and if so
+     * triggers the index process.
+     */
+    public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+        // If the last index was not sucessful, then trigger full index
+        boolean indexsuccess = this.checkIndexSucess(repoGitLocation);
+
+        if (repositoryChanged.isChanged() || indexsuccess == false) {
+            Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
+            this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
+
+            int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+            repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+            repoResult.getData().indexStatus = "success";
+            Singleton.getRepo().saveRepo(repoResult);
+        }
+    }
+
+    /**
+     * Checks if a clone operation of a repository was successful. If not
+     * then it will delete the folder to start again
+     */
+    public boolean checkCloneSuccess(String repoName, String repoLocations) {
+        if (Helpers.isNullEmptyOrWhitespace(repoName) && Helpers.isNullEmptyOrWhitespace(repoLocations)) {
+            Singleton.getLogger().warning("Repository Location is set to nothing, this can cause searchcode to modify the root file system!");
+            return false;
+        }
+
+        // Check if sucessfully cloned, and if not delete and restart
+        boolean cloneSucess = this.checkCloneUpdateSucess(repoLocations + repoName);
+        if (cloneSucess == false) {
+            // Delete the folder and delete from the index
+            try {
+                File filePath = new File(repoLocations + "/" + repoName + "/");
+                if (!filePath.getAbsolutePath().equals("/")) { // Lets really be sure....
+                    FileUtils.deleteDirectory(filePath);
+                }
+                Singleton.getCodeIndexer().deleteByReponame(repoName);
+            } catch (IOException ex) {
+                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            }
+        }
+        // TODO is this correct?!
+        this.deleteCloneUpdateSuccess(repoLocations + "/" + repoName);
+
+        return true;
+    }
+
+    /**
+     * Checks if the repository has changed, or if the last index failed for some reason
+     * and if either condition is true triggers a full index otherwise triggers a delta
+     * index of the files.
+     */
     public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         String repoGitLocation = repoLocations + "/" + repoName;
         Path docDir = Paths.get(repoGitLocation);
@@ -200,7 +233,7 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         // Write file indicating that the index was sucessful
-        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoName);
+        Singleton.getLogger().info("Successfully processed writing index success for " + repoName);
         createIndexSuccess(repoGitLocation);
     }
 
@@ -227,8 +260,8 @@ public abstract class IndexBaseRepoJob implements Job {
             changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
             changedFile = changedFile.replace("//", "/");
 
-            String md5Hash = Values.EMPTYSTRING;
-            List<String> codeLines = null;
+            String md5Hash;
+            List<String> codeLines;
 
             try {
                 codeLines = Helpers.readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
@@ -256,7 +289,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
             md5Hash = this.getFileMd5(changedFile);
 
-            String languageName = scl.languageGuesser(changedFile, codeLines);
+            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLines);
 
             String fileLocation = getRelativeToProjectPath(path.toString(), changedFile);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
@@ -267,17 +300,16 @@ public abstract class IndexBaseRepoJob implements Job {
 
             reportList.add(new String[]{changedFile, "included", ""});
 
-            if (codeLines != null) {
-                if (this.LOWMEMORY) {
-                    try {
-                        CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                    }
-                } else {
-                    Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                    codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+
+            if (this.LOWMEMORY) {
+                try {
+                    Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                } catch (IOException ex) {
+                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 }
+            } else {
+                Singleton.incrementCodeIndexLinesCount(codeLines.size());
+                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
             }
         }
 
@@ -285,12 +317,12 @@ public abstract class IndexBaseRepoJob implements Job {
             this.logIndexed(repoName + "_delta", reportList);
         }
 
-        for(String deletedFile: repositoryChanged.getDeletedFiles()) {
+        for (String deletedFile: repositoryChanged.getDeletedFiles()) {
             deletedFile = fileRepoLocations + "/" + repoName + "/" + deletedFile;
             deletedFile = deletedFile.replace("//", "/");
             Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
             try {
-                CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(deletedFile));
+                Singleton.getCodeIndexer().deleteByCodeId(DigestUtils.sha1Hex(deletedFile));
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
             }
@@ -321,86 +353,86 @@ public abstract class IndexBaseRepoJob implements Job {
             Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                try {
+                    if (shouldJobPauseOrTerminate()) {
+                        return FileVisitResult.TERMINATE;
+                    }
+
+                    // Convert Path file to unix style that way everything is easier to reason about
+                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
+                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
+                    String fileName = file.getFileName().toString();
+                    String repoLocationRepoNameLocationFilename = fileToString;
+
+                    if (ignoreFile(fileParent)) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    // This needs to be the primary key of the file
+                    fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
+
+                    List<String> codeLines;
                     try {
-                        if (shouldJobPauseOrTerminate()) {
-                            return FileVisitResult.TERMINATE;
-                        }
-
-                        // Convert Path file to unix style that way everything is easier to reason about
-                        String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                        String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                        String fileName = file.getFileName().toString();
-                        String repoLocationRepoNameLocationFilename = fileToString;
-
-                        if (ignoreFile(fileParent)) {
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        // This needs to be the primary key of the file
-                        fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
-
-                        List<String> codeLines;
-                        try {
-                            codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
-                        } catch (IOException ex) {
-                            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                            if (LOGINDEXED) {
-                                reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
-                            }
-                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        if (scl.isMinified(codeLines, fileName)) {
-                            Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                            if (LOGINDEXED) {
-                                reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
-                            }
-                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        if (codeLines.isEmpty()) {
-                            Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                            if (LOGINDEXED) {
-                                reportList.add(new String[]{fileToString, "excluded", "empty file"});
-                            }
-                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        if (determineBinary(fileToString, fileName, codeLines, reportList)) {
-                            fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                            return FileVisitResult.CONTINUE;
-                        }
-
-                        String md5Hash = getFileMd5(fileToString);
-                        String languageName = scl.languageGuesser(fileName, codeLines);
-
-
-                        String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
-                        String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
-
-                        String newString = getBlameFilePath(fileLocationFilename);
-                        String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-
-                        if (lowMemory) { // TODO this should be inside the indexer class not in here
-                            CodeIndexer.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                        } else {
-                            Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                            codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                        }
-
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
-                        }
-                    }
-                    catch(Exception ex) {
+                        codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
+                    } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
+                        if (LOGINDEXED) {
+                            reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
+                        }
+                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
+                        return FileVisitResult.CONTINUE;
                     }
 
-                    // Continue at all costs
-                    return FileVisitResult.CONTINUE;
+                    if (scl.isMinified(codeLines, fileName)) {
+                        Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
+                        if (LOGINDEXED) {
+                            reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
+                        }
+                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    if (codeLines.isEmpty()) {
+                        Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
+                        if (LOGINDEXED) {
+                            reportList.add(new String[]{fileToString, "excluded", "empty file"});
+                        }
+                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    if (determineBinary(fileToString, fileName, codeLines, reportList)) {
+                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    String md5Hash = getFileMd5(fileToString);
+                    String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLines);
+
+
+                    String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
+                    String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
+
+                    String newString = getBlameFilePath(fileLocationFilename);
+                    String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
+
+                    if (lowMemory) { // TODO this should be inside the indexer class not in here
+                        Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                    } else {
+                        Singleton.incrementCodeIndexLinesCount(codeLines.size());
+                        codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                    }
+
+                    if (LOGINDEXED) {
+                        reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
+                    }
+                }
+                catch(Exception ex) {
+                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
+                }
+
+                // Continue at all costs
+                return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException ex) {
@@ -435,7 +467,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!fileLocations.containsKey(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     try {
-                        CodeIndexer.deleteByCodeId(DigestUtils.sha1Hex(file));
+                        Singleton.getCodeIndexer().deleteByCodeId(DigestUtils.sha1Hex(file));
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
                     }
@@ -506,7 +538,7 @@ public abstract class IndexBaseRepoJob implements Job {
             return true;
         }
 
-        while (CodeIndexer.shouldPauseAdding()) {
+        while (Singleton.getCodeIndexer().shouldPauseAdding()) {
             if (Singleton.getBackgroundJobsEnabled() == false) {
                 return true;
             }
@@ -547,11 +579,20 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     public void createCloneUpdateSuccess(String repoLocation) {
-        createFile(repoLocation, "cloneupdate");
+
+        try {
+            this.createFile(repoLocation, "cloneupdate");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to write clone success file. This will cause this repository to re-indexed fresh every time.");
+        }
     }
 
     public void deleteCloneUpdateSuccess(String repoLocation) {
-        deleteFile(repoLocation, "cloneupdate");
+        try {
+            this.deleteFile(repoLocation, "cloneupdate");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to delete clone update sucess file.");
+        }
     }
 
     public boolean checkCloneUpdateSucess(String repoLocation) {
@@ -559,11 +600,19 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     public void createIndexSuccess(String repoLocation) {
-        createFile(repoLocation, "index");
+        try {
+            this.createFile(repoLocation, "index");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to create index success file.");
+        }
     }
 
     public void deleteIndexSuccess(String repoLocation) {
-        deleteFile(repoLocation, "index");
+        try {
+            this.deleteFile(repoLocation, "index");
+        } catch (IOException e) {
+            Singleton.getLogger().warning("Unable to delete index success file.");
+        }
     }
 
     public boolean checkIndexSucess(String repoLocation) {
@@ -575,14 +624,21 @@ public abstract class IndexBaseRepoJob implements Job {
         return f.exists();
     }
 
-    private void createFile(String repoLocation, String type) {
+    private void createFile(String repoLocation, String type) throws IOException {
         File file = new File(repoLocation, "/searchcode." + type + ".success");
-        file.mkdir();
+        boolean success = file.mkdir();
+
+        if (!success) {
+            throw new IOException("Unable to create directory " + file.getAbsolutePath());
+        }
     }
 
-    private void deleteFile(String repoLocation, String type) {
+    private void deleteFile(String repoLocation, String type) throws IOException {
         File file = new File(repoLocation, "/searchcode." + type + ".success");
+        boolean success = file.delete();
 
-        file.delete();
+        if (!success) {
+            throw new IOException("Unable to delete directory " + file.getAbsolutePath());
+        }
     }
 }

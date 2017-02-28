@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service;
@@ -13,6 +13,12 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;
+import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
+import com.searchcode.app.jobs.enqueue.EnqueueRepositoryJob;
+import com.searchcode.app.jobs.repository.IndexDocumentsJob;
+import com.searchcode.app.jobs.repository.IndexFileRepoJob;
+import com.searchcode.app.jobs.repository.IndexGitRepoJob;
+import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
@@ -368,7 +374,7 @@ public class JobService implements IJobService {
             }
             catch (IOException ex){
                 successful = false;
-                Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clear the folder manually and restart searchcode.");
+                Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
             }
 
             try {
@@ -378,7 +384,7 @@ public class JobService implements IJobService {
             }
             catch (IOException ex){
                 successful = false;
-                Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clear the folder manually and restart searchcode.");
+                Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
             }
         }
 
@@ -399,30 +405,48 @@ public class JobService implements IJobService {
             return false;
         }
 
-        UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
-        UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
-        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
-
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
         Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
         for(RepoResult rr: repoResultList) {
-            switch (rr.getScm().toLowerCase()) {
-                case "git":
-                    Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
-                    repoGitQueue.add(rr);
-                    break;
-                case "svn":
-                    Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
-                    repoSvnQueue.add(rr);
-                    break;
-                case "file":
-                    Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
-                    repoFileQueue.add(rr);
-                    break;
-            }
+            enqueueRepository(rr);
         }
 
         return true;
+    }
+
+    @Override
+    public boolean forceEnqueue(RepoResult repoResult) {
+        if (Singleton.getBackgroundJobsEnabled() == false) {
+            return false;
+        }
+
+        enqueueRepository(repoResult);
+
+        return true;
+    }
+
+    private void enqueueRepository(RepoResult rr) {
+        UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
+        UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
+
+        switch (rr.getScm().toLowerCase()) {
+            case "git":
+                Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
+                repoGitQueue.add(rr);
+                break;
+            case "svn":
+                Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
+                repoSvnQueue.add(rr);
+                break;
+            case "file":
+                Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
+                repoFileQueue.add(rr);
+                break;
+            default:
+                Singleton.getLogger().info("Unknown SCM type " + rr.getName() + " " + rr.getScm());
+                break;
+        }
     }
 }

@@ -68,7 +68,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
 
-        assertThat(viewName).isEqualTo("search_test.ftl");
+        assertThat(viewName).isEqualTo("search_ajax.ftl");
     }
 
     public void testHtmlNoQueryString() {
@@ -182,5 +182,18 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(map.get("logoImage")).isNotNull();
         assertThat(map.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
         assertThat(map.get("estimatedCost")).isNull();
+    }
+
+    public void testGetProject() {
+        CodeRouteService codeRouteService = new CodeRouteService();
+        Request request = Mockito.mock(Request.class);
+        Response response = Mockito.mock(Response.class);
+
+        try {
+            codeRouteService.getProject(request, response);
+        }
+        catch(HaltException ex) {}
+
+        verify(response, times(1)).redirect("/404/");
     }
 }

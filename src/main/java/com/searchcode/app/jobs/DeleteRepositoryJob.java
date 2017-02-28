@@ -5,13 +5,14 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
@@ -42,7 +43,6 @@ public class DeleteRepositoryJob implements Job {
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            AbstractMap<String, Integer> runningProcesses = Singleton.getRunningIndexRepoJobs();
             Repo repo = Singleton.getRepo();
 
             rr = deleteRepoQueue.poll();
@@ -52,14 +52,14 @@ public class DeleteRepositoryJob implements Job {
 
             Singleton.getUniqueGitRepoQueue().delete(rr);
 
-            if (runningProcesses.containsKey(rr.getName())) {
+            if (Singleton.getRunningIndexRepoJobs().containsKey(rr.getName())) {
                 // Put back into delete queue and quit
                 deleteRepoQueue.add(rr);
                 return;
             }
 
             Singleton.getLogger().info("Deleting repository. " + rr.getName());
-            CodeIndexer.deleteByReponame(rr.getName());
+            Singleton.getCodeIndexer().deleteByReponame(rr.getName());
 
             // remove the directory
             String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);

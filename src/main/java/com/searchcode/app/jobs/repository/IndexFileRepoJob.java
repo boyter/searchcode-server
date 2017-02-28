@@ -5,44 +5,24 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.CodeOwner;
-import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
-import org.apache.commons.io.FilenameUtils;
-import org.eclipse.jgit.api.BlameCommand;
-import org.eclipse.jgit.api.CloneCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PullCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.blame.BlameResult;
-import org.eclipse.jgit.diff.DiffEntry;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.lib.*;
-import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.quartz.*;
 
-import java.io.*;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -70,7 +50,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        while(CodeIndexer.shouldPauseAdding()) {
+        while(Singleton.getCodeIndexer().shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }
@@ -79,12 +59,16 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
         UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
 
         RepoResult repoResult = repoQueue.poll();
-        AbstractMap<String, Integer> runningIndexRepoJobs = Singleton.getRunningIndexRepoJobs();
 
-        if (repoResult != null && !runningIndexRepoJobs.containsKey(repoResult.getName())) {
+        if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
+
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
+            repoResult.getData().indexStatus = "indexing";
+            Singleton.getRepo().saveRepo(repoResult);
+
             try {
-                runningIndexRepoJobs.put(repoResult.getName(), (int) (System.currentTimeMillis() / 1000));
+                Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
+                        new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -98,10 +82,15 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 Path docDir = Paths.get(repoRemoteLocation);
 
                 this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
+
+                int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+                repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+                repoResult.getData().indexStatus = "success";
+                Singleton.getRepo().saveRepo(repoResult);
             }
             finally {
                 // Clean up the job
-                runningIndexRepoJobs.remove(repoResult.getName());
+                Singleton.getRunningIndexRepoJobs().remove(repoResult.getName());
             }
         }
     }

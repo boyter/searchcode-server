@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service.route;
@@ -28,12 +28,12 @@ import java.util.stream.Collectors;
 
 public class SearchRouteService {
 
-    public SearchResult CodeSearch(Request request, Response response) {
+    public SearchResult codeSearch(Request request, Response response) {
         CodeSearcher cs = new CodeSearcher();
         CodeMatcher cm = new CodeMatcher(Singleton.getData());
         SearchcodeLib scl = Singleton.getSearchcodeLib(Singleton.getData());
 
-        if (request.queryParams().contains("q") && request.queryParams("q").trim() != Values.EMPTYSTRING) {
+        if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
             String query = request.queryParams("q").trim();
 
             int page = 0;
@@ -48,9 +48,9 @@ public class SearchRouteService {
                 }
             }
 
-            String[] repos = new String[0];
-            String[] langs = new String[0];
-            String[] owners = new String[0];
+            String[] repos;
+            String[] langs;
+            String[] owners;
             String reposFilter = Values.EMPTYSTRING;
             String langsFilter = Values.EMPTYSTRING;
             String ownersFilter = Values.EMPTYSTRING;
@@ -91,9 +91,6 @@ public class SearchRouteService {
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
                 }
             }
-
-            // Need to pass in the filters into this query
-            String cacheKey = query + page + reposFilter + langsFilter + ownersFilter;
 
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);

@@ -2,19 +2,22 @@
 <@layout.masterTemplate title="Admin Bulk">
 
 <div class="row inside-container">
-<ul class="nav nav-tabs nav-justified">
-    <li role="presentation"><a href="/admin/">Admin</a></li>
-    <li role="presentation"><a href="/admin/repo/">Repository Admin</a></li>
-    <li role="presentation" class="active"><a href="/admin/bulk/">Repository Bulk Admin</a></li>
-    <li role="presentation"><a href="/admin/api/">API</a></li>
-    <li role="presentation"><a href="/admin/settings/">Settings</a></li>
-    <li role="presentation"><a href="/admin/logs/">Logs</a></li>
-    <li role="presentation"><a href="/logout/">Logout</a></li>
-</ul>
-</div>
-<br>
-
-<div class="row">
+    <div class="col-md-2">
+        <nav>
+          <ul class="nav nav-pills nav-stacked span2">
+            <li><a href="/admin/">Dashboard</a></li>
+            <li><a href="/admin/repo/">Repository Add</a></li>
+            <li><a href="/admin/repolist/">Repository List</a></li>
+            <li class="active"><a href="/admin/bulk/">Repository Bulk Add</a></li>
+            <li><a href="/admin/api/">API Keys</a></li>
+            <li><a href="/admin/settings/">Settings</a></li>
+            <li><a href="/admin/logs/">Logs</a></li>
+            <li><a href="/logout/">Logout</a></li>
+          </ul>
+        </nav>
+    </div>
+    <div class="col-md-10">
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Bulk API</h3>
 
 <form method="POST">
 
@@ -42,6 +45,9 @@
     <p>
         <pre>searchcode,git,https://searchcode@bitbucket.org/searchcode/hosting.git,myusername,mypassword,https://bitbucket.org/searchcode/hosting,master</pre>
     </p>
+</div>
+
+    </div>
 </div>
 
 </@layout.masterTemplate>

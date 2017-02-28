@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app;
@@ -15,11 +15,10 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.*;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.JsonTransformer;
-import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import spark.ModelAndView;
 import spark.Request;
@@ -27,8 +26,6 @@ import spark.Response;
 import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,38 +37,26 @@ import static spark.Spark.*;
 public class App {
 
     public static final boolean ISCOMMUNITY = false;
-    public static final String VERSION = "1.3.6";
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
+    public static final String VERSION = "1.3.8";
 
     public static void main (String[] args) {
         int server_port = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT), Values.DEFAULTSERVERPORT);
         boolean onlyLocalhost = Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
 
         // Database migrations happen before we start
-        databaseMigrations();
+        preStart();
 
-        LOGGER.info("Starting searchcode server on port " + server_port);
+        Singleton.getLogger().info("Starting searchcode server on port " + server_port);
 
         if (onlyLocalhost) {
-            LOGGER.info("Only listening on 127.0.0.1 ");
+            Singleton.getLogger().info("Only listening on 127.0.0.1 ");
             Spark.ipAddress("127.0.0.1");
         }
         Spark.port(server_port);
-
-        JobService js = new JobService();
-
-        ApiService apiService = Singleton.getApiService();
-        js.initialJobs();
-
         Spark.staticFileLocation("/public");
 
-        before((request, response) -> {
-            if (onlyLocalhost) {
-                if (!request.ip().equals("127.0.0.1")) {
-                    halt(204);
-                }
-            }
-        });
+        Singleton.getJobService().initialJobs();
+
 
         ////////////////////////////////////////////////////
         //          Search/Code Routes Below
@@ -99,6 +84,12 @@ public class App {
             response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl");
+        }, new FreeMarkerEngine());
+
+        get("/repository/overview/:reponame/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return new ModelAndView(codeRouteService.getProject(request, response), "repository_overview.ftl");
         }, new FreeMarkerEngine());
 
         ////////////////////////////////////////////////////
@@ -129,7 +120,7 @@ public class App {
         get("/api/codesearch/", (request, response) -> {
             addJsonHeaders(response);
             SearchRouteService searchRouteService = new SearchRouteService();
-            return searchRouteService.CodeSearch(request, response);
+            return searchRouteService.codeSearch(request, response);
         }, new JsonTransformer());
 
 
@@ -164,41 +155,48 @@ public class App {
         }, new JsonTransformer());
 
         ////////////////////////////////////////////////////
+        //          Unsecured API Routes Below
+        ////////////////////////////////////////////////////
+
+        get("/api/repo/index/", "application/json", (request, response) -> {
+            addJsonHeaders(response);
+            ApiRouteService apiRouteService = new ApiRouteService();
+            return apiRouteService.repositoryIndex(request, response);
+        }, new JsonTransformer());
+
+        ////////////////////////////////////////////////////
         //              Admin Routes Below
         ////////////////////////////////////////////////////
 
         get("/admin/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminPage(request, response);
+            Map<String, Object> map = adminRouteService.adminPage(request, response);
 
             return new ModelAndView(map, "admin.ftl");
         }, new FreeMarkerEngine());
 
         get("/admin/repo/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminRepo(request, response);
+            Map<String, Object> map = adminRouteService.adminRepo(request, response);
 
             return new ModelAndView(map, "admin_repo.ftl");
         }, new FreeMarkerEngine());
 
+        get("/admin/repolist/", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            Map<String, Object> map = adminRouteService.adminRepo(request, response);
+
+            return new ModelAndView(map, "admin_repolist.ftl");
+        }, new FreeMarkerEngine());
+
         get("/admin/bulk/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             Map<String, Object> map = new HashMap<>();
 
@@ -208,26 +206,18 @@ public class App {
         }, new FreeMarkerEngine());
 
         get("/admin/api/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminApi(request, response);
+            Map<String, Object> map = adminRouteService.adminApi(request, response);
 
             return new ModelAndView(map, "admin_api.ftl");
         }, new FreeMarkerEngine());
 
         post("/admin/api/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
-            apiService.createKeys();
+            Singleton.getApiService().createKeys();
 
             response.redirect("/admin/api/");
             halt();
@@ -242,43 +232,31 @@ public class App {
             }
 
             String publicKey = request.queryParams("publicKey");
-            apiService.deleteKey(publicKey);
+            Singleton.getApiService().deleteKey(publicKey);
 
             return true;
         }, new JsonTransformer());
 
         get("/admin/settings/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminSettings(request, response);
+            Map<String, Object> map = adminRouteService.adminSettings(request, response);
 
             return new ModelAndView(map, "admin_settings.ftl");
         }, new FreeMarkerEngine());
 
         get("/admin/logs/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.AdminLogs(request, response);
+            Map<String, Object> map = adminRouteService.adminLogs(request, response);
 
             return new ModelAndView(map, "admin_logs.ftl");
         }, new FreeMarkerEngine());
 
         post("/admin/settings/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             if (ISCOMMUNITY) {
                 response.redirect("/admin/settings/");
@@ -286,7 +264,7 @@ public class App {
             }
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.PostSettings(request, response);
+            adminRouteService.postSettings(request, response);
 
             response.redirect("/admin/settings/");
             halt();
@@ -294,14 +272,10 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/admin/bulk/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.PostBulk(request, response);
+            adminRouteService.postBulk(request, response);
 
             response.redirect("/admin/bulk/");
             halt();
@@ -309,14 +283,10 @@ public class App {
         }, new FreeMarkerEngine());
 
         post("/admin/repo/", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return null;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.PostRepo(request, response);
+            adminRouteService.postRepo(request, response);
 
             response.redirect("/admin/repo/");
             halt();
@@ -361,11 +331,7 @@ public class App {
         });
 
         get("/admin/delete/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null || !request.queryParams().contains("repoName")) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             String repoName = request.queryParams("repoName");
             Repo repo = Singleton.getRepo();
@@ -379,93 +345,94 @@ public class App {
         }, new JsonTransformer());
 
         post("/admin/rebuild/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
-            boolean result = js.rebuildAll();
+            boolean result = Singleton.getJobService().rebuildAll();
             if (result) {
-                js.forceEnqueue();
+                Singleton.getJobService().forceEnqueue();
             }
             return result;
         }, new JsonTransformer());
 
         post("/admin/forcequeue/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
-            return js.forceEnqueue();
+            return Singleton.getJobService().forceEnqueue();
         }, new JsonTransformer());
 
         post("/admin/togglepause/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
+
             Singleton.setPauseBackgroundJobs(!Singleton.getPauseBackgroundJobs());
             return Singleton.getPauseBackgroundJobs();
         }, new JsonTransformer());
 
+        post("/admin/clearsearchcount/", "application/json", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            Singleton.getStatsService().clearSearchCount();
+            return Values.EMPTYSTRING;
+        }, new JsonTransformer());
+
+        post("/admin/resetspellingcorrector/", "application/json", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            Singleton.getSpellingCorrector().reset();
+            return Values.EMPTYSTRING;
+        }, new JsonTransformer());
+
         get("/admin/checkversion/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+            checkLoggedIn(request, response);
 
             AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.CheckVersion();
+            return adminRouteService.checkVersion();
+        });
+
+        get("/admin/api/getstat/", "application/json", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.getStat(request, response);
+        });
+
+        get("/admin/api/getstatjson/", "application/json", (request, response) -> {
+            checkLoggedIn(request, response);
+
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.getStat(request, response);
         }, new JsonTransformer());
 
-        // Experimental method to restart the application
-        get("/admin/restart/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
+        get("/admin/api/checkindexstatus/", "application/json", (request, response) -> {
+            checkLoggedIn(request, response);
 
-            final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-            final File currentJar = new File(App.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-
-            if(!currentJar.getName().endsWith(".jar")) {
-                return false;
-            }
-
-            /* Build command: java -jar application.jar */
-            final ArrayList<String> command = new ArrayList<>();
-            command.add(javaBin);
-            command.add("-jar");
-            command.add(currentJar.getPath());
-
-            final ProcessBuilder builder = new ProcessBuilder(command);
-            builder.start();
-            System.exit(0);
-
-            return true;
-        }, new JsonTransformer());
-
+            AdminRouteService adminRouteService = new AdminRouteService();
+            return adminRouteService.checkIndexStatus(request, response);
+        });
     }
+
 
     /**
      * Called on startup to run all the DAO object table creation/migration logic. Slight overhead using this technique.
      * TODO Do the migrations inside the sqlite database so the application does not need to
      */
-    public static void databaseMigrations() {
+    public static void preStart() {
+        // Database migrations
         Data data = Singleton.getData();
         Repo repo = Singleton.getRepo();
         Api api = Singleton.getApi();
 
-        data.createTableIfMissing(); // Added data key/value table
-        repo.addSourceToTable(); // Added source to repo
-        repo.addBranchToTable(); // Add branch to repo
+        data.createTableIfMissing();
         api.createTableIfMissing();
+        repo.addSourceToTable();
+        repo.addBranchToTable();
+        repo.addDataToTable();
+    }
+
+    private static void checkLoggedIn(Request request, Response response) {
+        if (getAuthenticatedUser(request) == null) {
+            response.redirect("/login/");
+            halt();
+        }
     }
 
     private static void addJsonHeaders(Response response) {

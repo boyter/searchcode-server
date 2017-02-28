@@ -1,35 +1,92 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
+import org.apache.commons.lang3.RandomStringUtils;
+
+import java.util.Random;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class DataTest extends TestCase {
-    public void testRepoSaveUpdate() {
-        Data data = Singleton.getData();
 
-        String expected = "" + System.currentTimeMillis();
-        String actual = data.getDataByName("test_case_data_ignore");
-        assertFalse(expected.equals(actual));
+    Data data = null;
 
-        data.saveData("test_case_data_ignore", expected);
-        actual = data.getDataByName("test_case_data_ignore");
-        assertEquals(expected, actual);
+    public DataTest() {
+        this.data = new Data(new SQLiteMemoryDatabaseConfig());
+        this.data.createTableIfMissing();
     }
 
-    public void testManyGetCacheOk() {
-        Data data = Singleton.getData();
+    public void testDataSaveUpdate() {
+        String expected = Values.EMPTYSTRING + System.currentTimeMillis();
+        String actual = this.data.getDataByName("testDataSaveUpdate");
+        assertThat(actual).as("Checking value before saving").isNotEqualTo(expected);
 
-        String expected = "" + System.currentTimeMillis();
-        data.saveData("test_case_data_ignore", expected);
+        boolean isNew = this.data.saveData("testDataSaveUpdate", expected);
+        actual = this.data.getDataByName("testDataSaveUpdate");
+        assertThat(actual).as("Checking value after saving isNew=%s, actual=%s, expected=%s", isNew, actual, expected).isEqualTo(expected);
+    }
 
-        for(int i=0; i<10000; i++) {
-            assertEquals(expected, data.getDataByName("test_case_data_ignore"));
-            assertEquals(expected, data.getDataByName("test_case_data_ignore", "default"));
+    public void testGetWithoutSave() {
+        String actual = data.getDataByName("testSingleSaveManyGet");
+        for(int i = 0; i < 200; i++) {
+            assertThat(actual).as("Get without save").isEqualTo(data.getDataByName("testSingleSaveManyGet"));
+            assertThat(actual).as("Get without save").isEqualTo(data.getDataByName("testSingleSaveManyGet", actual));
         }
     }
 
+    public void testGetWithRandomValuesExpectingNull() {
+        Random random = new Random();
+
+        for(int i = 0; i < 200; i++) {
+            String actual = data.getDataByName(RandomStringUtils.randomAscii(random.nextInt(20) + 20));
+            assertThat(actual).isNull();
+        }
+    }
+
+    public void testSaveWithRandomValuesAndGet() {
+        Random random = new Random();
+
+        for(int i = 0; i < 200; i++) {
+            String randomString = RandomStringUtils.randomAscii(random.nextInt(5) + 1);
+            data.saveData(randomString, randomString);
+            String actual = data.getDataByName(randomString);
+
+            assertThat(actual).isEqualTo(randomString);
+        }
+    }
+
+    public void testSingleSaveManyGet() {
+        String expected = "" + System.currentTimeMillis();
+        data.saveData("testSingleSaveManyGet", expected);
+
+        for(int i = 0; i < 200; i++) {
+            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("testSingleSaveManyGet"));
+            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("testSingleSaveManyGet", "default"));
+        }
+    }
+
+    /**
+     * Stress test the saving to check if we are closing connections properly
+     */
+    public void testManySaveAndGet() {
+        for(int i=0; i < 200; i++) {
+            String expected = "" + System.currentTimeMillis();
+            data.saveData("testManySaveAndGet", expected);
+
+            assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("testManySaveAndGet"));
+            assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("testManySaveAndGet", "default"));
+        }
+    }
+
+    public void testDefaultReturns() {
+        double actual = Double.parseDouble(data.getDataByName("THISSHOULDNEVEREXISTIHOPE", "0"));
+        assertThat(actual).isEqualTo(0);
+    }
+
     public void testCreateTable() {
-        Data data = Singleton.getData();
 
         data.createTableIfMissing();
         data.createTableIfMissing();

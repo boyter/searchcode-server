@@ -5,12 +5,14 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.model;
 
+import com.google.gson.Gson;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.RepoData;
 
 public class RepoResult {
     private int rowId;
@@ -21,10 +23,13 @@ public class RepoResult {
     private String password = "";
     private String source = "";
     private String branch = "";
+    private RepoData data;
 
     public RepoResult() {}
 
-    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch) {
+    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
+        Gson gson = new Gson();
+
         this.setRowId(rowId);
         this.setName(name);
         this.setScm(scm);
@@ -33,6 +38,7 @@ public class RepoResult {
         this.setPassword(password);
         this.setSource(source);
         this.setBranch(branch);
+        this.setData(gson.fromJson(data, RepoData.class));
     }
 
     /**
@@ -52,6 +58,12 @@ public class RepoResult {
         }
 
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        assert false : "hashCode not designed";
+        return 42;
     }
 
     public int getRowId() {
@@ -135,5 +147,18 @@ public class RepoResult {
     @Override
     public String toString() {
         return String.format("%s %s %s %s %s %s %s", this.getName(), this.getScm(), this.getUrl(), this.getUsername(), this.getPassword(), this.getSource(), this.getBranch());
+    }
+
+    public RepoData getData() {
+        return this.data;
+    }
+
+    public String getDataAsJson() {
+        Gson gson = new Gson();
+        return gson.toJson(this.data);
+    }
+
+    public void setData(RepoData data) {
+        this.data = data;
     }
 }

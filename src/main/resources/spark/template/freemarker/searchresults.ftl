@@ -80,7 +80,11 @@
     <#list searchResult.codeResultList>
     <#items as result>
       <div>
-        <h5><a href="/file/${result.documentId?c}/${result.codePath}">${result.fileName} in ${result.repoName}</a> <small>| ${result.codePath?html} | ${result.codeLines} lines | ${result.languageName?html}</small></h5>
+        <h5>
+            <div>
+                <a href="/file/${result.codeId}/${result.codePath}">${result.fileName}</a><span> in </span><a href="/repository/overview/${result.repoName}/">${result.repoName}</a> <small>| ${result.codePath?html} | ${result.codeLines} lines | ${result.languageName?html}</small>
+            </div>
+        </h5>
       </div>
       <ol class="code-result">
           <#list result.matchingResults>

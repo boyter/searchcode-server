@@ -1,20 +1,22 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.TestHelpers;
+import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
-import static org.mockito.Mockito.*;
-
-
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.*;
 
 public class IndexBaseAndGitRepoJobTest extends TestCase {
     public void testGetBlameFilePath() {
@@ -51,7 +53,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
     public void testDeleteNoFile() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
 
-        for(int i=0; i< 100; i++) {
+        for(int i = 0; i < 100; i++) {
             gitRepoJob.deleteIndexSuccess("/tmp/");
             gitRepoJob.deleteCloneUpdateSuccess("/tmp/");
         }
@@ -71,6 +73,9 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         Singleton.setPauseBackgroundJobs(true);
         Singleton.setBackgroundJobsEnabled(false);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
+
+        // Reset
+        Singleton.setStatsService(new StatsService());
     }
 
     public void testGetFileMd5() {
@@ -149,5 +154,24 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 1);
         verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 2);
+    }
+
+    public void testCheckCloneSuccessEmptyReturnsFalse() {
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        boolean actual = indexGitRepoJob.checkCloneSuccess("", "");
+        assertThat(actual).isFalse();
+    }
+
+    public void testCheckCloneSuccessEmptyReturnsTrue() throws IOException {
+        File location = TestHelpers.clearAndCreateTempPath("testCheckCloneSuccessEmptyReturnsTrue");
+        File projectLocation = TestHelpers.createDirectory(location, "myawesomeproject");
+        TestHelpers.createFile(projectLocation, "myfile.java", "some file content");
+
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        boolean actual = indexGitRepoJob.checkCloneSuccess("myawesomeproject", location.getAbsolutePath());
+        assertThat(actual).isTrue();
+
+        File toCheck = new File(projectLocation.getAbsolutePath());
+        assertThat(toCheck.exists()).isFalse();
     }
 }

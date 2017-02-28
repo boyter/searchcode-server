@@ -20,7 +20,11 @@ Submissions/Pull Requests
 -------------------------
 If you would like to submit code to be integrated into searchcode server please specify that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
-Before making any submission be sure to run "fab test"
+Before making any submission be sure to run 
+
+	fab test
+
+All tests must pass before any submission will be accepted.
 
 To Build TL/DR;
 ---------------
@@ -36,32 +40,52 @@ To Build
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
 maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement. To run 
 the javascript unit tests through the command line you will need to install NPM and then run
-npm install -g node-qunit-phantomjs but you can always run them in your browser if required by opening 
-./src/test/javascript/index.html
 
-To test the application you can either run "mvn test" or "fab test". Note that these tests will only cover unit
-some integration and javascript unit. For full coverage run "fab test_full" with the application running in the background
-to ensure everything is working as expected.
+	npm install -g node-qunit-phantomjs 
 
-To build a full release IE ready for production you should run "fab build_release" which will test compile and build a release into
+but you can always run them in your browser if required by opening 
+
+	./src/test/javascript/index.html
+
+To test the application you can either run
+	mvn test 
+
+or
+
+	fab test
+
+Note that these tests will only cover unit some integration and javascript unit. For full coverage run 
+
+	fab test_full 
+
+with the application running in the background to ensure everything is working as expected.
+
+To build a full release IE ready for production you should run 
+
+	fab build_release 
+
+which will test compile and build a release into
 the release folder and produce the file "searchcode-server.tar.gz" which is a ready to deploy release.
 
-If you want to simply test and run then you can run "fab run" however this will be default build a package
-and run that. To run quickly just open in your IDE of choice and start running App.java
+If you want to simply test and run then you can run 
+
+	fab run 
+
+however this will be default build a package and run that. To run quickly just open in your IDE of choice and start running App.java
 
 There are a special bunch of tests used for verifying that indexing logic for GIT and File repositories works correctly. To perform 
 this you need to run one of all of the following shell scripts,
 
-./assets/integration_test/gitload/gitload.sh
-./assets/integration_test/gitupdate/gitupdate.sh
-./assets/integration_test/fileupdatetest/fileload.sh
-./assets/integration_test/fileload/fileload.sh
+	./assets/integration_test/gitload/gitload.sh
+	./assets/integration_test/gitupdate/gitupdate.sh
+	./assets/integration_test/fileupdatetest/fileload.sh
+	./assets/integration_test/fileload/fileload.sh
 
 Then add the git ones as GIT repositories in the application and the file ones as FILE repositories. It is also useful to 
 set the properties
 
-check_repo_chages=60
-check_filerepo_chages=60
+	check_repo_chages=60
+	check_filerepo_chages=60
 
 but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
 to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
@@ -74,12 +98,18 @@ ensure that performance is acceptable the tests are also run on a Atom powered n
 To Run
 ------
 
-To run searchcode server you will need to have any Windows, Linux or OSX machine with Java 8 installed.
+To run using Docker download the image
+
+https://hub.docker.com/r/searchcode/searchcode-server-community/
+
+and then simply run it. Note that this instance is not production ready, as all configuration and storage is done inside the container, but it is the fastest way to get started.
+
+To run searchcode server locally you will need to have any Windows, Linux or OSX machine with Java 8 installed.
 Testing and packaging was done using the below version.
 
-java version "1.8.0_65"
-Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
-Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
+	java version "1.8.0_65"
+	Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
+	Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
 
 Uncompress the file you have downloaded to a directory where you want to run searchcode server.
 This directory should have more disk space than the size of the repositories you want to index.
@@ -87,16 +117,16 @@ This directory should have more disk space than the size of the repositories you
 Once unpacked assuming that java is in your path (check with the command java -version) you should be able to run
 searchcode with the following command for Linux/OSX/BSD
 
-./searchcode-server.sh
+	./searchcode-server.sh
 
 or for Windows
 
-searchcode-server.bat
+	searchcode-server.bat
 
 After a few moments searchcode server should be ready to run. By default it will be running on port 8080.
 To connect to it enter the following in the browser,
 
-http://SERVER_IP:8080
+	http://SERVER_IP:8080
 
 Be sure to replace SERVER_IP with the ip address if your server or localhost if running locally.
 If you see a page with a search bar then everything is fine.
@@ -124,7 +154,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.6.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.8.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
@@ -139,21 +169,37 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED YET this software version '1.3.6' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date DATE NOT SPECIFIED YET this software version '1.3.8' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
+
+File Classifier Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/
 
 
 Change Log
 ==========
 
-XX XXXXXXXX XXXX - 1.3.6
+XX XXXXXXXX XXXX - 1.3.8
+ - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
+ - Small CSS display issues on search pages
+ - Resolve issues with some unit tests being inconsistent
+ - Setup CI pipeline to shake out issues and IWOMM
+ - New admin pages which expose information in a better way
+ - File classification moved into JSON database similar to OWASP
+ - Improved matching of found lines
+
+01 February 2017 - 1.3.7
+ - Fix display bug where file details in search was on newline
+ - Slight improvements to documentation
+
+31 January 2017 - 1.3.6
  - Add job to scan repositories updating the spelling corrector
  - Add logic to split interesting characters such as Chinese/Korean/Japanese to allow searching
  - Fix XSS on admin log page
  - Fix XSS on admin repo page
  - Fix bug where unable to delete repositories on admin page with special characters in name
  - Running jobs now displayed on admin page
+ - Repository overview page added to get overview of a repository
 
 19 December 2016 - 1.3.5
  - Fix only_localhost to really only listen localhost not drop connections

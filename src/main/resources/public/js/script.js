@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 /**
@@ -1766,11 +1766,14 @@ var SearchResultsComponent = {
             gethref: function(result) {
                 return '/file/' + result.codeId + '/' + result.codePath;
             },
+            getrepositoryhref: function(result) {
+                return '/repository/overview/' + result.repoName + '/';
+            },
             gethreflineno: function(result, lineNumber) {
                 return '/file/' + result.codeId + '/' + result.codePath + '#' + lineNumber;
             },
             getatag: function(result) {
-                return result.fileName + ' in ' + result.repoName;
+                return result.fileName;
             },
             getsmallvalue: function(result){
                 var fixedCodePath = '/' + result.codePath.split('/').slice(1,100000).join('/');
@@ -1784,8 +1787,13 @@ var SearchResultsComponent = {
                     return m('div.code-result', [
                         m('div', 
                             m('h5', [
-                                m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
-                                m('small', ctrl.getsmallvalue(res))  
+                                m('div', [
+                                    m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
+                                    m('span', ' in '),
+                                    m('a', { href: ctrl.getrepositoryhref(res) }, res.repoName),
+                                    m('small', ctrl.getsmallvalue(res))  
+                                ]),
+                                
                             ])
                         ),
                         m('ol.code-result', [
@@ -1855,4 +1863,3 @@ else {
     SearchModel.filterinstantly(true);
     SearchModel.searchhistory(false);
 }
-

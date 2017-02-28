@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service;
@@ -66,7 +66,7 @@ public class CodeMatcher {
         List<CodeMatchResult> newResultLines = new ArrayList<>();
 
         // get the top matching lines for this result
-        resultLines.sort((p1, p2) -> new Integer(p2.getLineMatches()).compareTo(p1.getLineMatches()));
+        resultLines.sort((p1, p2) -> Integer.valueOf(p2.getLineMatches()).compareTo(p1.getLineMatches()));
 
         // gets the best snippets based on number of matches
         for(int i = 0; i < resultLines.size(); i++) {
@@ -92,7 +92,7 @@ public class CodeMatcher {
             }
         }
 
-        newResultLines.sort((p1, p2) -> new Integer(p1.getLineNumber()).compareTo(p2.getLineNumber()));
+        newResultLines.sort((p1, p2) -> Integer.valueOf(p1.getLineNumber()).compareTo(p2.getLineNumber()));
 
         if (!newResultLines.isEmpty()) {
             newResultLines.get(0).addBreak = false;
@@ -128,10 +128,6 @@ public class CodeMatcher {
 
             if (matching != 0) {
                 resultLines.add(new CodeMatchResult(code.get(i), true, false, matching, i));
-            }
-
-            if (resultLines.size() >= MATCHLINES) {
-                break;
             }
         }
 
@@ -233,7 +229,7 @@ public class CodeMatcher {
         // Remove duplicates
         List<String> depdupeTerms = new ArrayList<>(new LinkedHashSet<>(newTerms));
         // Sort largest to smallest to produce largest matching results
-        depdupeTerms.sort((p1, p2) -> new Integer(p2.length()).compareTo(p1.length()));
+        depdupeTerms.sort((p1, p2) -> Integer.valueOf(p2.length()).compareTo(p1.length()));
         return depdupeTerms;
     }
 

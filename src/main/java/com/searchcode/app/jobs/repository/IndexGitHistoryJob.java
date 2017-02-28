@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
@@ -71,7 +71,7 @@ public class IndexGitHistoryJob implements Job {
             String message = rev.getFullMessage();
             String author = rev.getAuthorIdent().getName();
 
-            Date expiry = new Date(new Long(rev.getCommitTime()) * 1000);
+            Date expiry = new Date(Long.valueOf(rev.getCommitTime()) * 1000);
             System.out.println(expiry.toString() + " " + rev.getCommitTime() + " " + rev.getName());
 
             gitChangeSets.add(new GitChangeSet(message, author, rev.getName(), expiry));
@@ -121,7 +121,7 @@ public class IndexGitHistoryJob implements Job {
                 cd.setYear(cd.getYearMonthDay().substring(0, 4));
                 cd.setMessage(oldRevison.getMessage());
                 cd.setDeleted("TRUE");
-                CodeIndexer.indexTimeDocument(cd);
+                Singleton.getCodeIndexer().indexTimeDocument(cd);
             }
             else {
                 System.out.println("ADD " + entry.getNewPath());
@@ -134,7 +134,7 @@ public class IndexGitHistoryJob implements Job {
                 cd.setYear(cd.getYearMonthDay().substring(0, 4));
                 cd.setMessage(newRevision.getMessage());
                 cd.setDeleted("FALSE");
-                CodeIndexer.indexTimeDocument(cd);
+                Singleton.getCodeIndexer().indexTimeDocument(cd);
             }
         }
     }

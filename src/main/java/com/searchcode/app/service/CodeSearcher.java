@@ -5,17 +5,14 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.*;
-import com.searchcode.app.util.CodeAnalyzer;
-import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
-import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -156,6 +153,45 @@ public class CodeSearcher implements ICodeSearcher {
         return codeResult;
     }
 
+
+    public ProjectStats getProjectStats(String repoName) {
+        int totalCodeLines = 0;
+        int totalFiles = 0;
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
+        SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
+
+        try {
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(Paths.get(this.INDEXPATH)));
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(CODEFIELD, analyzer);
+            Query query = parser.parse(Values.REPONAME + ":" + repoName);
+
+            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            for (int i = 0; i < results.totalHits; i++) {
+                Document doc = searcher.doc(hits[i].doc);
+
+                if (!searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
+                    totalCodeLines += Helpers.tryParseInt(doc.get(Values.CODELINES), "0");
+                }
+            }
+
+            totalFiles = results.totalHits;
+            codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
+            repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
+
+            reader.close();
+        }
+        catch(Exception ex) {
+            LOGGER.severe("CodeSearcher getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+
+        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, repoFacetOwners);
+    }
 
     /**
      * Due to very large repositories (500,000 files) this needs to support

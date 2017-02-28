@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.util;
@@ -42,6 +42,12 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
     @Override
     public int getWordCount() {
         return dictionary.size();
+    }
+
+    @Override
+    public boolean reset() {
+        this.dictionary.clear();
+        return true;
     }
 
     @Override

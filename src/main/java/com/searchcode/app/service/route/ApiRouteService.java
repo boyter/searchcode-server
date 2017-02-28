@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service.route;
@@ -89,6 +89,22 @@ public class ApiRouteService {
         }
 
         return new ApiResponse(false, "was unable to force the index");
+    }
+
+    public ApiResponse repositoryIndex(Request request, Response response) {
+        if (!this.apiEnabled) {
+            return new ApiResponse(false, "API not enabled");
+        }
+
+        String repoUrl = request.queryParams("repoUrl");
+        RepoResult repoByUrl = this.repo.getRepoByUrl(repoUrl);
+
+        if (repoByUrl != null) {
+            this.jobService.forceEnqueue(repoByUrl);
+            return new ApiResponse(true, "Enqueued repository " + repoUrl);
+        }
+
+        return new ApiResponse(false, "Was unable to find repository " + repoUrl);
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {
@@ -262,7 +278,7 @@ public class ApiRouteService {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch));
+        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}"));
 
         return new ApiResponse(true, "added repository successfully");
     }

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+
 public class CodeMatcherTest extends TestCase {
 
     public void testFormatResults() {
@@ -56,6 +58,37 @@ public class CodeMatcherTest extends TestCase {
 
         assertEquals(2, codeMatchResults.size());
         assertEquals("fatal-error\n", codeMatchResults.get(1).line);
+    }
+
+    public void testMatchResultsVerifySorting() {
+        CodeMatcher codeMatcher = new CodeMatcher();
+        codeMatcher.MATCHLINES = 2;
+
+        List<String> matchTerms = new ArrayList<>();
+        matchTerms.add("test");
+        matchTerms.add("test1");
+        matchTerms.add("test2");
+
+        List<String> code = new ArrayList<>();
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test\n");
+        code.add("test test1\n");
+        code.add("test test1 test2\n");
+
+        List<CodeMatchResult> codeMatchResults = codeMatcher.matchResults(code, matchTerms, true);
+        assertThat(codeMatchResults.get(0).getLine()).isEqualTo("<strong>test</strong> <strong>test1</strong>\n");
+        assertThat(codeMatchResults.get(1).getLine()).isEqualTo("<strong>test</strong> <strong>test1</strong> <strong>test2</strong>\n");
     }
 
     public void testHighlightLineMultiNonOverlapping() {
@@ -276,23 +309,25 @@ public class CodeMatcherTest extends TestCase {
 
         // Simulates the worst possible case where the matching lines are right
         // at the end
+        String addString = "some additional stuff that random stuff that should not match but force it to work a bit harder then it normally would";
         List<String> code = new ArrayList<>();
         for (int i = 0; i < 9999; i++) {
-            String addString = "some additional stuff that random stuff that should not match but force it to work a bit harder then it normally would";
+            StringBuffer stringBuffer = new StringBuffer();
 
-            for(int j = 0; j< 5; j++) {
-                addString += addString;
+            for(int j = 0; j < 5; j++) {
+                stringBuffer.append(addString);
             }
 
-            code.add(addString);
+            code.add(stringBuffer.toString());
         }
         code.add("this is some code");
 
         Instant start = Instant.now();
         List<CodeMatchResult> result = cm.findMatchingLines(code, matchTerms, true);
 
-        assertTrue(result != null); // Force no optimisations by the JVM
-        assertTrue(Duration.between(start, Instant.now()).getSeconds() <= 1);
+        assertThat(result).isNotNull(); // Force no optimisations by the JVM
+        long seconds = Duration.between(start, Instant.now()).getSeconds();
+        assertThat(seconds).isLessThanOrEqualTo(5);
     }
 
     public void testFindMatchingLines() {
@@ -349,7 +384,7 @@ public class CodeMatcherTest extends TestCase {
     }
 
 
-    public void testFindBestMatchingLines1000Limit() {
+    public void testFindBestMatchingLinesOver1000Limit() {
         CodeMatcher cm = new CodeMatcher();
         List<String> matchTerms = new ArrayList<>();
         matchTerms.add("re.compile");
@@ -375,7 +410,7 @@ public class CodeMatcherTest extends TestCase {
             }
         }
 
-        assertFalse(found);
+        assertThat(found).isTrue();
     }
 
     public void testSplitTerms() {
@@ -407,5 +442,14 @@ public class CodeMatcherTest extends TestCase {
         assertTrue(strings.contains("wildcard*"));
         assertTrue(strings.contains("search*"));
         assertTrue(strings.contains("s*"));
+    }
+
+    public void testSplitTermsOrder() {
+        CodeMatcher cm = new CodeMatcher();
+        List<String> strings = cm.splitTerms("ttt t tt");
+        assertThat(strings).hasSize(3);
+        assertThat(strings.get(0)).isEqualTo("ttt");
+        assertThat(strings.get(1)).isEqualTo("tt");
+        assertThat(strings.get(2)).isEqualTo("t");
     }
 }

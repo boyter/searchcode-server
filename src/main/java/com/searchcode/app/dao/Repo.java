@@ -5,22 +5,21 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,64 +31,51 @@ import java.util.List;
  */
 public class Repo implements IRepo {
 
-    private static final LoggerWrapper LOGGER = Singleton.getLogger();
-    private AbstractMap<String, RepoResult> cache = Singleton.getRepoCache();
     private IDatabaseConfig dbConfig;
-    private AbstractMap<String, Object> genericCache = Singleton.getGenericCache();
-    private String repoCountCacheKey = "repo-repo-count";
-    private String repoAllRepoCacheKey = "repo-all-repo-cache";
-
     public Repo(IDatabaseConfig dbConfig) {
         this.dbConfig = dbConfig;
     }
 
+    @Override
     public synchronized List<RepoResult> getAllRepo() {
-        List<RepoResult> repoResults = (ArrayList<RepoResult>)this.genericCache.get(this.repoAllRepoCacheKey);
-        if (this.genericCache.containsKey(this.repoAllRepoCacheKey)) {
-            return repoResults;
-        }
+        List<RepoResult> repoResults = new ArrayList<>();
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        repoResults = new ArrayList<>();
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc;");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc;");
 
-            rs = stmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                int rowId = rs.getInt("rowid");
-                String repoName = rs.getString("name");
-                String repoScm = rs.getString("scm");
-                String repoUrl = rs.getString("url");
-                String repoUsername = rs.getString("username");
-                String repoPassword = rs.getString("password");
-                String repoSource = rs.getString("source");
-                String repoBranch = rs.getString("branch");
+            while (resultSet.next()) {
+                int rowId = resultSet.getInt("rowid");
+                String repoName = resultSet.getString("name");
+                String repoScm = resultSet.getString("scm");
+                String repoUrl = resultSet.getString("url");
+                String repoUsername = resultSet.getString("username");
+                String repoPassword = resultSet.getString("password");
+                String repoSource = resultSet.getString("source");
+                String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
-
-            stmt.close();
-            conn.close();
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
         }
 
-        this.genericCache.put(this.repoAllRepoCacheKey, repoResults);
         return repoResults;
     }
 
+    @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         List<RepoResult> repoResults = this.getAllRepo();
         List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
@@ -120,7 +106,7 @@ public class Repo implements IRepo {
         return matchRepoResults;
     }
 
-
+    @Override
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -130,7 +116,7 @@ public class Repo implements IRepo {
 
         try {
             conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo order by rowid desc limit ?, ?;");
+            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc limit ?, ?;");
 
             stmt.setInt(1, offset);
             stmt.setInt(2, pageSize);
@@ -146,202 +132,206 @@ public class Repo implements IRepo {
                 String repoPassword = rs.getString("password");
                 String repoSource = rs.getString("source");
                 String repoBranch = rs.getString("branch");
+                String repoData = rs.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch));
+                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(rs);
             Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
         }
 
         return repoResults;
     }
 
+    @Override
     public synchronized int getRepoCount() {
-        Integer totalcount = (Integer)this.genericCache.get(this.repoCountCacheKey);
-        if (totalcount != null) {
-            return totalcount;
-        }
+        int totalCount = 0;
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
-        totalcount = 0;
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select count(rowid) as totalcount from repo;");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select count(rowid) as totalcount from repo;");
 
-            rs = stmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
 
-            while (rs.next()) {
-                totalcount = rs.getInt("totalcount");
+            while (resultSet.next()) {
+                totalCount = resultSet.getInt("totalcount");
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
         }
 
-        this.genericCache.put(this.repoCountCacheKey, totalcount);
-        return totalcount;
+        return totalCount;
     }
 
+    @Override
     public synchronized RepoResult getRepoByName(String repositoryName) {
-        RepoResult result = this.cache.get(repositoryName);
-        if (result != null) {
-            return result;
+        if (repositoryName == null) {
+            return null;
         }
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        RepoResult result = null;
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch from repo where name=?;");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where name=?;");
 
-            stmt.setString(1, repositoryName);
+            preparedStatement.setString(1, repositoryName);
+            resultSet = preparedStatement.executeQuery();
 
-            rs = stmt.executeQuery();
+            while (resultSet.next()) {
+                int rowId = resultSet.getInt("rowid");
+                String repoName = resultSet.getString("name");
+                String repoScm = resultSet.getString("scm");
+                String repoUrl = resultSet.getString("url");
+                String repoUsername = resultSet.getString("username");
+                String repoPassword = resultSet.getString("password");
+                String repoSource = resultSet.getString("source");
+                String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
 
-            while (rs.next()) {
-                int rowId = rs.getInt("rowid");
-                String repoName = rs.getString("name");
-                String repoScm = rs.getString("scm");
-                String repoUrl = rs.getString("url");
-                String repoUsername = rs.getString("username");
-                String repoPassword = rs.getString("password");
-                String repoSource = rs.getString("source");
-                String repoBranch = rs.getString("branch");
-
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch);
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
-        }
-
-        if (result != null) {
-            this.cache.put(repositoryName, result);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
         }
 
         return result;
     }
 
-    public synchronized void deleteRepoByName(String repositoryName) {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+    @Override
+    public synchronized RepoResult getRepoByUrl(String repositoryUrl) {
+        if (repositoryUrl == null) {
+            return null;
+        }
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        RepoResult result = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("delete from repo where name=?;");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
 
-            stmt.setString(1, repositoryName);
+            preparedStatement.setString(1, repositoryUrl);
 
-            stmt.execute();
+            resultSet = preparedStatement.executeQuery();
 
-            this.cache.remove(repositoryName);
-            this.genericCache.remove(this.repoCountCacheKey);
-            this.genericCache.remove(this.repoAllRepoCacheKey);
+            while (resultSet.next()) {
+                int rowId = resultSet.getInt("rowid");
+                String repoName = resultSet.getString("name");
+                String repoScm = resultSet.getString("scm");
+                String repoUrl = resultSet.getString("url");
+                String repoUsername = resultSet.getString("username");
+                String repoPassword = resultSet.getString("password");
+                String repoSource = resultSet.getString("source");
+                String repoBranch = resultSet.getString("branch");
+                String repoData = resultSet.getString("data");
+
+                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
+            }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+        }
+
+        return result;
+    }
+
+    @Override
+    public synchronized void deleteRepoByName(String repositoryName) {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("delete from repo where name=?;");
+
+            preparedStatement.setString(1, repositoryName);
+
+            preparedStatement.execute();
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
         }
     }
 
-    // Anything which updates or saves should be syncronized to avoid
-    // SQLite issues with such operations
     // TODO add retry logic here as this can fail and as such should just trigger again
     @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
         RepoResult existing = this.getRepoByName(repoResult.getName());
-        this.cache.remove(repoResult.getName());
 
         boolean isNew = false;
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
 
-        if (existing != null) {
-            // Update with new details
-            try {
-                conn = this.dbConfig.getConnection();
-                stmt = conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ? WHERE  \"name\" = ?");
-
-                stmt.setString(1, repoResult.getName());
-                stmt.setString(2, repoResult.getScm());
-                stmt.setString(3, repoResult.getUrl());
-                stmt.setString(4, repoResult.getUsername());
-                stmt.setString(5, repoResult.getPassword());
-                stmt.setString(6, repoResult.getSource());
-                stmt.setString(7, repoResult.getBranch());
-
-                // Target the row
-                stmt.setString(8, repoResult.getName());
-
-                stmt.execute();
+        // Update with new details
+        try {
+            connection = this.dbConfig.getConnection();
+            if (existing != null) {
+                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
+                preparedStatement.setString(9, repoResult.getName());
             }
-            catch(SQLException ex) {
-                LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            else {
+                isNew = true;
+                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"data\") VALUES (?,?,?,?,?,?,?,?)");
             }
-            finally {
-                Helpers.closeQuietly(rs);
-                Helpers.closeQuietly(stmt);
-                Helpers.closeQuietly(conn);
-            }
+
+            preparedStatement.setString(1, repoResult.getName());
+            preparedStatement.setString(2, repoResult.getScm());
+            preparedStatement.setString(3, repoResult.getUrl());
+            preparedStatement.setString(4, repoResult.getUsername());
+            preparedStatement.setString(5, repoResult.getPassword());
+            preparedStatement.setString(6, repoResult.getSource());
+            preparedStatement.setString(7, repoResult.getBranch());
+            preparedStatement.setString(8, repoResult.getDataAsJson());
+
+            preparedStatement.execute();
         }
-        else {
-            isNew = true;
-            try {
-                conn = this.dbConfig.getConnection();
-                stmt = conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\") VALUES (?,?,?,?,?,?,?)");
-
-                stmt.setString(1, repoResult.getName());
-                stmt.setString(2, repoResult.getScm());
-                stmt.setString(3, repoResult.getUrl());
-                stmt.setString(4, repoResult.getUsername());
-                stmt.setString(5, repoResult.getPassword());
-                stmt.setString(6, repoResult.getSource());
-                stmt.setString(7, repoResult.getBranch());
-
-                stmt.execute();
-            }
-            catch(SQLException ex) {
-                LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-            }
-            finally {
-                Helpers.closeQuietly(rs);
-                Helpers.closeQuietly(stmt);
-                Helpers.closeQuietly(conn);
-            }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(preparedStatement);
         }
 
-        this.genericCache.remove(this.repoCountCacheKey);
-        this.genericCache.remove(this.repoAllRepoCacheKey);
         return isNew;
     }
+
 
     // Schema Migrations below
     public void addSourceToTable() {
@@ -380,12 +370,11 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(rs);
             Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
         }
     }
 
@@ -401,7 +390,7 @@ public class Repo implements IRepo {
             boolean shouldAlter = true;
 
             rs = stmt.executeQuery();
-            String value = "";
+            String value = Values.EMPTYSTRING;
             while (rs.next()) {
                 value = rs.getString("name");
 
@@ -426,12 +415,76 @@ public class Repo implements IRepo {
             }
         }
         catch(SQLException ex) {
-            LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             Helpers.closeQuietly(rs);
             Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+        }
+    }
+
+    public synchronized void createTableIfMissing() {
+
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
+
+            resultSet = preparedStatement.executeQuery();
+            String value = "";
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
+            }
+
+            if (Helpers.isNullEmptyOrWhitespace(value)) {
+                preparedStatement = connection.prepareStatement("CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)");
+                preparedStatement.execute();
+            }
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(resultSet);
+            Helpers.closeQuietly(preparedStatement);
+        }
+    }
+
+    public void addDataToTable() {
+        Connection conn;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+
+            boolean shouldAlter = true;
+
+            rs = stmt.executeQuery();
+            String value = Values.EMPTYSTRING;
+            while (rs.next()) {
+                value = rs.getString("name");
+
+                if ("data".equals(value)) {
+                    shouldAlter = false;
+                }
+            }
+
+            if (shouldAlter) {
+                stmt = conn.prepareStatement("ALTER TABLE repo ADD COLUMN data text;");
+                stmt.execute();
+            }
+        }
+        catch(SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            Helpers.closeQuietly(rs);
+            Helpers.closeQuietly(stmt);
         }
     }
 }

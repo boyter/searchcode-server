@@ -1,8 +1,8 @@
 package com.searchcode.app.util;
 
-import com.searchcode.app.dto.BinaryFinding;
-import com.searchcode.app.dto.CodeOwner;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.dto.FileClassifierResult;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -101,8 +101,10 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
-        for(SearchcodeLib.Classifier classifier: sl.classifier) {
-            for(String extension: classifier.extensions) {
+        FileClassifier fileClassifier = new FileClassifier();
+
+        for(FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
+            for(String extension: fileClassifierResult.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
             }
@@ -110,9 +112,11 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryWhiteListedPropertyExtension() {
-        // Assumes that java is in the properties whitelist
         SearchcodeLib sl = new SearchcodeLib();
-        sl.classifier = new ArrayList<>();
+        sl.WHITELIST = new String[1];
+        sl.WHITELIST[0] = "java";
+        FileClassifier fileClassifier = new FileClassifier();
+        sl.fileClassifier = fileClassifier;
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
@@ -120,9 +124,15 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryBlackListedPropertyExtension() {
-        // Assumes that java is in the properties whitelist
         SearchcodeLib sl = new SearchcodeLib();
-        sl.classifier = new ArrayList<>();
+
+        sl.BLACKLIST = new String[1];
+        sl.BLACKLIST[0] = "png";
+
+        FileClassifier fileClassifier = new FileClassifier();
+        fileClassifier.setDatabase(new ArrayList<>());
+        sl.fileClassifier = fileClassifier;
+
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
 
@@ -340,7 +350,8 @@ public class SearchcodeLibTest extends TestCase {
     public void testInterestingCharacters() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.findInterestingCharacters("this 你好 chinese");
-        assertThat(actual).isEqualTo("  你 好   ");
+        assertThat(actual).contains(" 你 ");
+        assertThat(actual).contains(" 好 ");
     }
 
     public void testInterestingCharactersNullExpectEmpty() {
@@ -349,46 +360,6 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).isEqualTo("");
     }
 
-    public void testLanguageGuesserText() {
-        SearchcodeLib sl = new SearchcodeLib();
-        String language = sl.languageGuesser("test.txt", new ArrayList<>());
-        assertEquals("Text", language);
-    }
-
-    public void testLanguageGuesserXAML() {
-        SearchcodeLib sl = new SearchcodeLib();
-        String language = sl.languageGuesser("test.xaml", new ArrayList<>());
-        assertEquals("XAML", language);
-    }
-
-    public void testLanguageGuesserASPNET() {
-        SearchcodeLib sl = new SearchcodeLib();
-        String language = sl.languageGuesser("test.ascx", new ArrayList<>());
-        assertEquals("ASP.Net", language);
-    }
-
-    public void testLanguageGuesserHTML() {
-        SearchcodeLib sl = new SearchcodeLib();
-        String language = sl.languageGuesser("test.html", new ArrayList<>());
-        assertEquals("HTML", language);
-    }
-
-    public void testLanguageGuesserUnknown() {
-        SearchcodeLib sl = new SearchcodeLib();
-        String language = sl.languageGuesser("test.shouldnotexist", new ArrayList<>());
-        assertEquals("Unknown", language);
-    }
-
-    // TODO update this with actual conflicting type and check that it classifies correctly
-    public void testLanguageGuesserMake() {
-        SearchcodeLib sl = new SearchcodeLib();
-
-        List<String> codeLines = new ArrayList<>();
-        codeLines.add("packagecom.searchcode.app.util;importcom.google.common.base.Joiner;importcom.google.common.base.Splitter;importcom.google.common.base.Strings;importorg.apache.commons.lang3.ArrayUtils;importorg.apache.commons.lang3.StringUtils;importjava.util.*;publicclassSearchcodeLib{publicStringhash(Stringcontents){inthashLength=20;if(contents.length()==0){returnStrings.padStart(\"\",hashLength,'0');}StringallowedCharacters=\"BCDFGHIJKLMNOPQRSUVWXYZbcdfghijklmnopqrsuvwxyz1234567890\";//removeallspacesJoinerjoiner=Joiner.on(\"\").skipNulls();StringtoHash=joiner.join(Splitter.on('').trimResults().omitEmptyStrings().split(contents));//removeallnonacceptablecharactersfor(inti=0;i<toHash.length();i++){charc=toHash.charAt(i);if(allowedCharacters.indexOf(c)!=-1){//allowedsokeepit}}return\"\";}publicList<Classifier>classifier=newLinkedList<>();{classifier.add(newClassifier(\"text\",\"txt,text\",\"\"));classifier.add(newClassifier(\"XAML\",\"xaml\",\"setter,value,style,margin,sstring,textblock,height,offset,gradientstop,stackpanel,width,propertymargin,trigger,lineargradientbrush,storyboard,image,duration,rectangle,settervalue,doubleanimation\"));classifier.add(newClassifier(\"ASP.Net\",\"ascx,config,asmx,asax,master,aspx,sitemap\",\"version,cultureneutral,runatserver,systemwebextensions,publickeytokenbfade,section,customerrors,error,value,systemweb,configuration,include,attribute,position,setting,connectionstrings,absolute,dependentassembly,stylezindex,below\"));classifier.add(newClassifier(\"HTML\",\"htm,html\",\"classpspanspan,classpspan,spanspan,classw,bgcoloreeeeff,classwspanspan,classospanspan,classnavbarcell,bgcolorwhite,classmispanspan,classospan,classcsingleline,valigntop,border,cellpadding,cellspacing,classs,classnf,titleclass,classcm\"));classifier.add(newClassifier(\"C#\",\"cs\",\"summary,param,public,static,string,return,value,summarypublic,class,object,double,private,values,method,using,license,which,version,false,override\"));classifier.add(newClassifier(\"C/C++Header\",\"h,hpp\",\"return,nsscriptable,nsimethod,define,license,const,version,under,public,class,struct,nsastring,interface,retval,nserrornullpointer,function,attribute,value,terms,ifndef\"));classifier.add(newClassifier(\"C++\",\"cpp,cc,c\",\"return,const,object,license,break,result,false,software,value,public,stdstring,copyright,version,without,buffer,sizet,general,unsigned,string,jsfalse\"));classifier.add(newClassifier(\"Python\",\"py\",\"return,import,class,value,false,response,article,field,model,software,default,should,print,input,except,modelscharfieldmaxlength,fclean,object,valid,typetext\"));classifier.add(newClassifier(\"Java\",\"java\",\"public,return,private,string,static,param,final,throws,license,catch,javaxswinggrouplayoutpreferredsize,class,override,software,value,exception,boolean,object,general,version\"));//classifier.add(newClassifier(\"\",\"\",\"\"));}publicStringlanguageGuesser(StringfileName,List<String>codeLines){String[]split=fileName.split(\"\\\\.\");Stringextension=split[split.length-1].toLowerCase();//FindalllanguagesthatmightbethisoneObject[]matching=classifier.stream().filter(x->ArrayUtils.contains(x.extensions,extension)).toArray();if(matching.length==0){return\"Unknown\";}if(matching.length==1){return((Classifier)matching[0]).language;}//Morethenonepossiblematch,checkwhichoneismostlikelyisandreturnthatStringlanguageGuess=\"\";intbestKeywords=0;//foreachmatchfor(Objectc:matching){Classifierclassi=(Classifier)c;intmatchingKeywords=0;for(Stringline:codeLines){for(Stringkeyword:classi.keywords){matchingKeywords+=StringUtils.countMatches(line,keyword);}}if(matchingKeywords>bestKeywords){bestKeywords=matchingKeywords;languageGuess=classi.language;}}//findouthowmanyofitskeywordsexistinthecode//ifgreatermatchesthentheprevioussavereturnlanguageGuess;}classClassifier{publicStringlanguage=null;publicString[]extensions={};publicString[]keywords={};publicClassifier(Stringlanguage,Stringextensions,Stringkeywords){this.language=language;this.extensions=extensions.toLowerCase().split(\",\");this.keywords=keywords.toLowerCase().split(\",\");}}}");
-
-        String language = sl.languageGuesser("test.java", codeLines);
-        assertEquals("Java", language);
-    }
 
     public void testCountFilteredLinesSingleLine() {
         SearchcodeLib scl = new SearchcodeLib();
@@ -514,6 +485,58 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltNeverEmptyString() {
         SearchcodeLib scl = new SearchcodeLib();
         assertEquals(0, scl.generateAltQueries("+").size());
+    }
+
+    public void testGenerateBusBlurb() {
+        SearchcodeLib scl = new SearchcodeLib();
+
+        List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
+        codeFacetOwners.add(new CodeFacetOwner("Ben", 1));
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        codeFacetLanguages.add(new CodeFacetLanguage("Java", 10));
+        codeFacetLanguages.add(new CodeFacetLanguage("Javascript", 8));
+        codeFacetLanguages.add(new CodeFacetLanguage("C#", 7));
+
+        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 1, codeFacetLanguages, codeFacetOwners));
+        assertThat(busBlurb).contains("In this repository 1 committer has contributed to 1 file.");
+        assertThat(busBlurb).contains("The most important languages in this repository are Java, Javascript and C#.");
+        assertThat(busBlurb).contains("The project has a low bus factor of 1 and will be in trouble if Ben is hit by a bus.");
+    }
+
+    public void testGenerateBusBlurbMore() {
+        SearchcodeLib scl = new SearchcodeLib();
+
+        List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
+        codeFacetOwners.add(new CodeFacetOwner("Ben", 6));
+        codeFacetOwners.add(new CodeFacetOwner("Terry", 4));
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        codeFacetLanguages.add(new CodeFacetLanguage("Java", 10));
+
+        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 10, codeFacetLanguages, codeFacetOwners));
+        assertThat(busBlurb).contains("In this repository 2 committers have contributed to 10 files.");
+        assertThat(busBlurb).contains("The most important language in this repository is Java");
+        assertThat(busBlurb).contains("The average person who commits this project has ownership of 50% of files.");
+        assertThat(busBlurb).contains("The project relies on the following people; Ben, Terry.");
+    }
+
+    public void testGenerateBusBlurbStress() {
+        SearchcodeLib scl = new SearchcodeLib();
+
+        for (int i=0; i < 1000; i++) {
+
+            List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                codeFacetOwners.add(new CodeFacetOwner("" + j, j));
+            }
+
+
+            List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+            for (int j = 0; j < i; j++) {
+                codeFacetLanguages.add(new CodeFacetLanguage("" + j, j));
+            }
+
+            scl.generateBusBlurb(new ProjectStats(i, i, codeFacetLanguages, codeFacetOwners));
+        }
     }
 
     /**

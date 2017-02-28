@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.util;
@@ -94,6 +94,10 @@ public class Helpers {
         }
 
         return lines;
+    }
+
+    public static int getCurrentTimeSeconds() {
+        return (int) (System.currentTimeMillis() / 1000);
     }
 
     public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
@@ -219,6 +223,13 @@ public class Helpers {
     public static void closeQuietly(Process process) {
         try {
             process.destroy();
+        }
+        catch (Exception ex) {}
+    }
+
+    public static void closeQuietly(BufferedReader bufferedReader) {
+        try {
+            bufferedReader.close();
         }
         catch (Exception ex) {}
     }

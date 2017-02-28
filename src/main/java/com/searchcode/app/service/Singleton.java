@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service;
@@ -16,6 +16,7 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.route.TimeSearchRouteService;
@@ -38,12 +39,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public final class Singleton {
 
-    private static AbstractMap<String, Integer> runningIndexRepoJobs = null; // Used to know which jobs are currently running
+    private static AbstractMap<String, RunningIndexJob> runningIndexRepoJobs = null; // Used to know which jobs are currently running
     private static ISpellingCorrector spellingCorrectorInstance = null;
     private static Queue<CodeIndexDocument> codeIndexQueue = null; // Documents ready to be indexed
     private static int codeIndexLinesCount = 0; // Used to store how many lines we have ready to index for throttling
 
     private static SearchcodeLib searchcodeLib = null;
+    private static FileClassifier fileClassifier = null;
     private static AbstractMap<String, String> dataCache = null;
     private static AbstractMap<String, ApiResult> apiCache = null;
     private static AbstractMap<String, RepoResult> repoCache = null;
@@ -58,6 +60,7 @@ public final class Singleton {
     private static StatsService statsService = null;
     private static JobService jobService = null;
     private static IDatabaseConfig databaseConfig = null;
+    private static CodeIndexer codeIndexer = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
@@ -121,9 +124,9 @@ public final class Singleton {
      * and should be resolved at some point
      * TODO investigate usage and resolve race conditions
      */
-    public static synchronized AbstractMap<String, Integer> getRunningIndexRepoJobs() {
+    public static synchronized AbstractMap<String, RunningIndexJob> getRunningIndexRepoJobs() {
         if (runningIndexRepoJobs == null) {
-            runningIndexRepoJobs = new ConcurrentHashMap<String, Integer>();
+            runningIndexRepoJobs = new ConcurrentHashMap<>();
         }
 
         return runningIndexRepoJobs;
@@ -250,7 +253,7 @@ public final class Singleton {
         Singleton.pauseBackgroundJobs = pauseBackgroundJobs;
     }
 
-    public static StatsService getStatsService() {
+    public static synchronized StatsService getStatsService() {
         if (statsService == null) {
             statsService = new StatsService();
         }
@@ -258,7 +261,7 @@ public final class Singleton {
         return statsService;
     }
 
-    public static void setStatsService(StatsService statsService) {
+    public static synchronized void setStatsService(StatsService statsService) {
         Singleton.statsService = statsService;
     }
 
@@ -270,7 +273,7 @@ public final class Singleton {
         return data;
     }
 
-    public static void setData(Data data) {
+    public static synchronized void setData(Data data) {
         Singleton.data = data;
     }
 
@@ -282,7 +285,7 @@ public final class Singleton {
         return api;
     }
 
-    public static void setApi(Api api) {
+    public static synchronized void setApi(Api api) {
         Singleton.api = api;
     }
 
@@ -294,7 +297,7 @@ public final class Singleton {
         return apiService;
     }
 
-    public static void setJobService(JobService jobService) {
+    public static synchronized void setJobService(JobService jobService) {
         Singleton.jobService = jobService;
     }
 
@@ -306,7 +309,15 @@ public final class Singleton {
         return jobService;
     }
 
-    public static IDatabaseConfig getDatabaseConfig() {
+    public static synchronized FileClassifier getFileClassifier() {
+        if (fileClassifier == null) {
+            fileClassifier = new FileClassifier();
+        }
+
+        return fileClassifier;
+    }
+
+    public static synchronized IDatabaseConfig getDatabaseConfig() {
         if (databaseConfig == null) {
             databaseConfig = new SQLiteDatabaseConfig();
         }
@@ -314,7 +325,15 @@ public final class Singleton {
         return databaseConfig;
     }
 
-    public static void setDatabaseConfig(IDatabaseConfig databaseConfig) {
+    public static synchronized CodeIndexer getCodeIndexer() {
+        if (codeIndexer == null) {
+            codeIndexer = new CodeIndexer();
+        }
+
+        return codeIndexer;
+    }
+
+    public static synchronized void setDatabaseConfig(IDatabaseConfig databaseConfig) {
         Singleton.databaseConfig = databaseConfig;
     }
 }

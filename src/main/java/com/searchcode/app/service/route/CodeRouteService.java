@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service.route;
@@ -74,7 +74,7 @@ public class CodeRouteService {
             List<String> ownsList = new ArrayList<>();
 
             if (request.queryParams().contains("repo")) {
-                String[] repos = new String[0];
+                String[] repos;
                 repos = request.queryParamsValues("repo");
 
                 if (repos.length != 0) {
@@ -83,7 +83,7 @@ public class CodeRouteService {
             }
 
             if (request.queryParams().contains("lan")) {
-                String[] langs = new String[0];
+                String[] langs;
                 langs = request.queryParamsValues("lan");
 
                 if (langs.length != 0) {
@@ -92,7 +92,7 @@ public class CodeRouteService {
             }
 
             if (request.queryParams().contains("own")) {
-                String[] owns = new String[0];
+                String[] owns;
                 owns = request.queryParamsValues("own");
 
                 if (owns.length != 0) {
@@ -105,7 +105,7 @@ public class CodeRouteService {
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
-            return new ModelAndView(map, "search_test.ftl");
+            return new ModelAndView(map, "search_ajax.ftl");
         }
 
         CodeSearcher cs = new CodeSearcher();
@@ -215,6 +215,49 @@ public class CodeRouteService {
             map.put("estimatedCost", estimatedCost);
         }
 
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
+
+        return map;
+    }
+
+    public Map<String, Object> getProject(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
+
+        String repoName = request.params(":reponame");
+        RepoResult repository = Singleton.getRepo().getRepoByName(repoName);
+        SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
+        Cocomo2 coco = new Cocomo2();
+        Gson gson = new Gson();
+
+        if (repository == null) {
+            response.redirect("/404/");
+            halt();
+        }
+
+        ProjectStats projectStats = this.codeSearcher.getProjectStats(repository.getName());
+
+
+        map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
+        map.put("repoLocation", repository.getUrl());
+        map.put("repoBranch", repository.getBranch());
+
+        map.put("totalFiles", projectStats.getTotalFiles());
+        map.put("totalCodeLines", projectStats.getTotalCodeLines());
+        map.put("languageFacet", projectStats.getCodeFacetLanguages());
+        map.put("ownerFacet", projectStats.getRepoFacetOwner());
+
+        double estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
+        map.put("estimatedEffort", estimatedEffort);
+        map.put("estimatedCost", (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary()));
+
+        map.put("totalOwners", projectStats.getRepoFacetOwner().size());
+        map.put("totalLanguages", projectStats.getCodeFacetLanguages().size());
+
+        map.put("ownerFacetJson", gson.toJson(projectStats.getRepoFacetOwner()));
+        map.put("languageFacetJson", gson.toJson(projectStats.getCodeFacetLanguages()));
+
+        map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
 

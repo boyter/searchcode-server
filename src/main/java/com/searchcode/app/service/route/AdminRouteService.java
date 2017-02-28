@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.service.route;
@@ -16,30 +16,78 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.RunningIndexJob;
+import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
+import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.JobService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
-import org.omg.CORBA.Environment;
+import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AdminRouteService {
 
+    private Repo repo;
+    private JobService jobService;
+
     public AdminRouteService() {
+        this.repo = Singleton.getRepo();
+        this.jobService = Singleton.getJobService();
     }
 
-    public Map<String, Object> AdminPage(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
+    public AdminRouteService(Repo repo, JobService jobService) {
+        this.repo = repo;
+        this.jobService = jobService;
+    }
 
-        CodeSearcher cs = new CodeSearcher();
-        Repo repo = Singleton.getRepo();
+    public String getStat(Request request, Response response) {
+        if (request.queryParams().contains("statname")) {
+            String statname = request.queryParams("statname");
+            return this.getStat(statname);
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
+    public String checkIndexStatus(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            String reponame = request.queryParams("reponame");
+            String reposLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+
+            IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
+
+            RepoResult repoResult = Singleton.getRepo().getRepoByName(reponame);
+            String indexStatus = Values.EMPTYSTRING;
+            if (repoResult != null) {
+                indexStatus = repoResult.getData().indexStatus;
+            }
+
+            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
+                return "Indexed ✓";
+            }
+
+            if("indexing".equals(indexStatus)) {
+                return "Indexing...";
+            }
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
+    public Map<String, Object> adminPage(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
         StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here
@@ -74,34 +122,30 @@ public class AdminRouteService {
         map.put(Values.TRASH_LOCATION, Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION));
 
 
-        map.put("repoCount", repo.getRepoCount());
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
-        map.put("numSearches", statsService.getSearchCount());
-        map.put("uptime", statsService.getUptime());
-        map.put("loadAverage", statsService.getLoadAverage());
+        map.put("repoCount", this.getStat("repoCount"));
+        map.put("numDocs", this.getStat("numDocs"));
+        map.put("numSearches", this.getStat("searchcount"));
+        map.put("uptime", this.getStat("uptime"));
+        map.put("loadAverage", this.getStat("loadAverage"));
+        map.put("memoryUsage", this.getStat("memoryUsage"));
+        map.put("currentdatetime", this.getStat("servertime"));
+        map.put("spellingCount", this.getStat("spellingCount"));
+        map.put("runningJobs", this.getStat("runningJobs"));
+
+
         map.put("sysArch", statsService.getArch());
         map.put("sysVersion", statsService.getOsVersion());
         map.put("processorCount", statsService.getProcessorCount());
-        map.put("memoryUsage", statsService.getMemoryUsage("<br>"));
         map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
         map.put("version", App.VERSION);
-        map.put("currentdatetime", new Date().toString());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put("spellingCount", Singleton.getSpellingCorrector().getWordCount());
-
         map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
-
-        StringBuffer stringBuffer = new StringBuffer();
-        for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-            stringBuffer.append(key).append(" ");
-        }
-        map.put("runningJobs", stringBuffer.toString());
 
         return map;
     }
 
-    public Map<String, Object> AdminRepo(Request request, Response response) {
+    public Map<String, Object> adminRepo(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
         Repo repo = Singleton.getRepo();
@@ -142,7 +186,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminApi(Request request, Response response) {
+    public Map<String, Object> adminApi(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
         Api api = Singleton.getApi();
@@ -159,7 +203,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminSettings(Request request, Response response) {
+    public Map<String, Object> adminSettings(Request request, Response response) {
         String[] highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
 
         Map<String, Object> map = new HashMap<>();
@@ -178,7 +222,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public Map<String, Object> AdminLogs(Request request, Response response) {
+    public Map<String, Object> adminLogs(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
         String level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
 
@@ -186,28 +230,28 @@ public class AdminRouteService {
             level = request.queryParams("level").trim().toUpperCase();
         }
 
-        List<String> logs = new ArrayList<>();
+        String logs;
         switch(level) {
             case "INFO":
-                logs = Singleton.getLogger().getInfoLogs();
+                logs = this.getStat("infologs");
                 break;
             case "WARNING":
-                logs = Singleton.getLogger().getWarningLogs();
+                logs = this.getStat("warninglogs");
                 break;
             case "ALL":
-                logs = Singleton.getLogger().getAllLogs();
+                logs = this.getStat("alllogs");
                 break;
             case "SEARCH":
-                logs = Singleton.getLogger().getSearchLogs();
+                logs = this.getStat("searchlogs");
                 break;
             case "SEVERE":
             default:
-                logs = Singleton.getLogger().getSevereLogs();
+                logs = this.getStat("severelogs");
                 break;
         }
 
         map.put("level", level);
-        map.put("logs", logs.size() > 1000 ? logs.subList(0,1000) : logs);
+        map.put("logs", logs);
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
@@ -215,7 +259,7 @@ public class AdminRouteService {
         return map;
     }
 
-    public void PostSettings(Request request, Response response) {
+    public void postSettings(Request request, Response response) {
         Data data = Singleton.getData();
 
         String logo = request.queryParams("logo").trim();
@@ -271,7 +315,7 @@ public class AdminRouteService {
         Singleton.getSearchcodeLib(data);
     }
 
-    public void PostBulk(Request request, Response response) {
+    public void postBulk(Request request, Response response) {
         String repos = request.queryParams("repos");
         String repolines[] = repos.split("\\r?\\n");
         Repo repo = Singleton.getRepo();
@@ -294,13 +338,14 @@ public class AdminRouteService {
                 RepoResult rr = repo.getRepoByName(repoparams[0]);
 
                 if (rr == null) {
-                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch));
+                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}"));
+                    this.jobService.forceEnqueue(this.repo.getRepoByUrl(repoparams[3]));
                 }
             }
         }
     }
 
-    public void PostRepo(Request request, Response response) {
+    public void postRepo(Request request, Response response) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -308,8 +353,6 @@ public class AdminRouteService {
         String[] repopassword = request.queryParamsValues("repopassword");
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
-
-        Repo repo = Singleton.getRepo();
 
         for(int i=0;i<reponames.length; i++) {
             if (reponames[i].trim().length() != 0) {
@@ -319,12 +362,13 @@ public class AdminRouteService {
                     branch = "master";
                 }
 
-                repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch));
+                this.repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
+                this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
             }
         }
     }
 
-    public String CheckVersion() {
+    public String checkVersion() {
         String version;
         try {
             version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);
@@ -339,5 +383,57 @@ public class AdminRouteService {
         else {
             return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version + ".";
         }
+    }
+
+    private String getStat(String statname) {
+        if (statname == null) {
+            return Values.EMPTYSTRING;
+        }
+
+        switch (statname.toLowerCase()) {
+            case "memoryusage":
+                return Singleton.getStatsService().getMemoryUsage("<br>");
+            case "loadaverage":
+                return Singleton.getStatsService().getLoadAverage();
+            case "uptime":
+                return Singleton.getStatsService().getUptime();
+            case "searchcount":
+                return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
+            case "runningjobs":
+                StringBuilder stringBuffer = new StringBuilder();
+                for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
+                    RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
+                    if (indexJob != null) {
+                        int runningTime = Helpers.getCurrentTimeSeconds() - indexJob.startTime;
+                        stringBuffer.append(key).append(" <small>(").append(runningTime).append(" seconds)</small>").append(" ");
+                    }
+                    else {
+                        stringBuffer.append(key).append(" ");
+                    }
+                }
+                return stringBuffer.toString();
+            case "spellingcount":
+                return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
+            case "repocount":
+                return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
+            case "numdocs":
+                CodeSearcher codeSearcher = new CodeSearcher();
+                return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+            case "servertime":
+                return new Date().toString();
+            case "deletionqueue":
+                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
+            case "alllogs":
+                return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
+            case "infologs":
+                return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
+            case "warninglogs":
+                return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
+            case "severelogs":
+                return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
+            case "searchlogs":
+                return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+        }
+        return Values.EMPTYSTRING;
     }
 }

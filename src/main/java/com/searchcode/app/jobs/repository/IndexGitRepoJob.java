@@ -5,10 +5,10 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.repository;
 
 // Useful for the future
 // http://stackoverflow.com/questions/1685228/how-to-cat-a-file-in-jgit
@@ -124,13 +124,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         processBuilder.directory(new File(repoLocations + "/" + repoName));
 
         Process process = null;
+        BufferedReader bufferedReader = null;
 
         try {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
+            bufferedReader = new BufferedReader(isr);
             String line;
             DateFormat df = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss");
 
@@ -138,7 +139,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
             boolean foundSomething = false;
 
-            while ((line = br.readLine()) != null) {
+            while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("Blame line " + repoName + fileName + ": " + line);
                 String[] split = line.split("\t");
 
@@ -188,6 +189,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         }
         finally {
             Helpers.closeQuietly(process);
+            Helpers.closeQuietly(bufferedReader);
         }
 
         return codeOwners;

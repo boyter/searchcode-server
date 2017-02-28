@@ -1,4 +1,4 @@
-FROM java:openjdk-8-jre
+FROM openjdk:8-jre
 
 RUN apt-get update && apt-get install -y \
     curl \

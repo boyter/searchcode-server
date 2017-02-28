@@ -1,14 +1,16 @@
 package com.searchcode.app.integration;
 
+import com.searchcode.app.TestHelpers;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.SearchResult;
-import com.searchcode.app.jobs.IndexFileRepoJob;
-import com.searchcode.app.jobs.IndexGitRepoJob;
-import com.searchcode.app.jobs.IndexSvnRepoJob;
+import com.searchcode.app.jobs.repository.IndexFileRepoJob;
+import com.searchcode.app.jobs.repository.IndexGitRepoJob;
+import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
@@ -19,13 +21,13 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class EndToEndTest extends TestCase{
+public class EndToEndITCase extends TestCase{
 
     public String GITPATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
 
     public void testEndToEndFilePath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
-        File directoryWithFiles = createDirectoryWithFiles("EndToEndFileTest");
+        File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndFileTest");
         IndexFileRepoJob indexFileRepoJob = new IndexFileRepoJob();
 
         // Index created files
@@ -42,7 +44,7 @@ public class EndToEndTest extends TestCase{
 
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
-        CodeIndexer.deleteByCodeId(codeId);
+        Singleton.getCodeIndexer().deleteByCodeId(codeId);
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -64,14 +66,14 @@ public class EndToEndTest extends TestCase{
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
         // Delete everything
-        CodeIndexer.deleteByReponame("ENDTOENDTEST");
+        Singleton.getCodeIndexer().deleteByReponame("ENDTOENDTEST");
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
     public void testEndToEndGitPath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
-        File directoryWithFiles = createDirectoryWithFiles("EndToEndGitTest");
+        File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndGitTest");
 
         String result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "init", ".");
         result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
@@ -92,7 +94,7 @@ public class EndToEndTest extends TestCase{
 
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
-        CodeIndexer.deleteByCodeId(codeId);
+        Singleton.getCodeIndexer().deleteByCodeId(codeId);
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -108,14 +110,14 @@ public class EndToEndTest extends TestCase{
         assertThat(codeResult1.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile1");
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
-        CodeIndexer.deleteByReponame("ENDTOENDTEST");
+        Singleton.getCodeIndexer().deleteByReponame("ENDTOENDTEST");
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
     public void testEndToEndSvnPath() throws IOException {
         CodeSearcher cs = new CodeSearcher();
-        File directoryWithFiles = createDirectoryWithFiles("EndToEndSvnTest");
+        File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndSvnTest");
 
         IndexSvnRepoJob indexSvnRepoJob = new IndexSvnRepoJob();
         indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
@@ -132,7 +134,7 @@ public class EndToEndTest extends TestCase{
 
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
-        CodeIndexer.deleteByCodeId(codeId);
+        Singleton.getCodeIndexer().deleteByCodeId(codeId);
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -148,7 +150,7 @@ public class EndToEndTest extends TestCase{
         assertThat(codeResult1.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile1");
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
-        CodeIndexer.deleteByReponame("ENDTOENDTEST");
+        Singleton.getCodeIndexer().deleteByReponame("ENDTOENDTEST");
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
@@ -156,14 +158,14 @@ public class EndToEndTest extends TestCase{
     public void testEndToEndGitDelta() throws IOException {
         CodeSearcher cs = new CodeSearcher();
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-        File directoryWithFiles = createDirectoryWithFiles("EndToEndGitTest");
+        File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndGitTest");
 
         this.runCommand(directoryWithFiles.toString(), this.GITPATH, "init", ".");
         this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
         this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"First commit\"");
 
         // Clone from the above into a new directory
-        File tempPath = this.clearAndCreateTempPath("EndToEndGitCloneTest");
+        File tempPath = TestHelpers.clearAndCreateTempPath("EndToEndGitCloneTest");
         this.runCommand(tempPath.toString(), this.GITPATH, "clone", directoryWithFiles.toString(), "EndToEndGitTest");
 
         // Index
@@ -172,7 +174,7 @@ public class EndToEndTest extends TestCase{
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
         // Update the source
-        createFile(directoryWithFiles, "EndToEndTestFile4.cpp", "EndToEndTestFile EndToEndTestFile4");
+        TestHelpers.createFile(directoryWithFiles, "EndToEndTestFile4.cpp", "EndToEndTestFile EndToEndTestFile4");
         this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
         this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"Add new\"");
 
@@ -198,7 +200,7 @@ public class EndToEndTest extends TestCase{
         searchResult = cs.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
-        CodeIndexer.deleteByReponame("EndToEndGitTest");
+        Singleton.getCodeIndexer().deleteByReponame("EndToEndGitTest");
         searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
@@ -210,7 +212,7 @@ public class EndToEndTest extends TestCase{
         Process process = processBuilder.start();
 
         InputStream is = process.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
+        InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
         BufferedReader br = new BufferedReader(isr);
         String line;
         StringBuilder sb = new StringBuilder();
@@ -220,39 +222,5 @@ public class EndToEndTest extends TestCase{
         }
 
         return sb.toString();
-    }
-
-    private File createDirectoryWithFiles(String unique) throws IOException {
-        File tempPath = this.clearAndCreateTempPath(unique);
-
-        createFile(tempPath, "EndToEndTestFile1.php", "EndToEndTestFile EndToEndTestFile1");
-        createFile(tempPath, "EndToEndTestFile2.py",  "EndToEndTestFile EndToEndTestFile2");
-        createFile(tempPath, "EndToEndTestFile3.java",  "EndToEndTestFile EndToEndTestFile3");
-
-        return tempPath;
-    }
-
-    private File createFile(File tempDir, String filename, String contents) throws IOException {
-        File file = new File(tempDir, filename);
-
-        try (PrintWriter pw = new PrintWriter(new FileWriter(file, true))) {
-            pw.println(contents);
-        }
-
-        return file;
-    }
-
-    private File clearAndCreateTempPath(String unique) throws IOException {
-        String baseName = org.apache.commons.codec.digest.DigestUtils.md5Hex(unique);
-        File baseDir = new File(System.getProperty("java.io.tmpdir"));
-        File tempDir = new File(baseDir, baseName);
-
-        if (tempDir.exists()) {
-            FileUtils.deleteDirectory(tempDir);
-        }
-
-        tempDir.mkdir();
-
-        return tempDir;
     }
 }

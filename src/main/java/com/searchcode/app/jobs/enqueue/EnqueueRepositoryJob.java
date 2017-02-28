@@ -5,10 +5,10 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.enqueue;
 
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -48,6 +48,9 @@ public class EnqueueRepositoryJob implements Job {
                     case "svn":
                         Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
                         repoSvnQueue.add(rr);
+                        break;
+                    default:
+                        Singleton.getLogger().info("Unable to determine SCM type for " + rr.getName() + " " + rr.getScm());
                         break;
                 }
             }

@@ -1,61 +1,79 @@
 package com.searchcode.app.dao;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
+import org.apache.commons.lang3.RandomStringUtils;
+
+import java.util.Random;
+
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class ApiTest extends TestCase {
-    public void testMultipleCreateTable() {
-        Api api = Singleton.getApi();
 
-        api.createTableIfMissing();
-        api.createTableIfMissing();
-        api.createTableIfMissing();
-        api.createTableIfMissing();
+    Api api = null;
+
+    public ApiTest() {
+        this.api = new Api(new SQLiteMemoryDatabaseConfig());
+        this.api.createTableIfMissing();
+    }
+
+    public void testMultipleCreateTable() {
+        for (int i = 0; i < 200; i++) {
+            this.api.createTableIfMissing();
+        }
     }
 
     public void testSaveDelete() {
-        Api api = Singleton.getApi();
+        String randomApiString = this.getRandomString();
 
-        api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
-        api.deleteApiByPublicKey("publicKey");
+        this.api.saveApi(new ApiResult(0, randomApiString, "privateKey", "", ""));
+        this.api.deleteApiByPublicKey(randomApiString);
     }
 
     public void testSaveRetrieve() {
-        Api api = Singleton.getApi();
+        String randomApiString = this.getRandomString();
 
-        api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
-        ApiResult apiResult = api.getApiByPublicKey("publicKey");
+        this.api.saveApi(new ApiResult(0, randomApiString, "privateKey", "", ""));
+        ApiResult apiResult = this.api.getApiByPublicKey(randomApiString);
 
-        assertEquals("publicKey", apiResult.getPublicKey());
-        assertEquals("privateKey", apiResult.getPrivateKey());
+        assertThat(apiResult.getPublicKey()).isEqualTo(randomApiString);
+        assertThat(apiResult.getPrivateKey()).isEqualTo("privateKey");
 
-        api.deleteApiByPublicKey("publicKey");
+        this.api.deleteApiByPublicKey(randomApiString);
     }
 
     public void testMultipleRetrieveCache() {
-        Api api = Singleton.getApi();
+        String randomApiString = this.getRandomString();
 
-        api.saveApi(new ApiResult(0, "publicKey", "privateKey", "", ""));
+        this.api.saveApi(new ApiResult(0, randomApiString, "privateKey", "", ""));
 
-        // Without the cache this is horribly slow
-        for(int i=0; i < 50000; i++) {
-            ApiResult apiResult = api.getApiByPublicKey("publicKey");
+        for(int i=0; i < 500; i++) {
+            ApiResult apiResult = this.api.getApiByPublicKey(randomApiString);
 
-            assertEquals("publicKey", apiResult.getPublicKey());
-            assertEquals("privateKey", apiResult.getPrivateKey());
+            assertThat(apiResult.getPublicKey()).isEqualTo(randomApiString);
+            assertThat(apiResult.getPrivateKey()).isEqualTo("privateKey");
         }
 
-        api.deleteApiByPublicKey("publicKey");
+        this.api.deleteApiByPublicKey(randomApiString);
     }
 
     public void testGetAllApi() {
-        Api api = Singleton.getApi();
+        String randomApi1 = this.getRandomString();
+        String randomApi2 = this.getRandomString();
 
-        api.saveApi(new ApiResult(0, "publicKey1", "privateKey", "", ""));
-        api.saveApi(new ApiResult(0, "publicKey2", "privateKey", "", ""));
-        assertEquals(2, api.getAllApi().size());
-        api.deleteApiByPublicKey("publicKey1");
-        api.deleteApiByPublicKey("publicKey2");
+        this.api.saveApi(new ApiResult(0, randomApi1, "privateKey", "", ""));
+        this.api.saveApi(new ApiResult(0, randomApi2, "privateKey", "", ""));
+
+        assertThat(this.api.getAllApi().size()).isEqualTo(2);
+
+        this.api.deleteApiByPublicKey(randomApi1);
+        this.api.deleteApiByPublicKey(randomApi2);
+    }
+
+    private String getRandomString() {
+        Random random = new Random();
+        return RandomStringUtils.randomAscii(random.nextInt(20) + 20);
     }
 }

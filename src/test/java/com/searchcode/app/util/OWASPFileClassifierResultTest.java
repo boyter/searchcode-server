@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.6
+ * Version 1.3.8
  */
 
 package com.searchcode.app.util;
@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class OWASPClassifierTest extends TestCase {
+public class OWASPFileClassifierResultTest extends TestCase {
 
     public void testOWASPLoader() {
         OWASPClassifier oc = new OWASPClassifier();
