@@ -129,10 +129,6 @@ public class CodeMatcher {
             if (matching != 0) {
                 resultLines.add(new CodeMatchResult(code.get(i), true, false, matching, i));
             }
-
-//            if (resultLines.size() >= MATCHLINES) {
-//                break;
-//            }
         }
 
         // Get the adjacent lines
