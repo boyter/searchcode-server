@@ -88,9 +88,6 @@ public class AdminRouteService {
 
     public Map<String, Object> adminPage(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
-
-        CodeSearcher cs = new CodeSearcher();
-        Repo repo = Singleton.getRepo();
         StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here

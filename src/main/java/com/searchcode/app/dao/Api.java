@@ -109,9 +109,8 @@ public class Api implements IApi {
     public synchronized boolean saveApi(ApiResult apiResult) {
         boolean successful = false;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
             connection = this.dbConfig.getConnection();
@@ -130,7 +129,6 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
         }
 
@@ -138,9 +136,8 @@ public class Api implements IApi {
     }
 
     public synchronized void deleteApiByPublicKey(String publicKey) {
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
 
         try {
             connection = this.dbConfig.getConnection();
@@ -154,7 +151,6 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
             Helpers.closeQuietly(preparedStatement);
         }
     }

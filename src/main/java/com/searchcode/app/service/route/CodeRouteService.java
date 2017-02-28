@@ -74,7 +74,7 @@ public class CodeRouteService {
             List<String> ownsList = new ArrayList<>();
 
             if (request.queryParams().contains("repo")) {
-                String[] repos = new String[0];
+                String[] repos;
                 repos = request.queryParamsValues("repo");
 
                 if (repos.length != 0) {
@@ -83,7 +83,7 @@ public class CodeRouteService {
             }
 
             if (request.queryParams().contains("lan")) {
-                String[] langs = new String[0];
+                String[] langs;
                 langs = request.queryParamsValues("lan");
 
                 if (langs.length != 0) {
@@ -92,7 +92,7 @@ public class CodeRouteService {
             }
 
             if (request.queryParams().contains("own")) {
-                String[] owns = new String[0];
+                String[] owns;
                 owns = request.queryParamsValues("own");
 
                 if (owns.length != 0) {

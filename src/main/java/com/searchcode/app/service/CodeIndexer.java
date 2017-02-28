@@ -375,7 +375,6 @@ public class CodeIndexer {
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(codeIndexDocument);
         indexDocuments(queue);
-        queue = null;
     }
 
     /**
@@ -386,6 +385,5 @@ public class CodeIndexer {
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
         queue.add(codeIndexDocument);
         indexTimeDocuments(queue);
-        queue = null;
     }
 }

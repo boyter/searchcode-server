@@ -50,7 +50,6 @@ public class FileClassifier {
         }
 
         // Find all languages that might be this one
-        FileClassifier fileClassifier = new FileClassifier();
         Object[] matching = this.database.stream().filter(x -> ArrayUtils.contains(x.extensions, extension)).toArray();
         if (matching.length == 0) {
             // Check against all using the pattern and see if we can guess

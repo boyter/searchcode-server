@@ -48,9 +48,9 @@ public class SearchRouteService {
                 }
             }
 
-            String[] repos = new String[0];
-            String[] langs = new String[0];
-            String[] owners = new String[0];
+            String[] repos;
+            String[] langs;
+            String[] owners;
             String reposFilter = Values.EMPTYSTRING;
             String langsFilter = Values.EMPTYSTRING;
             String ownersFilter = Values.EMPTYSTRING;
@@ -91,9 +91,6 @@ public class SearchRouteService {
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
                 }
             }
-
-            // Need to pass in the filters into this query
-            String cacheKey = query + page + reposFilter + langsFilter + ownersFilter;
 
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);
