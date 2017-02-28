@@ -229,7 +229,7 @@ public class CodeMatcher {
         // Remove duplicates
         List<String> depdupeTerms = new ArrayList<>(new LinkedHashSet<>(newTerms));
         // Sort largest to smallest to produce largest matching results
-        depdupeTerms.sort((p1, p2) -> new Integer(p2.length()).compareTo(p1.length()));
+        depdupeTerms.sort((p1, p2) -> Integer.valueOf(p2.length()).compareTo(p1.length()));
         return depdupeTerms;
     }
 

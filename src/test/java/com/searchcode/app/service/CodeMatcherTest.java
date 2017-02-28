@@ -443,4 +443,13 @@ public class CodeMatcherTest extends TestCase {
         assertTrue(strings.contains("search*"));
         assertTrue(strings.contains("s*"));
     }
+
+    public void testSplitTermsOrder() {
+        CodeMatcher cm = new CodeMatcher();
+        List<String> strings = cm.splitTerms("ttt t tt");
+        assertThat(strings).hasSize(3);
+        assertThat(strings.get(0)).isEqualTo("ttt");
+        assertThat(strings.get(1)).isEqualTo("tt");
+        assertThat(strings.get(2)).isEqualTo("t");
+    }
 }
