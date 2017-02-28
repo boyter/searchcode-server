@@ -144,4 +144,6 @@ public class Values {
     // Used for job status
     public static final String REPO_STATUS_INDEXING = "INDEXING";
     public static final String REPO_STATUS_FINISHED = "FINISHED";
+
+    public static final String CHARSET_UTF8 = "UTF8";
 }

@@ -130,7 +130,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             String line;
             DateFormat df = new SimpleDateFormat("yyyy-mm-dd kk:mm:ss");

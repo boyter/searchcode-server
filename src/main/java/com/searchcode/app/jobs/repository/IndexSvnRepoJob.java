@@ -131,7 +131,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             String line;
             StringBuilder bf = new StringBuilder();
@@ -199,7 +199,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             String line;
 
@@ -241,7 +241,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             String line;
             StringBuffer sb = new StringBuffer();
@@ -305,7 +305,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             StringBuilder sb = new StringBuilder();
             String line;
@@ -376,7 +376,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             process = processBuilder.start();
 
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
+            InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             String line;
 

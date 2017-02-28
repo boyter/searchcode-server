@@ -212,7 +212,7 @@ public class EndToEndITCase extends TestCase{
         Process process = processBuilder.start();
 
         InputStream is = process.getInputStream();
-        InputStreamReader isr = new InputStreamReader(is);
+        InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
         BufferedReader br = new BufferedReader(isr);
         String line;
         StringBuilder sb = new StringBuilder();
