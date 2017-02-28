@@ -25,7 +25,7 @@ public class Properties {
 
     private static java.util.Properties properties = null;
 
-    public static java.util.Properties getProperties() {
+    public static synchronized java.util.Properties getProperties() {
         if (properties == null) {
             properties = new java.util.Properties();
             FileInputStream fileInputStream = null;
