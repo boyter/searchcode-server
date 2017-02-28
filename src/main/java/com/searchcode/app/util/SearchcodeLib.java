@@ -486,13 +486,13 @@ public class SearchcodeLib {
         }
 
         ISpellingCorrector sc = Singleton.getSpellingCorrector();
-        altquery = Values.EMPTYSTRING;
+        StringBuilder stringBuilder = new StringBuilder();
         for(String word: query.replaceAll(" +", " ").split(" ")) {
             if (!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
-                altquery += " " + sc.correct(word);
+                stringBuilder.append(" ").append(sc.correct(word));
             }
         }
-        altquery = altquery.trim();
+        altquery = stringBuilder.toString().trim();
 
         if (!altquery.toLowerCase().equals(query.toLowerCase()) && !altQueries.contains(altquery)) {
             altQueries.add(altquery);
