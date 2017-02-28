@@ -590,36 +590,36 @@ public class SearchcodeLib {
         return stringBuffer.toString().replace(",  and", " and");
     }
 
-    /**
-     * Currently not used but meant to replicate the searchcode.com hash which is used to identify duplicate files
-     * even when they have a few characters or lines missing. It should in these cases produce identical hashes.
-     */
-    public String hash(String contents) {
-        int hashLength = 20;
-
-        if (contents.length() == 0) {
-            return Strings.padStart("", hashLength, '0');
-        }
-
-        String allowedCharacters = "BCDFGHIJKLMNOPQRSUVWXYZbcdfghijklmnopqrsuvwxyz1234567890";
-
-        // remove all spaces
-        Joiner joiner = Joiner.on("").skipNulls();
-        String toHash = joiner.join(Splitter.on(' ')
-                            .trimResults()
-                            .omitEmptyStrings()
-                            .split(contents));
-
-        // remove all non acceptable characters
-        for(int i=0; i< toHash.length(); i++) {
-            char c = toHash.charAt(i);
-
-            if (allowedCharacters.indexOf(c) != -1) {
-                // allowed so keep it
-            }
-        }
-
-        return "";
-    }
+//    /**
+//     * Currently not used but meant to replicate the searchcode.com hash which is used to identify duplicate files
+//     * even when they have a few characters or lines missing. It should in these cases produce identical hashes.
+//     */
+//    public String hash(String contents) {
+//        int hashLength = 20;
+//
+//        if (contents.length() == 0) {
+//            return Strings.padStart("", hashLength, '0');
+//        }
+//
+//        String allowedCharacters = "BCDFGHIJKLMNOPQRSUVWXYZbcdfghijklmnopqrsuvwxyz1234567890";
+//
+//        // remove all spaces
+//        Joiner joiner = Joiner.on("").skipNulls();
+//        String toHash = joiner.join(Splitter.on(' ')
+//                            .trimResults()
+//                            .omitEmptyStrings()
+//                            .split(contents));
+//
+//        // remove all non acceptable characters
+//        for(int i=0; i< toHash.length(); i++) {
+//            char c = toHash.charAt(i);
+//
+//            if (allowedCharacters.indexOf(c) != -1) {
+//                // allowed so keep it
+//            }
+//        }
+//
+//        return "";
+//    }
 }
 

@@ -444,6 +444,9 @@ public class JobService implements IJobService {
                 Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
                 repoFileQueue.add(rr);
                 break;
+            default:
+                Singleton.getLogger().info("Unknown SCM type " + rr.getName() + " " + rr.getScm());
+                break;
         }
     }
 }

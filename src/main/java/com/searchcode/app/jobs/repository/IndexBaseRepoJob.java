@@ -300,17 +300,16 @@ public abstract class IndexBaseRepoJob implements Job {
 
             reportList.add(new String[]{changedFile, "included", ""});
 
-            if (codeLines != null) {
-                if (this.LOWMEMORY) {
-                    try {
-                        Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                    }
-                } else {
-                    Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                    codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+
+            if (this.LOWMEMORY) {
+                try {
+                    Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                } catch (IOException ex) {
+                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 }
+            } else {
+                Singleton.incrementCodeIndexLinesCount(codeLines.size());
+                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
             }
         }
 

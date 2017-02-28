@@ -44,6 +44,9 @@ public class EnqueueFileRepositoryJob implements Job {
                         Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
                         repoQueue.add(rr);
                         break;
+                    default:
+                        Singleton.getLogger().info("Unable to determine job type for " + rr.getName());
+                        break;
                 }
             }
         }
