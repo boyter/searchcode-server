@@ -117,52 +117,57 @@ public class App {
         //              API Routes Below
         ////////////////////////////////////////////////////
 
-        get("/api/codesearch/", (request, response) -> {
-            addJsonHeaders(response);
-            SearchRouteService searchRouteService = new SearchRouteService();
-            return searchRouteService.codeSearch(request, response);
-        }, new JsonTransformer());
+        path("/api", () -> {
+            get("/codesearch/", (request, response) -> {
+                addJsonHeaders(response);
+                SearchRouteService searchRouteService = new SearchRouteService();
+                return searchRouteService.codeSearch(request, response);
+            }, new JsonTransformer());
 
 
-        get("/api/timecodesearch/", (request, response) -> {
-            addJsonHeaders(response);
-            TimeSearchRouteService ars = new TimeSearchRouteService();
-            return ars.getTimeSearch(request, response);
-        }, new JsonTransformer());
+            get("/timecodesearch/", (request, response) -> {
+                addJsonHeaders(response);
+                TimeSearchRouteService ars = new TimeSearchRouteService();
+                return ars.getTimeSearch(request, response);
+            }, new JsonTransformer());
 
-        get("/api/repo/add/", "application/json", (request, response) -> {
-            addJsonHeaders(response);
-            ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.repoAdd(request, response);
-        }, new JsonTransformer());
+            path("/repo", () -> {
+                get("/add/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.repoAdd(request, response);
+                }, new JsonTransformer());
 
-        get("/api/repo/delete/", "application/json", (request, response) -> {
-            addJsonHeaders(response);
-            ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.repoDelete(request, response);
-        }, new JsonTransformer());
+                get("/delete/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.repoDelete(request, response);
+                }, new JsonTransformer());
 
-        get("/api/repo/list/", "application/json", (request, response) -> {
-            addJsonHeaders(response);
-            ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.repoList(request, response);
-        }, new JsonTransformer());
+                get("/list/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.repoList(request, response);
+                }, new JsonTransformer());
 
-        get("/api/repo/reindex/", "application/json", (request, response) -> {
-            addJsonHeaders(response);
-            ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.repositoryReindex(request, response);
-        }, new JsonTransformer());
+                get("/reindex/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.repositoryReindex(request, response);
+                }, new JsonTransformer());
 
-        ////////////////////////////////////////////////////
-        //          Unsecured API Routes Below
-        ////////////////////////////////////////////////////
+                ////////////////////////////////////////////////////
+                //          Unsecured API Routes Below
+                ////////////////////////////////////////////////////
 
-        get("/api/repo/index/", "application/json", (request, response) -> {
-            addJsonHeaders(response);
-            ApiRouteService apiRouteService = new ApiRouteService();
-            return apiRouteService.repositoryIndex(request, response);
-        }, new JsonTransformer());
+                get("/index/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.repositoryIndex(request, response);
+                }, new JsonTransformer());
+            });
+        });
+
 
         ////////////////////////////////////////////////////
         //              Admin Routes Below
