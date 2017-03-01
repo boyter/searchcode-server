@@ -168,131 +168,6 @@ public class App {
         //              Admin Routes Below
         ////////////////////////////////////////////////////
 
-        get("/admin/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.adminPage(request, response);
-
-            return new ModelAndView(map, "admin.ftl");
-        }, new FreeMarkerEngine());
-
-        get("/admin/repo/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.adminRepo(request, response);
-
-            return new ModelAndView(map, "admin_repo.ftl");
-        }, new FreeMarkerEngine());
-
-        get("/admin/repolist/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.adminRepo(request, response);
-
-            return new ModelAndView(map, "admin_repolist.ftl");
-        }, new FreeMarkerEngine());
-
-        get("/admin/bulk/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            Map<String, Object> map = new HashMap<>();
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
-            return new ModelAndView(map, "admin_bulk.ftl");
-        }, new FreeMarkerEngine());
-
-        get("/admin/api/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.adminApi(request, response);
-
-            return new ModelAndView(map, "admin_api.ftl");
-        }, new FreeMarkerEngine());
-
-        post("/admin/api/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            Singleton.getApiService().createKeys();
-
-            response.redirect("/admin/api/");
-            halt();
-            return null;
-        }, new FreeMarkerEngine());
-
-        get("/admin/api/delete/", "application/json", (request, response) -> {
-            if (getAuthenticatedUser(request) == null || !request.queryParams().contains("publicKey")) {
-                response.redirect("/login/");
-                halt();
-                return false;
-            }
-
-            String publicKey = request.queryParams("publicKey");
-            Singleton.getApiService().deleteKey(publicKey);
-
-            return true;
-        }, new JsonTransformer());
-
-        get("/admin/settings/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.adminSettings(request, response);
-
-            return new ModelAndView(map, "admin_settings.ftl");
-        }, new FreeMarkerEngine());
-
-        get("/admin/logs/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            Map<String, Object> map = adminRouteService.adminLogs(request, response);
-
-            return new ModelAndView(map, "admin_logs.ftl");
-        }, new FreeMarkerEngine());
-
-        post("/admin/settings/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            if (ISCOMMUNITY) {
-                response.redirect("/admin/settings/");
-                halt();
-            }
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.postSettings(request, response);
-
-            response.redirect("/admin/settings/");
-            halt();
-            return null;
-        }, new FreeMarkerEngine());
-
-        post("/admin/bulk/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.postBulk(request, response);
-
-            response.redirect("/admin/bulk/");
-            halt();
-            return null;
-        }, new FreeMarkerEngine());
-
-        post("/admin/repo/", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            adminRouteService.postRepo(request, response);
-
-            response.redirect("/admin/repo/");
-            halt();
-            return null;
-        }, new FreeMarkerEngine());
-
         get("/login/", (request, response) -> {
             if (getAuthenticatedUser(request) != null) {
                 response.redirect("/admin/");
@@ -330,84 +205,194 @@ public class App {
             return null;
         });
 
-        get("/admin/delete/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+        path("/admin", () -> {
+            get("/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminPage(request, response);
 
-            String repoName = request.queryParams("repoName");
-            Repo repo = Singleton.getRepo();
-            RepoResult rr = repo.getRepoByName(repoName);
+                return new ModelAndView(map, "admin.ftl");
+            }, new FreeMarkerEngine());
 
-            if (rr != null) {
-                Singleton.getUniqueDeleteRepoQueue().add(rr);
-            }
+            get("/repo/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminRepo(request, response);
 
-            return true;
-        }, new JsonTransformer());
+                return new ModelAndView(map, "admin_repo.ftl");
+            }, new FreeMarkerEngine());
 
-        post("/admin/rebuild/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+            get("/repolist/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminRepo(request, response);
 
-            boolean result = Singleton.getJobService().rebuildAll();
-            if (result) {
-                Singleton.getJobService().forceEnqueue();
-            }
-            return result;
-        }, new JsonTransformer());
+                return new ModelAndView(map, "admin_repolist.ftl");
+            }, new FreeMarkerEngine());
 
-        post("/admin/forcequeue/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+            get("/bulk/", (request, response) -> {
+                checkLoggedIn(request, response);
+                Map<String, Object> map = new HashMap<>();
 
-            return Singleton.getJobService().forceEnqueue();
-        }, new JsonTransformer());
+                map.put("logoImage", CommonRouteService.getLogo());
+                map.put("isCommunity", ISCOMMUNITY);
+                return new ModelAndView(map, "admin_bulk.ftl");
+            }, new FreeMarkerEngine());
 
-        post("/admin/togglepause/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+            get("/settings/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminSettings(request, response);
 
-            Singleton.setPauseBackgroundJobs(!Singleton.getPauseBackgroundJobs());
-            return Singleton.getPauseBackgroundJobs();
-        }, new JsonTransformer());
+                return new ModelAndView(map, "admin_settings.ftl");
+            }, new FreeMarkerEngine());
 
-        post("/admin/clearsearchcount/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+            get("/logs/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminLogs(request, response);
 
-            Singleton.getStatsService().clearSearchCount();
-            return Values.EMPTYSTRING;
-        }, new JsonTransformer());
+                return new ModelAndView(map, "admin_logs.ftl");
+            }, new FreeMarkerEngine());
 
-        post("/admin/resetspellingcorrector/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+            post("/settings/", (request, response) -> {
+                checkLoggedIn(request, response);
+                if (ISCOMMUNITY) {
+                    response.redirect("/admin/settings/");
+                    halt();
+                }
 
-            Singleton.getSpellingCorrector().reset();
-            return Values.EMPTYSTRING;
-        }, new JsonTransformer());
+                AdminRouteService adminRouteService = new AdminRouteService();
+                adminRouteService.postSettings(request, response);
 
-        get("/admin/checkversion/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
+                response.redirect("/admin/settings/");
+                halt();
+                return null;
+            }, new FreeMarkerEngine());
 
-            AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.checkVersion();
+            post("/bulk/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                adminRouteService.postBulk(request, response);
+
+                response.redirect("/admin/bulk/");
+                halt();
+                return null;
+            }, new FreeMarkerEngine());
+
+            post("/repo/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                adminRouteService.postRepo(request, response);
+
+                response.redirect("/admin/repo/");
+                halt();
+                return null;
+            }, new FreeMarkerEngine());
+
+            get("/delete/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                String repoName = request.queryParams("repoName");
+                Repo repo = Singleton.getRepo();
+                RepoResult rr = repo.getRepoByName(repoName);
+
+                if (rr != null) {
+                    Singleton.getUniqueDeleteRepoQueue().add(rr);
+                }
+
+                return true;
+            }, new JsonTransformer());
+
+            post("/rebuild/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                boolean result = Singleton.getJobService().rebuildAll();
+                if (result) {
+                    Singleton.getJobService().forceEnqueue();
+                }
+                return result;
+            }, new JsonTransformer());
+
+            post("/forcequeue/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                return Singleton.getJobService().forceEnqueue();
+            }, new JsonTransformer());
+
+            post("/togglepause/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.setPauseBackgroundJobs(!Singleton.getPauseBackgroundJobs());
+                return Singleton.getPauseBackgroundJobs();
+            }, new JsonTransformer());
+
+            post("/clearsearchcount/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.getStatsService().clearSearchCount();
+                return Values.EMPTYSTRING;
+            }, new JsonTransformer());
+
+            post("/resetspellingcorrector/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.getSpellingCorrector().reset();
+                return Values.EMPTYSTRING;
+            }, new JsonTransformer());
+
+            get("/checkversion/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                return adminRouteService.checkVersion();
+            });
+
+            path("/api", () -> {
+                get("/", (request, response) -> {
+                    checkLoggedIn(request, response);
+                    AdminRouteService adminRouteService = new AdminRouteService();
+                    Map<String, Object> map = adminRouteService.adminApi(request, response);
+
+                    return new ModelAndView(map, "admin_api.ftl");
+                }, new FreeMarkerEngine());
+
+                post("/", (request, response) -> {
+                    checkLoggedIn(request, response);
+                    Singleton.getApiService().createKeys();
+
+                    response.redirect("/admin/api/");
+                    halt();
+                    return null;
+                }, new FreeMarkerEngine());
+
+                get("/delete/", "application/json", (request, response) -> {
+                    checkLoggedIn(request, response);
+                    if (getAuthenticatedUser(request) == null || !request.queryParams().contains("publicKey")) {
+                        response.redirect("/login/");
+                        halt();
+                        return false;
+                    }
+
+                    String publicKey = request.queryParams("publicKey");
+                    Singleton.getApiService().deleteKey(publicKey);
+
+                    return true;
+                }, new JsonTransformer());
+
+                get("/getstat/", "application/json", (request, response) -> {
+                    checkLoggedIn(request, response);
+                    AdminRouteService adminRouteService = new AdminRouteService();
+                    return adminRouteService.getStat(request, response);
+                });
+
+                get("/getstatjson/", "application/json", (request, response) -> {
+                    checkLoggedIn(request, response);
+                    AdminRouteService adminRouteService = new AdminRouteService();
+                    return adminRouteService.getStat(request, response);
+                }, new JsonTransformer());
+
+                get("/checkindexstatus/", "application/json", (request, response) -> {
+                    checkLoggedIn(request, response);
+                    AdminRouteService adminRouteService = new AdminRouteService();
+                    return adminRouteService.checkIndexStatus(request, response);
+                });
+            });
         });
 
-        get("/admin/api/getstat/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.getStat(request, response);
-        });
-
-        get("/admin/api/getstatjson/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.getStat(request, response);
-        }, new JsonTransformer());
-
-        get("/admin/api/checkindexstatus/", "application/json", (request, response) -> {
-            checkLoggedIn(request, response);
-
-            AdminRouteService adminRouteService = new AdminRouteService();
-            return adminRouteService.checkIndexStatus(request, response);
-        });
     }
 
 
