@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <jdk.version>1.8</jdk.version>
-        <spark.version>2.5.4</spark.version>
+        <spark.version>2.5.5</spark.version>
         <spark.freemarker.version>2.0.0</spark.freemarker.version>
         <freemarker.version>2.3.23</freemarker.version>
         <hsqldb.version>2.3.3</hsqldb.version>
