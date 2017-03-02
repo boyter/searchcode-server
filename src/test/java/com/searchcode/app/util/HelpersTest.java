@@ -2,6 +2,7 @@ package com.searchcode.app.util;
 
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
+import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -11,6 +12,8 @@ import java.util.Map;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.when;
 
 public class HelpersTest extends TestCase {
 
@@ -73,16 +76,11 @@ public class HelpersTest extends TestCase {
     }
 
     public void testIgnoreFilesBlackList() {
+        java.util.Properties mockProperties = Mockito.mock(java.util.Properties.class);
+        when(mockProperties.getProperty(any(), any())).thenReturn("");
 
+        this.helpers = new Helpers(mockProperties);
 
-        assertThat(this.helpers.ignoreFiles("/.git")).isTrue();
-        assertThat(this.helpers.ignoreFiles("/.git/")).isTrue();
-        assertThat(this.helpers.ignoreFiles(".git/")).isTrue();
-        assertThat(this.helpers.ignoreFiles(".git")).isTrue();
-
-        assertThat(this.helpers.ignoreFiles("/.svn")).isTrue();
-        assertThat(this.helpers.ignoreFiles("/.svn/")).isTrue();
-
-
+        assertThat(this.helpers.ignoreFiles("/target")).isFalse();
     }
 }
