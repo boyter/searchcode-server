@@ -12,6 +12,7 @@ package com.searchcode.app.util;
 
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.service.Singleton;
 
 import java.util.*;
 
@@ -63,7 +64,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
 
     @Override
     public String correct(String word) {
-        if (Helpers.isNullEmptyOrWhitespace(word)) {
+        if (Singleton.getHelpers().isNullEmptyOrWhitespace(word)) {
             return word;
         }
 
@@ -89,7 +90,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
 
         if (!possibleMatches.isEmpty()) {
             // Sorted least likely first
-            Object[] matches = Helpers.sortByValue(possibleMatches).keySet().toArray();
+            Object[] matches = Singleton.getHelpers().sortByValue(possibleMatches).keySet().toArray();
 
             // Try to match anything of the same length first
             String bestMatch = "";
@@ -99,7 +100,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
                 }
             }
 
-            if (!Helpers.isNullEmptyOrWhitespace(bestMatch)) {
+            if (!Singleton.getHelpers().isNullEmptyOrWhitespace(bestMatch)) {
                 return bestMatch;
             }
 
@@ -126,7 +127,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
 
         if (!possibleMatches.isEmpty()) {
             // Sorted least likely first
-            Object[] matches = Helpers.sortByValue(possibleMatches).keySet().toArray();
+            Object[] matches = Singleton.getHelpers().sortByValue(possibleMatches).keySet().toArray();
 
             // Try to match anything of the same length first
             String bestMatch = "";
@@ -136,7 +137,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
                 }
             }
 
-            if (!Helpers.isNullEmptyOrWhitespace(bestMatch)) {
+            if (!Singleton.getHelpers().isNullEmptyOrWhitespace(bestMatch)) {
                 return bestMatch;
             }
 

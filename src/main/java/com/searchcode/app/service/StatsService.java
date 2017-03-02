@@ -38,7 +38,7 @@ public class StatsService {
     }
 
     public void incrementSearchCount() {
-        int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        int totalCount = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
 
         if (totalCount == Integer.MAX_VALUE) {
             totalCount = 0;
@@ -53,7 +53,7 @@ public class StatsService {
     }
 
     public int getSearchCount() {
-        int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        int totalCount = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
         return totalCount;
     }
 

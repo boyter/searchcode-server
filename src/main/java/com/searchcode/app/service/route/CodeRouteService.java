@@ -173,7 +173,7 @@ public class CodeRouteService {
         int limit = Integer.parseInt(
                 Properties.getProperties().getProperty(
                         Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-        boolean highlight = Helpers.tryParseInt(codeResult.codeLines, "0") <= limit;
+        boolean highlight = Singleton.getHelpers().tryParseInt(codeResult.codeLines, "0") <= limit;
 
         RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 

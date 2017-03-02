@@ -43,8 +43,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class CodeIndexer {
 
-    private static int MAXINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
-    private static int MAXLINESINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static int MAXINDEXSIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
+    private static int MAXLINESINDEXSIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
 
     /**
      * Returns true if indexing should be paused, false otherwise
@@ -185,13 +185,13 @@ public class CodeIndexer {
                 facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                 facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
 
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
 
@@ -295,28 +295,28 @@ public class CodeIndexer {
                 facetsConfig.setIndexFieldName(Values.REVISION, Values.REVISION);
                 facetsConfig.setIndexFieldName(Values.DELETED, Values.DELETED);
 
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTH, codeIndexDocument.getYearMonthDay().substring(0, 6)));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEAR, codeIndexDocument.getYearMonthDay().substring(0, 4)));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRevision()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRevision()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REVISION, codeIndexDocument.getRevision()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.isDeleted()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.isDeleted()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DELETED, codeIndexDocument.isDeleted()));
                 }
 

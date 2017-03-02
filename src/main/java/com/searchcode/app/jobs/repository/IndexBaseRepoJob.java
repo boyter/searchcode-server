@@ -47,7 +47,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
     public boolean LOWMEMORY = true;
     protected int SLEEPTIME = 5000;
-    public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+    public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
     public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
     public boolean haveRepoResult = false;
     public CodeIndexer codeIndexer = Singleton.getCodeIndexer();
@@ -129,7 +129,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
-                        new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
+                        new RunningIndexJob("Indexing", Singleton.getHelpers().getCurrentTimeSeconds()));
 
                 this.checkCloneSuccess(repoResult.getName(), repoLocations);
 
@@ -169,7 +169,7 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
             this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
-            int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+            int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
             repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
             repoResult.getData().indexStatus = "success";
             Singleton.getRepo().saveRepo(repoResult);
@@ -181,7 +181,7 @@ public abstract class IndexBaseRepoJob implements Job {
      * then it will delete the folder to start again
      */
     public boolean checkCloneSuccess(String repoName, String repoLocations) {
-        if (Helpers.isNullEmptyOrWhitespace(repoName) && Helpers.isNullEmptyOrWhitespace(repoLocations)) {
+        if (Singleton.getHelpers().isNullEmptyOrWhitespace(repoName) && Singleton.getHelpers().isNullEmptyOrWhitespace(repoLocations)) {
             Singleton.getLogger().warning("Repository Location is set to nothing, this can cause searchcode to modify the root file system!");
             return false;
         }
@@ -264,7 +264,7 @@ public abstract class IndexBaseRepoJob implements Job {
             List<String> codeLines;
 
             try {
-                codeLines = Helpers.readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
+                codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
@@ -373,7 +373,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
                     List<String> codeLines;
                     try {
-                        codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
+                        codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                     } catch (IOException ex) {
                         Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
                         if (LOGINDEXED) {
@@ -557,12 +557,12 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     private void logIndexed(String repoName, List<String[]> reportList) {
         try {
-            CSVWriter writer = new CSVWriter(new FileWriter(Helpers.getLogPath() + repoName + ".csv.tmp"));
+            CSVWriter writer = new CSVWriter(new FileWriter(Singleton.getHelpers().getLogPath() + repoName + ".csv.tmp"));
             writer.writeAll(reportList);
             writer.flush();
             writer.close();
 
-            Path source = Paths.get(Helpers.getLogPath() + repoName + ".csv.tmp");
+            Path source = Paths.get(Singleton.getHelpers().getLogPath() + repoName + ".csv.tmp");
             Files.move(source, source.resolveSibling(repoName + ".csv"), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " logIndexed for " + repoName + "\n with message: " + ex.getMessage());

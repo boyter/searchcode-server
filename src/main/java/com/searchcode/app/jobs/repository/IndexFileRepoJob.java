@@ -68,7 +68,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
-                        new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
+                        new RunningIndexJob("Indexing", Singleton.getHelpers().getCurrentTimeSeconds()));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -83,7 +83,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
 
-                int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+                int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                 repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
                 repoResult.getData().indexStatus = "success";
                 Singleton.getRepo().saveRepo(repoResult);
@@ -120,6 +120,6 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public boolean ignoreFile(String fileParent) {
-        return Helpers.ignoreFiles(fileParent);
+        return Singleton.getHelpers().ignoreFiles(fileParent);
     }
 }

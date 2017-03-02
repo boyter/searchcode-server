@@ -61,6 +61,7 @@ public final class Singleton {
     private static JobService jobService = null;
     private static IDatabaseConfig databaseConfig = null;
     private static CodeIndexer codeIndexer = null;
+    private static Helpers helpers = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
@@ -331,6 +332,14 @@ public final class Singleton {
         }
 
         return codeIndexer;
+    }
+
+    public static synchronized Helpers getHelpers() {
+        if (helpers == null) {
+            helpers = new Helpers();
+        }
+
+        return helpers;
     }
 
     public static synchronized void setDatabaseConfig(IDatabaseConfig databaseConfig) {

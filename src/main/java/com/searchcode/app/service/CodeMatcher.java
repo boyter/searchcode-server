@@ -34,8 +34,8 @@ public class CodeMatcher {
     public CodeMatcher()  {}
 
     public CodeMatcher(Data data) {
-        this.MATCHLINES = Helpers.tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
-        this.MAXLINEDEPTH = Helpers.tryParseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH), Values.DEFAULTMAXLINEDEPTH);
+        this.MATCHLINES = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
+        this.MAXLINEDEPTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH), Values.DEFAULTMAXLINEDEPTH);
     }
 
     /**

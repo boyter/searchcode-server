@@ -138,7 +138,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
 
             while ((line = bufferedReader.readLine()) != null) {
-                bf.append(Helpers.removeUTF8BOM(line));
+                bf.append(Singleton.getHelpers().removeUTF8BOM(line));
             }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -165,8 +165,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(process);
-            Helpers.closeQuietly(bufferedReader);
+            Singleton.getHelpers().closeQuietly(process);
+            Singleton.getHelpers().closeQuietly(bufferedReader);
         }
 
         return owner;
@@ -218,8 +218,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(process);
-            Helpers.closeQuietly(bufferedReader);
+            Singleton.getHelpers().closeQuietly(process);
+            Singleton.getHelpers().closeQuietly(bufferedReader);
         }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
@@ -248,7 +248,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
             while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("svn diff: " + line);
-                sb.append(Helpers.removeUTF8BOM(line));
+                sb.append(Singleton.getHelpers().removeUTF8BOM(line));
             }
 
             Singleton.getLogger().info("Before XML parsing: " + sb.toString());
@@ -286,8 +286,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(process);
-            Helpers.closeQuietly(bufferedReader);
+            Singleton.getHelpers().closeQuietly(process);
+            Singleton.getHelpers().closeQuietly(bufferedReader);
         }
 
         return new RepositoryChanged(true, changedFiles, deletedFiles);
@@ -311,7 +311,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
-                sb.append(Helpers.removeUTF8BOM(line));
+                sb.append(Singleton.getHelpers().removeUTF8BOM(line));
             }
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -336,8 +336,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(process);
-            Helpers.closeQuietly(bufferedReader);
+            Singleton.getHelpers().closeQuietly(process);
+            Singleton.getHelpers().closeQuietly(bufferedReader);
         }
 
         return currentRevision;
@@ -390,8 +390,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(process);
-            Helpers.closeQuietly(bufferedReader);
+            Singleton.getHelpers().closeQuietly(process);
+            Singleton.getHelpers().closeQuietly(bufferedReader);
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);

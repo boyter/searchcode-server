@@ -53,9 +53,9 @@ public class JobService implements IJobService {
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 1; // TODO allow this to be configurable
-    private int NUMBERGITPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS), Values.DEFAULT_NUMBER_GIT_PROCESSORS);
-    private int NUMBERSVNPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS), Values.DEFAULT_NUMBER_SVN_PROCESSORS);
-    private int NUMBERFILEPROCESSORS = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);;
+    private int NUMBERGITPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS), Values.DEFAULT_NUMBER_GIT_PROCESSORS);
+    private int NUMBERSVNPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS), Values.DEFAULT_NUMBER_SVN_PROCESSORS);
+    private int NUMBERFILEPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);;
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
     private String TRASHLOCATION = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);

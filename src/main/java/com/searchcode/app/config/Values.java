@@ -71,6 +71,8 @@ public class Values {
     public static final String DEFAULT_BINARY_WHITE_LIST = "";
     public static final String BINARY_BLACK_LIST = "binary_extension_black_list";
     public static final String DEFAULT_BINARY_BLACK_LIST = "";
+    public static final String DIRECTORY_BLACK_LIST = "directory_black_list";
+    public static final String DEFAULT_DIRECTORY_BLACK_LIST = "";
     public static final String GUESS_BINARY = "binary_guess";
     public static final String DEFAULT_GUESS_BINARY = "true";
     public static final String NUMBER_GIT_PROCESSORS = "number_git_processors";

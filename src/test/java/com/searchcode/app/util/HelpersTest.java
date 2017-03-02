@@ -1,5 +1,6 @@
 package com.searchcode.app.util;
 
+import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
 import java.io.FileNotFoundException;
@@ -14,22 +15,22 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class HelpersTest extends TestCase {
 
     public void testReadFileLines() throws FileNotFoundException {
-        List<String> result = Helpers.readFileLines("./README.md", 10);
+        List<String> result = Singleton.getHelpers().readFileLines("./README.md", 10);
         assertEquals(10, result.size());
 
-        result = Helpers.readFileLines("./README.md", 5);
+        result = Singleton.getHelpers().readFileLines("./README.md", 5);
         assertEquals(5, result.size());
     }
 
     public void testIsNullEmptyOrWhitespace() {
-        assertTrue(Helpers.isNullEmptyOrWhitespace(null));
-        assertTrue(Helpers.isNullEmptyOrWhitespace(""));
-        assertTrue(Helpers.isNullEmptyOrWhitespace("   "));
-        assertFalse(Helpers.isNullEmptyOrWhitespace("test"));
+        assertTrue(Singleton.getHelpers().isNullEmptyOrWhitespace(null));
+        assertTrue(Singleton.getHelpers().isNullEmptyOrWhitespace(""));
+        assertTrue(Singleton.getHelpers().isNullEmptyOrWhitespace("   "));
+        assertFalse(Singleton.getHelpers().isNullEmptyOrWhitespace("test"));
     }
 
     public void testGetLogPath() {
-        String result = Helpers.getLogPath();
+        String result = Singleton.getHelpers().getLogPath();
         assertThat(result).isNotEmpty();
     }
 
@@ -40,7 +41,7 @@ public class HelpersTest extends TestCase {
             testMap.put( "SomeString" + random.nextInt(), random.nextInt());
         }
 
-        testMap = Helpers.sortByValue( testMap );
+        testMap = Singleton.getHelpers().sortByValue( testMap );
         assertEquals(1000, testMap.size());
 
         Integer previous = null;
@@ -51,5 +52,9 @@ public class HelpersTest extends TestCase {
             }
             previous = entry.getValue();
         }
+    }
+
+    public void testIgnoreFiles() {
+
     }
 }

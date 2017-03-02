@@ -40,7 +40,7 @@ public class Helpers {
      * Calculate MD5 for a file. Using other methods for this (so this is actually dead code)
      * but we may want to use it in the future so keeping here for the moment.
      */
-    public static String calculateMd5(String filePath) {
+    public String calculateMd5(String filePath) {
         String md5 = "";
         FileInputStream fileInputStream = null;
         try {
@@ -60,7 +60,7 @@ public class Helpers {
      * Similar to the C# Int.TryParse where you pass in a string and if no good it will use the
      * default value which is also parsed... which seems odd now I think about it
      */
-    public static int tryParseInt(String toParse, String defaultValue) {
+    public int tryParseInt(String toParse, String defaultValue) {
         int result;
 
         try {
@@ -76,7 +76,7 @@ public class Helpers {
     /**
      * Reads a certain amount of lines deep into a file to save on memory
      */
-    public static List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
+    public List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
         Scanner scanner = null;
         int counter = 0;
@@ -96,11 +96,11 @@ public class Helpers {
         return lines;
     }
 
-    public static int getCurrentTimeSeconds() {
+    public int getCurrentTimeSeconds() {
         return (int) (System.currentTimeMillis() / 1000);
     }
 
-    public static List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
+    public List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
         List<String> fileLines = new ArrayList<>();
         BufferedReader bufferedReader = null;
         String line;
@@ -126,14 +126,14 @@ public class Helpers {
         return fileLines;
     }
 
-    public static Charset guessCharset(File file) throws IOException {
+    public Charset guessCharset(File file) throws IOException {
         return CharsetToolkit.guessEncoding(file, 4096, StandardCharsets.UTF_8);
     }
 
     /**
      * Crappy implementation of the C# is nullEmptyOrWhitespace which is occasionally useful
      */
-    public static boolean isNullEmptyOrWhitespace(String test) {
+    public boolean isNullEmptyOrWhitespace(String test) {
         if (test == null) {
             return true;
         }
@@ -148,7 +148,7 @@ public class Helpers {
     /**
      * Generic file paths that should be ignored
      */
-    public static boolean ignoreFiles(String fileParent) {
+    public boolean ignoreFiles(String fileParent) {
         if (fileParent.endsWith("/.git") || fileParent.contains("/.git/") || fileParent.contains(".git/") || fileParent.equals(".git")) {
             return true;
         }
@@ -164,9 +164,9 @@ public class Helpers {
      * Byte order mark issue fix see
      * http://stackoverflow.com/questions/4569123/content-is-not-allowed-in-prolog-saxparserexception
      */
-    public static final String UTF8_BOM = "\uFEFF";
-    public static String removeUTF8BOM(String s) {
-        if (s.startsWith(UTF8_BOM)) {
+    private final String UTF8_BOM = "\uFEFF";
+    public String removeUTF8BOM(String s) {
+        if (s.startsWith(this.UTF8_BOM)) {
             s = s.substring(1);
         }
         return s;
@@ -176,7 +176,7 @@ public class Helpers {
      * Sorts a map by value taken from
      * http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
      */
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {
+    public <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {
         Map<K, V> result = new LinkedHashMap<>();
         Stream<Map.Entry<K, V>> st = map.entrySet().stream();
 
@@ -185,7 +185,7 @@ public class Helpers {
         return result;
     }
 
-    public static String getLogPath() {
+    public String getLogPath() {
         String path = (String) Properties.getProperties().getOrDefault(Values.LOG_PATH, Values.DEFAULT_LOG_PATH);
 
         if (path.toUpperCase().equals("STDOUT")) {
@@ -199,49 +199,49 @@ public class Helpers {
         return path;
     }
 
-    public static void closeQuietly(ResultSet resultSet) {
+    public void closeQuietly(ResultSet resultSet) {
         try {
             resultSet.close();
         }
         catch (Exception ex) {}
     }
 
-    public static void closeQuietly(PreparedStatement preparedStatement) {
+    public void closeQuietly(PreparedStatement preparedStatement) {
         try {
             preparedStatement.close();
         }
         catch (Exception ex) {}
     }
 
-    public static void closeQuietly(Connection connection) {
+    public void closeQuietly(Connection connection) {
         try {
             connection.close();
         }
         catch (Exception ex) {}
     }
 
-    public static void closeQuietly(Process process) {
+    public void closeQuietly(Process process) {
         try {
             process.destroy();
         }
         catch (Exception ex) {}
     }
 
-    public static void closeQuietly(BufferedReader bufferedReader) {
+    public void closeQuietly(BufferedReader bufferedReader) {
         try {
             bufferedReader.close();
         }
         catch (Exception ex) {}
     }
 
-    public static void closeQuietly(Repository repository) {
+    public void closeQuietly(Repository repository) {
         try {
            repository.close();
         }
         catch (Exception ex) {}
     }
 
-    public static void closeQuietly(Git git) {
+    public void closeQuietly(Git git) {
         try {
             git.close();
         }

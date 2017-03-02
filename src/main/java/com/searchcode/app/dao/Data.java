@@ -62,8 +62,8 @@ public class Data implements IData {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get " + key);
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return value;
@@ -98,7 +98,7 @@ public class Data implements IData {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return isNew;
@@ -120,7 +120,7 @@ public class Data implements IData {
                 value = resultSet.getString("name");
             }
 
-            if (Helpers.isNullEmptyOrWhitespace(value)) {
+            if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
                 preparedStatement = connection.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR)");
                 preparedStatement.execute();
             }
@@ -129,8 +129,8 @@ public class Data implements IData {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 }

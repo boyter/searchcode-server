@@ -188,8 +188,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getBlameInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(process);
-            Helpers.closeQuietly(bufferedReader);
+            Singleton.getHelpers().closeQuietly(process);
+            Singleton.getHelpers().closeQuietly(bufferedReader);
         }
 
         return codeOwners;
@@ -361,8 +361,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(localRepository);
-            Helpers.closeQuietly(git);
+            Singleton.getHelpers().closeQuietly(localRepository);
+            Singleton.getHelpers().closeQuietly(git);
         }
 
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
@@ -396,7 +396,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(call);
+            Singleton.getHelpers().closeQuietly(call);
         }
 
         RepositoryChanged repositoryChanged = new RepositoryChanged(successful);

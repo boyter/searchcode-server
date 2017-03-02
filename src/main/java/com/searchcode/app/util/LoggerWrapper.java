@@ -13,6 +13,7 @@ package com.searchcode.app.util;
 import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.Lists;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.service.Singleton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,9 +46,9 @@ public class LoggerWrapper {
     private boolean LOGSTDOUT = false;
 
     public LoggerWrapper() {
-        this.LOGCOUNT = Helpers.tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
+        this.LOGCOUNT = Singleton.getHelpers().tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
         this.LOGLEVEL = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
-        this.LOGPATH = Helpers.getLogPath();
+        this.LOGPATH = Singleton.getHelpers().getLogPath();
 
         if (this.LOGLEVEL.equals("OFF")) {
             this.LOGSENABLED = false;

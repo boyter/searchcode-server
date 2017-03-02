@@ -16,6 +16,7 @@ import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -63,8 +64,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return apiResults;
@@ -99,8 +100,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return result;
@@ -129,7 +130,7 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return successful;
@@ -151,7 +152,7 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 
@@ -171,7 +172,7 @@ public class Api implements IApi {
                 value = resultSet.getString("name");
             }
 
-            if (Helpers.isNullEmptyOrWhitespace(value)) {
+            if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
                 preparedStatement = connection.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
                 preparedStatement.execute();
             }
@@ -180,8 +181,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 }

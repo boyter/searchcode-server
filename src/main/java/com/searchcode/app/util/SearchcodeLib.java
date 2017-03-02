@@ -46,7 +46,7 @@ public class SearchcodeLib {
     }
 
     public SearchcodeLib(Data data) {
-        this.MINIFIEDLENGTH = Helpers.tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
+        this.MINIFIEDLENGTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
         if (this.MINIFIEDLENGTH <= 0) {
             this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
         }
