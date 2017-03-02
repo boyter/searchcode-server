@@ -75,12 +75,25 @@ public class HelpersTest extends TestCase {
         assertThat(this.helpers.ignoreFiles("/.svn/")).isTrue();
     }
 
-    public void testIgnoreFilesBlackList() {
+    public void testIgnoreFilesBlackListNoResults() {
         java.util.Properties mockProperties = Mockito.mock(java.util.Properties.class);
-        when(mockProperties.getProperty(any(), any())).thenReturn("");
+        when(mockProperties.get(any())).thenReturn("");
 
         this.helpers = new Helpers(mockProperties);
 
         assertThat(this.helpers.ignoreFiles("/target")).isFalse();
+    }
+
+    public void testIgnoreFilesBlackListSingleResult() {
+        java.util.Properties mockProperties = Mockito.mock(java.util.Properties.class);
+        when(mockProperties.get(any())).thenReturn("target");
+
+        this.helpers = new Helpers(mockProperties);
+
+        assertThat(this.helpers.ignoreFiles("./target/")).isTrue();
+        assertThat(this.helpers.ignoreFiles("/target/")).isTrue();
+        assertThat(this.helpers.ignoreFiles("/target")).isTrue();
+
+        assertThat(this.helpers.ignoreFiles("target")).isFalse();
     }
 }

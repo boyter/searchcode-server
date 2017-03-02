@@ -13,7 +13,6 @@ package com.searchcode.app.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -166,6 +165,16 @@ public class Helpers {
 
         if (fileParent.endsWith("/.svn") || fileParent.contains("/.svn/")) {
             return true;
+        }
+
+        if (!this.isNullEmptyOrWhitespace((String)this.properties.get(Values.DIRECTORY_BLACK_LIST))) {
+            String[] toIgnoreArray = ((String) this.properties.get(Values.DIRECTORY_BLACK_LIST)).split(",");
+
+            for(String toIgnore: toIgnoreArray) {
+                if (fileParent.endsWith("/" + toIgnore) || fileParent.endsWith("/" + toIgnore + "/")) {
+                    return true;
+                }
+            }
         }
 
         return false;
