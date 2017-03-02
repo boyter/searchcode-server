@@ -14,8 +14,14 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class HelpersTest extends TestCase {
 
+    private Helpers helpers;
+
+    public void setUp() {
+        this.helpers = new Helpers();
+    }
+
     public void testReadFileLines() throws FileNotFoundException {
-        List<String> result = Singleton.getHelpers().readFileLines("./README.md", 10);
+        List<String> result = this.helpers.readFileLines("./README.md", 10);
         assertEquals(10, result.size());
 
         result = Singleton.getHelpers().readFileLines("./README.md", 5);
@@ -23,25 +29,25 @@ public class HelpersTest extends TestCase {
     }
 
     public void testIsNullEmptyOrWhitespace() {
-        assertTrue(Singleton.getHelpers().isNullEmptyOrWhitespace(null));
-        assertTrue(Singleton.getHelpers().isNullEmptyOrWhitespace(""));
-        assertTrue(Singleton.getHelpers().isNullEmptyOrWhitespace("   "));
-        assertFalse(Singleton.getHelpers().isNullEmptyOrWhitespace("test"));
+        assertTrue(this.helpers.isNullEmptyOrWhitespace(null));
+        assertTrue(this.helpers.isNullEmptyOrWhitespace(""));
+        assertTrue(this.helpers.isNullEmptyOrWhitespace("   "));
+        assertFalse(this.helpers.isNullEmptyOrWhitespace("test"));
     }
 
     public void testGetLogPath() {
-        String result = Singleton.getHelpers().getLogPath();
+        String result = this.helpers.getLogPath();
         assertThat(result).isNotEmpty();
     }
 
     public void testSortByValue() {
         Random random = new Random(System.currentTimeMillis());
-        Map<String, Integer> testMap = new HashMap<String, Integer>(1000);
+        Map<String, Integer> testMap = new HashMap<>(1000);
         for (int i = 0 ; i < 1000 ; ++i) {
             testMap.put( "SomeString" + random.nextInt(), random.nextInt());
         }
 
-        testMap = Singleton.getHelpers().sortByValue( testMap );
+        testMap = this.helpers.sortByValue( testMap );
         assertEquals(1000, testMap.size());
 
         Integer previous = null;
@@ -54,7 +60,29 @@ public class HelpersTest extends TestCase {
         }
     }
 
-    public void testIgnoreFiles() {
+    public void testIgnoreFilesDefaults() {
+        assertThat(this.helpers.ignoreFiles("/git")).isFalse();
+
+        assertThat(this.helpers.ignoreFiles("/.git")).isTrue();
+        assertThat(this.helpers.ignoreFiles("/.git/")).isTrue();
+        assertThat(this.helpers.ignoreFiles(".git/")).isTrue();
+        assertThat(this.helpers.ignoreFiles(".git")).isTrue();
+
+        assertThat(this.helpers.ignoreFiles("/.svn")).isTrue();
+        assertThat(this.helpers.ignoreFiles("/.svn/")).isTrue();
+    }
+
+    public void testIgnoreFilesBlackList() {
+
+
+        assertThat(this.helpers.ignoreFiles("/.git")).isTrue();
+        assertThat(this.helpers.ignoreFiles("/.git/")).isTrue();
+        assertThat(this.helpers.ignoreFiles(".git/")).isTrue();
+        assertThat(this.helpers.ignoreFiles(".git")).isTrue();
+
+        assertThat(this.helpers.ignoreFiles("/.svn")).isTrue();
+        assertThat(this.helpers.ignoreFiles("/.svn/")).isTrue();
+
 
     }
 }

@@ -14,15 +14,11 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 

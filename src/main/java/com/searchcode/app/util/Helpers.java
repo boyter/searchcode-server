@@ -13,6 +13,7 @@ package com.searchcode.app.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
@@ -36,12 +37,22 @@ import java.util.stream.Stream;
  */
 public class Helpers {
 
+    private java.util.Properties properties;
+
+    public Helpers() {
+        this(Properties.getProperties());
+    }
+
+    public Helpers(java.util.Properties properties) {
+        this.properties = properties;
+    }
+
     /**
      * Calculate MD5 for a file. Using other methods for this (so this is actually dead code)
      * but we may want to use it in the future so keeping here for the moment.
      */
     public String calculateMd5(String filePath) {
-        String md5 = "";
+        String md5 = Values.EMPTYSTRING;
         FileInputStream fileInputStream = null;
         try {
             fileInputStream = new FileInputStream(new File(filePath));
@@ -186,7 +197,7 @@ public class Helpers {
     }
 
     public String getLogPath() {
-        String path = (String) Properties.getProperties().getOrDefault(Values.LOG_PATH, Values.DEFAULT_LOG_PATH);
+        String path = (String) this.properties.getOrDefault(Values.LOG_PATH, Values.DEFAULT_LOG_PATH);
 
         if (path.toUpperCase().equals("STDOUT")) {
             return path.toUpperCase();
@@ -194,6 +205,10 @@ public class Helpers {
 
         if (!(path.endsWith("/") || path.endsWith("\\"))) {
             path = path + "/";
+        }
+
+        if (!this.isNullEmptyOrWhitespace(this.properties.getProperty(Values.DIRECTORY_BLACK_LIST, Values.DEFAULT_DIRECTORY_BLACK_LIST))) {
+            // Split and check if we end with them
         }
 
         return path;
