@@ -161,6 +161,12 @@ To upgrade your current instance of searchcode perform the following steps.
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
 
+Luke
+----
+
+If you wish to use Luke to inspect the index you will need to use whatever version matches lucence in the pom.xml
+Currently this is 5.5.0 so you would need to use the same version of luke https://github.com/DmitryKey/luke/releases/tag/luke-5.5.0 
+
 Licence
 -------
 Copyright (c) 2016 Boyter Online Services
