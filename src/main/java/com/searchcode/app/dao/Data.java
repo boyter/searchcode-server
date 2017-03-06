@@ -26,10 +26,16 @@ import java.util.AbstractMap;
  * Provides access to all methods required to get Data details from the database.
  */
 public class Data implements IData {
-    private IDatabaseConfig dbConfig;
+    private final Helpers helpers;
+    private final IDatabaseConfig dbConfig;
 
-    public Data(IDatabaseConfig dbConfig) {
+    public Data() {
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+    }
+
+    public Data(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
+        this.helpers = helpers;
     }
 
     public synchronized String getDataByName(String key, String defaultValue) {
@@ -62,8 +68,8 @@ public class Data implements IData {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get " + key);
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return value;
@@ -98,7 +104,7 @@ public class Data implements IData {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return isNew;
@@ -129,8 +135,8 @@ public class Data implements IData {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 }

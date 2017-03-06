@@ -31,9 +31,17 @@ import java.util.List;
  */
 public class Repo implements IRepo {
 
-    private IDatabaseConfig dbConfig;
-    public Repo(IDatabaseConfig dbConfig) {
+    private final Helpers helpers;
+    private final IDatabaseConfig dbConfig;
+
+    public Repo() {
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+    }
+
+
+    public Repo(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
+        this.helpers = helpers;
     }
 
     @Override

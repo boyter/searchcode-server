@@ -14,6 +14,7 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,10 +29,16 @@ import java.util.List;
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
 public class Api implements IApi {
-    private IDatabaseConfig dbConfig;
+    private final Helpers helpers;
+    private final IDatabaseConfig dbConfig;
 
-    public Api(IDatabaseConfig dbConfig) {
+    public Api(){
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+    }
+
+    public Api(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
+        this.helpers = helpers;
     }
 
     public synchronized List<ApiResult> getAllApi() {
@@ -60,8 +67,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return apiResults;
@@ -96,8 +103,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return result;
@@ -126,7 +133,7 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return successful;
@@ -148,7 +155,7 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 
@@ -177,8 +184,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 }

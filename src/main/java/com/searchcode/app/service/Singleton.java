@@ -135,7 +135,7 @@ public final class Singleton {
 
     public static synchronized Repo getRepo() {
         if (repo == null) {
-            repo = new Repo(Singleton.getDatabaseConfig());
+            repo = new Repo();
         }
 
         return repo;
@@ -268,7 +268,7 @@ public final class Singleton {
 
     public static synchronized Data getData() {
         if (data == null) {
-            data = new Data(Singleton.getDatabaseConfig());
+            data = new Data();
         }
 
         return data;
@@ -280,7 +280,7 @@ public final class Singleton {
 
     public static synchronized Api getApi() {
         if (api == null) {
-            api = new Api(Singleton.getDatabaseConfig());
+            api = new Api();
         }
 
         return api;
