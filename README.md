@@ -193,6 +193,7 @@ XX XXXXXXXX XXXX - 1.3.8
  - New admin pages which expose information in a better way
  - File classification moved into JSON database similar to OWASP
  - Improved matching of found lines
+ - Addition of folder blacklist to exclude folders from being indexed
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline

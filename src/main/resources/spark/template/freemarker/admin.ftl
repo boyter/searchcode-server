@@ -128,6 +128,7 @@ owasp_database_location=${owasp_database_location}
 highlight_lines_limit=${highlight_lines_limit}
 binary_extension_white_list=${binary_extension_white_list}
 binary_extension_black_list=${binary_extension_black_list}
+directory_black_list=${directory_black_list}
 number_git_processors=${number_git_processors}
 number_svn_processors=${number_svn_processors}
 number_file_processors=${number_file_processors}

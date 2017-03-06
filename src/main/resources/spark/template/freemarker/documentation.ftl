@@ -638,6 +638,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>A white list of file extensions that if match will always be added to the index. The white list has a higher priority then the blacklist and so if an extension appears in both it will be indexed.</dd>
               <dt>binary_extension_black_list</dt>
               <dd>A black list of file extensions that if match will never be added to the index. The black list has a lower priority then the whitelist and so if an extension appears in both it will be indexed.</dd>
+              <dt>directory_black_list</dt>
+              <dd>A black list of directories that if match will not be added to the index. Typically used to exclude binary directories such as bin. Example, directory_black_list=bin,target</dd>
               <dt>number_git_processors</dt>
               <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
               <dt>number_svn_processors</dt>
