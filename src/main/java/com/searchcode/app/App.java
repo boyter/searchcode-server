@@ -90,6 +90,12 @@ public class App {
             return new ModelAndView(codeRouteService.getProject(request, response), "repository_overview.ftl");
         }, new FreeMarkerEngine());
 
+        get("/repository/list/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
+            CodeRouteService codeRouteService = new CodeRouteService();
+            return new ModelAndView(codeRouteService.getRepositoryList(request, response), "repository_list.ftl");
+        }, new FreeMarkerEngine());
+
         ////////////////////////////////////////////////////
         //              Page Routes Below
         ////////////////////////////////////////////////////

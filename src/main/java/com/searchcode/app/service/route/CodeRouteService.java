@@ -264,6 +264,21 @@ public class CodeRouteService {
         return map;
     }
 
+    public Map<String, Object> getRepositoryList(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
+
+
+        Repo repo = Singleton.getRepo();
+
+        List<RepoResult> allRepo = repo.getAllRepo();
+
+        map.put("repoList", allRepo);
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
+
+        return map;
+    }
+
     public ModelAndView html(Request request, Response response) {
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();

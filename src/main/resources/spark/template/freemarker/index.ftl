@@ -56,8 +56,9 @@
     <div class="white repocount"><#if repoCount == 0>
     You have no repositories indexed. Add some using the <a href="/admin/">admin</a> page. Read the <a href="/documentation/#repositories">documentation</a> for more details.
     <#else>
-    Searching across ${numDocs} files in ${repoCount} repositories
-    </#if></div>
+    Searching across ${numDocs} files in <a href="/repository/list/">${repoCount} repositories</a>
+    </#if>
+    </div>
   </div>
 </div>
 
