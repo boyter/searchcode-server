@@ -19,10 +19,10 @@ public class Values {
     // Property values used for looking up values
     // in the properties file
     public static final String PROPERTIES_FILE_NAME = "searchcode.properties";
-    public static final String SQLITEFILE = "sqlite_file";
-    public static final String DEFAULTSQLITEFILE = "searchcode.sqlite";
-    public static final String SERVERPORT = "server_port";
-    public static final String DEFAULTSERVERPORT = "8080";
+    public static final String SQLITE_FILE = "sqlite_file";
+    public static final String DEFAULT_SQLITE_FILE = "searchcode.sqlite";
+    public static final String SERVER_PORT = "server_port";
+    public static final String DEFAULT_SERVER_PORT = "8080";
     public static final String INDEXLOCATION = "index_location";
     public static final String DEFAULTINDEXLOCATION = "./index/";
     public static final String FACETSLOCATION = "facets_location";

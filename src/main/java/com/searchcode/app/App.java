@@ -441,7 +441,7 @@ public class App {
     }
 
     private static int getServerPort() {
-        return Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT), Values.DEFAULTSERVERPORT);
+        return Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.SERVER_PORT, Values.DEFAULT_SERVER_PORT), Values.DEFAULT_SERVER_PORT);
     }
 
     private static boolean getOnlyLocalhost() {

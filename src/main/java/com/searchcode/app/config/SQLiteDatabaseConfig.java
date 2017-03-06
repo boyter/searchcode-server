@@ -24,7 +24,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
     public synchronized Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
-                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE);
+                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
 
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);

@@ -24,7 +24,6 @@ import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.JobService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,8 +90,8 @@ public class AdminRouteService {
         StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here
-        map.put(Values.SQLITEFILE, Properties.getProperties().getProperty(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE));
-        map.put(Values.SERVERPORT, Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT));
+        map.put(Values.SQLITE_FILE, Properties.getProperties().getProperty(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE));
+        map.put(Values.SERVER_PORT, Properties.getProperties().getProperty(Values.SERVER_PORT, Values.DEFAULT_SERVER_PORT));
         map.put(Values.REPOSITORYLOCATION, Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION));
         map.put(Values.INDEXLOCATION, Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
         map.put(Values.FACETSLOCATION, Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
