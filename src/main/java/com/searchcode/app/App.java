@@ -169,6 +169,11 @@ public class App {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return apiRouteService.repositoryIndex(request, response);
                 }, new JsonTransformer());
+
+                get("/filecount/", "application/json", (request, response) -> {
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.getFileCount(request, response);
+                });
             });
         });
 
@@ -395,7 +400,7 @@ public class App {
                 }, new JsonTransformer());
 
                 get("/checkindexstatus/", "application/json", (request, response) -> {
-                    checkLoggedIn(request, response);
+                    //checkLoggedIn(request, response);
                     AdminRouteService adminRouteService = new AdminRouteService();
                     return adminRouteService.checkIndexStatus(request, response);
                 });

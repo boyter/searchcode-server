@@ -14,9 +14,9 @@
             <tbody>
             <#items as result>
                   <tr>
-                    <td><a href="/repository/overview/${result.name}/">${result.name}</a></td>
-                    <td></td>
-                    <td></td>
+                    <td><a href="/repository/overview/${result.name?html}/">${result.name?html}</a></td>
+                    <td><span ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/checkindexstatus/?reponame=${result.name?html}"></span></td>
+                    <td><span ic-trigger-on="load" ic-poll="10s" ic-src="/api/repo/filecount/?reponame=${result.name?html}"></span></td>
                   </tr>
             </#items>
             </tbody>
@@ -24,5 +24,6 @@
     </#list>
 </div> <!-- end row -->
 
-
+<script src="/js/jquery-1.11.1.min.js"></script>
+<script src="/js/intercooler-1.0.3.min.js"></script>
 </@layout.masterTemplate>
