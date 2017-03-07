@@ -25,6 +25,9 @@ class TestIntegration(unittest.TestCase):
         data = self.getData("http://%s/" % (host))
         result = 'Searching across' in data or 'You have no repositories indexed' in data
         self.assertTrue(result)
+        self.assertTrue('Repositories' in data)
+        self.assertTrue('Documentation' in data)
+        self.assertTrue('Admin' in data)
 
     def testDocumentationPage(self):
         data = self.getData("http://%s/documentation/" % (host))
@@ -63,6 +66,11 @@ class TestIntegration(unittest.TestCase):
         url = "http://%s/file/zeroclickinfo-fathead/lib/fathead/java/test_parse.py" % (host)
         data = self.getData(url)
         #self.assertTrue('MD5 Hash' in data)
+
+    def testRepositoryList(self):
+        url = "http://%s/repository/list/" % (host)
+        data = self.getData(url)
+        self.assertTrue('Repository Name' in data)
 
     def testNoSearch(self):
         url = "http://%s/?q=&p=0" % (host)

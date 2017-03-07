@@ -58,6 +58,7 @@ public class RepoResultTest extends TestCase {
         repoResult.setData(repoData);
         String actual = repoResult.getDataAsJson();
 
-        assertThat(actual).isEqualTo("{\"averageIndexTimeSeconds\":20,\"indexStatus\":\"indexing\"}");
+        assertThat(actual).contains("{\"averageIndexTimeSeconds\":20,\"indexStatus\":\"indexing\"");
+        assertThat(actual).contains("\"jobRunTime\":{\"seconds\":");
     }
 }
