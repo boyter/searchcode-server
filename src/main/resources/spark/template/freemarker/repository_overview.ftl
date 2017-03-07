@@ -3,6 +3,19 @@
 
 <div class="row">
     <br />
+
+    <center>
+        <form method="GET" action="/">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input name="q" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="true" size="50" placeholder="Search within ${repoName?html}" type="search" class="form-control" />
+                    <input type="hidden" name="repo" value="${repoName?html}" />
+                </div>
+                <input type="submit" value="search" class="btn btn-primary">
+            </div>
+        </form>
+    </center>
+
     <h4>Repository Overview for ${repoName}</h4>
     <p>${busBlurb}</p>
     <table class="table">
