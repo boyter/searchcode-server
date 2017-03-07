@@ -128,7 +128,6 @@ public class App {
                 return searchRouteService.codeSearch(request, response);
             }, new JsonTransformer());
 
-
             get("/timecodesearch/", (request, response) -> {
                 addJsonHeaders(response);
                 TimeSearchRouteService ars = new TimeSearchRouteService();
@@ -173,6 +172,11 @@ public class App {
                 get("/filecount/", "application/json", (request, response) -> {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return apiRouteService.getFileCount(request, response);
+                });
+
+                get("/indextime/", "application/json", (request, response) -> {
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.getIndexTime(request, response);
                 });
             });
         });

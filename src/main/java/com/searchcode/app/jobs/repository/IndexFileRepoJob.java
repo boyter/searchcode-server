@@ -23,6 +23,7 @@ import org.quartz.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -64,6 +65,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
+            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
 
             try {
@@ -86,6 +88,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                 repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
                 repoResult.getData().indexStatus = "success";
+                repoResult.getData().jobRunTime = Instant.now();
                 Singleton.getRepo().saveRepo(repoResult);
             }
             finally {

@@ -12,9 +12,12 @@ package com.searchcode.app.dto;
 
 import com.searchcode.app.config.Values;
 
+import java.time.Instant;
+
 public class RepoData {
     public int averageIndexTimeSeconds = 0;
     public String indexStatus = Values.EMPTYSTRING;
+    public Instant jobRunTime = Instant.now();
 
     public RepoData() {}
 }

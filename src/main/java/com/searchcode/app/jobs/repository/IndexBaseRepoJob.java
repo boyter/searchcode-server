@@ -41,6 +41,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
 import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
@@ -125,6 +126,7 @@ public abstract class IndexBaseRepoJob implements Job {
             this.haveRepoResult = true;
             Singleton.getLogger().info("Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
+            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
 
             try {
@@ -172,6 +174,7 @@ public abstract class IndexBaseRepoJob implements Job {
             int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
             repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
             repoResult.getData().indexStatus = "success";
+            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
         }
     }

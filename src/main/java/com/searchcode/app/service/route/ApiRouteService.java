@@ -12,7 +12,6 @@ package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
@@ -107,10 +106,19 @@ public class ApiRouteService {
 
     public String getFileCount(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            String statname = request.queryParams("statname");
             CodeSearcher codeSearcher = new CodeSearcher();
             ProjectStats projectStats = codeSearcher.getProjectStats(request.queryParams("reponame"));
             return "" + projectStats.getTotalFiles();
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
+    public String getIndexTime(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+
+            return Singleton.getHelpers().timeAgo(reponame.getData().jobRunTime);
         }
 
         return Values.EMPTYSTRING;
