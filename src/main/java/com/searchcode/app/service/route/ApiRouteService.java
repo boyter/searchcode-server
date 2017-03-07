@@ -120,7 +120,7 @@ public class ApiRouteService {
             if (reponame == null) {
                 return Values.EMPTYSTRING;
             }
-            
+
             return Singleton.getHelpers().timeAgo(reponame.getData().jobRunTime);
         }
 

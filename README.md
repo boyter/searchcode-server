@@ -194,6 +194,8 @@ XX XXXXXXXX XXXX - 1.3.8
  - File classification moved into JSON database similar to OWASP
  - Improved matching of found lines
  - Addition of folder blacklist to exclude folders from being indexed
+ - Addition of repository overview page to list indexed repositories and status
+ - Add search button to repository overview to search current repository
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline
