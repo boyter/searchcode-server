@@ -117,7 +117,10 @@ public class ApiRouteService {
     public String getIndexTime(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
             RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
-
+            if (reponame == null) {
+                return Values.EMPTYSTRING;
+            }
+            
             return Singleton.getHelpers().timeAgo(reponame.getData().jobRunTime);
         }
 
