@@ -38,7 +38,7 @@ public class App {
     public static final boolean ISCOMMUNITY = false;
     public static final String VERSION = "1.3.8";
 
-    public static void main (String[] args) {
+    public static void main(String[] args) {
 
         // Database migrations happen before we start
         preStart();
@@ -404,7 +404,7 @@ public class App {
                 }, new JsonTransformer());
 
                 get("/checkindexstatus/", "application/json", (request, response) -> {
-                    //checkLoggedIn(request, response);
+                    // TODO move this to unsecured routes
                     AdminRouteService adminRouteService = new AdminRouteService();
                     return adminRouteService.checkIndexStatus(request, response);
                 });

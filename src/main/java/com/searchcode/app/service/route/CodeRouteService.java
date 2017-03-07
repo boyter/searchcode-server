@@ -268,9 +268,24 @@ public class CodeRouteService {
         Map<String, Object> map = new HashMap<>();
 
         Repo repo = Singleton.getRepo();
-        List<RepoResult> allRepo = repo.getPagedRepo(0, 200);
+        String offSet = request.queryParams("offset");
 
-        map.put("repoList", allRepo);
+        int pageSize = 20;
+        int indexOffset = Singleton.getHelpers().tryParseInt(offSet, "0");
+
+        List<RepoResult> pagedRepo = repo.getPagedRepo(pageSize * indexOffset, pageSize + 1);
+        boolean hasNext = pagedRepo.size() == (pageSize + 1);
+        boolean hasPrevious = indexOffset != 0;
+
+        if (hasNext) {
+            pagedRepo = pagedRepo.subList(0, pageSize);
+        }
+
+        map.put("hasPrevious", hasPrevious);
+        map.put("hasNext", hasNext);
+        map.put("repoList", pagedRepo);
+        map.put("nextOffset", indexOffset + 1);
+        map.put("previousOffset", indexOffset - 1);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
 

@@ -2,6 +2,19 @@
 <@layout.masterTemplate title="Repository List">
 
 <div class="row inside-container">
+    <center>
+        <#if hasPrevious == true>
+            <a href="?offset=${previousOffset}" class="btn btn-xs btn-success filter-button" />&#9664; Previous</a>
+        <#else>
+            <input type="submit" value="&#9664; Previous" disabled="true" class="btn btn-xs btn-success filter-button" />
+        </#if>
+        <#if hasNext == true>
+            <a href="?offset=${nextOffset}" class="btn btn-xs btn-success filter-button" />Next &#9658;</a>
+        <#else>
+            <input type="submit" value="Next &#9658;" disabled="true" class="btn btn-xs btn-success filter-button" />
+        </#if>
+    </center>
+
     <#list repoList>
         <table class="table table-striped table-hover">
             <thead>
@@ -26,6 +39,19 @@
             </tbody>
         </table>
     </#list>
+
+    <center>
+        <#if hasPrevious == true>
+            <a href="?offset=${previousOffset}" class="btn btn-xs btn-success filter-button" />&#9664; Previous</a>
+        <#else>
+            <input type="submit" value="&#9664; Previous" disabled="true" class="btn btn-xs btn-success filter-button" />
+        </#if>
+        <#if hasNext == true>
+            <a href="?offset=${nextOffset}" class="btn btn-xs btn-success filter-button" />Next &#9658;</a>
+        <#else>
+            <input type="submit" value="Next &#9658;" disabled="true" class="btn btn-xs btn-success filter-button" />
+        </#if>
+    </center>
 </div> <!-- end row -->
 
 <script src="/js/jquery-1.11.1.min.js"></script>
