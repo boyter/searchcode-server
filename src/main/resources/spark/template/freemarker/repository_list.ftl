@@ -3,7 +3,7 @@
 
 <div class="row inside-container">
     <#list repoList>
-        <table class="table table-striped">
+        <table class="table table-striped table-hover">
             <thead>
                 <tr>
                     <th>Repository Name</th>

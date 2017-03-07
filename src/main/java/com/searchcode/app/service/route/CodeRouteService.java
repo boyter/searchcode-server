@@ -267,10 +267,9 @@ public class CodeRouteService {
     public Map<String, Object> getRepositoryList(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
-
         Repo repo = Singleton.getRepo();
 
-        List<RepoResult> allRepo = repo.getAllRepo();
+        List<RepoResult> allRepo = repo.getPagedRepo(0, 200);
 
         map.put("repoList", allRepo);
         map.put("logoImage", CommonRouteService.getLogo());
