@@ -201,6 +201,7 @@ public class CodeIndexer {
                 StringBuilder indexContents = new StringBuilder();
 
                 indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+                indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
                 indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
                 indexContents.append(codeIndexDocument.getFileLocation());
                 indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
