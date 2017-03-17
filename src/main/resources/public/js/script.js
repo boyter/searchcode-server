@@ -679,15 +679,6 @@ var SearchComponent = {
                             search: SearchModel.search,
                             totalhits: SearchModel.totalhits(),
                         }),
-                        m.component(SearchButtonFilterComponent, {
-                            totalhits: SearchModel.totalhits(),
-                            clearfilters: SearchModel.clearfilters,
-                            search: SearchModel.search,
-                            languagefilters: SearchModel.langfilters(),
-                            repofilters: SearchModel.repositoryfilters(),
-                            ownfilters: SearchModel.ownfilters(),
-                            filterinstantly: SearchModel.filterinstantly
-                        }),
                         m.component(SearchAlternateFilterComponent, {
                             query: SearchModel.query(),
                             altquery: SearchModel.altquery()
@@ -708,6 +699,15 @@ var SearchComponent = {
                         m.component(SearchYearMonthDayFilterComponent),
                         m.component(SearchRevisionComponent),
                         m.component(SearchDeletedComponent),
+                        m.component(SearchButtonFilterComponent, {
+                            totalhits: SearchModel.totalhits(),
+                            clearfilters: SearchModel.clearfilters,
+                            search: SearchModel.search,
+                            languagefilters: SearchModel.langfilters(),
+                            repofilters: SearchModel.repositoryfilters(),
+                            ownfilters: SearchModel.ownfilters(),
+                            filterinstantly: SearchModel.filterinstantly
+                        }),
                         m.component(FilterOptionsComponent, {
                             filterinstantly: SearchModel.filterinstantly
                         })

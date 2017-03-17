@@ -23,13 +23,6 @@
     </div>
 
     <div>
-      <h5>Filter Results</h5>
-      <div class="center">
-        <a href="?q=${searchValue?html}" class="btn btn-xs btn-success filter-button">Remove</a><span>&nbsp;</span><input type="submit" value="Apply" class="btn btn-xs btn-success filter-button" />
-      </div>
-    </div>
-
-    <div>
       <#list searchResult.repoFacetResults>
       <h5>Repositories</h5>
       <#items as result>
@@ -61,6 +54,13 @@
       </div>
       </#items>
       </#list>
+    </div>
+
+    <div>
+      <h5>Filter Results</h5>
+      <div class="center">
+        <a href="?q=${searchValue?html}" class="btn btn-xs btn-success filter-button">Remove</a><span>&nbsp;</span><input type="submit" value="Apply" class="btn btn-xs btn-success filter-button" />
+      </div>
     </div>
 
     </form>
