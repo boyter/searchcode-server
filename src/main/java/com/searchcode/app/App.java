@@ -391,7 +391,7 @@ public class App {
                     return true;
                 }, new JsonTransformer());
 
-                get("/getstat/", "application/json", (request, response) -> {
+                get("/getstat/", (request, response) -> {
                     checkLoggedIn(request, response);
                     AdminRouteService adminRouteService = new AdminRouteService();
                     return adminRouteService.getStat(request, response);

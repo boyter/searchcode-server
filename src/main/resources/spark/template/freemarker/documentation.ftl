@@ -569,6 +569,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
 
         <h3 id="properties">Properties</h3>
 
+        <p>There are two properties files in the base directory of searchcode server, searchcode.properties and quartz.properties.</p>
+
         <p>
         The searchcode.properties file in the base directory is a simple text file that can be used to configure aspects of searchcode server. By default
         it is setup using suggested defaults. <b>It is important to note that the password to administer your server is located
@@ -652,6 +654,13 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>If set to true a csv containing the results of the last index run will be written to the log directory with the repository name as the filename. Can be used to determine why files are being indexed or not. Defaults to false.</dd>
             </dl>
 
+        </p>
+
+        <p>
+        The quartz.properties file in the base directory should only need to be modified when changing the searchcode.properties values of number_git_processors, number_svn_processors and number_file_processors.
+        By default searchcode spawns 10 background threads which are used for repository processing and internal processing logic. By itself searchcode uses 5 threads
+        by itself leaving over 5 for background repository processing tasks. If you adjust the number of repository processors higher then you should increase the value for
+        org.quartz.threadPool.threadCount to a higher number up-to a maximum of 100.
         </p>
 
         <h3 id="settings">Settings</h3>

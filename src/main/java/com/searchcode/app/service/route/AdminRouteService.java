@@ -131,6 +131,7 @@ public class AdminRouteService {
         map.put("currentdatetime", this.getStat("servertime"));
         map.put("spellingCount", this.getStat("spellingCount"));
         map.put("runningJobs", this.getStat("runningJobs"));
+        map.put("threads", this.getStat("threads"));
 
 
         map.put("sysArch", statsService.getArch());
@@ -433,6 +434,8 @@ public class AdminRouteService {
                 return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
             case "searchlogs":
                 return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+            case "threads":
+                return "" + java.lang.Thread.activeCount();
         }
         return Values.EMPTYSTRING;
     }
