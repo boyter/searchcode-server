@@ -175,7 +175,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED YET this software version '1.3.8' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date 20 March 2020 YET this software version '1.3.8' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -185,7 +185,7 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXXXXXX XXXX - 1.3.8
+20 March 2017 - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
  - Small CSS display issues on search pages
  - Resolve issues with some unit tests being inconsistent
@@ -196,6 +196,7 @@ XX XXXXXXXX XXXX - 1.3.8
  - Addition of folder blacklist to exclude folders from being indexed
  - Addition of repository overview page to list indexed repositories and status
  - Add search button to repository overview to search current repository
+ - Improved matching of filenames
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline
