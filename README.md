@@ -186,6 +186,7 @@ Change Log
 ==========
 
 XX XXXXX XXXX - 1.3.9
+ - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
 
 20 March 2017 - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
