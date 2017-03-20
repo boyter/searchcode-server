@@ -439,18 +439,8 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
-
-            resultSet = preparedStatement.executeQuery();
-            String value = "";
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
-            }
-
-            if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
-                preparedStatement = connection.prepareStatement("CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)");
-                preparedStatement.execute();
-            }
+            preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
+            preparedStatement.execute();
         }
         catch(SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
@@ -473,7 +463,7 @@ public class Repo implements IRepo {
             boolean shouldAlter = true;
 
             rs = stmt.executeQuery();
-            String value = Values.EMPTYSTRING;
+            String value;
             while (rs.next()) {
                 value = rs.getString("name");
 

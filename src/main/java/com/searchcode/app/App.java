@@ -426,6 +426,7 @@ public class App {
 
         data.createTableIfMissing();
         api.createTableIfMissing();
+        repo.createTableIfMissing();
         repo.addSourceToTable();
         repo.addBranchToTable();
         repo.addDataToTable();
