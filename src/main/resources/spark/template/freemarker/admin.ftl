@@ -39,6 +39,7 @@
                         <br>Version: ${version} <a ic-get-from="/admin/checkversion/" ic-indicator="#demo-spinner">(check if latest version)</a>
                                             <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"><img src="/img/loading_small.gif" /></i>
                         <br>Threads: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=threads">${threads}</span>
+                        <br>Index Status: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=paused">${paused}</span>
                     </div>
                 </div>
             </div>

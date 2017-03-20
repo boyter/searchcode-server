@@ -132,6 +132,7 @@ public class AdminRouteService {
         map.put("spellingCount", this.getStat("spellingCount"));
         map.put("runningJobs", this.getStat("runningJobs"));
         map.put("threads", this.getStat("threads"));
+        map.put("paused", this.getStat("paused"));
 
 
         map.put("sysArch", statsService.getArch());
@@ -436,7 +437,10 @@ public class AdminRouteService {
                 return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
             case "threads":
                 return "" + java.lang.Thread.activeCount();
+            case "paused":
+                return Singleton.getPauseBackgroundJobs() ? "paused": "running";
         }
+
         return Values.EMPTYSTRING;
     }
 }
