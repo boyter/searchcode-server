@@ -39,7 +39,7 @@
                         <br>Version: ${version} <a ic-get-from="/admin/checkversion/" ic-indicator="#demo-spinner">(check if latest version)</a>
                                             <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"><img src="/img/loading_small.gif" /></i>
                         <br>Threads: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=threads">${threads}</span>
-                        <br>Index Status: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=paused">${paused}</span>
+                        <br>Index Status: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=paused">${paused}</span>
                     </div>
                 </div>
             </div>
@@ -96,6 +96,8 @@
             <a data-text="Reset the search count to zero." style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count</a>
             <a data-text="Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results." style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling</a>
             <a data-text="Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results." style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
+            <a data-text="Pauses the indexer from running. Use this to reduce load on the searchcode server or source control system." style="width:180px;" ic-post-to="/admin/togglepause/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Pause/Unpause Indexer</a>
+
 
             <i id="action-spinner" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i>
 
