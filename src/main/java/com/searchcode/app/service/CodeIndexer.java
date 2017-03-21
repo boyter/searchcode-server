@@ -210,16 +210,16 @@ public class CodeIndexer {
                 indexContents.append(searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
                 String toIndex = indexContents.toString().toLowerCase();
 
-                doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName(), Field.Store.YES));
+                doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
                 doc.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
                 doc.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
                 doc.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
-                doc.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName(), Field.Store.YES));
+                doc.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
                 doc.add(new  IntField(Values.CODELINES,            codeIndexDocument.getCodeLines(), Field.Store.YES));
                 doc.add(new TextField(Values.CONTENTS,             toIndex, Field.Store.NO));
                 doc.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-                doc.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner(), Field.Store.YES));
+                doc.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
                 doc.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
 
                 // Extra metadata in this case when it was last indexed
