@@ -189,6 +189,7 @@ XX XXXXX XXXX - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
  - Add indexer pause button back to admin pages https://github.com/boyter/searchcode-server/issues/84
  - Resolve bug where filters could match multiple https://github.com/boyter/searchcode-server/issues/86
+ - Batch index size is now configurable through properties file https://github.com/boyter/searchcode-server/issues/85
 
 20 March 2017 - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
