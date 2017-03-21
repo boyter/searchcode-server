@@ -608,6 +608,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Maximum number of documents to store in indexing queue. When on a memory constrained system it can be advisable to reduce the size. Needs to be a number or will default to 1000.</dd>
               <dt>max_document_queue_line_size</dt>
               <dd>Maximum number of lines of code to store in indexing queue. This is a soft cap which can be exceeded to allow large documents to be indexed. When on a memory constrained system it can be advisable to reduce the size. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 100000.</dd>
+              <dt>index_queue_batch_size</dt>
+              <dd>Maximum number of files the indexer will attempt to index before flushing them to disk. If the value of max_document_queue_size is raised it can be useful to raise this value to match. Needs to be a number or will default to 1000.</dd>
               <dt>max_file_line_depth</dt>
               <dd>Maximum number of lines in a file to index. If you want to index very large files set this value to a high number and lower the size of max_document_queue_size to avoid out of memory exceptions. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 10000.</dd>
               <dt>use_system_git</dt>

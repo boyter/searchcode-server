@@ -59,6 +59,8 @@ public class Values {
     public static final String DEFAULTMAXDOCUMENTQUEUESIZE ="1000";
     public static final String MAXDOCUMENTQUEUELINESIZE = "max_document_queue_line_size";
     public static final String DEFAULTMAXDOCUMENTQUEUELINESIZE ="100000";
+    public static final String INDEX_QUEUE_BATCH_SIZE = "index_queue_batch_size";
+    public static final String DEFAULT_INDEX_QUEUE_BATCH_SIZE ="1000";
     public static final String MAXFILELINEDEPTH = "max_file_line_depth";
     public static final String DEFAULTMAXFILELINEDEPTH = "10000";
     public static final String OWASPDATABASELOCATION = "owasp_database_location";

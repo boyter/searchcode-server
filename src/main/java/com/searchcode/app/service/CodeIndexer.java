@@ -14,7 +14,6 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.util.CodeAnalyzer;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.lucene.analysis.Analyzer;
@@ -43,8 +42,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class CodeIndexer {
 
-    private static int MAXINDEXSIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
-    private static int MAXLINESINDEXSIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static int MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
+    private static int MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static int INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
 
     /**
      * Returns true if indexing should be paused, false otherwise
@@ -63,13 +63,13 @@ public class CodeIndexer {
         int indexQueueSize = Singleton.getCodeIndexQueue().size();
         int codeIndexLinesCount = Singleton.getCodeIndexLinesCount();
 
-        if (indexQueueSize > MAXINDEXSIZE) {
-            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger then " + MAXINDEXSIZE);
+        if (indexQueueSize > MAX_INDEX_SIZE) {
+            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger then " + MAX_INDEX_SIZE);
             return true;
         }
 
-        if (codeIndexLinesCount > MAXLINESINDEXSIZE) {
-            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger then " + MAXLINESINDEXSIZE);
+        if (codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
+            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger then " + MAX_LINES_INDEX_SIZE);
             return true;
         }
 
@@ -148,7 +148,6 @@ public class CodeIndexer {
      * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
      * index.
      * TODO investigate how Lucene deals with multiple writes
-     * TODO make the 1000 limit configurable
      */
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
@@ -228,7 +227,7 @@ public class CodeIndexer {
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
 
                 count++;
-                if (count >= 1000) { // Only index 1000 documents at most each time
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
                     codeIndexDocument = null;
                 }
                 else {
@@ -352,13 +351,12 @@ public class CodeIndexer {
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxoWriter, doc));
 
                 count++;
-                if (count >= 1000) { // Only index 1000 documents at most each time
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
                     codeIndexDocument = null;
                 }
                 else {
                     codeIndexDocument = codeIndexDocumentQueue.poll();
                 }
-
             }
         }
         finally {
