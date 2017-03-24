@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service;
@@ -38,7 +38,7 @@ public class StatsService {
     }
 
     public void incrementSearchCount() {
-        int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        int totalCount = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
 
         if (totalCount == Integer.MAX_VALUE) {
             totalCount = 0;
@@ -53,7 +53,7 @@ public class StatsService {
     }
 
     public int getSearchCount() {
-        int totalCount = Helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        int totalCount = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
         return totalCount;
     }
 

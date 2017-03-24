@@ -17,7 +17,7 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class PopulateSpellingCorrectorJob implements Job {
 
-    public int MAXFILELINEDEPTH = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+    public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         if (Singleton.getBackgroundJobsEnabled() == false) {
@@ -38,13 +38,13 @@ public class PopulateSpellingCorrectorJob implements Job {
                         String fileToString = FilenameUtils.separatorsToUnix(file.toString());
                         String fileName = file.getFileName().toString();
 
-                        if (Helpers.ignoreFiles(fileParent)) {
+                        if (Singleton.getHelpers().ignoreFiles(fileParent)) {
                             return FileVisitResult.CONTINUE;
                         }
 
                         List<String> codeLines;
                         try {
-                            codeLines = Helpers.readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
+                            codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
                         } catch (IOException ex) {
                             return FileVisitResult.CONTINUE;
                         }

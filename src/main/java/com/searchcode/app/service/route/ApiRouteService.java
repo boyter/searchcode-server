@@ -5,21 +5,18 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.ApiService;
-import com.searchcode.app.service.IApiService;
-import com.searchcode.app.service.IJobService;
-import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import spark.Request;
@@ -105,6 +102,29 @@ public class ApiRouteService {
         }
 
         return new ApiResponse(false, "Was unable to find repository " + repoUrl);
+    }
+
+    public String getFileCount(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            CodeSearcher codeSearcher = new CodeSearcher();
+            ProjectStats projectStats = codeSearcher.getProjectStats(request.queryParams("reponame"));
+            return "" + projectStats.getTotalFiles();
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
+    public String getIndexTime(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+            if (reponame == null) {
+                return Values.EMPTYSTRING;
+            }
+
+            return Singleton.getHelpers().timeAgo(reponame.getData().jobRunTime);
+        }
+
+        return Values.EMPTYSTRING;
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {

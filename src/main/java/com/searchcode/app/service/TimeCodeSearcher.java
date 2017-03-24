@@ -134,7 +134,7 @@ public class TimeCodeSearcher {
                 List<String> code = new ArrayList<>();
                 try {
                     code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
-                    code = Helpers.readFileLines(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Singleton.getHelpers().readFileLines(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 } catch (Exception ex) {
                     Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
                 }

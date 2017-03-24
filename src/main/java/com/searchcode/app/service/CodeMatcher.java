@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service;
@@ -34,8 +34,8 @@ public class CodeMatcher {
     public CodeMatcher()  {}
 
     public CodeMatcher(Data data) {
-        this.MATCHLINES = Helpers.tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
-        this.MAXLINEDEPTH = Helpers.tryParseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH), Values.DEFAULTMAXLINEDEPTH);
+        this.MATCHLINES = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
+        this.MAXLINEDEPTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH), Values.DEFAULTMAXLINEDEPTH);
     }
 
     /**
@@ -162,7 +162,14 @@ public class CodeMatcher {
         if (highlightLine) {
             for(CodeMatchResult cmr: resultLines) {
                 if (cmr.isMatching()) {
-                    cmr.setLine( this.highlightLine(cmr.getLine(), matchTerms));
+                    String line = Values.EMPTYSTRING;
+                    try {
+                        line = this.highlightLine(cmr.getLine(), matchTerms);
+                    }
+                    catch(StringIndexOutOfBoundsException ex) {
+                        Singleton.getLogger().severe("Unable to highlightLine " + cmr.getLine() + " using terms " + String.join(",", matchTerms) +  " "+ ex.toString());
+                    }
+                    cmr.setLine( line );
                 } else {
                     cmr.setLine( StringEscapeUtils.escapeHtml4(cmr.getLine()) );
                 }
@@ -238,7 +245,7 @@ public class CodeMatcher {
      * terms with <strong> tags.
      * TODO a bug exists here, see test cases for details
      */
-    public String highlightLine(String line, List<String> matchTerms) {
+    public String highlightLine(String line, List<String> matchTerms) throws StringIndexOutOfBoundsException {
 
         List<String> terms = matchTerms.stream()
                 .filter(s -> !"AND".equals(s) && !"OR".equals(s) && !"NOT".equals(s))

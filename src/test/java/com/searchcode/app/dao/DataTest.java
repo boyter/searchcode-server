@@ -2,7 +2,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -12,10 +12,11 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class DataTest extends TestCase {
 
-    Data data = null;
+    private Data data;
 
-    public DataTest() {
-        this.data = new Data(new SQLiteMemoryDatabaseConfig());
+    public void setUp() throws Exception {
+        super.setUp();
+        this.data = new Data(new SQLiteMemoryDatabaseConfig(), new Helpers());
         this.data.createTableIfMissing();
     }
 

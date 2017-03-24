@@ -3,6 +3,7 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -12,10 +13,11 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class ApiTest extends TestCase {
 
-    Api api = null;
+    private Api api;
 
-    public ApiTest() {
-        this.api = new Api(new SQLiteMemoryDatabaseConfig());
+    public void setUp() throws Exception {
+        super.setUp();
+        this.api = new Api(new SQLiteMemoryDatabaseConfig(), new Helpers());
         this.api.createTableIfMissing();
     }
 

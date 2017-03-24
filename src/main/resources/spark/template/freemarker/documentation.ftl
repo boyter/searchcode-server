@@ -569,6 +569,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
 
         <h3 id="properties">Properties</h3>
 
+        <p>There are two properties files in the base directory of searchcode server, searchcode.properties and quartz.properties.</p>
+
         <p>
         The searchcode.properties file in the base directory is a simple text file that can be used to configure aspects of searchcode server. By default
         it is setup using suggested defaults. <b>It is important to note that the password to administer your server is located
@@ -606,6 +608,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Maximum number of documents to store in indexing queue. When on a memory constrained system it can be advisable to reduce the size. Needs to be a number or will default to 1000.</dd>
               <dt>max_document_queue_line_size</dt>
               <dd>Maximum number of lines of code to store in indexing queue. This is a soft cap which can be exceeded to allow large documents to be indexed. When on a memory constrained system it can be advisable to reduce the size. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 100000.</dd>
+              <dt>index_queue_batch_size</dt>
+              <dd>Maximum number of files the indexer will attempt to index before flushing them to disk. If the value of max_document_queue_size is raised it can be useful to raise this value to match. Needs to be a number or will default to 1000.</dd>
               <dt>max_file_line_depth</dt>
               <dd>Maximum number of lines in a file to index. If you want to index very large files set this value to a high number and lower the size of max_document_queue_size to avoid out of memory exceptions. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 10000.</dd>
               <dt>use_system_git</dt>
@@ -638,6 +642,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>A white list of file extensions that if match will always be added to the index. The white list has a higher priority then the blacklist and so if an extension appears in both it will be indexed.</dd>
               <dt>binary_extension_black_list</dt>
               <dd>A black list of file extensions that if match will never be added to the index. The black list has a lower priority then the whitelist and so if an extension appears in both it will be indexed.</dd>
+              <dt>directory_black_list</dt>
+              <dd>A black list of directories that if match will not be added to the index. Typically used to exclude binary directories such as bin. Example, directory_black_list=bin,target</dd>
               <dt>number_git_processors</dt>
               <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
               <dt>number_svn_processors</dt>
@@ -650,6 +656,13 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>If set to true a csv containing the results of the last index run will be written to the log directory with the repository name as the filename. Can be used to determine why files are being indexed or not. Defaults to false.</dd>
             </dl>
 
+        </p>
+
+        <p>
+        The quartz.properties file in the base directory should only need to be modified when changing the searchcode.properties values of number_git_processors, number_svn_processors and number_file_processors.
+        By default searchcode spawns 10 background threads which are used for repository processing and internal processing logic. By itself searchcode uses 5 threads
+        by itself leaving over 5 for background repository processing tasks. If you adjust the number of repository processors higher then you should increase the value for
+        org.quartz.threadPool.threadCount to a higher number up-to a maximum of 100.
         </p>
 
         <h3 id="settings">Settings</h3>

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.util;
@@ -46,7 +46,7 @@ public class SearchcodeLib {
     }
 
     public SearchcodeLib(Data data) {
-        this.MINIFIEDLENGTH = Helpers.tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
+        this.MINIFIEDLENGTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
         if (this.MINIFIEDLENGTH <= 0) {
             this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
         }

@@ -33,6 +33,7 @@
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
+            <li><a href="/repository/list/">Repositories</a></li>
             <li><a href="/documentation/">Documentation</a></li>
             <li><a href="/admin/">Admin</a></li>
         </ul>
@@ -56,8 +57,9 @@
     <div class="white repocount"><#if repoCount == 0>
     You have no repositories indexed. Add some using the <a href="/admin/">admin</a> page. Read the <a href="/documentation/#repositories">documentation</a> for more details.
     <#else>
-    Searching across ${numDocs} files in ${repoCount} repositories
-    </#if></div>
+    Searching across ${numDocs} files in <a href="/repository/list/">${repoCount} repositories</a>
+    </#if>
+    </div>
   </div>
 </div>
 

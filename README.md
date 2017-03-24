@@ -154,12 +154,18 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.8.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.9.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
+
+Luke
+----
+
+If you wish to use Luke to inspect the index you will need to use whatever version matches lucence in the pom.xml
+Currently this is 5.5.0 so you would need to use the same version of luke https://github.com/DmitryKey/luke/releases/tag/luke-5.5.0 
 
 Licence
 -------
@@ -169,7 +175,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED YET this software version '1.3.8' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date DATE NOT SPECIFIED this software version '1.3.9' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -179,7 +185,15 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXXXXXX XXXX - 1.3.8
+XX XXXXX XXXX - 1.3.9
+ - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
+ - Add indexer pause button back to admin pages https://github.com/boyter/searchcode-server/issues/84
+ - Resolve bug where filters could match multiple https://github.com/boyter/searchcode-server/issues/86
+ - Batch index size is now configurable through properties file https://github.com/boyter/searchcode-server/issues/85
+ - Mitigate issue where matching some files will crash search https://github.com/boyter/searchcode-server/issues/88
+ - Update highlight.js https://github.com/boyter/searchcode-server/issues/22
+
+20 March 2017 - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
  - Small CSS display issues on search pages
  - Resolve issues with some unit tests being inconsistent
@@ -187,6 +201,10 @@ XX XXXXXXXX XXXX - 1.3.8
  - New admin pages which expose information in a better way
  - File classification moved into JSON database similar to OWASP
  - Improved matching of found lines
+ - Addition of folder blacklist to exclude folders from being indexed
+ - Addition of repository overview page to list indexed repositories and status
+ - Add search button to repository overview to search current repository
+ - Improved matching of filenames
 
 01 February 2017 - 1.3.7
  - Fix display bug where file details in search was on newline

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service.route;
@@ -24,7 +24,6 @@ import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.JobService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -91,8 +90,8 @@ public class AdminRouteService {
         StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here
-        map.put(Values.SQLITEFILE, Properties.getProperties().getProperty(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE));
-        map.put(Values.SERVERPORT, Properties.getProperties().getProperty(Values.SERVERPORT, Values.DEFAULTSERVERPORT));
+        map.put(Values.SQLITE_FILE, Properties.getProperties().getProperty(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE));
+        map.put(Values.SERVER_PORT, Properties.getProperties().getProperty(Values.SERVER_PORT, Values.DEFAULT_SERVER_PORT));
         map.put(Values.REPOSITORYLOCATION, Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION));
         map.put(Values.INDEXLOCATION, Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
         map.put(Values.FACETSLOCATION, Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
@@ -114,6 +113,7 @@ public class AdminRouteService {
         map.put(Values.HIGHLIGHT_LINE_LIMIT, Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
         map.put(Values.BINARY_WHITE_LIST, Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST));
         map.put(Values.BINARY_BLACK_LIST, Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST));
+        map.put(Values.DIRECTORY_BLACK_LIST, Properties.getProperties().getProperty(Values.DIRECTORY_BLACK_LIST, Values.DEFAULT_DIRECTORY_BLACK_LIST));
         map.put(Values.NUMBER_GIT_PROCESSORS, Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS));
         map.put(Values.NUMBER_SVN_PROCESSORS, Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS));
         map.put(Values.NUMBER_FILE_PROCESSORS, Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS));
@@ -131,6 +131,8 @@ public class AdminRouteService {
         map.put("currentdatetime", this.getStat("servertime"));
         map.put("spellingCount", this.getStat("spellingCount"));
         map.put("runningJobs", this.getStat("runningJobs"));
+        map.put("threads", this.getStat("threads"));
+        map.put("paused", this.getStat("paused"));
 
 
         map.put("sysArch", statsService.getArch());
@@ -404,7 +406,7 @@ public class AdminRouteService {
                 for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
                     RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
                     if (indexJob != null) {
-                        int runningTime = Helpers.getCurrentTimeSeconds() - indexJob.startTime;
+                        int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - indexJob.startTime;
                         stringBuffer.append(key).append(" <small>(").append(runningTime).append(" seconds)</small>").append(" ");
                     }
                     else {
@@ -433,7 +435,12 @@ public class AdminRouteService {
                 return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
             case "searchlogs":
                 return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+            case "threads":
+                return "" + java.lang.Thread.activeCount();
+            case "paused":
+                return Singleton.getPauseBackgroundJobs() ? "paused": "running";
         }
+
         return Values.EMPTYSTRING;
     }
 }

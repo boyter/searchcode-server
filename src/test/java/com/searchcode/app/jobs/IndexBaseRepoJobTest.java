@@ -76,6 +76,6 @@ public class IndexBaseRepoJobTest extends TestCase {
         assertThat(spy.haveRepoResult).isTrue();
         assertThat(spy.LOWMEMORY).isTrue();
         verify(spy).getNextQueuedRepo();
-        //verify(spy).getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
+        verify(spy, times(2)).getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
     }
 }

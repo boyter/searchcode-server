@@ -7,6 +7,7 @@ import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.route.ApiRouteService;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
 import org.mockito.Matchers;
@@ -211,7 +212,7 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoListApiEnabledNoAuth() {
         Request mockRequest = Mockito.mock(Request.class);
-        Repo repo = new Repo(new SQLiteMemoryDatabaseConfig());
+        Repo repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers());
         repo.createTableIfMissing();
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repo, null);

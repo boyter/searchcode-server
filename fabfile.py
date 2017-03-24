@@ -6,7 +6,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 '''
 
@@ -30,7 +30,7 @@ import hashlib
 import sys
 import datetime
 
-VERSION = "1.3.8"
+VERSION = "1.3.9"
 
 
 def setup_npm():
@@ -171,6 +171,7 @@ def _build_package():
     local('cp -R ./target/dependency-jars ./release/')
     local('cp ./target/*.jar ./release/')
     local('cp ./searchcode.properties.example ./release/searchcode.properties')
+    local('cp ./quartz.properties ./release/quartz.properties')
     local('cp ./searchcode.sqlite.empty ./release/searchcode.sqlite')
     local('cp ./README.md ./release/')
     local('chmod +x ./searchcode-server.sh')

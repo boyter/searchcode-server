@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service;
@@ -125,7 +125,7 @@ public class CodeSearcher implements ICodeSearcher {
 
                 List<String> code = new ArrayList<>();
                 try {
-                    code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 } catch (Exception ex) {
                     Singleton.getLogger().info("Indexed file appears to binary: " + filepath);
                 }
@@ -176,7 +176,7 @@ public class CodeSearcher implements ICodeSearcher {
                 Document doc = searcher.doc(hits[i].doc);
 
                 if (!searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
-                    totalCodeLines += Helpers.tryParseInt(doc.get(Values.CODELINES), "0");
+                    totalCodeLines += Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
                 }
             }
 
@@ -263,7 +263,7 @@ public class CodeSearcher implements ICodeSearcher {
                 try {
                     // This should probably be limited by however deep we are meant to look into the file
                     // or the value we use here whichever is less
-                    code = Helpers.readFileLinesGuessEncoding(filepath, Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch(Exception ex) {
                     LOGGER.warning("Indexed file appears to binary or missing: " + filepath);

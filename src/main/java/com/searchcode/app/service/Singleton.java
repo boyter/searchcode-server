@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service;
@@ -61,6 +61,7 @@ public final class Singleton {
     private static JobService jobService = null;
     private static IDatabaseConfig databaseConfig = null;
     private static CodeIndexer codeIndexer = null;
+    private static Helpers helpers = null;
 
     private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
     private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
@@ -134,7 +135,7 @@ public final class Singleton {
 
     public static synchronized Repo getRepo() {
         if (repo == null) {
-            repo = new Repo(Singleton.getDatabaseConfig());
+            repo = new Repo();
         }
 
         return repo;
@@ -267,7 +268,7 @@ public final class Singleton {
 
     public static synchronized Data getData() {
         if (data == null) {
-            data = new Data(Singleton.getDatabaseConfig());
+            data = new Data();
         }
 
         return data;
@@ -279,7 +280,7 @@ public final class Singleton {
 
     public static synchronized Api getApi() {
         if (api == null) {
-            api = new Api(Singleton.getDatabaseConfig());
+            api = new Api();
         }
 
         return api;
@@ -331,6 +332,14 @@ public final class Singleton {
         }
 
         return codeIndexer;
+    }
+
+    public static synchronized Helpers getHelpers() {
+        if (helpers == null) {
+            helpers = new Helpers();
+        }
+
+        return helpers;
     }
 
     public static synchronized void setDatabaseConfig(IDatabaseConfig databaseConfig) {

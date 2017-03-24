@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service;
@@ -14,7 +14,6 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.util.CodeAnalyzer;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.lucene.analysis.Analyzer;
@@ -43,8 +42,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class CodeIndexer {
 
-    private static int MAXINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
-    private static int MAXLINESINDEXSIZE = Helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static int MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
+    private static int MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static int INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
 
     /**
      * Returns true if indexing should be paused, false otherwise
@@ -63,13 +63,13 @@ public class CodeIndexer {
         int indexQueueSize = Singleton.getCodeIndexQueue().size();
         int codeIndexLinesCount = Singleton.getCodeIndexLinesCount();
 
-        if (indexQueueSize > MAXINDEXSIZE) {
-            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger then " + MAXINDEXSIZE);
+        if (indexQueueSize > MAX_INDEX_SIZE) {
+            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger then " + MAX_INDEX_SIZE);
             return true;
         }
 
-        if (codeIndexLinesCount > MAXLINESINDEXSIZE) {
-            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger then " + MAXLINESINDEXSIZE);
+        if (codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
+            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger then " + MAX_LINES_INDEX_SIZE);
             return true;
         }
 
@@ -148,7 +148,6 @@ public class CodeIndexer {
      * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
      * index.
      * TODO investigate how Lucene deals with multiple writes
-     * TODO make the 1000 limit configurable
      */
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
@@ -185,13 +184,13 @@ public class CodeIndexer {
                 facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                 facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
 
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
 
@@ -200,23 +199,24 @@ public class CodeIndexer {
 
                 StringBuilder indexContents = new StringBuilder();
 
-                indexContents.append(codeIndexDocument.getFileName()).append(" ");
+                indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+                indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
                 indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
                 indexContents.append(codeIndexDocument.getFileLocation());
                 indexContents.append(runCodeIndexPipeline(searchcodeLib, codeIndexDocument.getContents()));
 
                 String toIndex = indexContents.toString().toLowerCase();
 
-                doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName(), Field.Store.YES));
+                doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
                 doc.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
                 doc.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
                 doc.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
                 doc.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
-                doc.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName(), Field.Store.YES));
+                doc.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
                 doc.add(new  IntField(Values.CODELINES,            codeIndexDocument.getCodeLines(), Field.Store.YES));
                 doc.add(new TextField(Values.CONTENTS,             toIndex, Field.Store.NO));
                 doc.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-                doc.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner(), Field.Store.YES));
+                doc.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
                 doc.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
 
                 // Extra metadata in this case when it was last indexed
@@ -225,7 +225,7 @@ public class CodeIndexer {
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
 
                 count++;
-                if (count >= 1000) { // Only index 1000 documents at most each time
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
                     codeIndexDocument = null;
                 }
                 else {
@@ -305,28 +305,28 @@ public class CodeIndexer {
                 facetsConfig.setIndexFieldName(Values.REVISION, Values.REVISION);
                 facetsConfig.setIndexFieldName(Values.DELETED, Values.DELETED);
 
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTHDAY, codeIndexDocument.getYearMonthDay()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEARMONTH, codeIndexDocument.getYearMonthDay().substring(0, 6)));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getYearMonthDay()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DATEYEAR, codeIndexDocument.getYearMonthDay().substring(0, 4)));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRevision()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRevision()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.REVISION, codeIndexDocument.getRevision()));
                 }
-                if (Helpers.isNullEmptyOrWhitespace(codeIndexDocument.isDeleted()) == false) {
+                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.isDeleted()) == false) {
                     doc.add(new SortedSetDocValuesFacetField(Values.DELETED, codeIndexDocument.isDeleted()));
                 }
 
@@ -361,13 +361,12 @@ public class CodeIndexer {
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxoWriter, doc));
 
                 count++;
-                if (count >= 1000) { // Only index 1000 documents at most each time
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
                     codeIndexDocument = null;
                 }
                 else {
                     codeIndexDocument = codeIndexDocumentQueue.poll();
                 }
-
             }
         }
         finally {

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.dao;
@@ -31,9 +31,17 @@ import java.util.List;
  */
 public class Repo implements IRepo {
 
-    private IDatabaseConfig dbConfig;
-    public Repo(IDatabaseConfig dbConfig) {
+    private final Helpers helpers;
+    private final IDatabaseConfig dbConfig;
+
+    public Repo() {
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+    }
+
+
+    public Repo(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
+        this.helpers = helpers;
     }
 
     @Override
@@ -68,8 +76,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return repoResults;
@@ -141,8 +149,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(rs);
+            Singleton.getHelpers().closeQuietly(stmt);
         }
 
         return repoResults;
@@ -170,8 +178,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return totalCount;
@@ -214,8 +222,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return result;
@@ -259,8 +267,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return result;
@@ -284,8 +292,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 
@@ -326,7 +334,7 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
         return isNew;
@@ -373,8 +381,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(rs);
+            Singleton.getHelpers().closeQuietly(stmt);
         }
     }
 
@@ -418,8 +426,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(rs);
+            Singleton.getHelpers().closeQuietly(stmt);
         }
     }
 
@@ -431,25 +439,15 @@ public class Repo implements IRepo {
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
-
-            resultSet = preparedStatement.executeQuery();
-            String value = "";
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
-            }
-
-            if (Helpers.isNullEmptyOrWhitespace(value)) {
-                preparedStatement = connection.prepareStatement("CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)");
-                preparedStatement.execute();
-            }
+            preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
+            preparedStatement.execute();
         }
         catch(SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 
@@ -465,7 +463,7 @@ public class Repo implements IRepo {
             boolean shouldAlter = true;
 
             rs = stmt.executeQuery();
-            String value = Values.EMPTYSTRING;
+            String value;
             while (rs.next()) {
                 value = rs.getString("name");
 
@@ -483,8 +481,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(rs);
+            Singleton.getHelpers().closeQuietly(stmt);
         }
     }
 }

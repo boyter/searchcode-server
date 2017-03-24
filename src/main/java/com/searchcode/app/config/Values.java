@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.config;
@@ -19,10 +19,10 @@ public class Values {
     // Property values used for looking up values
     // in the properties file
     public static final String PROPERTIES_FILE_NAME = "searchcode.properties";
-    public static final String SQLITEFILE = "sqlite_file";
-    public static final String DEFAULTSQLITEFILE = "searchcode.sqlite";
-    public static final String SERVERPORT = "server_port";
-    public static final String DEFAULTSERVERPORT = "8080";
+    public static final String SQLITE_FILE = "sqlite_file";
+    public static final String DEFAULT_SQLITE_FILE = "searchcode.sqlite";
+    public static final String SERVER_PORT = "server_port";
+    public static final String DEFAULT_SERVER_PORT = "8080";
     public static final String INDEXLOCATION = "index_location";
     public static final String DEFAULTINDEXLOCATION = "./index/";
     public static final String FACETSLOCATION = "facets_location";
@@ -59,6 +59,8 @@ public class Values {
     public static final String DEFAULTMAXDOCUMENTQUEUESIZE ="1000";
     public static final String MAXDOCUMENTQUEUELINESIZE = "max_document_queue_line_size";
     public static final String DEFAULTMAXDOCUMENTQUEUELINESIZE ="100000";
+    public static final String INDEX_QUEUE_BATCH_SIZE = "index_queue_batch_size";
+    public static final String DEFAULT_INDEX_QUEUE_BATCH_SIZE ="1000";
     public static final String MAXFILELINEDEPTH = "max_file_line_depth";
     public static final String DEFAULTMAXFILELINEDEPTH = "10000";
     public static final String OWASPDATABASELOCATION = "owasp_database_location";
@@ -71,6 +73,8 @@ public class Values {
     public static final String DEFAULT_BINARY_WHITE_LIST = "";
     public static final String BINARY_BLACK_LIST = "binary_extension_black_list";
     public static final String DEFAULT_BINARY_BLACK_LIST = "";
+    public static final String DIRECTORY_BLACK_LIST = "directory_black_list";
+    public static final String DEFAULT_DIRECTORY_BLACK_LIST = "";
     public static final String GUESS_BINARY = "binary_guess";
     public static final String DEFAULT_GUESS_BINARY = "true";
     public static final String NUMBER_GIT_PROCESSORS = "number_git_processors";

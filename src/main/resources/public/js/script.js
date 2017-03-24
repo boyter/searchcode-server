@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 /**
@@ -679,15 +679,6 @@ var SearchComponent = {
                             search: SearchModel.search,
                             totalhits: SearchModel.totalhits(),
                         }),
-                        m.component(SearchButtonFilterComponent, {
-                            totalhits: SearchModel.totalhits(),
-                            clearfilters: SearchModel.clearfilters,
-                            search: SearchModel.search,
-                            languagefilters: SearchModel.langfilters(),
-                            repofilters: SearchModel.repositoryfilters(),
-                            ownfilters: SearchModel.ownfilters(),
-                            filterinstantly: SearchModel.filterinstantly
-                        }),
                         m.component(SearchAlternateFilterComponent, {
                             query: SearchModel.query(),
                             altquery: SearchModel.altquery()
@@ -708,6 +699,15 @@ var SearchComponent = {
                         m.component(SearchYearMonthDayFilterComponent),
                         m.component(SearchRevisionComponent),
                         m.component(SearchDeletedComponent),
+                        m.component(SearchButtonFilterComponent, {
+                            totalhits: SearchModel.totalhits(),
+                            clearfilters: SearchModel.clearfilters,
+                            search: SearchModel.search,
+                            languagefilters: SearchModel.langfilters(),
+                            repofilters: SearchModel.repositoryfilters(),
+                            ownfilters: SearchModel.ownfilters(),
+                            filterinstantly: SearchModel.filterinstantly
+                        }),
                         m.component(FilterOptionsComponent, {
                             filterinstantly: SearchModel.filterinstantly
                         })

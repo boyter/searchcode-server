@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -27,6 +27,7 @@
 
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
+            <li><a href="/repository/list/">Repositories</a></li>
             <li><a href="/documentation/">Documentation</a></li>
             <li><a href="/admin/">Admin</a></li>
         </ul>

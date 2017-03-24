@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.service.route;
@@ -173,7 +173,7 @@ public class CodeRouteService {
         int limit = Integer.parseInt(
                 Properties.getProperties().getProperty(
                         Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-        boolean highlight = Helpers.tryParseInt(codeResult.codeLines, "0") <= limit;
+        boolean highlight = Singleton.getHelpers().tryParseInt(codeResult.codeLines, "0") <= limit;
 
         RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
 
@@ -258,6 +258,34 @@ public class CodeRouteService {
         map.put("languageFacetJson", gson.toJson(projectStats.getCodeFacetLanguages()));
 
         map.put("repoName", repoName);
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
+
+        return map;
+    }
+
+    public Map<String, Object> getRepositoryList(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
+
+        Repo repo = Singleton.getRepo();
+        String offSet = request.queryParams("offset");
+
+        int pageSize = 20;
+        int indexOffset = Singleton.getHelpers().tryParseInt(offSet, "0");
+
+        List<RepoResult> pagedRepo = repo.getPagedRepo(pageSize * indexOffset, pageSize + 1);
+        boolean hasNext = pagedRepo.size() == (pageSize + 1);
+        boolean hasPrevious = indexOffset != 0;
+
+        if (hasNext) {
+            pagedRepo = pagedRepo.subList(0, pageSize);
+        }
+
+        map.put("hasPrevious", hasPrevious);
+        map.put("hasNext", hasNext);
+        map.put("repoList", pagedRepo);
+        map.put("nextOffset", indexOffset + 1);
+        map.put("previousOffset", indexOffset - 1);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
 

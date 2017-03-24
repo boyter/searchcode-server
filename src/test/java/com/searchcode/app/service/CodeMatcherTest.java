@@ -265,7 +265,7 @@ public class CodeMatcherTest extends TestCase {
 
             StringBuilder bf = new StringBuilder();
             for(int j=0; j < rand.nextInt(1000) + 1; j++) {
-                bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1) + " ");
+                bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1)).append(" ");
             }
 
             cm.highlightLine(bf.toString(), matchTerms);
@@ -294,6 +294,36 @@ public class CodeMatcherTest extends TestCase {
             cm.highlightLine(line, matchTerms);
         }
     }
+
+    public void testHighlightLineIssue88() {
+        Random rand = new Random();
+        CodeMatcher cm = new CodeMatcher();
+
+        List<String> matchTerms = new ArrayList<String>() {{
+            add("q");
+        }};
+
+        String line = "q";
+        for (int i = 0; i < 1000; i++) {
+            line += "q";
+            cm.highlightLine(line, matchTerms);
+        }
+
+        StringBuilder bf = new StringBuilder();
+        for(int j=0; j < 1000 + 1; j++) {
+            bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1)).append(" ");
+        }
+
+        cm.highlightLine(bf.toString(), matchTerms);
+
+        bf = new StringBuilder();
+        for(int j=0; j < 1000 + 1; j++) {
+            bf.append(RandomStringUtils.random(rand.nextInt(20) + 1)).append(" ").append("q");
+        }
+
+        cm.highlightLine(bf.toString(), matchTerms);
+    }
+
 
     /**
      * This tests the worst possible case of matching were the only match is literally at the end of the string

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.dao;
@@ -15,13 +15,11 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +29,16 @@ import java.util.List;
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
 public class Api implements IApi {
-    private IDatabaseConfig dbConfig;
+    private final Helpers helpers;
+    private final IDatabaseConfig dbConfig;
 
-    public Api(IDatabaseConfig dbConfig) {
+    public Api(){
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+    }
+
+    public Api(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
+        this.helpers = helpers;
     }
 
     public synchronized List<ApiResult> getAllApi() {
@@ -63,8 +67,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return apiResults;
@@ -99,8 +103,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return result;
@@ -129,7 +133,7 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return successful;
@@ -151,7 +155,7 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 
@@ -171,7 +175,7 @@ public class Api implements IApi {
                 value = resultSet.getString("name");
             }
 
-            if (Helpers.isNullEmptyOrWhitespace(value)) {
+            if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
                 preparedStatement = connection.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
                 preparedStatement.execute();
             }
@@ -180,8 +184,8 @@ public class Api implements IApi {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(resultSet);
-            Helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 }

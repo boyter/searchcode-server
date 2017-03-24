@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 package com.searchcode.app.config;
@@ -24,7 +24,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
     public synchronized Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
-                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITEFILE, Values.DEFAULTSQLITEFILE);
+                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
 
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);

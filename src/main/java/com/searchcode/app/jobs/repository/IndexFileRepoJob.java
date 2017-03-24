@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.8
+ * Version 1.3.9
  */
 
 
@@ -23,6 +23,7 @@ import org.quartz.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.*;
 
 /**
@@ -64,11 +65,12 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
+            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
 
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
-                        new RunningIndexJob("Indexing", Helpers.getCurrentTimeSeconds()));
+                        new RunningIndexJob("Indexing", Singleton.getHelpers().getCurrentTimeSeconds()));
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
@@ -83,9 +85,10 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
 
-                int runningTime = Helpers.getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+                int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                 repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
                 repoResult.getData().indexStatus = "success";
+                repoResult.getData().jobRunTime = Instant.now();
                 Singleton.getRepo().saveRepo(repoResult);
             }
             finally {
@@ -120,6 +123,6 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     @Override
     public boolean ignoreFile(String fileParent) {
-        return Helpers.ignoreFiles(fileParent);
+        return Singleton.getHelpers().ignoreFiles(fileParent);
     }
 }
