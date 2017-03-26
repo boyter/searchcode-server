@@ -2,6 +2,29 @@
 Change Log
 ==========
 
+XX XXXXX XXXX - 1.3.9
+---------------------
+ - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
+ - Add indexer pause button back to admin pages https://github.com/boyter/searchcode-server/issues/84
+ - Resolve bug where filters could match multiple https://github.com/boyter/searchcode-server/issues/86
+ - Batch index size is now configurable through properties file https://github.com/boyter/searchcode-server/issues/85
+ - Mitigate issue where matching some files will crash search https://github.com/boyter/searchcode-server/issues/88
+ - Update highlight.js https://github.com/boyter/searchcode-server/issues/22
+
+20 March 2017 - 1.3.8
+---------------------
+ - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
+ - Small CSS display issues on search pages
+ - Resolve issues with some unit tests being inconsistent
+ - Setup CI pipeline to shake out issues and IWOMM
+ - New admin pages which expose information in a better way
+ - File classification moved into JSON database similar to OWASP
+ - Improved matching of found lines
+ - Addition of folder blacklist to exclude folders from being indexed
+ - Addition of repository overview page to list indexed repositories and status
+ - Add search button to repository overview to search current repository
+ - Improved matching of filenames
+
 01 February 2017 - 1.3.7
 ------------------------
  - Fix display bug where file details in search was on newline

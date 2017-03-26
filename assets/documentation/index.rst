@@ -13,6 +13,7 @@ Welcome to searchcode server's documentation!
    overview
    building
    installation
+   questions
    changelog
 
 
