@@ -1,0 +1,53 @@
+.white {
+	color:white;
+}
+
+.center {
+	text-align: center;
+}
+
+.em {
+	font-size: 1.2em;
+}
+
+.img-float {
+	margin-right:15px; 
+	margin-bottom:15px; 
+	margin-top:10px; 
+	float:left; 
+	width:500px;
+}
+
+.img-border {
+	border:1px solid #ccc;
+	border-radius: 3px;
+}
+
+.left {
+	float: left;
+}
+
+.right {
+	float: right;
+}
+
+.blue-container {
+	background-color: #428bca;
+}
+
+.grey-container {
+	background-color: #f3f3f3;
+}
+
+.top20 {
+	margin-top: 20px !important;
+}
+
+.top50 {
+	margin-top: 50px !important;
+}
+
+.footer {
+	padding-top:40px;
+	padding-bottom:40px;
+}
