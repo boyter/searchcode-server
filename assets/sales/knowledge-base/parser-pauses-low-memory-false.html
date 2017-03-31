@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="/favicon.ico">
+
+    <title>Knowledge Base - searchcode server</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/style.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="././assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="#">Download</a></li>
+            <li><a href="#">Documentation</a></li>
+            <li><a href="/knowledge-base/">Knowledge Base</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Integration</a></li>
+            <li><a href="#">Compare</a></li>
+          </ul>
+        </div><!--/.navbar-collapse -->
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1 style="color:white;"><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">Parser pauses when low_memory=false <a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></h1>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p>So if you have set low_memory=false in the searchcode.properties file then what happens is that searchcode will add processed files into a queue which occasionally is flushed to disk in a single transaction. By contrast when low_memory is set to true each one is written to disk when processed, which is slower (and uses a lot more disk IO) but since there is no buffering uses less memory.</p>
+
+            <p>The queue needs to be in place because with enough repository processors or complex files the indexer can lag behind the number of things to index.</p>
+
+            <p>You can tweak these values that control the size of the queue using the following values in the properties file.</p>
+
+<pre><code>
+    max_document_queue_size=1000
+    max_document_queue_line_size=100000
+    max_file_line_depth=10000
+    index_queue_batch_size=1000
+</code></pre>
+
+            <p>The first is the maximum number of files that will be added to the queue because the indexer pauses. By default it is set to 1,000 files.</p>
+
+            <p>The second is the number of lines in those files. A count is kept of the number of lines that are in each file in the queue and when the sum of them is over the value the indexer is paused. Please note that this is a soft cap that can be breached a few times before the pause kicks in.</p>
+
+            <p>The third is the number of lines that searchcode will read into a file for indexing. Generally file over 10,000 lines are not that useful for search results and just slow things down. This value dictates how much the soft cap of max_document_queue_line_size can be breached.</p>
+
+            <p>The final value is the number of queued batch items that will be written out to the index in a single transaction. When indexing happens searchcode will pop this many items from the internal queue then index them and write the index to disk.</p>
+
+            <p>If you have enough memory on the machine (and this is a case by case basis) you can increase the first two to have a larger buffer. When the indexer is busy and falling behind that could be because it ran into a bunch of complex/large files which cause it to do more work. However once it runs into a batch of files that it can work on quickly this can cause it to work on larger chunks for indexing. It may also be worthwhile in these situations to increase the value of index_queue_batch_size to match whatever the max_document_queue_size value is.</p>
+        </div>
+      </div>
+      <div class="row top20">
+        <div class="container">
+        </div>
+      </div>
+
+      <!-- Site footer -->
+      <div class="row footer grey-container">
+          <div class="container">
+              <footer class="">
+                <p><a href="/"><img src="/images/searchcode_logo_greyscale.png" height="30px" /></a> &copy; 2017 Boyter Online Services | Proudly Made in Sydney Australia</p>
+                    <ul class="nav navbar-nav">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="#">Download</a></li>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="/knowledge-base/">Knowledge Base</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Integration</a></li>
+                        <li><a href="#">Compare</a></li>
+                      </ul>
+                    </div><!--/.navbar-collapse -->
+              </footer>
+      </div>
+
+    </div> <!-- /container-fluid -->
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
