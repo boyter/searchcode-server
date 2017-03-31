@@ -1,3 +1,12 @@
+
+.underline {
+	text-decoration: underline;
+}
+
+a.white:hover {
+	color: #e1e1e1;
+}
+
 .white {
 	color:white;
 }
@@ -8,6 +17,10 @@
 
 .em {
 	font-size: 1.2em;
+}
+
+.transparent {
+	background-color: transparent;
 }
 
 .img-float {
@@ -41,6 +54,14 @@
 
 .grey-container {
 	background-color: #f3f3f3;
+}
+
+.padtop10 {
+	padding-top: 10px;
+}
+
+.padbot10 {
+	padding-bottom: 10px;
 }
 
 .top20 {
