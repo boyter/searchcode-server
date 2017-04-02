@@ -14,6 +14,9 @@ config = [{
         'file': 'index.html',
         'title': 'Powerful Code Search in Your Cloud'
     }, {
+        'file': 'features.html',
+        'title': 'Features of searchcode server'
+    }, {
         'directory': './knowledge-base/',
         'footer': './generic/kb_footer.html',
         'title': 'Knowledge Base Article'
@@ -28,8 +31,7 @@ assets = [
     'fonts',
     'images',
     'js',
-    'favicon.ico',
-    'style.css'
+    'favicon.ico'
 ]
 
 #####################################
