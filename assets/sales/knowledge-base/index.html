@@ -12,7 +12,7 @@
             <p>
                 <form class="form-inline">
                   <div class="form-group">
-                    <input style="width: 400px;" type="text" class="form-control" id="" placeholder="Search Knowledge Base">
+                    <input style="width: 400px;" type="text" class="form-control" id="search-input" placeholder="Search Knowledge Base">
                   </div>
                   <button type="submit" class="btn btn-default">Search</button>
                 </form>
@@ -22,14 +22,47 @@
 
        <div class="row top20">
         <div class="container em">
-            <div class="col-lg-6">
+            <div class="col-lg-6 searchable">
               <p><a href="/knowledge-base/eventually-open.html">What does eventually open mean</a></p>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 searchable">
               <p><a href="/knowledge-base/parser-pauses-low-memory-false.html">Parser pauses when low_memory=false</a></p>
             </div>
-            <div class="col-lg-6">
+            <div class="col-lg-6 searchable">
               <p><a data-text="How do you add a repository to be indexed using the admin interface" href="/knowledge-base/parser-pauses-low-memory-false.html">How to add a repository to the index</a></p>
             </div>
         </div>
       </div>
+
+
+      <script>
+      $('#search-input').keyup(function(e) {
+        var value = $(this).val().toLowerCase();
+        var terms = value.split(' ');
+
+        if (value.trim() === '') {
+          $('.searchable').each(function(index) {
+            $(this).show();
+          });
+          return;
+        }
+
+        $('.searchable').each(function(index) {
+          var show = false;
+          var text = $(this).text().toLowerCase();
+
+          for(var i=0; i<terms.length; i++) {
+            if (text.indexOf(terms[i]) !== -1) {
+              show = true;
+            }
+          }
+
+          if (show) {
+            $(this).show();
+          }
+          else {
+            $(this).hide();
+          }
+        });
+      });
+      </script>
