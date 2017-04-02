@@ -37,8 +37,9 @@
 
       <script>
       $('#search-input').keyup(function(e) {
-        var value = $(this).val().toLowerCase();
+        var value = $(this).val().toLowerCase().replace(/\s+/g, ' ');
         var terms = value.split(' ');
+        console.log(terms);
 
         if (value.trim() === '') {
           $('.searchable').each(function(index) {
