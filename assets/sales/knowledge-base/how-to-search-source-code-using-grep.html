@@ -1,0 +1,31 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1 style="color:white;"><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to search source code in grep <a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></h1>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+            <h2>grep  <small>(command line)</small></h2>
+            <a href="https://www.gnu.org/software/grep/">https://www.gnu.org/software/grep/</a>
+            <p>
+            <button type="button" class="btn btn-success btn-xs">Windows</button>
+            <button type="button" class="btn btn-success btn-xs">Linux</button>
+            <button type="button" class="btn btn-success btn-xs">macOS</button>
+            <button type="button" class="btn btn-success btn-xs">BSD</button>
+            </p>
+
+<p>
+Venerable grep works on pretty much every operating system around and is included by default on almost all Unix ones. It is not specificly designed for searching source code as it was designed to be a general purpose search tool but can fulfil that role very well. Its ubiquity is its great strength as knowing how to use it is portable across pretty much any system you will end up working on. The biggest issues with using grep to search source code is its lack of syntax highlighting, recursive searches include things you probably don't want to search across, and you need a few command line arguments to achieve your goal. For example,</p>
+
+<pre><code>grep -inIEr -C1 –include="*.java" "codere*" ./src/</code></pre>
+
+<p>Will search ignoring case (-i), printing line numbers (-n), ignoring binary files (-I), using posix regex (-E), recursively (-r), showing the context (-C1), only searching java files (-include) for "codre*" in the directory ./src/ This can be a bit of a handful to type out for every search. Another problem with grep is that it because it looks at every file and depending on your query every byte in every file it can take a very long time to search across large or multiple code bases.</p>
+
+<p>You should only be using grep if you are unable to use any other code search solution. It is reccomended to use <a href="/knowledge-base/how-to-search-source-code-using-ack.html">ack</a> in all situations where you would normally use grep.</p>
+
+        </div>
+      </div>
