@@ -17,6 +17,9 @@ config = [{
         'file': 'features.html',
         'title': 'Features of searchcode server'
     }, {
+        'file': 'pricing.html',
+        'title': 'Community Download and Pricing for searchcode server'
+    }, {
         'file': 'documentation.html',
         'title': 'Documentation for searchcode server'
     }, {
