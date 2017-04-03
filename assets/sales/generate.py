@@ -17,6 +17,9 @@ config = [{
         'file': 'features.html',
         'title': 'Features of searchcode server'
     }, {
+        'file': 'documentation.html',
+        'title': 'Documentation for searchcode server'
+    }, {
         'directory': './knowledge-base/',
         'footer': './generic/kb_footer.html',
         'title': 'Knowledge Base Article'
