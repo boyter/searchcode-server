@@ -1,6 +1,6 @@
       <div class="row blue-container top50">
           <div class="container"> 
-            <a href="/"><h1 style="color:white;"><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
           </div>
           <div class="container">
             <h1 class="white">How to search effectively with searchcode server <a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></h1>
@@ -11,7 +11,7 @@
         <div class="container em">
         <p class="em">
         Type any term you want to search for in the search box and press the enter key. Generally best results can be
-        gained by searching for terms that you expect to be close to each other on the same line.
+        gained by searching for terms that you expect to be close to each other on the same line. Case is ignored for all searches with the exception of search operators.
         </p>
         
         <p class="em">
@@ -20,15 +20,15 @@
 
         <dl class="dl-horizontal">
             <dt>AND</dt>
-            <dd>Match where documents contain terms on both sides of the operator. E.G. test AND import</dd>
+            <dd>Match where documents contain terms on both sides of the operator. E.G. <code>test AND import</code></dd>
             <dt>OR</dt>
-            <dd>Match where documents contain terms on either side of the operator. E.G. test OR import</dd>
+            <dd>Match where documents contain terms on either side of the operator. E.G. <code>test OR import</code></dd>
             <dt>NOT</dt>
-            <dd>Match where documents do not contain terms on the right hand side of the operator. E.G. test NOT import</dd>
+            <dd>Match where documents do not contain terms on the right hand side of the operator. E.G. <code>test NOT import</code></dd>
             <dt>( )</dt>
-            <dd>Group terms. Allows creation of exclusive matches. E.G. (test OR import) AND other</dd>
+            <dd>Group terms. Allows creation of exclusive matches. E.G. <code>(test OR import) AND other</code></dd>
             <dt>*</dt>
-            <dd>Wildcard. Only applies at end of a query. E.G. test*</dd>
+            <dd>Wildcard. Only applies at end of a query. E.G. <code>test*</code></dd>
         </dl>
 
         <p class="em">An example using all of the above would be <code>(mkdir NOT sphinx*) OR (php AND print*)</code>

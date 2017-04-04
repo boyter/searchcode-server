@@ -27,8 +27,13 @@ a.white:hover {
 	margin-right:15px; 
 	margin-bottom:15px; 
 	margin-top:10px; 
-	float:left; 
 	width:500px;
+}
+
+.img-video {
+	border:1px solid #ccc;
+	border-radius: 3px;
+	width: 600px;
 }
 
 .img-border {
