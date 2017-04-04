@@ -23,6 +23,11 @@ a.white:hover {
 	background-color: transparent;
 }
 
+.number {
+	color:#f0ad4e; 
+	font-weight: bolder;
+}
+
 .img-float {
 	margin-right:15px; 
 	margin-bottom:15px; 
