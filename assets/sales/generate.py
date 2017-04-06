@@ -1,7 +1,9 @@
 # A dead simple static site generater becaues I didn't like any others
 
 import os
+import sys
 from shutil import copyfile, copytree, rmtree
+from subprocess import call
 
 # Target output
 target = './output/'
@@ -19,9 +21,6 @@ config = [{
     }, {
         'file': 'pricing.html',
         'title': 'Community Download and Pricing for searchcode server'
-    }, {
-        'file': 'documentation.html',
-        'title': 'Documentation for searchcode server'
     }, {
         'directory': './knowledge-base/',
         'footer': './generic/kb_footer.html',
@@ -117,3 +116,9 @@ for asset in assets:
         copytree(asset, target + asset)
     else:
         copyfile(asset, target + asset)
+
+# Compress images etc...
+if len(sys.argv[1:]) != 0:
+    for root, dirs, files in os.walk(target):
+        call(['./png_crush.sh', root])
+        call(['./gif_crush.sh', root])
