@@ -15,6 +15,10 @@ a.white:hover {
 	text-align: center;
 }
 
+.text-left {
+	text-align: left;
+}
+
 .em {
 	font-size: 1.2em;
 }
@@ -72,6 +76,10 @@ a.white:hover {
 
 .padbot10 {
 	padding-bottom: 10px;
+}
+
+.top10 {
+	margin-top: 10px !important;
 }
 
 .top20 {
