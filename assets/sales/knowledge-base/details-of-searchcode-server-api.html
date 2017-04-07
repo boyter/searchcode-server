@@ -15,8 +15,7 @@
        <div class="row top20">
         <div class="container em">
 
-        <p class="em">API endpoints offered by your searchcode server instance are described below. Note that some require API authentication
-        which will also be covered.</p>
+        <p class="em">API endpoints offered by your searchcode server instance are described in your searchcode server documentation page. Note that some require API authentication.</p>
         <h4>API Authentication</h4>
         <p class="em">API authentication is done through the use of shared secret key HMAC generation. If enabled you will be required to sign
           the arguments sent to the API endpoint as detailed. Ask your administrator for a public and private key to be generated for you
@@ -26,7 +25,7 @@
           The most important thing to note is that parameter order is important. All API endpoints will list the order
           that parameters should have passed in. The below code is has no license and is released as public domain. The second
           example is identical to the first but performs the signing using SHA512 for greater security.</p>
-          SHA1 Example
+        <h4>SHA1 Example</h4>
 <textarea style="font-family: monospace,serif; width:100%; height:150px;" readonly="true">from hashlib import sha1
 from hmac import new as hmac
 import urllib2
@@ -111,7 +110,7 @@ data = data.read()
 data = json.loads(data)
 print data['sucessful'], data['message']</textarea>
 
-SHA512 example
+<h4>SHA512 example</h4>
 
 <textarea style="font-family: monospace,serif; width:100%; height:150px;" readonly="true">from hashlib import sha512
 from hmac import new as hmac
@@ -203,210 +202,6 @@ print data['sucessful'], data['message']</textarea>
           
           <textarea style="font-family: monospace,serif; width:100%; height:55px;" readonly="true">String myHmac = HmacUtils.hmacSha1Hex(MYPRIVATEKEY, PARAMSTOHMAC);
 String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
-        
-        <p>
-          <h4>Repository API (secured)</h4>
-          The repository API allows you to list, add/update and delete repositories that are currently being indexed within your searchcode server instance. All calls to the repository API methods are secured if the appropiate property has been set by your administrator.
-        
-          <h5>Endpoint List All Repositories</h5>
-          <pre>/api/repo/list/</pre>
-          <p>Some repositories returned by this endpoint may be queued for deletion. They will continue to appear in this list until they
-          are sucessfully removed.</p>
-          <h5>Params</h5>
-              <ul>
-                <li>sig: signed value (optional if unsecured)</li>
-                <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
-              </ul>
-        
-          <h5>Signing</h5>
-          To sign requests to this endpoint you need to HMAC as follows<br>
-          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY")</pre>
-
-          <h5>Examples</h5>
-          <pre>http://localhost/api/repo/list/</pre>
-          <pre>http://localhost/api/repo/list/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
-        
-          <h5>Return Field Definitions</h5>
-
-          <dl class="dl-horizontal">
-            <dt>message</dt>
-            <dd>A message containing debug information if the request fails.</dd>
-            <dt>sucessful</dt>
-            <dd>True or false value if the request was processed.</dd>
-
-            <dt>repoResultList</dt>
-            <dd>An array containing the repository results. Will only be present if the call was sucessful.
-              <dl class="dl-horizontal">
-                <dt>branch</dt>
-                <dd>Branch that is being monitored. N.B. this is not applicable to SVN repositories.</dd>
-                <dt>name</dt>
-                <dd>name used to idenity this repository.</dd>
-                <dt>password</dt>
-                <dd>The password used to authenticate for clone and update requests</dd>
-                <dt>rowId</dt>
-                <dd>Only used internally. Refers to the rowId of the database</dd>
-                <dt>scm</dt>
-                <dd>The source control management system used</dd>
-                <dt>source</dt>
-                <dd>The source URL that should point to where this repository is located</dd>
-                <dt>url</dt>
-                <dd>The endpoint URL that us used for clone and update requests</dd>
-                <dt>username</dt>
-                <dd>The username used to authenticate for clone and update requests</dd>
-              </dl>
-            </dd>
-          </dl>
-
-          <h5>Sample Response</h5>
-          <pre>{
-    "message": "",
-    "repoResultList": [
-        {
-            "branch": "master",
-            "name": "test",
-            "password": "",
-            "rowId": 1,
-            "scm": "git",
-            "source": "http://github.com/myuser/myrepo",
-            "url": "git://github.com/myuser/myrepo.git",
-            "username": ""
-        }
-    ],
-    "sucessful": true
-}</pre>
-
-
-        <h5>Endpoint Add Repository</h5>
-          <pre>/api/repo/add/</pre>
-          <p>It is not possible to update an existing repository. To do so you must first delete the existing repository and wait for the background
-           tasks finish cleaning the repository.
-          </p>
-          <h5>Params</h5>
-            <ul>
-              <li>sig: signed value (optional if unsecured)</li>
-              <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
-
-              <li>reponame: unique name to identify the repository if matches existing it will delete the existing and recreate</li>
-              <li>repourl: the url to the repository endpoint</li>
-              <li>repotype: the type of repository this is, NB only git is currently supported</li>
-              <li>repousername: username used to pull from the repository</li>
-              <li>repopassword: password used to pull from the repository</li>
-              <li>reposource: a http link pointing where the repository can be browsed or a helpful link</li>
-              <li>repobranch: what branch should be indexed</li>
-            </ul>
-
-        
-          <h5>Signing</h5>
-          To sign requests to this endpoint you need to HMAC as follows<br>
-          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY&reponame=REPONAME&repourl=REPOURL&repotype=REPOTYPE&repousername=REPOUSERNAME&repopassword=REPOPASSWORD&reposource=REPOSOURCE&repobranch=REPOBRANCH")</pre>
-
-          <h5>Examples</h5>
-          <pre>http://localhost/api/repo/add/?reponame=testing&repourl=git://github.com/test/test.git&repotype=git&repousername=MYUSER&repopassword=MYPASSWORD&reposource=http://githib.com/test/test/&repobranch=master</pre>
-          <pre>http://localhost/api/repo/add/?sig=SIGNEDKEY&pub=PUBLICKEY&reponame=testing&repourl=git://github.com/test/test.git&repotype=git&repousername=MYUSER&repopassword=MYPASSWORD&reposource=http://githib.com/test/test/&repobranch=master</pre>
-        
-          <h5>Return Field Definitions</h5>
-
-          <dl class="dl-horizontal">
-            <dt>message</dt>
-            <dd>A message containing debug information if the request fails.</dd>
-            <dt>sucessful</dt>
-            <dd>True or false value if the request was processed.</dd>
-          </dl>
-
-          <h5>Sample Response</h5>
-          <pre>{
-    "message": "added repository sucessfully",
-    "sucessful": true
-}</pre>
-
-
-        <h5>Endpoint Delete Repository</h5>
-          <pre>/api/repo/delete/</pre>
-          <p>Successful calls to this endpoint will insert a request into a queue to remove the repository. The actual deletion
-          can take several minutes.<p>
-          <h5>Params</h5>
-            <ul>
-              <li>sig: signed value (optional if unsecured)</li>
-              <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
-              <li>reponame: unique name to identify the repository</li>
-            </ul>
-        
-          <h5>Signing</h5>
-          To sign requests to this endpoint you need to HMAC as follows<br>
-          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY&reponame=REPONAME)"</pre>
-
-          <h5>Examples</h5>
-          <pre>http://localhost/api/repo/delete/?reponame=testing</pre>
-          <pre>http://localhost/api/repo/delete/?sig=SIGNEDKEY&pub=PUBLICKEY&reponame=testing</pre>
-        
-          <h5>Return Field Definitions</h5>
-
-          <dl class="dl-horizontal">
-            <dt>message</dt>
-            <dd>A message containing debug information if the request fails.</dd>
-            <dt>sucessful</dt>
-            <dd>True or false value if the request was processed.</dd>
-          </dl>
-
-          <h5>Sample Response</h5>
-          <pre>{
-    "message": "deleted repository sucessfully",
-    "sucessful": true
-}</pre>
-
-        <h5>Endpoint Rebuild & Reindex Repository</h5>
-          <pre>/api/repo/reindex/</pre>
-          <p>Successful calls to this endpoint will cause the index and repository directories to be deleted and schedule all repositories to be reindexed. Note that queries to the system while the reindex is running may not return expected results.<p>
-          <h5>Params</h5>
-            <ul>
-              <li>sig: signed value (optional if unsecured)</li>
-              <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
-            </ul>
-        
-          <h5>Signing</h5>
-          To sign requests to this endpoint you need to HMAC as follows<br>
-          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY")</pre>
-
-          <h5>Examples</h5>
-          <pre>http://localhost/api/repo/reindex/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
-          <pre>http://localhost/api/repo/delete/?sig=SIGNEDKEY&pub=PUBLICKEY</pre>
-        
-          <h5>Return Field Definitions</h5>
-
-          <dl class="dl-horizontal">
-            <dt>message</dt>
-            <dd>A message containing debug information if the request fails.</dd>
-            <dt>sucessful</dt>
-            <dd>True or false value if the request was processed.</dd>
-          </dl>
-
-          <h5>Sample Response</h5>
-          <pre>{
-    "message": "reindex forced",
-    "sucessful": true
-}</pre>
-
-
-
-        <h5>Post commit hook index</h5>
-          <pre>/api/repo/index/</pre>
-          <p>Successful calls to this endpoint will suggest to searchcode that a repository has been updated and add it to the
-          index queue. If already on the queue this method does nothing. The queue is a first in first out queue and repositories
-          will be processed in order.<p>
-          <h5>Params</h5>
-            <ul>
-              <li>repoUrl: the repository url you wish to index (required)</li>
-            </ul>
-           <h5>Examples</h5>
-           <pre>http://localhost/api/repo/index/?repoUrl=https://github.com/boyter/searchcode-server.git</pre>
-           <pre>http://localhost/api/repo/index/?repoUrl=/disk/location/</pre>
-          <h5>Sample Response</h5>
-          <pre>{
-    sucessful: true,
-    message: "Enqueued repository https://github.com/boyter/searchcode-server.git"
-}</pre>
-
-
 
 
       </div>
