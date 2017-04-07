@@ -1,0 +1,21 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to control searchcode server's CPU usage</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">The ability to the CPU usage of caused by indexing in searchcode server can only be done through paid for editions of searchcode server by modifying the "Backoff Value" inside the settings page. It is possible to control the general amount of CPU usage for the process using OS specific commands such as cpulimit for linux.</p>
+            <p class="em">If you want to launch searchcode server on a multi-tennancy system setting this value is highly advised. It can also be worth setting on t2 instance types in AWS to ensure that all credits are not used. The value to set should be set to the amount of CPU's you want to restrict searchcode server to be able to use. On a t2.large instance to ensure that the instance will never run out of credits a value of 0.2 will achive this. Keep in mind that the CPU load average is a global setting, and as such other applications can impact it. By setting the value too low in a multi-tennancy situation you can starve searchcode of CPU and the ability to index. Be sure to monitor your instance if you set this value. A sure sign of it being too low is the message "Indexing paused" appearing in the logs.</p>
+        </div>
+      </div>
