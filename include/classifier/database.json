@@ -33,7 +33,7 @@
     "keywords": ["nbsp", "class", "span", "font", "href", "html", "name", "code", "java", "title", "the", "org", "bgcolor", "com", "div", "line", "color", "table", "top", "http", "src", "green", "summary", "align", "interface", "lang", "width", "size", "apache", "api", "type", "xbird", "eeeeff", "docs", "pre", "valign", "sun", "method", "jmeter", "awt", "j2se", "white", "text", "border", "navbarcell1", "index", "string", "xquery", "navbarfont1", "cellpadding", "cellspacing", "navbar", "style", "object", "this", "mt4j", "xstream", "value", "right", "100", "strong", "thoughtworks", "javax", "util", "script", "public", "and", "for", "left", "tablerowcolor", "package", "all", "swing", "int", "true", "phpexcel", "from", "bottom", "target", "file", "component", "sym", "center", "detail", "colspan", "return", "var", "list", "body", "javascript", "function", "classes", "doc", "quot", "skip", "model", "that", "content", "noscript", "css", "external", "document", "www", "xml", "tree", "field", "constructor", "img", "tools", "benchmark", "components", "with", "new", "input", "inherited", "head", "void", "help", "use", "alt", "static", "link", "gui", "testelement", "overview", "deprecated", "not", "frames", "dtd", "event", "end", "you", "jdom", "meta", "net", "navbarcell2", "allclasses", "noframe", "data", "test", "methods", "jcomponent", "false", "returns", "gif", "boolean", "ccccff", "start", "a100parents", "php", "stylesheet", "specified", "ruby", "products", "next", "are", "height", "set", "tableheadingcolor", "ingatan", "window", "expr", "final", "func", "math", "protocol", "license", "files", "amp", "null", "extended", "comment", "ref", "keyword", "xmlrpc", "image", "will", "rel", "str", "get", "visiblecomponents", "nested", "sketchel", "models", "nokogiri", "long", "key", "source", "instance", "tablesubheadingcolor", "ffffff", "element", "worksheet", "whit", "writer", "onclick", "float", "attribute", "version", "can"]
   },
   {
-    "language": "MSBuildscripts",
+    "language": "MSBuild scripts",
     "extensions": [
       "csproj"
     ],
@@ -155,7 +155,7 @@
     "keywords": []
   },
   {
-    "language": "Fortran77",
+    "language": "Fortran 77",
     "extensions": [
       "f",
       "f77"
@@ -163,7 +163,7 @@
     "keywords": []
   },
   {
-    "language": "Fortran90",
+    "language": "Fortran 90",
     "extensions": [
       "f90",
       "f90"
@@ -188,7 +188,7 @@
     "keywords": []
   },
   {
-    "language": "VisualBasic",
+    "language": "Visual Basic",
     "extensions": [
       "vbs",
       "vb"
@@ -196,7 +196,7 @@
     "keywords": []
   },
   {
-    "language": "BourneShell",
+    "language": "Bourne Shell",
     "extensions": [
       "sh",
       "bash",
@@ -227,7 +227,7 @@
     "keywords": []
   },
   {
-    "language": "ObjectiveC++",
+    "language": "Objective C++",
     "extensions": [
       "mm",
       "m"
@@ -257,7 +257,7 @@
     "keywords": []
   },
   {
-    "language": "RubyHTML",
+    "language": "Ruby HTML",
     "extensions": [
       "rhtml"
     ],
@@ -272,7 +272,7 @@
     "keywords": []
   },
   {
-    "language": "BourneAgainShell",
+    "language": "Bourne Again Shell",
     "extensions": [
       "sh",
       "bash",
@@ -459,7 +459,7 @@
     "keywords": []
   },
   {
-    "language": "NAntscripts",
+    "language": "NAnt scripts",
     "extensions": [
       "build"
     ],
@@ -526,21 +526,21 @@
     "keywords": []
   },
   {
-    "language": "KornShell",
+    "language": "Korn Shell",
     "extensions": [
       "ksh"
     ],
     "keywords": []
   },
   {
-    "language": "Fortran95",
+    "language": "Fortran 95",
     "extensions": [
       "f95"
     ],
     "keywords": []
   },
   {
-    "language": "OracleForms",
+    "language": "Oracle Forms",
     "extensions": [
       "fmt"
     ],
@@ -574,14 +574,14 @@
     "keywords": []
   },
   {
-    "language": "OracleReports",
+    "language": "Oracle Reports",
     "extensions": [
       "rex"
     ],
     "keywords": []
   },
   {
-    "language": "SoftbridgeBasic",
+    "language": "Softbridge Basic",
     "extensions": [
       "sbl"
     ],
@@ -602,7 +602,7 @@
     "keywords": []
   },
   {
-    "language": "FreemarkerTemplate",
+    "language": "Freemarker Template",
     "extensions": [
       "ftl"
     ],
@@ -754,7 +754,7 @@
     "keywords": []
   },
   {
-    "language": "ScalableVectorGraphics",
+    "language": "Scalable Vector Graphics",
     "extensions": [
       "svg"
     ],
@@ -789,7 +789,7 @@
     "keywords": []
   },
   {
-    "language": "WolframLanguage",
+    "language": "Wolfram Language",
     "extensions": [
       "wl"
     ],
@@ -845,35 +845,35 @@
     "keywords": []
   },
   {
-    "language": "RubyTemplate",
+    "language": "Ruby Template",
     "extensions": [
       "erb"
     ],
     "keywords": []
   },
   {
-    "language": "XMLResource",
+    "language": "XML Resource",
     "extensions": [
       "resx"
     ],
     "keywords": []
   },
   {
-    "language": "VarnishConfiguration",
+    "language": "Varnish Configuration",
     "extensions": [
       "vcl"
     ],
     "keywords": []
   },
   {
-    "language": "JadeTemplate",
+    "language": "Jade Template",
     "extensions": [
       "jade"
     ],
     "keywords": []
   },
   {
-    "language": "ReStructuredText",
+    "language": "ReStructured Text",
     "extensions": [
       "rst"
     ],
@@ -887,14 +887,14 @@
     "keywords": []
   },
   {
-    "language": "RazorTemplate",
+    "language": "Razor Template",
     "extensions": [
       "cshtml"
     ],
     "keywords": []
   },
   {
-    "language": "HandlebarsTemplate",
+    "language": "Handlebars Template",
     "extensions": [
       "hbs"
     ],
@@ -922,28 +922,28 @@
     "keywords": []
   },
   {
-    "language": "VisualNDepend",
+    "language": "Visual NDepend",
     "extensions": [
       "ndproj"
     ],
     "keywords": []
   },
   {
-    "language": "DeviceTreeSource",
+    "language": "Device Tree Source",
     "extensions": [
       "dts"
     ],
     "keywords": []
   },
   {
-    "language": "ASP.NETWebHandler",
+    "language": "ASP.NET WebHandler",
     "extensions": [
       "ashx"
     ],
     "keywords": []
   },
   {
-    "language": "GherkinSpecification",
+    "language": "Gherkin Specification",
     "extensions": [
       "feature"
     ],
@@ -957,28 +957,28 @@
     "keywords": []
   },
   {
-    "language": "QtMetaLanguage",
+    "language": "Qt Meta Language",
     "extensions": [
       "qml"
     ],
     "keywords": []
   },
   {
-    "language": "StyleSheeteXtender",
+    "language": "Style Sheet eXtender",
     "extensions": [
       "cssx"
     ],
     "keywords": []
   },
   {
-    "language": "ScratchProjectFile",
+    "language": "Scratch Project File",
     "extensions": [
       "sb"
     ],
     "keywords": []
   },
   {
-    "language": "PrecompiledHeader",
+    "language": "Precompiled Header",
     "extensions": [
       "pch"
     ],
@@ -992,7 +992,7 @@
     "keywords": []
   },
   {
-    "language": "PortageInstaller",
+    "language": "Portage Installer",
     "extensions": [
       "ebuild"
     ],
@@ -1006,7 +1006,7 @@
     "keywords": []
   },
   {
-    "language": "JenkinsBuildfile",
+    "language": "Jenkins Buildfile",
     "extensions": [
       "jenkinsfile"
     ],
@@ -1020,28 +1020,28 @@
     "keywords": []
   },
   {
-    "language": "PropertiesFile",
+    "language": "Properties File",
     "extensions": [
       "properties"
     ],
     "keywords": []
   },
   {
-    "language": "TagLibraryDescriptor",
+    "language": "Tag Library Descriptor",
     "extensions": [
       "tld"
     ],
     "keywords": []
   },
   {
-    "language": "SyntacticallyAwesomeStyleSheets",
+    "language": "Syntactically Awesome Style Sheets",
     "extensions": [
       "scss"
     ],
     "keywords": []
   },
   {
-    "language": "EmbeddedJavaScript",
+    "language": "Embedded JavaScript",
     "extensions": [
       "ejs"
     ],

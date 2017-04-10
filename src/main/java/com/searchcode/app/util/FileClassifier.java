@@ -61,7 +61,7 @@ public class FileClassifier {
         }
 
         // More then one possible match, check which one is most likely is and return that
-        String languageGuess = "";
+        String languageGuess = Values.EMPTYSTRING;
         int bestKeywords = 0;
 
         // This is hideous, need to look at performance at some point
@@ -83,8 +83,9 @@ public class FileClassifier {
             }
         }
 
-        if (languageGuess == null || languageGuess.trim().equals(Values.EMPTYSTRING)) {
-            languageGuess = "Unknown";
+        // If there is still no decision then go for the first match
+        if (Singleton.getHelpers().isNullEmptyOrWhitespace(languageGuess)) {
+            return ((FileClassifierResult)matching[0]).language;
         }
 
         return languageGuess;
