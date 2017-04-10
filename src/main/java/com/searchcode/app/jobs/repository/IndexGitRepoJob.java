@@ -64,7 +64,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         this.USESYSTEMGIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
 
         File f = new File(this.GITBINARYPATH);
-        if (USESYSTEMGIT && !f.exists()) {
+        if (this.USESYSTEMGIT && !f.exists()) {
             Singleton.getLogger().warning("\n///////////////////////////////////////////////////////////////////////////\n// Property git_binary_path in properties file appears to be incorrect.  //\n// Please check the path. Falling back to internal git implementation.   //\n///////////////////////////////////////////////////////////////////////////");
 
             this.USESYSTEMGIT = false;
