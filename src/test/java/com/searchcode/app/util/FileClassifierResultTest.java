@@ -73,6 +73,21 @@ public class FileClassifierResultTest extends TestCase {
         assertEquals("Kotlin", language);
     }
 
+    public void testLanguageGuesserMultiple() {
+        // Multiple languages match c so need to add logic here to check they are correct
+        FileClassifier fileClassifier = new FileClassifier();
+        ArrayList<String> lines = new ArrayList<String>() {{
+            add("#include<stdio.h>");
+            add("int main(void) {");
+            add("printf(\"Hello World\\n\");");
+            add("return 0;");
+            add("}");
+        }};
+
+        String language = fileClassifier.languageGuesser("test.c", lines);
+        assertEquals("C", language);
+    }
+
     // TODO update this with actual conflicting type and check that it classifies correctly
     public void testLanguageGuesserMake() {
         FileClassifier fileClassifier = new FileClassifier();
