@@ -1,1 +1,1050 @@
-[{"language":"Text","extensions":["text","txt"],"keywords":[]},{"language":"XAML","extensions":["xaml"],"keywords":[]},{"language":"ASP.Net","extensions":["ascx","asmx","asax","aspx"],"keywords":[]},{"language":"HTML","extensions":["htm","html"],"keywords":[]},{"language":"MSBuildscripts","extensions":["csproj"],"keywords":[]},{"language":"C#","extensions":["cs"],"keywords":[]},{"language":"XSD","extensions":["xsd"],"keywords":[]},{"language":"XML","extensions":["xml"],"keywords":[]},{"language":"CMake","extensions":["cmake"],"keywords":[]},{"language":"C/C++Header","extensions":["h","hpp"],"keywords":[]},{"language":"C++","extensions":["cpp","cc","c"],"keywords":["#include","<iostream>","using","namespace","std;","void","main()","{","cout","<<","\"HelloWorld!\"","<<","endl;","cout","<<","\"Welcome","to","C++","Programming\"","<<","endl;","}"]},{"language":"make","extensions":["makefile","gnumakefile","make"],"keywords":[]},{"language":"CSS","extensions":["css"],"keywords":[]},{"language":"Python","extensions":["py"],"keywords":[]},{"language":"MATLAB","extensions":["m"],"keywords":[]},{"language":"ObjectiveC","extensions":["m","mm"],"keywords":[]},{"language":"Javascript","extensions":["js"],"keywords":[]},{"language":"Java","extensions":["java"],"keywords":[]},{"language":"PHP","extensions":["php4","php5","php","inc"],"keywords":[]},{"language":"Erlang","extensions":["erl","hrl"],"keywords":[]},{"language":"Fortran77","extensions":["f","f77"],"keywords":[]},{"language":"Fortran90","extensions":["f90","f90"],"keywords":[]},{"language":"C","extensions":["c"],"keywords":["#include<stdio.h>","int","main(void)","{","printf(\"HelloWorld\\n\");","return","0;","}"]},{"language":"Lisp","extensions":["lisp","el","lsp","sc"],"keywords":[]},{"language":"VisualBasic","extensions":["vbs","vb"],"keywords":[]},{"language":"BourneShell","extensions":["sh","bash","zsh"],"keywords":[]},{"language":"Ruby","extensions":["rb"],"keywords":[]},{"language":"vimscript","extensions":["vim"],"keywords":[]},{"language":"Assembly","extensions":["s","asm"],"keywords":[]},{"language":"ObjectiveC++","extensions":["mm","m"],"keywords":[]},{"language":"DTD","extensions":["dtd"],"keywords":[]},{"language":"SQL","extensions":["sql"],"keywords":[]},{"language":"YAML","extensions":["yaml","yml"],"keywords":[]},{"language":"RubyHTML","extensions":["rhtml"],"keywords":[]},{"language":"Haskell","extensions":["hs","lhs"],"keywords":[]},{"language":"BourneAgainShell","extensions":["sh","bash","zsh"],"keywords":[]},{"language":"ActionScript","extensions":["as"],"keywords":[]},{"language":"MXML","extensions":["mxml"],"keywords":[]},{"language":"ASP","extensions":["asa","asp"],"keywords":[]},{"language":"D","extensions":["d"],"keywords":[]},{"language":"Pascal","extensions":["p","pp","pas"],"keywords":[]},{"language":"Scala","extensions":["scala"],"keywords":[]},{"language":"DOSBatch","extensions":["bat","cmd","bat"],"keywords":[]},{"language":"Groovy","extensions":["groovy"],"keywords":[]},{"language":"XSLT","extensions":["xsl","xslt"],"keywords":[]},{"language":"Perl","extensions":["cgi","pl","pm"],"keywords":[]},{"language":"Teamcenterdef","extensions":["def"],"keywords":[]},{"language":"IDL","extensions":["idl","pro"],"keywords":[]},{"language":"Lua","extensions":["lua","rockspec"],"keywords":[]},{"language":"Go","extensions":["go"],"keywords":[]},{"language":"yacc","extensions":["y"],"keywords":[]},{"language":"Cython","extensions":["pyx"],"keywords":[]},{"language":"lex","extensions":["l"],"keywords":[]},{"language":"Ada","extensions":["pad","adb","ads","ada"],"keywords":[]},{"language":"sed","extensions":["sed"],"keywords":[]},{"language":"m4","extensions":["m4","ac"],"keywords":[]},{"language":"Ocaml","extensions":["ml","mli","mly","mll"],"keywords":[]},{"language":"Smarty","extensions":["tpl"],"keywords":[]},{"language":"ColdFusion","extensions":["cfm"],"keywords":[]},{"language":"NAntscripts","extensions":["build"],"keywords":[]},{"language":"Expect","extensions":["exp"],"keywords":[]},{"language":"CShell","extensions":["sh"],"keywords":[]},{"language":"VHDL","extensions":["vhd","vhdl"],"keywords":[]},{"language":"Tcl/Tk","extensions":["tcl","tk","tkpkg"],"keywords":[]},{"language":"JSP","extensions":["jsp"],"keywords":[]},{"language":"SKILL","extensions":["il"],"keywords":[]},{"language":"awk","extensions":["awk"],"keywords":[]},{"language":"MUMPS","extensions":["m","mps"],"keywords":[]},{"language":"KornShell","extensions":["ksh"],"keywords":[]},{"language":"Fortran95","extensions":["f95"],"keywords":[]},{"language":"OracleForms","extensions":["fmt"],"keywords":[]},{"language":"Dart","extensions":["dart"],"keywords":[]},{"language":"COBOL","extensions":["cob","cbl","cbl","cob"],"keywords":[]},{"language":"Modula3","extensions":["i3","mg","ig","m3"],"keywords":[]},{"language":"OracleReports","extensions":["rex"],"keywords":[]},{"language":"SoftbridgeBasic","extensions":["sbl"],"keywords":[]},{"language":"Markdown","extensions":["md"],"keywords":[]},{"language":"git-ignore","extensions":["gitignore"],"keywords":[]},{"language":"FreemarkerTemplate","extensions":["ftl"],"keywords":[]},{"language":"LessCSS","extensions":["less"],"keywords":[]},{"language":"Gradle","extensions":["gradle"],"keywords":[]},{"language":"Basic","extensions":["bas"],"keywords":[]},{"language":"GolfScript","extensions":["golfscript"],"keywords":[]},{"language":"LaTeX","extensions":["tex"],"keywords":[]},{"language":"Boo","extensions":["boo"],"keywords":[]},{"language":"Julia","extensions":["jl"],"keywords":[]},{"language":"Delphi","extensions":["delphi"],"keywords":[]},{"language":"LOLCODE","extensions":["lol"],"keywords":[]},{"language":"B","extensions":["b"],"keywords":[]},{"language":"Chef","extensions":["ch"],"keywords":[]},{"language":"Racket","extensions":["rkt","rktl","ss","scm","scrbl"],"keywords":[]},{"language":"Swift","extensions":["swift"],"keywords":[]},{"language":"JSON","extensions":["json"],"keywords":[]},{"language":"Octave","extensions":["octave"],"keywords":[]},{"language":"Elixir","extensions":["exs"],"keywords":[]},{"language":"Factor","extensions":["factor"],"keywords":[]},{"language":"VimScript","extensions":["vim"],"keywords":[]},{"language":"Powershell","extensions":["ps1","psm1"],"keywords":[]},{"language":"Eiffel","extensions":["eiff"],"keywords":[]},{"language":"ScalableVectorGraphics","extensions":["svg"],"keywords":[]},{"language":"Rust","extensions":["rs"],"keywords":[]},{"language":"MUSHCode","extensions":["mush"],"keywords":[]},{"language":"Logo","extensions":["lg"],"keywords":[]},{"language":"Nim","extensions":["nim"],"keywords":[]},{"language":"WolframLanguage","extensions":["wl"],"keywords":[]},{"language":"Purebasic","extensions":["pb"],"keywords":[]},{"language":"ArnoldC","extensions":["arnoldc"],"keywords":[]},{"language":"VRML","extensions":["wrl"],"keywords":[]},{"language":"Coffeescript","extensions":["coffee"],"keywords":[]},{"language":"SPDX","extensions":["spdx"],"keywords":[]},{"language":"TypeScript","extensions":["ts"],"keywords":[]},{"language":"JSX","extensions":["jsx"],"keywords":[]},{"language":"RubyTemplate","extensions":["erb"],"keywords":[]},{"language":"XMLResource","extensions":["resx"],"keywords":[]},{"language":"VarnishConfiguration","extensions":["vcl"],"keywords":[]},{"language":"JadeTemplate","extensions":["jade"],"keywords":[]},{"language":"ReStructuredText","extensions":["rst"],"keywords":[]},{"language":"CSV","extensions":["csv"],"keywords":[]},{"language":"RazorTemplate","extensions":["cshtml"],"keywords":[]},{"language":"HandlebarsTemplate","extensions":["hbs"],"keywords":[]},{"language":"INIFile","extensions":["ini"],"keywords":[]},{"language":"Configuration","extensions":["conf"],"keywords":[]},{"language":"Clojure","extensions":["clj"],"keywords":[]},{"language":"VisualNDepend","extensions":["ndproj"],"keywords":[]},{"language":"DeviceTreeSource","extensions":["dts"],"keywords":[]},{"language":"ASP.NETWebHandler","extensions":["ashx"],"keywords":[]},{"language":"GherkinSpecification","extensions":["feature"],"keywords":[]},{"language":"Haxe","extensions":["hx"],"keywords":[]},{"language":"QtMetaLanguage","extensions":["qml"],"keywords":[]},{"language":"StyleSheeteXtender","extensions":["cssx"],"keywords":[]},{"language":"ScratchProjectFile","extensions":["sb"],"keywords":[]},{"language":"PrecompiledHeader","extensions":["pch"],"keywords":[]},{"language":"Opalang","extensions":["opa"],"keywords":[]},{"language":"PortageInstaller","extensions":["ebuild"],"keywords":[]},{"language":"Crystal","extensions":["cr"],"keywords":[]},{"language":"JenkinsBuildfile","extensions":["jenkinsfile"],"keywords":[]},{"language":"Kotlin","extensions":["kt"],"keywords":[]},{"language":"PropertiesFile","extensions":["properties"],"keywords":[]},{"language":"TagLibraryDescriptor","extensions":["tld"],"keywords":[]},{"language":"SyntacticallyAwesomeStyleSheets","extensions":["scss"],"keywords":[]},{"language":"EmbeddedJavaScript","extensions":["ejs"],"keywords":[]}]
+[
+  {
+    "language": "Text",
+    "extensions": [
+      "text",
+      "txt"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "XAML",
+    "extensions": [
+      "xaml"
+    ],
+    "keywords": ["name", "value", "sap", "grid", "property", "setter", "storyboard", "displayname", "hintsize", "virtualizedcontainerservice", "string", "microsoft", "mtbwa", "typearguments", "mtbwt", "importance", "buildtrackingparticipant", "staticresource", "path", "style", "quot", "key", "xmlns", "low", "true", "build", "margin", "color", "targetname", "then", "boolean", "height", "sequence", "teamfoundation", "width", "binding", "border", "type", "scg", "fill", "background", "templatebinding", "dictionary", "workflowviewstateservice", "viewstate", "this", "gradientstop", "controltemplate", "trigger", "canvas", "process", "textblock", "offset", "system", "vsm", "opacity", "targetproperty", "namespace", "clr", "http", "verticalalignment", "schemas", "horizontalalignment", "condition", "visualstate", "activityaction", "the", "keytime", "false", "doubleanimationusingkeyframes", "assembly", "xaml", "com", "data", "activities", "text", "builddetail", "inargument", "lineargradientbrush", "targettype", "trycatch", "dynamicresource", "workflow", "row", "auto", "borderbrush", "center", "2006", "borderthickness", "column", "exception", "left", "foreground", "content", "workspace", "rectangle", "object", "platformconfiguration", "464", "isexpanded", "for", "top", "rowdefinition", "variables", "and", "visibility", "winfx", "variable", "visualstategroup", "stretch", "stackpanel", "button", "client", "columndefinition", "duration", "stroke", "200", "100", "resources", "not", "buildsettings", "triggers", "argument", "splinedoublekeyframe", "invokeforreason", "objectanimationusingkeyframes", "discreteobjectkeyframe", "new", "controls", "template", "padding", "columndefinitions", "uielement", "try", "fontsize", "rowdefinitions", "relativesource", "begintime", "configuration", "cornerradius", "source", "strokethickness", "presentation", "set", "startpoint", "resourcedictionary", "beginstoryboard", "endpoint", "run", "normal", "testassembly", "reason", "teststatus", "agentsettings", "transformgroup", "test", "format", "local", "header", "result", "assign", "directory", "droplocation", "sourceandsymbolserversettings", "click", "201", "none", "label", "group", "platform", "compilationstatus", "static", "usercontrol", "solidcolorbrush", "datatemplate", "geometrydrawing", "269", "class", "208", "rendertransform", "points", "right", "collapsed", "contentpresenter", "windows", "builddirectory", "binariesdirectory", "verbosity", "buildphasestatus", "multitrigger", "snapstodevicepixels", "dockpanel", "project", "ffffffff", "doubleanimation", "fontfamily", "image", "foreach", "radiusx", "location"]
+  },
+  {
+    "language": "ASP.Net",
+    "extensions": [
+      "ascx",
+      "asmx",
+      "asax",
+      "aspx"
+    ],
+    "keywords": ["asp", "server", "runat", "div", "class", "name", "text", "the", "system", "type", "config", "width", "web", "true", "value", "false", "not", "label", "set", "table", "style", "span", "add", "content", "html", "version", "height", "nbsp", "int", "title", "language", "for", "null", "cssclass", "textbox", "align", "row", "string", "culture", "publickeytoken", "listitem", "neutral", "scope", "script", "page", "meta", "configuration", "http", "function", "this", "aspx", "and", "resourcekey", "select", "center", "src", "href", "microsoft", "font", "inherits", "return", "from", "100", "valign", "public", "body", "head", "form", "varchar", "left", "new", "button", "namespace", "net", "top", "key", "dtd", "eval", "create", "31bf3856ad364e35", "cellpadding", "where", "autoeventwireup", "moduleid", "cellspacing", "contentplaceholderid", "www", "default", "onclick", "int4", "javascript", "var", "itemtemplate", "images", "literal", "dependentassembly", "xml", "dbo", "org", "data", "mvc", "middle", "css", "section", "click", "file", "border", "tagprefix", "you", "assembly", "color", "register", "com", "img", "itemid", "resources", "panel", "password", "extensions", "security", "description", "display", "insert", "user", "255", "else", "path", "alias", "ascx", "size", "transitional", "input", "url", "end", "strong", "replace", "get", "xhtml", "codebehind", "threadid", "into", "xhtml1", "document", "master", "dropdownlist", "code", "userid", "control", "xmlns", "requiredfieldvalidator", "b77a5c561934e089", "linkbutton", "visible", "feature", "test", "headertext", "delete", "right", "forumid", "error", "checkbox", "update", "controltovalidate", "nvarchar", "errormessage", "hyperlink", "none", "setting", "colspan", "parameter", "your", "masterpagefile", "container", "cc1", "site", "form1", "with", "values", "that", "attribute", "enableviewstate", "guid", "index", "object", "rowcount", "date", "use", "runtime", "application", "link", "schemas", "templatefield", "assemblyidentity", "request", "bindingredirect", "padding", "newversion", "oldversion", "post", "validationgroup"]
+  },
+  {
+    "language": "HTML",
+    "extensions": [
+      "htm",
+      "html"
+    ],
+    "keywords": ["nbsp", "class", "span", "font", "href", "html", "name", "code", "java", "title", "the", "org", "bgcolor", "com", "div", "line", "color", "table", "top", "http", "src", "green", "summary", "align", "interface", "lang", "width", "size", "apache", "api", "type", "xbird", "eeeeff", "docs", "pre", "valign", "sun", "method", "jmeter", "awt", "j2se", "white", "text", "border", "navbarcell1", "index", "string", "xquery", "navbarfont1", "cellpadding", "cellspacing", "navbar", "style", "object", "this", "mt4j", "xstream", "value", "right", "100", "strong", "thoughtworks", "javax", "util", "script", "public", "and", "for", "left", "tablerowcolor", "package", "all", "swing", "int", "true", "phpexcel", "from", "bottom", "target", "file", "component", "sym", "center", "detail", "colspan", "return", "var", "list", "body", "javascript", "function", "classes", "doc", "quot", "skip", "model", "that", "content", "noscript", "css", "external", "document", "www", "xml", "tree", "field", "constructor", "img", "tools", "benchmark", "components", "with", "new", "input", "inherited", "head", "void", "help", "use", "alt", "static", "link", "gui", "testelement", "overview", "deprecated", "not", "frames", "dtd", "event", "end", "you", "jdom", "meta", "net", "navbarcell2", "allclasses", "noframe", "data", "test", "methods", "jcomponent", "false", "returns", "gif", "boolean", "ccccff", "start", "a100parents", "php", "stylesheet", "specified", "ruby", "products", "next", "are", "height", "set", "tableheadingcolor", "ingatan", "window", "expr", "final", "func", "math", "protocol", "license", "files", "amp", "null", "extended", "comment", "ref", "keyword", "xmlrpc", "image", "will", "rel", "str", "get", "visiblecomponents", "nested", "sketchel", "models", "nokogiri", "long", "key", "source", "instance", "tablesubheadingcolor", "ffffff", "element", "worksheet", "whit", "writer", "onclick", "float", "attribute", "version", "can"]
+  },
+  {
+    "language": "MSBuildscripts",
+    "extensions": [
+      "csproj"
+    ],
+    "keywords": ["include", "compile", "reference", "system", "itemgroup", "microsoft", "propertygroup", "content", "false", "subtype", "true", "configuration", "dependentupon", "project", "platform", "outputpath", "defineconstants", "name", "debug", "condition", "debugtype", "optimize", "errorreport", "warninglevel", "target", "link", "xml", "none", "designer", "anycpu", "targets", "hintpath", "properties", "bin", "debugsymbols", "data", "version", "embeddedresource", "projectreference", "release", "trace", "build", "prompt", "assemblyname", "generator", "outputtype", "rootnamespace", "install", "projectguid", "requiredtargetframework", "png", "targetframeworkversion", "schemaversion", "specificversion", "productversion", "net", "dll", "images", "appdesignerfolder", "web", "resources", "your", "windows", "msbuild", "core", "visible", "common", "framework", "productname", "bootstrapperpackage", "filealignment", "code", "culture", "neutral", "copytooutputdirectory", "csharp", "platformtarget", "x86", "aspx", "processorarchitecture", "resx", "xaml", "publickeytoken", "import", "full", "csproj", "msil", "http", "schemas", "settings", "com", "codeanalysisruleset", "private", "assemblyinfo", "the", "autogen", "pdbonly", "xmlns", "developer", "2003", "client", "defaulttargets", "toolsversion", "lastgenoutput", "and", "forms", "design", "add", "library", "src", "extension", "task", "afterbuild", "see", "one", "exist", "process", "beforebuild", "modify", "other", "uncomment", "points", "below", "inside", "similar", "encoding", "utf", "gif", "lib", "page", "linq", "app", "documentationfile", "config", "file", "test", "sak", "relpath", "designtime", "buildaction", "512", "nostdlib", "visualstudio", "fileupgradeflags", "ascx", "scripts", "nowarn", "silverlight", "oldtoolsversion", "sp1", "msbuildtoolspath", "views", "themes", "allowunsafeblocks", "ruleset", "form", "jquery", "projecttypeguids", "program", "security", "controls", "default", "services", "upgradebackuplocation", "sccprovider", "sccprojectname", "scclocalpath", "sccauxpath", "tools", "treatwarningsaserrors", "drawing", "applicationversion", "targetframeworkprofile", "bootstrapperenabled", "templates", "iswebbootstrapper", "updateintervalunits", "updateenabled", "updateinterval", "publishurl", "updatemode", "updaterequired", "updateperiodically", "installfrom", "mapfileextensions", "applicationrevision", "plugins", "useapplicationtrust", "usage", "preservenewest", "references", "datasetextensions", "files", "usercontrol", "allrules", "resource", "tests", "extensions", "msbuildbinpath", "installer"]
+  },
+  {
+    "language": "C#",
+    "extensions": [
+      "cs"
+    ],
+    "keywords": ["the", "this", "system", "public", "new", "summary", "using", "return", "string", "name", "param", "int", "null", "void", "private", "value", "get", "for", "windows", "static", "object", "and", "var", "class", "true", "add", "global", "false", "data", "set", "type", "assembly", "returns", "bool", "forms", "text", "region", "list", "assert", "size", "endregion", "that", "result", "license", "not", "else", "case", "namespace", "drawing", "file", "double", "see", "with", "override", "count", "test", "microsoft", "code", "length", "internal", "point", "from", "throw", "index", "software", "you", "typeof", "source", "collections", "any", "copyright", "method", "sones", "out", "message", "version", "protected", "item", "base", "instance", "break", "byte", "exception", "tostring", "generic", "areequal", "readonly", "are", "sender", "all", "key", "values", "http", "foreach", "settings", "path", "can", "cref", "table", "com", "resources", "location", "runtime", "default", "controls", "use", "left", "will", "event", "information", "without", "project", "used", "float", "componentmodel", "right", "ref", "diagnostics", "current", "properties", "uint", "under", "line", "following", "linq", "datetime", "expected", "color", "dictionary", "info", "copy", "property", "remarks", "may", "position", "format", "node", "long", "implied", "element", "start", "partial", "but", "general", "free", "array", "obj", "empty", "create", "try", "graphdb", "other", "virtual", "should", "number", "click", "write", "state", "gnu", "attribute", "ret", "end", "context", "tabindex", "nunit", "input", "gets", "width", "math", "expression", "uuid", "lsl", "vector", "error", "parameters", "www", "row", "request", "const", "app", "generated", "resourcemanager", "args", "target", "connection", "module", "catch", "guid", "items", "char", "eventargs", "types", "height", "core", "url", "xml", "contains", "image", "debuggernonusercodeattribute", "writer"]
+  },
+  {
+    "language": "XSD",
+    "extensions": [
+      "xsd"
+    ],
+    "keywords": ["name", "xsd", "element", "type", "annotation", "documentation", "attribute", "the", "complextype", "minoccurs", "string", "value", "sequence", "ref", "enumeration", "maxoccurs", "use", "simpletype", "true", "restriction", "optional", "base", "http", "extension", "unbounded", "this", "complexcontent", "msprop", "generator", "for", "required", "nillable", "choice", "and", "xmlns", "org", "schema", "www", "false", "default", "that", "xml", "tns", "gml", "xbrli", "msb", "ccts", "gets", "boolean", "version", "sets", "appinfo", "substitutiongroup", "file", "attributegroup", "group", "property", "parameter", "used", "com", "empty", "sourcecolumn", "schemas", "with", "non", "int", "namespace", "are", "not", "class", "size", "item", "xmlschema", "nant", "any", "mixed", "microsoft", "input", "simplecontent", "all", "direction", "scale", "2001", "from", "precision", "dbtype", "parametername", "datasourcename", "autogeneratedname", "sourceversion", "sourcecolumnnullmapping", "will", "allowdbnull", "providertype", "text", "list", "set", "qualified", "can", "encoding", "which", "span", "current", "other", "system", "elements", "number", "source", "application", "when", "code", "duration", "comment", "specified", "output", "definition", "mapping", "whether", "reference", "component", "2003", "description", "should", "periodtype", "schemalocation", "license", "service", "original", "one", "columnvarnameintable", "include", "columnpropnameinrow", "columnpropnameintable", "usercolumnname", "integer", "task", "lang", "targetnamespace", "pattern", "data", "utf", "may", "elementformdefault", "types", "docbook", "abstract", "maxlength", "date", "unique", "doc", "key", "html", "web", "information", "document", "object", "oval", "time", "specifies", "xpath", "must", "link", "user", "you", "target", "indicates", "values", "core", "datasetcolumn", "msdata", "decimal", "datetime", "only", "path", "net", "field", "xlink", "serialization", "maml", "message", "processcontents", "parameters", "files", "import", "content", "contains", "public", "javaee", "identifier", "directory", "double", "action", "attributes", "gaap", "server", "table", "under", "anyuri", "monetaryitemtype", "token"]
+  },
+  {
+    "language": "XML",
+    "extensions": [
+      "xml"
+    ],
+    "keywords": ["name", "the", "member", "summary", "param", "string", "type", "system", "value", "para", "label", "text", "returns", "for", "see", "this", "cref", "true", "and", "item", "version", "org", "title", "xml", "that", "row", "code", "http", "key", "property", "data", "file", "description", "object", "menu", "entry", "panel", "false", "microsoft", "vendor", "left", "width", "not", "remarks", "with", "artifactid", "button", "call", "application", "method", "event", "index", "com", "from", "height", "class", "message", "avp", "set", "target", "layout", "notification", "framework", "instance", "groupid", "are", "will", "nunit", "slimdx", "log4net", "source", "term", "exception", "result", "default", "hsp", "attribute", "list", "new", "www", "control", "mobicents", "used", "unit", "right", "nant", "core", "test", "check", "order", "you", "top", "floater", "link", "multiplicity", "can", "box", "url", "listitem", "specified", "texture", "all", "parameter", "configuration", "amazon", "template", "gets", "details", "boolean", "may", "must", "use", "resource", "double", "server", "sqlite", "plugin", "command", "jboss", "literal", "model", "anchors", "example", "encoding", "int", "time", "edm", "maven", "href", "size", "int32", "when", "properties", "author", "line", "xmlns", "number", "val", "action", "service", "productid", "java", "point", "which", "utf", "orderid", "section", "function", "dependency", "real", "typeparam", "ref", "src", "error", "user", "content", "tool", "topleft", "null", "copy", "path", "datetime", "sets", "constraints", "project", "group", "offset", "apply", "anchor", "sip", "element", "build", "map", "font", "info", "image", "entity", "array", "interface", "tip", "posx", "posy", "schemas", "media", "context", "apache", "combo", "public", "state", "filename", "setting", "format", "color", "lang", "yes", "net", "tasks", "using", "jar", "home"]
+  },
+  {
+    "language": "CMake",
+    "extensions": [
+      "cmake"
+    ],
+    "keywords": ["cmake", "dir", "set", "cpp", "include", "source", "the", "add", "src", "endif", "library", "current", "lib", "test", "files", "file", "install", "target", "libraries", "not", "build", "binary", "name", "version", "and", "have", "flags", "for", "link", "path", "properties", "command", "find", "project", "frontend", "destination", "executable", "this", "use", "message", "plplot", "found", "with", "else", "cxx", "debug", "list", "directories", "libs", "license", "check", "output", "subdirectory", "srcs", "string", "ogre", "hpp", "win32", "boost", "package", "clucene", "shared", "directory", "bibletime", "required", "config", "bin", "custom", "sources", "definitions", "compile", "release", "strequal", "sword", "dirs", "tests", "enable", "tag", "depends", "prefix", "software", "sge", "examples", "targets", "type", "append", "cache", "header", "system", "you", "core", "copy", "txt", "llvm", "exists", "root", "that", "static", "status", "plugin", "python", "compiler", "all", "common", "dependencies", "msvc", "without", "configure", "boss", "locale", "public", "backend", "cmakedefine", "dll", "option", "matches", "internal", "module", "headers", "rpath", "gnu", "free", "copyright", "glob", "property", "get", "plugins", "scripts", "data", "tcl", "cpack", "general", "names", "suffix", "paths", "any", "inc", "default", "http", "usr", "main", "www", "will", "png", "only", "windows", "mysql", "server", "are", "true", "foreach", "base", "agg", "vtk", "support", "apple", "icu", "program", "error", "env", "function", "opengl", "html", "var", "warranty", "see", "java", "endforeach", "local", "lang", "info", "out", "can", "regex", "zlib", "curl", "doc", "component", "define", "index", "off", "handbook", "args", "run", "make", "sys", "but", "distributed", "framework", "org", "replace", "under", "used", "unix", "platform", "xml", "linux", "defined", "example", "howto"]
+  },
+  {
+    "language": "C/C++Header",
+    "extensions": [
+      "h",
+      "hpp"
+    ],
+    "keywords": ["the", "const", "define", "void", "typename", "boost", "class", "int", "type", "return", "bool", "this", "for", "ace", "and", "endif", "char", "include", "template", "typedef", "public", "size", "virtual", "value", "license", "struct", "string", "not", "static", "name", "file", "long", "defined", "that", "std", "with", "data", "unsigned", "inline", "use", "list", "extern", "software", "object", "you", "set", "iterator", "end", "get", "ifndef", "version", "fp8", "any", "function", "copyright", "from", "namespace", "hpp", "code", "base", "are", "null", "stlp", "error", "have", "ptr", "operator", "vector", "max", "free", "key", "tuple", "will", "can", "has", "used", "see", "without", "else", "all", "gnu", "param", "copy", "uint32", "mpl", "s32", "result", "index", "general", "private", "time", "map", "handle", "new", "under", "true", "pointer", "internal", "default", "but", "first", "array", "param1", "only", "false", "double", "returns", "gtest", "param2", "impl", "should", "other", "state", "param3", "source", "node", "event", "tag", "http", "interface", "aux", "start", "inc", "number", "library", "param4", "128", "ifdef", "iteration", "write", "distributed", "param5", "call", "float", "warranty", "reference", "when", "item", "cast", "flags", "may", "param6", "buffer", "which", "undef", "pos", "must", "foundation", "next", "message", "detail", "out", "traits", "param7", "api", "thread", "stream", "enum", "left", "length", "check", "config", "org", "implied", "header", "last", "count", "param8", "block", "read", "info", "begin", "mode", "func", "offset", "purpose", "nsstring", "method", "www", "more", "declare", "mask", "param9", "handler", "current", "test", "rettype", "while", "str", "format", "fold", "wxstring", "functions", "seq", "field", "case", "line", "using", "make", "f32"]
+  },
+  {
+    "language": "C++",
+    "extensions": [
+      "cpp",
+      "cc",
+      "c"
+    ],
+    "keywords": ["the", "0000000000000000", "return", "const", "void", "5000000000000000", "this", "int", "2500000000000000", "for", "7500000000000000", "else", "case", "ace", "name", "type", "string", "include", "false", "char", "true", "null", "size", "bool", "std", "and", "break", "data", "value", "new", "50000000000000000", "result", "static", "25000000000000000", "file", "get", "unsigned", "not", "set", "end", "0x00", "str", "75000000000000000", "item", "class", "that", "error", "object", "code", "list", "player", "public", "with", "count", "spell", "out", "handle", "target", "from", "uint32", "license", "info", "index", "cast", "check", "0x20", "s32", "map", "soap", "key", "function", "node", "test", "endif", "add", "max", "iter", "swig", "printf", "buffer", "iterator", "any", "length", "unit", "delete", "event", "begin", "use", "free", "message", "start", "ptr", "have", "can", "state", "text", "offset", "default", "width", "are", "msg", "assert", "has", "software", "llvm", "define", "time", "next", "pos", "all", "append", "first", "bwapi", "err", "base", "float", "args", "line", "context", "source", "creature", "while", "sizeof", "path", "back", "version", "entry", "will", "gnu", "f32", "block", "copy", "number", "push", "len", "mask", "height", "virtual", "current", "log", "you", "flags", "input", "double", "read", "color", "general", "only", "but", "see", "without", "0x65", "num", "buf", "empty", "template", "defined", "struct", "mode", "vector", "llsd", "expr", "switch", "handler", "second", "should", "flag", "array", "instance", "register", "arg", "getattr", "val", "debug", "0x64", "clear", "status", "write", "init", "group", "endl", "find", "field", "long", "call", "copyright", "timer", "create", "continue", "isolate", "src", "itr", "left", "output", "module", "format", "namespace", "one", "0x74", "rect"]
+  },
+  {
+    "language": "make",
+    "extensions": [
+      "makefile",
+      "gnumakefile",
+      "make"
+    ],
+    "keywords": ["swig", "top", "target", "interface", "make", "the", "makefile", "include", "srcs", "all", "example", "swigopt", "clean", "cxxsrcs", "obj", "cpp", "config", "static", "openssl", "libs", "dir", "echo", "check", "test", "and", "file", "lib", "build", "this", "for", "srcdir", "license", "src", "cflags", "install", "endif", "python", "objs", "version", "preinst", "cxx", "java", "files", "use", "curdir", "incdir", "html", "includes", "bin", "you", "object", "path", "module", "ruby", "source", "under", "not", "run", "with", "are", "prog", "bsd", "progfile", "gnu", "freebsd", "builddir", "usr", "main", "modules", "library", "exe", "php", "gpl", "common", "lgpl", "name", "else", "elf", "sources", "compile", "copyright", "extra", "006", "any", "may", "core", "perl5", "mlfile", "mkdir", "arch", "that", "terms", "your", "dist", "destdir", "man", "local", "data", "wrap", "lua", "ifeq", "list", "005", "debug", "out", "public", "ldflags", "phony", "prefix", "dll", "then", "tcl", "ocaml", "base", "csharp", "dev", "sed", "software", "code", "above", "flags", "doc", "mpl", "provisions", "chicken", "set", "distributed", "scm", "used", "cmo", "project", "opt", "root", "output", "package", "driver", "shell", "general", "domain", "lang", "tests", "platform", "routines", "inc", "either", "default", "binary", "ccache", "webcore", "only", "copy", "without", "mypython", "rules", "program", "can", "configure", "compiler", "done", "from", "txt", "gen", "system", "runme", "ldadd", "png", "gcc", "rights", "objects", "linux", "info", "ifdef", "latex", "simple", "crypto", "cpu", "kmod", "options", "link", "release", "tclsh", "call", "drv", "which", "asn1", "xml", "stamp", "myruby", "have", "cxxflags", "octave", "class", "krb5", "developer", "setup", "err", "dynamic", "subdir", "directory", "guile"]
+  },
+  {
+    "language": "CSS",
+    "extensions": [
+      "css"
+    ],
+    "keywords": ["background", "color", "border", "padding", "font", "position", "left", "margin", "width", "1px", "top", "url", "icon", "right", "height", "text", "span", "bottom", "solid", "none", "size", "repeat", "cke", "display", "images", "div", "0px", "5px", "png", "image", "2px", "align", "button", "weight", "important", "10px", "hover", "skin", "block", "float", "the", "4px", "gif", "100", "radius", "datepicker", "bold", "yui", "moz", "3px", "content", "cursor", "table", "style", "menu", "center", "header", "overflow", "line", "20px", "16px", "absolute", "default", "decoration", "body", "1em", "list", "hidden", "webkit", "input", "auto", "family", "box", "fff", "form", "gwt", "white", "blue", "toolbar", "5em", "panel", "sans", "img", "dialog", "btn", "tabs", "serif", "active", "state", "widget", "first", "not", "transparent", "normal", "vertical", "opacity", "8px", "relative", "child", "6px", "2em", "arial", "32px", "15px", "ffffff", "for", "html", "12px", "tab", "inline", "index", "pointer", "container", "48px", "nav", "disabled", "shadow", "http", "rtl", "slider", "license", "clear", "pre", "96px", "helvetica", "icons", "css", "arrow", "select", "64px", "80px", "rgba", "link", "11px", "000", "focus", "and", "112px", "item", "label", "type", "128px", "filter", "black", "18px", "255", "resizable", "title", "com", "group", "selected", "gradient", "tree", "ccc", "space", "footer", "grid", "syntaxhighlighter", "zoom", "error", "grid3", "this", "ie6", "defaultskin", "o2k7skin", "verdana", "code", "4em", "mce", "textarea", "144px", "both", "7px", "layout", "red", "wrap", "160px", "page", "14px", "alpha", "3em", "row", "date", "kama", "192px", "sam", "linear", "jquery", "middle", "main", "inner", "visited", "chrome", "calendar", "corner", "000000", "window", "browser", "resize", "tundra"]
+  },
+  {
+    "language": "Python",
+    "extensions": [
+      "py"
+    ],
+    "keywords": ["self", "the", "def", "return", "none", "for", "name", "and", "import", "not", "test", "from", "class", "get", "assertequal", "file", "path", "value", "this", "type", "true", "data", "with", "else", "key", "list", "false", "set", "print", "len", "text", "string", "line", "try", "that", "object", "args", "append", "sys", "except", "all", "code", "raise", "user", "letter", "str", "init", "error", "add", "end", "default", "new", "pass", "write", "record", "url", "node", "assert", "elif", "result", "version", "start", "are", "join", "int", "table", "module", "latin", "time", "dict", "request", "use", "http", "index", "check", "read", "other", "filename", "item", "size", "python", "foo", "create", "can", "message", "will", "tag", "base", "method", "output", "options", "option", "close", "format", "info", "field", "any", "msg", "content", "query", "small", "you", "response", "source", "title", "values", "has", "main", "dir", "obj", "should", "model", "open", "max", "function", "input", "django", "run", "exception", "files", "number", "unicode", "column", "models", "state", "isinstance", "first", "count", "html", "context", "update", "range", "length", "params", "func", "encoding", "one", "current", "command", "capital", "used", "label", "unittest", "license", "entry", "which", "fields", "software", "match", "have", "parent", "config", "objects", "server", "assertraises", "out", "header", "group", "action", "token", "copy", "param", "event", "date", "names", "kwargs", "xml", "replace", "but", "split", "status", "instance", "items", "com", "parser", "next", "only", "parse", "log", "call", "form", "returns", "find", "root", "template", "select", "make", "when", "lines", "handle", "txt", "element", "settings", "debug", "connection", "valueerror", "areequal", "while", "doc", "typeerror"]
+  },
+  {
+    "language": "MATLAB",
+    "extensions": [
+      "m"
+    ],
+    "keywords": ["the", "end", "for", "error", "data", "and", "cfg", "function", "else", "size", "this", "narglist", "input", "length", "strcmp", "set", "handles", "arglist", "file", "with", "not", "endif", "name", "get", "spm", "output", "elseif", "that", "all", "0078125", "varargin", "value", "fprintf", "rand", "case", "are", "fid", "type", "isempty", "from", "struct", "image", "string", "inputs", "matrix", "sum", "see", "test", "number", "disp", "max", "out1", "out", "hdr", "zeros", "default", "you", "double", "source", "will", "return", "vector", "plot", "try", "use", "filename", "can", "time", "must", "model", "val", "minval", "isfield", "any", "num2str", "argument", "read", "label", "nargin", "single", "foo", "values", "self", "revision", "channel", "find", "catch", "dim", "copyright", "xblock", "options", "version", "str", "sprintf", "var", "matlab", "check", "maxval", "char", "min", "nextinput", "nextoutput", "first", "block", "cell", "menu", "each", "license", "pos", "dat", "log", "which", "should", "delay", "was", "files", "header", "xlsub2", "new", "parameters", "have", "obj", "int", "required", "figure", "tag", "object", "array", "example", "hobject", "ones", "num", "add", "latency", "list", "tmp", "general", "mean", "nargout", "structure", "details", "line", "gnu", "width", "reshape", "varargout", "also", "1000", "real", "only", "xsignal", "using", "off", "but", "than", "one", "used", "meg", "position", "roboos", "bar", "100", "mat", "complex", "zero", "fread", "info", "bit", "xlsub4", "public", "has", "user", "integer", "index", "arguments", "method", "vol", "bin", "current", "sqrt", "format", "abs", "fieldtrip", "col", "run", "help", "color", "net", "hello", "axis", "exist", "grid", "class", "2000", "trial", "par", "defaults", "00000e", "alpha", "path"]
+  },
+  {
+    "language": "ObjectiveC",
+    "extensions": [
+      "m",
+      "mm"
+    ],
+    "keywords": ["self", "the", "return", "nsstring", "nil", "void", "for", "and", "else", "import", "this", "int", "bool", "error", "license", "end", "yes", "class", "alloc", "size", "release", "name", "null", "value", "selector", "length", "not", "count", "data", "nsarray", "type", "super", "with", "object", "init", "implementation", "obj", "result", "software", "key", "path", "case", "string", "use", "any", "mark", "static", "copyright", "const", "width", "delegate", "char", "that", "pragma", "autorelease", "height", "file", "version", "frame", "view", "nsdictionary", "forkey", "you", "window", "under", "break", "retain", "endif", "objectforkey", "from", "gtm", "all", "nsuinteger", "copy", "nsmutablearray", "origin", "may", "http", "str", "unsigned", "without", "are", "array", "nsnumber", "set", "dealloc", "stringwithformat", "sender", "should", "item", "method", "service", "event", "text", "nslog", "nsdata", "check", "url", "context", "image", "distributed", "addobject", "setobject", "request", "objectatindex", "have", "test", "but", "err", "cgfloat", "list", "title", "msg", "synthesize", "struct", "define", "interface", "code", "long", "rect", "nsinteger", "get", "state", "nserror", "com", "conditions", "implied", "target", "can", "will", "apache", "isequaltostring", "index", "gdata", "see", "source", "status", "new", "action", "nsmutabledictionary", "float", "failed", "sel", "cell", "location", "www", "free", "warranties", "nsurl", "range", "sizeof", "rights", "message", "args", "tableview", "while", "other", "nsrect", "default", "google", "color", "description", "stassertnotnil", "buffer", "bytes", "options", "out", "required", "include", "create", "property", "when", "express", "userinfo", "inc", "org", "reserved", "start", "user", "stringvalue", "info", "kind", "entries", "bounds", "stassertequals", "row", "either", "stassertequalobjects", "our", "only", "specific", "including", "created", "connection", "line", "res", "nscolor", "max", "must", "following"]
+  },
+  {
+    "language": "Javascript",
+    "extensions": [
+      "js"
+    ],
+    "keywords": ["this", "function", "the", "var", "return", "element", "for", "type", "true", "value", "name", "length", "new", "null", "else", "false", "jquery", "event", "data", "options", "string", "object", "and", "elem", "case", "document", "param", "style", "prototype", "test", "array", "node", "license", "get", "not", "width", "html", "text", "div", "class", "left", "dom", "match", "top", "that", "set", "break", "method", "height", "url", "with", "number", "replace", "window", "version", "file", "arguments", "http", "ext", "typeof", "date", "index", "push", "each", "are", "key", "yahoo", "use", "undefined", "call", "check", "css", "all", "code", "target", "property", "add", "item", "position", "form", "title", "math", "selector", "missing", "body", "from", "obj", "error", "com", "default", "callback", "button", "result", "ret", "sys", "self", "you", "context", "under", "elements", "editor", "extend", "org", "any", "try", "let", "returns", "parentnode", "start", "classname", "offset", "browser", "parent", "input", "list", "remove", "val", "summary", "handler", "end", "while", "catch", "when", "apply", "mozilla", "content", "select", "ckeditor", "may", "attr", "span", "gpl", "link", "events", "args", "state", "size", "config", "will", "copyright", "display", "indexof", "first", "should", "util", "doc", "nodetype", "script", "used", "www", "message", "dialog", "show", "filter", "only", "can", "right", "lgpl", "table", "delete", "container", "log", "see", "color", "status", "menu", "exec", "widget", "src", "handle", "hide", "one", "boolean", "throw", "nodename", "tag", "private", "href", "block", "lang", "disabled", "values", "range", "find", "results", "label", "public", "which", "map", "click", "selected", "split", "create", "pos", "field", "mode", "settings", "hidden", "your", "actual"]
+  },
+  {
+    "language": "Java",
+    "extensions": [
+      "java"
+    ],
+    "keywords": ["the", "public", "this", "import", "return", "new", "string", "org", "for", "null", "void", "int", "license", "private", "and", "software", "class", "java", "static", "final", "value", "see", "param", "code", "not", "throws", "name", "javax", "mobicents", "gnu", "com", "you", "with", "general", "boolean", "any", "that", "version", "free", "type", "object", "else", "without", "true", "slee", "file", "lesser", "message", "false", "copyright", "request", "util", "under", "logger", "list", "data", "package", "event", "get", "http", "warranty", "inc", "google", "override", "length", "exception", "will", "add", "sip", "set", "catch", "byte", "foundation", "key", "distributed", "avp", "try", "xml", "method", "copy", "tag", "contributors", "throw", "super", "source", "long", "size", "individual", "from", "should", "can", "fsf", "protected", "out", "resource", "link", "ioexception", "float", "author", "write", "implied", "system", "www", "case", "map", "have", "append", "either", "but", "equals", "api", "error", "put", "extends", "apache", "received", "protocols", "may", "element", "test", "default", "use", "more", "user", "session", "assertequals", "tostring", "jboss", "server", "result", "index", "events", "response", "client", "net", "double", "diameter", "service", "particular", "open", "context", "even", "details", "purpose", "modify", "non", "fitness", "merchantability", "println", "returns", "option", "terms", "txt", "useful", "address", "swing", "are", "your", "along", "state", "hope", "redistribute", "integer", "ss7", "distribution", "all", "text", "break", "has", "servlet", "published", "usa", "later", "log", "floor", "boston", "fifth", "1301", "02110", "franklin", "full", "home", "authors", "red", "start", "info", "parameter", "site", "listing", "hat", "javadoc", "jdiameter", "professional", "getname", "media", "used", "arraylist", "required", "create", "2011"]
+  },
+  {
+    "language": "PHP",
+    "extensions": [
+      "php4",
+      "php5",
+      "php",
+      "inc"
+    ],
+    "keywords": ["1000", "this", "the", "array", "return", "function", "phpexcel", "public", "param", "php", "string", "600", "value", "name", "for", "602", "new", "and", "file", "data", "get", "null", "class", "type", "false", "chr", "else", "true", "self", "objwriter", "case", "style", "key", "var", "set", "license", "http", "not", "error", "isset", "break", "row", "echo", "calculation", "556", "cell", "version", "text", "object", "500", "copyright", "date", "lang", "page", "private", "count", "default", "foreach", "code", "module", "protected", "int", "table", "path", "content", "list", "category", "with", "access", "result", "from", "font", "url", "index", "gnu", "size", "html", "that", "838", "754", "com", "color", "www", "user", "objphpexcel", "package", "722", "exception", "you", "any", "column", "number", "width", "config", "title", "format", "empty", "str", "header", "software", "static", "667", "278", "method", "options", "all", "args", "use", "author", "create", "general", "see", "query", "add", "form", "getactivesheet", "pvalue", "const", "org", "worksheet", "values", "parent", "info", "link", "require", "once", "replace", "are", "boolean", "writeattribute", "option", "token", "image", "length", "border", "message", "sql", "tag", "333", "substr", "free", "functions", "will", "elseif", "smarty", "write", "field", "can", "record", "dir", "out", "match", "admin", "check", "current", "throw", "output", "preg", "line", "request", "val", "exists", "img", "post", "shared", "cache", "integer", "xml", "height", "property", "returns", "2006", "div", "offset", "611", "select", "test", "right", "template", "xd0", "end", "params", "time", "without", "library", "zend", "include", "start", "left", "nsm", "ecart", "lesser", "label", "should", "strlen", "float", "script", "block", "input", "where"]
+  },
+  {
+    "language": "Erlang",
+    "extensions": [
+      "erl",
+      "hrl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Fortran77",
+    "extensions": [
+      "f",
+      "f77"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Fortran90",
+    "extensions": [
+      "f90",
+      "f90"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "C",
+    "extensions": [
+      "c"
+    ],
+    "keywords": ["the", "return", "int", "void", "null", "int32", "0x0000", "struct", "for", "char", "static", "else", "type", "case", "error", "and", "size", "this", "break", "include", "name", "data", "get", "const", "file", "len", "set", "endif", "info", "not", "sizeof", "value", "define", "buf", "flags", "list", "free", "that", "state", "code", "ptr", "next", "dev", "read", "offset", "with", "mode", "from", "buffer", "tree", "new", "table", "err", "unsigned", "write", "reg", "addr", "are", "out", "max", "end", "node", "count", "string", "status", "goto", "use", "result", "length", "device", "any", "ret", "printf", "start", "ifdef", "line", "mng", "have", "log", "long", "init", "index", "while", "check", "png", "args", "num", "block", "val", "lock", "all", "sys", "key", "default", "false", "function", "bfd", "isc", "true", "entry", "software", "add", "first", "arg", "debug", "number", "res", "mask", "port", "bus", "can", "frame", "last", "stream", "version", "pos", "base", "0x00", "msg", "str", "pyobject", "config", "bits", "map", "current", "copyright", "object", "but", "header", "time", "handle", "assert", "register", "switch", "hash", "output", "flag", "cmd", "used", "byte", "insn", "eif", "src", "event", "dns", "bit", "target", "defined", "will", "memory", "address", "softc", "link", "must", "priv", "copy", "uint32", "class", "field", "bytes", "path", "self", "license", "tag", "context", "only", "width", "func", "input", "cur", "one", "source", "call", "ctx", "without", "symbol", "alloc", "print", "hal", "pointer", "exit", "decl", "format", "fprintf", "acpi", "has", "section", "mem", "command", "ifp", "create", "text", "dst", "face", "rtx", "make", "argv", "page", "xfs", "should"]
+  },
+  {
+    "language": "Lisp",
+    "extensions": [
+      "lisp",
+      "el",
+      "lsp",
+      "sc"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "VisualBasic",
+    "extensions": [
+      "vbs",
+      "vb"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "BourneShell",
+    "extensions": [
+      "sh",
+      "bash",
+      "zsh"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Ruby",
+    "extensions": [
+      "rb"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "vimscript",
+    "extensions": [
+      "vim"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Assembly",
+    "extensions": [
+      "s",
+      "asm"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ObjectiveC++",
+    "extensions": [
+      "mm",
+      "m"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "DTD",
+    "extensions": [
+      "dtd"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "SQL",
+    "extensions": [
+      "sql"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "YAML",
+    "extensions": [
+      "yaml",
+      "yml"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "RubyHTML",
+    "extensions": [
+      "rhtml"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Haskell",
+    "extensions": [
+      "hs",
+      "lhs"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "BourneAgainShell",
+    "extensions": [
+      "sh",
+      "bash",
+      "zsh"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ActionScript",
+    "extensions": [
+      "as"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "MXML",
+    "extensions": [
+      "mxml"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ASP",
+    "extensions": [
+      "asa",
+      "asp"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "D",
+    "extensions": [
+      "d"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Pascal",
+    "extensions": [
+      "p",
+      "pp",
+      "pas"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Scala",
+    "extensions": [
+      "scala"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "DOSBatch",
+    "extensions": [
+      "bat",
+      "cmd",
+      "bat"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Groovy",
+    "extensions": [
+      "groovy"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "XSLT",
+    "extensions": [
+      "xsl",
+      "xslt"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Perl",
+    "extensions": [
+      "cgi",
+      "pl",
+      "pm"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Teamcenterdef",
+    "extensions": [
+      "def"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "IDL",
+    "extensions": [
+      "idl",
+      "pro"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Lua",
+    "extensions": [
+      "lua",
+      "rockspec"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Go",
+    "extensions": [
+      "go"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "yacc",
+    "extensions": [
+      "y"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Cython",
+    "extensions": [
+      "pyx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "lex",
+    "extensions": [
+      "l"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Ada",
+    "extensions": [
+      "pad",
+      "adb",
+      "ads",
+      "ada"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "sed",
+    "extensions": [
+      "sed"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "m4",
+    "extensions": [
+      "m4",
+      "ac"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Ocaml",
+    "extensions": [
+      "ml",
+      "mli",
+      "mly",
+      "mll"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Smarty",
+    "extensions": [
+      "tpl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ColdFusion",
+    "extensions": [
+      "cfm"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "NAntscripts",
+    "extensions": [
+      "build"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Expect",
+    "extensions": [
+      "exp"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "CShell",
+    "extensions": [
+      "sh"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "VHDL",
+    "extensions": [
+      "vhd",
+      "vhdl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Tcl/Tk",
+    "extensions": [
+      "tcl",
+      "tk",
+      "tkpkg"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "JSP",
+    "extensions": [
+      "jsp"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "SKILL",
+    "extensions": [
+      "il"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "awk",
+    "extensions": [
+      "awk"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "MUMPS",
+    "extensions": [
+      "m",
+      "mps"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "KornShell",
+    "extensions": [
+      "ksh"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Fortran95",
+    "extensions": [
+      "f95"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "OracleForms",
+    "extensions": [
+      "fmt"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Dart",
+    "extensions": [
+      "dart"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "COBOL",
+    "extensions": [
+      "cob",
+      "cbl",
+      "cbl",
+      "cob"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Modula3",
+    "extensions": [
+      "i3",
+      "mg",
+      "ig",
+      "m3"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "OracleReports",
+    "extensions": [
+      "rex"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "SoftbridgeBasic",
+    "extensions": [
+      "sbl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Markdown",
+    "extensions": [
+      "md"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "git-ignore",
+    "extensions": [
+      "gitignore"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "FreemarkerTemplate",
+    "extensions": [
+      "ftl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "LessCSS",
+    "extensions": [
+      "less"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Gradle",
+    "extensions": [
+      "gradle"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Basic",
+    "extensions": [
+      "bas"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "GolfScript",
+    "extensions": [
+      "golfscript"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "LaTeX",
+    "extensions": [
+      "tex"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Boo",
+    "extensions": [
+      "boo"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Julia",
+    "extensions": [
+      "jl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Delphi",
+    "extensions": [
+      "delphi"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "LOLCODE",
+    "extensions": [
+      "lol"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "B",
+    "extensions": [
+      "b"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Chef",
+    "extensions": [
+      "ch"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Racket",
+    "extensions": [
+      "rkt",
+      "rktl",
+      "ss",
+      "scm",
+      "scrbl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Swift",
+    "extensions": [
+      "swift"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "JSON",
+    "extensions": [
+      "json"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Octave",
+    "extensions": [
+      "octave"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Elixir",
+    "extensions": [
+      "exs"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Factor",
+    "extensions": [
+      "factor"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "VimScript",
+    "extensions": [
+      "vim"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Powershell",
+    "extensions": [
+      "ps1",
+      "psm1"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Eiffel",
+    "extensions": [
+      "eiff"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ScalableVectorGraphics",
+    "extensions": [
+      "svg"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Rust",
+    "extensions": [
+      "rs"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "MUSHCode",
+    "extensions": [
+      "mush"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Logo",
+    "extensions": [
+      "lg"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Nim",
+    "extensions": [
+      "nim"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "WolframLanguage",
+    "extensions": [
+      "wl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Purebasic",
+    "extensions": [
+      "pb"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ArnoldC",
+    "extensions": [
+      "arnoldc"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "VRML",
+    "extensions": [
+      "wrl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Coffeescript",
+    "extensions": [
+      "coffee"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "SPDX",
+    "extensions": [
+      "spdx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "TypeScript",
+    "extensions": [
+      "ts"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "JSX",
+    "extensions": [
+      "jsx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "RubyTemplate",
+    "extensions": [
+      "erb"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "XMLResource",
+    "extensions": [
+      "resx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "VarnishConfiguration",
+    "extensions": [
+      "vcl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "JadeTemplate",
+    "extensions": [
+      "jade"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ReStructuredText",
+    "extensions": [
+      "rst"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "CSV",
+    "extensions": [
+      "csv"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "RazorTemplate",
+    "extensions": [
+      "cshtml"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "HandlebarsTemplate",
+    "extensions": [
+      "hbs"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "INIFile",
+    "extensions": [
+      "ini"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Configuration",
+    "extensions": [
+      "conf"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Clojure",
+    "extensions": [
+      "clj"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "VisualNDepend",
+    "extensions": [
+      "ndproj"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "DeviceTreeSource",
+    "extensions": [
+      "dts"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ASP.NETWebHandler",
+    "extensions": [
+      "ashx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "GherkinSpecification",
+    "extensions": [
+      "feature"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Haxe",
+    "extensions": [
+      "hx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "QtMetaLanguage",
+    "extensions": [
+      "qml"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "StyleSheeteXtender",
+    "extensions": [
+      "cssx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "ScratchProjectFile",
+    "extensions": [
+      "sb"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "PrecompiledHeader",
+    "extensions": [
+      "pch"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Opalang",
+    "extensions": [
+      "opa"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "PortageInstaller",
+    "extensions": [
+      "ebuild"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Crystal",
+    "extensions": [
+      "cr"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "JenkinsBuildfile",
+    "extensions": [
+      "jenkinsfile"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Kotlin",
+    "extensions": [
+      "kt"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "PropertiesFile",
+    "extensions": [
+      "properties"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "TagLibraryDescriptor",
+    "extensions": [
+      "tld"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "SyntacticallyAwesomeStyleSheets",
+    "extensions": [
+      "scss"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "EmbeddedJavaScript",
+    "extensions": [
+      "ejs"
+    ],
+    "keywords": []
+  }
+]

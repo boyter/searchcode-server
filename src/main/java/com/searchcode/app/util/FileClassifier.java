@@ -71,6 +71,7 @@ public class FileClassifier {
             FileClassifierResult fileClassifierResult = (FileClassifierResult)c;
             int matchingKeywords = 0;
             for(String line: codeLines) {
+                line = line.toLowerCase().replaceAll("[^A-Za-z]", " ");
                 for(String keyword: fileClassifierResult.keywords) {
                     matchingKeywords += StringUtils.countMatches(line, keyword);
                 }

@@ -86,6 +86,16 @@ public class FileClassifierResultTest extends TestCase {
 
         String language = fileClassifier.languageGuesser("test.c", lines);
         assertEquals("C", language);
+
+        lines = new ArrayList<String>() {{
+            add("#include <iostream>");
+            add("using namespace std;");
+            add("void main()");
+            add("{ cout << \"Hello World!\" << endl;   cout << \"Welcome to C++ Programming\" << endl; }");
+        }};
+
+        language = fileClassifier.languageGuesser("test.c", lines);
+        assertEquals("C++", language);
     }
 
     // TODO update this with actual conflicting type and check that it classifies correctly
