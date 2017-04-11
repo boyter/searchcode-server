@@ -1046,5 +1046,12 @@
       "ejs"
     ],
     "keywords": []
+  },
+  {
+    "language": "Patch",
+    "extensions": [
+      "patch"
+    ],
+    "keywords": []
   }
 ]

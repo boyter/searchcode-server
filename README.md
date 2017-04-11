@@ -192,6 +192,7 @@ XX XXXXX XXXX - 1.3.9
  - Batch index size is now configurable through properties file https://github.com/boyter/searchcode-server/issues/85
  - Mitigate issue where matching some files will crash search https://github.com/boyter/searchcode-server/issues/88
  - Update highlight.js https://github.com/boyter/searchcode-server/issues/22
+ - Resolve issue where database had no keywords for language guessing https://github.com/boyter/searchcode-server/issues/87
 
 20 March 2017 - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written
