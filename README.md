@@ -1,6 +1,6 @@
 # searchcode server
 
-[![Video](https://searchcode.com/static/product/searchcode-server.gif)](https://searchcode.com/static/product/searchcode-server.gif)
+[![Video](https://searchcodeserver.com/images/videos/searchcode_server_search.gif)](https://searchcodeserver.com/images/videos/searchcode_server_search.gif)
 
 What is it?
 -----------
