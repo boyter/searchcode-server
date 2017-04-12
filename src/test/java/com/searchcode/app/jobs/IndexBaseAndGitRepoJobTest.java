@@ -6,6 +6,7 @@ import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
+import org.apache.commons.io.FileUtils;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -32,30 +33,60 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         assertEquals("", actual);
     }
 
-    public void testIndexSucess() {
+    public void testIndexSucess() throws IOException {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
-        assertFalse(gitRepoJob.checkIndexSucess("/tmp/"));
-        gitRepoJob.createIndexSuccess("/tmp/");
-        assertTrue(gitRepoJob.checkIndexSucess("/tmp/"));
-        gitRepoJob.deleteIndexSuccess("/tmp/");
-        assertFalse(gitRepoJob.checkIndexSucess("/tmp/"));
+
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempDir = new File(baseDir, "testIndexSucess");
+
+        if (tempDir.exists()) {
+            FileUtils.deleteDirectory(tempDir);
+        }
+        tempDir.mkdir();
+        String tempDirString = tempDir.toString();
+
+        assertFalse(gitRepoJob.checkIndexSucess(tempDirString));
+        gitRepoJob.createIndexSuccess(tempDirString);
+        assertTrue(gitRepoJob.checkIndexSucess(tempDirString));
+        gitRepoJob.deleteIndexSuccess(tempDirString);
+        assertFalse(gitRepoJob.checkIndexSucess(tempDirString));
     }
 
-    public void testCloneSucess() {
+    public void testCloneSucess() throws IOException {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
-        assertFalse(gitRepoJob.checkCloneUpdateSucess("/tmp/"));
-        gitRepoJob.createCloneUpdateSuccess("/tmp/");
-        assertTrue(gitRepoJob.checkCloneUpdateSucess("/tmp/"));
-        gitRepoJob.deleteCloneUpdateSuccess("/tmp/");
-        assertFalse(gitRepoJob.checkCloneUpdateSucess("/tmp/"));
+
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempDir = new File(baseDir, "testIndexSucess");
+
+        if (tempDir.exists()) {
+            FileUtils.deleteDirectory(tempDir);
+        }
+        tempDir.mkdir();
+        String tempDirString = tempDir.toString();
+
+
+        assertFalse(gitRepoJob.checkCloneUpdateSucess(tempDirString));
+        gitRepoJob.createCloneUpdateSuccess(tempDirString);
+        assertTrue(gitRepoJob.checkCloneUpdateSucess(tempDirString));
+        gitRepoJob.deleteCloneUpdateSuccess(tempDirString);
+        assertFalse(gitRepoJob.checkCloneUpdateSucess(tempDirString));
     }
 
-    public void testDeleteNoFile() {
+    public void testDeleteNoFile() throws IOException {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempDir = new File(baseDir, "testIndexSucess");
+
+        if (tempDir.exists()) {
+            FileUtils.deleteDirectory(tempDir);
+        }
+        tempDir.mkdir();
+        String tempDirString = tempDir.toString();
 
         for(int i = 0; i < 100; i++) {
-            gitRepoJob.deleteIndexSuccess("/tmp/");
-            gitRepoJob.deleteCloneUpdateSuccess("/tmp/");
+            gitRepoJob.deleteIndexSuccess(tempDirString);
+            gitRepoJob.deleteCloneUpdateSuccess(tempDirString);
         }
     }
 
