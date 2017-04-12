@@ -37,9 +37,14 @@ To Build TL/DR;
 
 To Build
 --------
+
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
-maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement. To run 
-the javascript unit tests through the command line you will need to install NPM and then run
+maven setup. Idealy you want to use a Unix OS with Python and Python Fabric installed.
+
+Note that Fabric tasks (fab) are not currently supported on Windows. You an attempt to use
+them but they will probably need to under Bash for Windows or something similar. 
+
+To run the javascript unit tests through the command line you will need to install NPM and then run
 
 	npm install -g node-qunit-phantomjs 
 
@@ -48,6 +53,7 @@ but you can always run them in your browser if required by opening
 	./src/test/javascript/index.html
 
 To test the application you can either run
+
 	mvn test 
 
 or

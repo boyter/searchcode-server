@@ -22,7 +22,7 @@ from fabric.contrib.files import sed
 from fabric.context_managers import settings, hide, cd
 from fabric.colors import yellow
 
-
+import platform
 import os
 from os import path
 import re
@@ -92,6 +92,7 @@ def build_all_release():
 
 
 def build_release():
+    _check_os
     replacements = {
         'public static final boolean ISCOMMUNITY = true;': 'public static final boolean ISCOMMUNITY = false;'
     }
@@ -110,6 +111,7 @@ def build_release():
 
 
 def build_community_release():
+    _check_os
     # modify community flag in application
     replacements = {
         'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;'
@@ -161,6 +163,11 @@ def configure_prod():
     }
     _python_sed(
         fileloc='./src/main/resources/spark/template/freemarker/search_ajax.ftl', replacements=replacements)
+
+
+def _check_os():
+    if 'windows' in platform.system().lower():
+        fabric.operations.prompt('Warning. Creating a build through Windows is not currently supported. Please any key to contine.', key=None, default='', validate=None)
 
 
 def _build_package():
