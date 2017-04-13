@@ -27,7 +27,8 @@ def all(server_filter=None):
 def setup_site():
     local('python generate.py compress')
     put('output', '/var/www/html')
-    sudo('mv /var/www/html/output/* /var/www/html/')
+    sudo('cp -R /var/www/html/output/* /var/www/html/')
+    sudo('rm -rf /var/www/html/output')
 
 
 # TODO should be a cron job

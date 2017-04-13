@@ -9,7 +9,7 @@ searchcode server is a powerful code search engine with a sleak web user interfa
 searchcode server works in tandem with your source control system, indexing thousands of repositories 
 and files allowing you and your developers to quickly find and reuse code across teams.
 
-See https://searchcodeserver.com/ for more details or http://searchcodeserver.com:8080/ for a live demo which is indexing Rails, Django, React, Thumbor and Nodejs.
+See https://searchcodeserver.com/ for more details or http://demo.searchcodeserver.com/ for a live demo which is indexing Rails, Django, React, Thumbor and Nodejs.
 
 Support
 -------
