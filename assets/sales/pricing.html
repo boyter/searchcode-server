@@ -92,7 +92,7 @@
           </tr>
           <tr>
             <th scope="row"></th>
-            <td><div style="margin-top:14px;"><a href="https://searchcode.com/static/searchcode-server-community.tar.gz" class="top20">Free Community Edition</a></div></td>
+            <td><div style="margin-top:14px;"><a id="communitydownload" href="https://searchcode.com/static/searchcode-server-community.tar.gz" class="top20">Free Community Edition</a></div></td>
             <td><a data-gumroad-single-product="true" target="_blank" class="gumroad-button" href="https://gum.co/spTnp">Buy now $99</a></td>
             <td><a data-gumroad-single-product="true" target="_blank" class="gumroad-button" href="https://gum.co/XJVCH">Buy now $699</a></td>
           </tr>
@@ -127,3 +127,38 @@
   <p>We understand that you may want to check the searchcode server source code before allowing searchcode server to index your most valuable intellectual property. No problem, searchcode server is licenced under the <a href="https://fair.io/">fair source</a> licence, and you are allowed to view, modify and use the source code for searchcode server for up to 5 users. View the <a href="https://github.com/boyter/searchcode-server">source on github</a></p>
   </div>
 </div>
+
+<script>
+$(document).ready(function(){
+    $('#communitydownload').click(function(e) {
+      portfold(24, '/communitydownload')
+    });
+});
+
+function portfold (id, path) {
+    if (!id) {
+      return;
+    }
+
+    var er = encodeURIComponent;
+    var url =   '?ua=' + er(window.navigator.userAgent) +
+                '&an=' + er(window.navigator.appName) +
+                '&re=' + er(document.referrer) +
+                '&sh=' + er(screen.height) +
+                '&sw=' + er(screen.width) +
+                '&os=' + er(navigator.oscpu) +
+                '&pl=' + er(navigator.platform) +
+                '&hr=' + er(window.location.href.trim().replace(/\/+$/, '') + path) +
+                '&si=' + id;
+    console.log(url);
+
+    var img = document.createElement('img');
+    img.src = '//portfold.com/track/' + url;
+    img.style.cssText = 'display:none;'
+    img.width = '1';
+    img.height = '1';
+    var src = document.getElementsByTagName('script')[0];
+    src.appendChild(img);
+    img.remove();
+}
+</script>
