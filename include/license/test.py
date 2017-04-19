@@ -45,13 +45,22 @@ licenses = json.loads(database)
 v = VectorCompare()
 
 for license in licenses:
-    value = license['text'].lower()
-    license['concordance'] = v.concordance(value),
+    lis = license['text'].lower()
+    hea = license['header'].lower()
+    license['concordance'] = v.concordance(lis),
+    license['headerconcordance'] = v.concordance(hea)
+
+
+project_directory = '/Users/boyter/Documents/Projects/goap/'
 
 # Check the base for a LICENCE file or README which contains one
-directory_list = os.listdir('../../')
-possible_files = ['../../' + x for x in directory_list if 'license' in x.lower()]
+directory_list = os.listdir(project_directory)
+possible_files = [project_directory + x for x in directory_list if 'license' in x.lower() or 'copying' in x.lower()]
 
+if len(possible_files) == 0:
+    possible_files = [project_directory + x for x in directory_list if 'readme' in x.lower()]
+
+# This works pretty well for license files not so well for headers
 for possible_file in possible_files:
     with open(possible_files[0]) as file:
         potential_license = file.read()
@@ -67,10 +76,38 @@ for possible_file in possible_files:
 
 matches.sort(reverse=True)
 
-for i in matches:
+print 'Project License'
+for i in matches[:3]:
     print i[0], i[1]['fullname']
 
+# Inspect files for license
+for root, dirs, files in os.walk(project_directory):
+    for file in [root + '/' + x for x in files if '.js' in x]:
+        matches = []
+        with open(file, 'r') as myfile:
+            content = myfile.read()
+        display = False
+        for license in [x for x in licenses if len(x['header']) != 0]:
+            length = int(len(license['header']) * 1)
+            con = v.concordance(content[:length].lower())
 
-# for root, dirs, files in os.walk('../../'):
-#     for file in [root + '/' + x for x in files]:
-#         print file
+            relation = v.relation(con, license['headerconcordance'])
+            if relation != 0:
+                display = True
+            matches.append((relation, license))
+
+        for license in [x for x in licenses if len(x['header']) == 0]:
+            length = int(len(license['text']) * 1)
+            con = v.concordance(content[:length].lower())
+
+            relation = v.relation(con, license['concordance'][0])
+            if relation != 0:
+                display = True
+            matches.append((relation, license))
+
+        matches.sort(reverse=True)
+        matches = [x for x in matches if x[0] > 0.9]
+
+        if len(matches) != 0:
+            for i in matches:
+                print i[0], i[1]['fullname'], file
