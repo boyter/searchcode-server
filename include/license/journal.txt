@@ -1,0 +1,182 @@
+Going to keep a record of progress and thoughts while doing this in the hopes that I get some sort of useful blog post out of it.
+
+Once of the tickets raised for searchcode-server is the ability to to filter by licence https://github.com/boyter/searchcode-server/issues/96 yes, I am the one who raised the ticket, but it is based on requests from customers. It will also put searchcode server closer to feature parity with Krugle so it seems like a good thing to add.
+
+My first thought was that adding it for say the top 20 most popular licenses shouldn't be the difficult, and its something that I could always expand on later.
+
+So the first thing I needed was to determine the top software licenses in use which thankfully blackduck has already done https://www.blackducksoftware.com/top-open-source-licenses 
+
+Then need to get a copy of them and in a nice format such as JSON. Decided to source them from SPDX since they should be considered the source of truth for this https://spdx.org/licenses/
+
+Wrote a simple script download.py to pull them all down (yes using regex to pull information out of HTML which is BADtm but im not trying to parse it so I am pretty sure he won't come). Sorry SPDX people about crawling your site in a non nice way... 
+
+Added a simple filter to pull back the top 20+ licences so we can test.
+
+Next needed to turn the HTML into JSON. Again an ugly script which calls the beast by using regex to pull information out of HTML. One thing I did notice is that the Fair Source licence was missing. Since I was planning on using searchcode server as a test bed I needed that and added it myself. 
+
+Once again sorry to the SPDX people. If you come to Sydney and ill buy you a beer and apologize for,
+
+1) For creating my own shortname for the Fair Source License without permission
+2) For the crappy internet you will experience (Seriously search for Turnbull NBN if you want to see how backwards a country can become, don't want to get political here, but WHY would you ever stop rolling out FTTP and then switch to FTTN!?!?!)
+
+The result is now we have a database of about 20 licences that we can use to try and determine what licence a software project is.
+
+Attempt 1
+
+Made the following assumptions.
+
+A file with a name such as license or copying is likely to exist in the root folder of any project and contain license information. If not have a look inside readme (if it exists). This is the base license for all files inside the project.
+Files may have a header which overrides the above.
+
+One thing that I didn't consider is that there may be another license/copying file somewhere deeper inside the file tree. Something to consider for later.
+
+First thought was to just use the vector space search algorith. Its kinda my hammer for every problem. It works reasonably well for a lot of them, is fast enough in most cases and generally gets the job done. Thankfully I had already written one for python a while ago. Don't hate please, I wrote this 10 years ago when I was first learning it and yes its not Pythonic but works. One thing to note is that licenses tend to be of different length. This means that licenses that are closer to each other in length will be matched more closesly using the vector space. This is a cool result.
+
+So the algorithm is,
+
+Find likely candidates for license files.
+Compare them to the list of known licenses using the vector space model.
+Keep the most likely match.
+
+Then walk through every file in the repository, checking for the special header and when there are no matches try the full header because things like MIT license tend to get included at the top of the file.
+
+The result for searchcode-server
+
+Project License
+0.929696395964 Fair Source License v0.9
+0.802095284986 Mozilla Public License 2.0 (no copyleft exception)
+0.802095284986 Mozilla Public License 2.0
+
+0.925341443302 MIT License /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+
+Wow. That is a very cool result. It actually worked. It not only picked up that its using the Fair Source Licence it also picked up that that one file is using the MIT license. Lets try it out on some other projects.
+
+Against wordpress,
+
+Project License
+0.623430083878 GNU General Public License v2.0 only
+0.614318516008 GNU General Public License v1.0 only
+0.601642491832 GNU Library General Public License v2 only
+
+Hmmm it did pick up that its probably using GNU GPL v2.0 but it wasn't as confident as it was with the previous. Lets try another one.
+
+minitwit (spark java)
+
+Project License
+0.954897366777 MIT License
+0.784597744861 Fair Source License v0.9
+0.777231345803 Apache License 2.0
+
+Not bad. Its pretty confident that it us under the MIT license.
+
+armory-react
+
+Project License
+0.945769202843 BSD 3-clause Clear License
+0.937649791859 BSD with attribution
+0.927894236317 BSD 2-clause "Simplified" License
+
+Again pretty good. 
+
+Ok. So it looks like we could just pop the top license off and call it a day. This works pretty well with the most common licenses, but why limit ourselves. Lets just do every licese that SPDX has listed? It should work just as well in theory. All we need to do is remove the filter in download.py and rebuild the database and try again.
+
+Trying out on searchcode-server again
+
+Project License
+0.929696395964 Fair Source License v0.9
+0.813818153434 OCLC Research Public License 2.0
+0.804549095187 OSET Public License version 2.1
+
+0.977617793941 BSD Zero Clause License /Users/boyter/Documents/Projects/searchcode-server/include/license/database.json
+0.939606278132 Attribution Assurance License /Users/boyter/Documents/Projects/searchcode-server/include/license/database.json
+0.908192569643 Open CASCADE Technology Public License /Users/boyter/Documents/Projects/searchcode-server/include/license/database.json
+0.902275136399 Adaptive Public License 1.0 /Users/boyter/Documents/Projects/searchcode-server/include/license/database.json
+0.93217139424 JSON License /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+0.925341443302 MIT License /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+0.914039614281 feh License /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+
+Ok so it still picked up fair source as the main project lices which is a good result. However our very cool result of MIT being found in cache.js has gone away. Apparently the JSON license looks like the MIT license to the vector space. What to do. Indeed a diff between them shows that they are almost the same. The differences being right at the start,
+
+MIT  License Copyright (c)               
+JSON License Copyright (c) 2002 JSON.org 
+
+and buried in the middle of the JSON license
+
+The Software shall be used for Good, not Evil.
+
+Hah! I remember reading about that a while ago. Something about Google not being able to use it because apparently their motto "Don't be evil" is more a guideline then a rule. https://www.cnet.com/news/dont-be-evil-google-spurns-no-evil-software/
+
+So what we would normally do about now is add keyword weighting to the terms so that in this case MIT makes it rank higher for MIT and JSON for JSON. In fact I started doing just that with keyword it then realised with 328 licenses this is going to be a painful process. Perhaps there is a better way.
+
+Thinking about it what we really want is to find keywords or a collection of multiple keywords that we know to be unique for each license. Then all we need to is check the text for the presense of those keywords. The catch being we need to ensure that they are unique for each license. To do so what I think will work is break the license up into collections of works of length 1-10 and check for unique-ness against the other liceses. The techical term for this is ngrams. 
+
+An example would be,
+
+Lorem ipsum dolor sit amet consetetur sadipscing elitr
+
+bi-grams
+
+[('lorem', 'ipsum'), ('ipsum', 'dolor'), ('dolor', 'sit'), ('sit', 'amet'), ('amet', 'consetetur'), ('consetetur', 'sadipscing'), ('sadipscing', 'elitr')]
+
+tri-grams
+
+[('lorem', 'ipsum', 'dolor'), ('ipsum', 'dolor', 'sit'), ('dolor', 'sit', 'amet'), ('sit', 'amet', 'consetetur'), ('amet', 'consetetur', 'sadipscing'), ('consetetur', 'sadipscing', 'elitr')]
+
+Thankfully this is pretty easy to do in Python so I borrowed an existing bit of code to do it for me, http://locallyoptimal.com/blog/2013/01/20/elegant-n-gram-generation-in-python/
+
+input_list = ['all', 'this', 'happened', 'more', 'or', 'less']
+
+def find_ngrams(input_list, n):
+  return zip(*[input_list[i:] for i in range(n)])
+
+For the record I am totally aware that NTLK can also do this but since I don't currently have that installed lets go pure Python. Its a little slower but considering this should rarely run calculation I am not too worried about performance yet.
+
+We can then generate ngrams for each license, then check for its uniqueness in every other one. If no matches found then bazinga we have a gram that uniquely matches the license.
+
+Some simple but stupid code was written parse2.py which does exactly this. Turns out that language is a lot more distinctive for licenses then I first thought,
+
+0BSD 188
+AAL 1985
+Abstyles 437
+Adobe-2006 1234
+Adobe-Glyph 1620
+ADSL 608
+AFL-1.1 555
+AFL-1.2 251
+AFL-2.0 69
+AFL-2.1 67
+AFL-3.0 452
+Afmparse 959
+AGPL-1.0 2212
+
+For the BSD Zero Clause License there are apparently 188 unique ngrams between a length of 2-10 words in it. For the Affero General Public License v1.0 there are a whopping 2212! In fact this seemed like overkill. So I changed the ngrams to start at 5 to 10. This dropped the numbers found by about 25% which seems about right. You would expect the most unique combinations of words to exist at the upper range. One problem I noticed with this is that a lot of the ngrams are based on names that exist within the sample licenses that SPDX has. For example BSD Zero Clause has the name "Rob Landley" which produces a lot of ngrams with this in it as is indeed unique.
+
+
+Of course this isnt foolproof. We can always fall back to the vector space if we cannot find anything.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

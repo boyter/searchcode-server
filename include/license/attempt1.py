@@ -51,7 +51,7 @@ for license in licenses:
     license['headerconcordance'] = v.concordance(hea)
 
 
-project_directory = '/Users/boyter/Documents/Projects/goap/'
+project_directory = '/Users/boyter/Documents/Projects/searchcode-server/'
 
 # Check the base for a LICENCE file or README which contains one
 directory_list = os.listdir(project_directory)
@@ -79,7 +79,7 @@ matches.sort(reverse=True)
 print 'Project License'
 for i in matches[:3]:
     print i[0], i[1]['fullname']
-
+print
 # Inspect files for license
 for root, dirs, files in os.walk(project_directory):
     for file in [root + '/' + x for x in files if '.js' in x]:
