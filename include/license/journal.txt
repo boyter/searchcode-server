@@ -151,6 +151,365 @@ AGPL-1.0 2212
 
 For the BSD Zero Clause License there are apparently 188 unique ngrams between a length of 2-10 words in it. For the Affero General Public License v1.0 there are a whopping 2212! In fact this seemed like overkill. So I changed the ngrams to start at 5 to 10. This dropped the numbers found by about 25% which seems about right. You would expect the most unique combinations of words to exist at the upper range. One problem I noticed with this is that a lot of the ngrams are based on names that exist within the sample licenses that SPDX has. For example BSD Zero Clause has the name "Rob Landley" which produces a lot of ngrams with this in it as is indeed unique.
 
+However it was taking a long time to process. Not suprising really considering its multiple loop in loops. I tried just searching for ngrams of 4-5 words long, and assuming we didn't find any 0 matches than happy days we can try implementing. Doh! Alas turns out some are not unique enough. The culprits,
+
+Artistic-1.0
+BSD-3-Clause
+MIT-CMU
+MPL-1.1
+MPL-2.0-no-copyleft-exception
+MPL-2.0
+
+I modified the code to just loop those ones with a more exaustive search to find what worked. Even with ngrams of length 2-10 still there was not enough uniqueness. So I went all out, ngrams from length 2-35.
+
+Artistic-1.0 120
+BSD-3-Clause 21
+
+This resolved the issue for Artistic-1.0 and BSD-3-Clause but we still have nothing for the following,
+
+MIT-CMU
+MPL-1.1
+MPL-2.0-no-copyleft-exception
+MPL-2.0
+
+Something is wrong here clearly. Lets look at the text of 
+
+Turns out some of these are particullary troubling. Mozilla Public License 1.1 for example seems to be embedded to an extent in the Netscape Public License v1.1 which of course means nothing about it is unique compared to the other. The others seem to be similar. I tried searching just between both those licences with ngrams of length 2-100 to see if anything would turn up, which of course took a crazy amount of time to process in Python, however the result was that there was nothing that could be used keyword wise to seperate these licenses.
+
+How about a hybrid approach?
+
+If we cannot definitively say using keywords what license the file is, then we can fall back to the vector space to rank based on those without keywords. To do so I flushed the results of the last run into the database file using 7-8 ngrams for everything except Artistic-1.0 and BSD-3-Clause which checked for ngrams with a range of 2-35. The results of this produced the following licenses with their number of unique ngrams,
+
+0BSD 97
+AAL 365
+Abstyles 99
+Adobe-2006 255
+Adobe-Glyph 244
+ADSL 78
+AFL-1.1 612
+AFL-1.2 691
+AFL-2.0 1252
+AFL-2.1 1246
+AFL-3.0 1503
+Afmparse 127
+AGPL-1.0 2635
+AGPL-3.0 5496
+Aladdin 1872
+AMDPLPA 850
+AML 355
+AMPAS 319
+ANTLR-PD 160
+Apache-1.0 361
+Apache-1.1 350
+Apache-2.0 1512
+APAFML 94
+APL-1.0 6826
+APSL-1.0 2830
+APSL-1.1 2890
+APSL-1.2 2826
+APSL-2.0 2895
+Artistic-1.0-cl8 815
+Artistic-1.0-Perl 964
+Artistic-1.0 24521
+Artistic-2.0 1363
+Bahyph 223
+Barr 96
+Beerware 41
+BitTorrent-1.0 2814
+BitTorrent-1.1 3487
+Borceux 59
+BSD-2-Clause-FreeBSD 220
+BSD-2-Clause-NetBSD 201
+BSD-2-Clause 184
+BSD-3-Clause-Attribution 233
+BSD-3-Clause-Clear 244
+BSD-3-Clause-LBNL 344
+BSD-3-Clause-No-Nuclear-License-2014 250
+BSD-3-Clause-No-Nuclear-License 251
+BSD-3-Clause-No-Nuclear-Warranty 251
+BSD-3-Clause 6686
+BSD-4-Clause-UC 254
+BSD-4-Clause 236
+BSD-Protection 968
+BSD-Source-Code 193
+BSL-1.0 206
+bzip2-1.0.5 298
+bzip2-1.0.6 259
+Caldera 374
+CATOSL-1.1 2790
+CC-BY-1.0 50
+CC-BY-2.0 49
+CC-BY-2.5 49
+CC-BY-3.0 50
+CC-BY-4.0 382
+CC-BY-NC-1.0 50
+CC-BY-NC-2.0 49
+CC-BY-NC-2.5 49
+CC-BY-NC-3.0 50
+CC-BY-NC-4.0 382
+CC-BY-NC-ND-1.0 50
+CC-BY-NC-ND-2.0 49
+CC-BY-NC-ND-2.5 49
+CC-BY-NC-ND-3.0 50
+CC-BY-NC-ND-4.0 382
+CC-BY-NC-SA-1.0 50
+CC-BY-NC-SA-2.0 49
+CC-BY-NC-SA-2.5 49
+CC-BY-NC-SA-3.0 50
+CC-BY-NC-SA-4.0 382
+CC-BY-ND-1.0 50
+CC-BY-ND-2.0 49
+CC-BY-ND-2.5 49
+CC-BY-ND-3.0 50
+CC-BY-ND-4.0 382
+CC-BY-SA-1.0 50
+CC-BY-SA-2.0 49
+CC-BY-SA-2.5 49
+CC-BY-SA-3.0 50
+CC-BY-SA-4.0 382
+CC0-1.0 69
+CDDL-1.0 1561
+CDDL-1.1 1597
+CECILL-1.0 3220
+CECILL-1.1 3376
+CECILL-2.0 3242
+CECILL-2.1 3371
+CECILL-B 3266
+CECILL-C 3328
+ClArtistic 1015
+CNRI-Jython 601
+CNRI-Python-GPL-Compatible 607
+CNRI-Python 520
+Condor-1.1 855
+CPAL-1.0 1478
+CPL-1.0 1735
+CPOL-1.02 1900
+Crossword 68
+CrystalStacker 159
+CUA-OPL-1.0 300
+Cube 162
+curl 161
+D-FSL-1.0 2061
+diffmark 11
+DOC 660
+Dotseqn 37
+DSDP 329
+dvipdfm 27
+ECL-1.0 353
+ECL-2.0 1634
+EFL-1.0 135
+EFL-2.0 137
+eGenix 612
+Entessa 316
+EPL-1.0 1690
+ErlPL-1.1 727
+EUDatagrid 444
+EUPL-1.0 2074
+EUPL-1.1 2114
+Eurosym 213
+Fair 39
+Frameworx-1.0 1436
+FreeImage 731
+FSFAP 28
+FSFUL 21
+FSFULLR 28
+FTL 924
+GFDL-1.1 2903
+GFDL-1.2 3271
+GFDL-1.3 3681
+Giftware 229
+GL2PS 123
+Glide 1934
+Glulxe 75
+gnuplot 211
+GPL-1.0 2023
+GPL-2.0 2887
+GPL-3.0 5599
+gSOAP-1.3b 1135
+HaskellReport 92
+HPND 160
+IBM-pibs 134
+ICU 244
+IJG 669
+ImageMagick 1865
+iMatix 546
+Imlib2 311
+Info-ZIP 461
+Intel-ACPI 910
+Intel 305
+Interbase-1.0 703
+IPA 1428
+IPL-1.0 1709
+ISC 121
+JasPer-2.0 403
+JSON 171
+LAL-1.2 1026
+LAL-1.3 1203
+Latex2e 100
+Leptonica 113
+LGPL-2.0 4154
+LGPL-2.1 4343
+LGPL-3.0 1225
+LGPLLR 2333
+Libpng 615
+libtiff 173
+LiLiQ-P-1.1 996
+LiLiQ-R-1.1 1312
+LiLiQ-Rplus-1.1 1264
+LPL-1.0 1755
+LPL-1.02 1740
+LPPL-1.0 1397
+LPPL-1.1 2189
+LPPL-1.2 2202
+LPPL-1.3a 2897
+LPPL-1.3c 2996
+MakeIndex 295
+MirOS 355
+MIT-advertising 189
+MIT-CMU 181
+MIT-enna 251
+MIT-feh 169
+MIT 160
+MITNFA 231
+Motosoto 2486
+mpich2 216
+MPL-1.0 788
+MPL-1.1 0
+MPL-2.0-no-copyleft-exception 1903
+MPL-2.0 1903
+MS-PL 396
+MS-RL 463
+MTLL 458
+Multics 284
+Mup 212
+NASA-1.3 2035
+Naumen 295
+NBPL-1.0 851
+NCSA 227
+Net-SNMP 2132
+NetCDF 282
+Newsletr 74
+NGPL 786
+NLOD-1.0 1329
+NLPL 35
+Nokia 1232
+NOSL 563
+Noweb 192
+NPL-1.0 905
+NPL-1.1 4322
+NPOSL-3.0 1728
+NRL 489
+NTP 94
+Nunit 166
+OCCT-PL 2084
+OCLC-2.0 1630
+ODbL-1.0 4029
+OFL-1.0 609
+OFL-1.1 629
+OGTSL 824
+OLDAP-1.1 846
+OLDAP-1.2 846
+OLDAP-1.3 909
+OLDAP-1.4 922
+OLDAP-2.0.1 280
+OLDAP-2.0 281
+OLDAP-2.1 320
+OLDAP-2.2.1 328
+OLDAP-2.2.2 330
+OLDAP-2.2 326
+OLDAP-2.3 330
+OLDAP-2.4 313
+OLDAP-2.5 322
+OLDAP-2.6 310
+OLDAP-2.7 323
+OLDAP-2.8 323
+OML 253
+OpenSSL 782
+OPL-1.0 1055
+OSET-PL-2.1 2647
+OSL-1.0 1209
+OSL-1.1 1364
+OSL-2.0 1406
+OSL-2.1 1403
+OSL-3.0 1502
+PDDL-1.0 2524
+PHP-3.0 371
+PHP-3.01 371
+Plexus 268
+PostgreSQL 168
+psfrag 73
+psutils 237
+Python-2.0 1425
+Qhull 202
+QPL-1.0 678
+Rdisc 174
+RHeCos-1.1 1335
+RPL-1.1 4509
+RPL-1.5 4255
+RPSL-1.0 4443
+RSA-MD 129
+RSCPL 1437
+Ruby 327
+SAX-PD 373
+Saxpath 293
+SCEA 996
+Sendmail 578
+SGI-B-1.0 1695
+SGI-B-1.1 1899
+SGI-B-2.0 227
+SimPL-2.0 437
+SISSL-1.2 978
+SISSL 886
+Sleepycat 746
+SMLNJ 165
+SMPPL 490
+SNIA 589
+Spencer-86 127
+Spencer-94 150
+Spencer-99 207
+SPL-1.0 435
+SugarCRM-1.1.3 576
+SWL 322
+TCL 333
+TCP-wrappers 89
+TMate 372
+TORQUE-1.1 560
+TOSL 312
+Unicode-DFS-2015 419
+Unicode-DFS-2016 389
+Unicode-TOU 959
+Unlicense 190
+UPL-1.0 295
+Vim 752
+VOSTROM 444
+VSL-1.0 294
+W3C-19980720 447
+W3C-20150513 275
+W3C 398
+Watcom-1.0 3026
+Wsuipa 82
+WTFPL 66
+X11 210
+Xerox 137
+XFree86-1.1 349
+xinetd 316
+Xnet 194
+xpp 344
+XSkat 84
+YPL-1.0 1432
+YPL-1.1 1430
+Zed 34
+Zend-2.0 300
+Zimbra-1.3 1432
+Zimbra-1.4 1422
+zlib-acknowledgement 173
+Zlib 128
+ZPL-1.1 413
+ZPL-2.0 339
+ZPL-2.1 314
+Fair-Source-0.9 290
+
+Most seem to have over 100 or so unique ngrams which means they will probably work pretty well, and as expected the only exception is the MPL-1.1 which has nothing unique about it compared to every other license. I ended up cleaning up the code at this point and improving on the loops so thankfully it took only a few minutes to run. Some of the orginal runs were taking tens of minutes due to some dodgy loops. The resulting file was on the heavy side though at 20 megabytes and crashed most editors when I tried to read it. To resolve this I truncated down to at most 50 unique ngrams per license to see how this worked in the real world. This file weighed in a much more realistic 3 megabytes.
 
 Of course this isnt foolproof. We can always fall back to the vector space if we cannot find anything.
 

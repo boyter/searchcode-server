@@ -12,34 +12,63 @@ def clean_text(text):
 def find_ngrams(input_list, n):
     return zip(*[input_list[i:] for i in range(n)])
 
-with open('database.json', 'r') as file:
-    database = file.read()
 
-licenses = json.loads(database)
+def load_database():
+    with open('database.json', 'r') as file:
+        database = file.read()
 
-for license in licenses:
-    license['clean'] = clean_text(license['text'])
+    licenses = json.loads(database)
 
-for license in licenses:
+    for license in licenses:
+        license['clean'] = clean_text(license['text'])
+        ngrams = []
 
-    matches = []
+        start = 7
+        end = 8
 
-    for x in range(5, 11):
-        ngrams = find_ngrams(license['clean'].split(), x)
+        if license['shortname'] in ['Artistic-1.0', 'BSD-3-Clause']:
+            start = 2
+            end = 35
 
-        for ngram in ngrams:
+        for x in range(start, end):
+            ngrams = ngrams + find_ngrams(license['clean'].split(), x)
+        license['ngrams'] = ngrams
+
+    return licenses
+
+if __name__ == '__main__':
+    licenses = load_database()
+
+    for license in licenses:
+        matches = []
+
+        for ngram in license['ngrams']:
             find = ' '.join(ngram)
             ismatch = True
 
-            for lic in licenses:
-                if license['shortname'] != lic['shortname']:
-                    if find in lic['clean']:
-                        ismatch = False
+            filtered = [x for x in licenses if x['shortname'] != license['shortname'] and x['shortname'] == 'NPL-1.1']
+            for lic in filtered:
+                if find in lic['clean']:
+                    ismatch = False
+                    break
 
             if ismatch:
                 matches.append(find)
 
-    print license['shortname'], len(matches)
-    license['keywords'] = matches
+        if len(matches) == 0:
+            print '>>>>', license['shortname'], len(matches)
+        else:
+            print license['shortname'], len(matches)
 
-print json.dumps(licenses)
+        license['keywords'] = matches
+
+    licenses = [{
+        'text': x['text'],
+        'fullname': x['fullname'],
+        'shortname': x['shortname'],
+        'header': x['header'],
+        'keywords': x['keywords'][:50]
+    } for x in licenses]
+
+    with open('database_keywords.json', 'w') as myfile:
+        myfile.write(json.dumps(licenses))
