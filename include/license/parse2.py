@@ -23,14 +23,12 @@ def load_database():
         license['clean'] = clean_text(license['text'])
         ngrams = []
 
-        start = 7
-        end = 8
+        ngramrange = [3, 7, 8]
 
         if license['shortname'] in ['Artistic-1.0', 'BSD-3-Clause']:
-            start = 2
-            end = 35
+            ngramrange = range(2, 35)
 
-        for x in range(start, end):
+        for x in ngramrange:
             ngrams = ngrams + find_ngrams(license['clean'].split(), x)
         license['ngrams'] = ngrams
 
@@ -46,7 +44,7 @@ if __name__ == '__main__':
             find = ' '.join(ngram)
             ismatch = True
 
-            filtered = [x for x in licenses if x['shortname'] != license['shortname'] and x['shortname'] == 'NPL-1.1']
+            filtered = [x for x in licenses if x['shortname'] != license['shortname']]
             for lic in filtered:
                 if find in lic['clean']:
                     ismatch = False
