@@ -8,7 +8,7 @@ import codecs
 
 
 def load_database():
-    with open('database_keywords.json', 'r') as file:
+    with codecs.open('database_keywords.json', 'r', 'utf-8') as file:
         database = file.read()
 
     licenses = json.loads(database)
@@ -36,27 +36,34 @@ def clean_text(text):
     return text
 
 
+def guess_license(check_license, licenses):
+    for license in licenses:
+        keywordmatch = 0
+        for keyword in license['keywords']:
+            if keyword in check_license:
+                keywordmatch = keywordmatch + 1
+
+        if len(license['keywords']):
+            if (float(keywordmatch) / float(len(license['keywords'])) * 100) >= 50:
+                return license['shortname']
+    return None
+
+
+def read_clean_file(filename):
+    with codecs.open(filename, 'r', 'utf-8') as file:
+        contents = clean_text(file.read())
+    return contents
+
 if __name__ == '__main__':
     licenses = load_database()
 
-    project_directory = '/Users/boyter/Documents/Projects/armory-react/'
+    project_directory = '/Users/boyter/Documents/Projects/gcc/'
     possible_files = find_possible_licence_files(project_directory)
 
     for possible_file in possible_files:
-        with codecs.open(possible_files[0], 'r', 'utf-8') as file:
-            potential_license = clean_text(file.read())
+        potential_license = read_clean_file(possible_files[0])
 
-        print potential_license
-
-        for license in licenses:
-            keywordmatch = 0
-            for keyword in license['keywords']:
-                if keyword in potential_license:
-                    keywordmatch = keywordmatch + 1
-
-            if len(license['keywords']):
-                if (float(keywordmatch) / float(len(license['keywords'])) * 100) >= 70:
-                    print possible_file, license['shortname']
+        print guess_license(potential_license, licenses)
 
 
     # for root, dirs, files in os.walk(project_directory):
@@ -73,8 +80,9 @@ if __name__ == '__main__':
     #                 if keyword in content:
     #                     keywordmatch = keywordmatch + 1
 
-    #             if (float(keywordmatch) / float(len(license['keywords'])) * 100) >= 70:
-    #                 matches[license['shortname']] = license
+    #             if len(license['keywords']):
+    #                 if (float(keywordmatch) / float(len(license['keywords'])) * 100) >= 70:
+    #                     matches[license['shortname']] = license
 
     #         if len(matches) != 0:
     #             for i in matches.keys():
