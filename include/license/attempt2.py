@@ -129,7 +129,7 @@ if __name__ == '__main__':
         print guess[0][0], guess[0][1]['shortname'], possible_file
 
     for root, dirs, files in os.walk(project_directory):
-        for file in [root + '/' + x for x in files]:
+        for file in [root + '/' + x for x in files if x.endswith('.js') or x.endswith('.java') or x.endswith('.py')]:
             content = None
             try:
                 content = read_clean_file(file)
