@@ -529,7 +529,25 @@ Which is correct. In fact futher tests on various other repositories worked unti
 
 Thinking about this for a bit, it totally makes sense to look for ngrams from 2-8 even when we are truncating to 50. The smaller ones are going to be high value ones usually and there shouldnt be too many of them. At the very least we should include trigrams (3 length ngrams) since it solves this issue and should work to be unqiue for a lot of licenses. Modifying the parse2.py script to take in a range of numbers defined was easy enough then just let it run and produce the new database to work with and try everything again.
 
-Due to how painful this was getting to test manually I started to build a small test harness which I could eyeball to see if I was getting closer to a result I wanted without regressions.
+Due to how painful this was getting to test manually I started to build a small test harness which I could eyeball to see if I was getting closer to a result I wanted without regressions. Thankfully it was working perfectly for the tests I was trying.
+
+At this point I tried the same technique across all the files in repositories. Using the previous example of searchcode-server I would have expected that the cache.js file would be marked as MIT license as before. This however was not the case. Because I had the keyword match script se a sliding scale IE it needed a few matches to be considered positive it was missing out on this one.
+
+ I decided at this point to integrate the Vector Space back in. If a file was marked with any license, we would then confirm using the Vector Space and if it was able to have a high degree of confidence over the license that matched then it would be marked as the license. After adding this logic I managed to get the following output,
+
+Bens-MBP:license boyter$ python attempt2.py
+0.988840442861 Fair-Source-0.9 /Users/boyter/Documents/Projects/searchcode-server/LICENSE.txt
+0.442713859889 MIT /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+0.442713859889 MIT /Users/boyter/Documents/Projects/searchcode-server/target/classes/public/js/cache.js
+
+Exactly what I was looking for. All of the tests I had previously written also passed with this logic. With a simple change to only check the top of the file IE where the header would be by cutting the string down I was able to better the result futher,
+
+Bens-MBP:license boyter$ python attempt2.py
+0.988840442861 Fair-Source-0.9 /Users/boyter/Documents/Projects/searchcode-server/LICENSE.txt
+0.985719098155 MIT /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+0.985719098155 MIT /Users/boyter/Documents/Projects/searchcode-server/target/classes/public/js/cache.js
+
+That is a seriously cool result. Not only was the code able to identify the licences, it did so with a very percentage of confidence to boot.
 
 
 Of course this isnt foolproof. We can always fall back to the vector space if we cannot find anything.
