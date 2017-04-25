@@ -25,5 +25,11 @@ class TestIntegration(unittest.TestCase):
         result = attempt2.guess_license(license, licenses)
         self.assertEqual('GPL-2.0', result[0][1]['shortname'])
 
+    def testMITHeader(self):
+        license = attempt2.read_clean_file('./samples/mit-header')
+        licenses = attempt2.load_database()
+        result = attempt2.guess_license(license, licenses)
+        self.assertEqual('MIT', result[0][1]['shortname'])
+
 if __name__ == "__main__":
     unittest.main()
