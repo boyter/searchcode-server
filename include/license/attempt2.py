@@ -120,7 +120,7 @@ def read_clean_file(filename):
 if __name__ == '__main__':
     licenses = load_database()
 
-    project_directory = '/Users/boyter/Documents/Projects/searchcode-server/'
+    project_directory = '/Users/boyter/Documents/Projects/'
     possible_files = find_possible_licence_files(project_directory)
 
     for possible_file in possible_files:
@@ -129,7 +129,7 @@ if __name__ == '__main__':
         print guess[0][0], guess[0][1]['shortname'], possible_file
 
     for root, dirs, files in os.walk(project_directory):
-        for file in [root + '/' + x for x in files if x.endswith('.js') or x.endswith('.java') or x.endswith('.py')]:
+        for file in [root + '/' + x for x in files if x.endswith('.js') or x.endswith('.java') or x.endswith('.py') or x.endswith('.c') or 'copying' in x.lower() or 'license' in x.lower()]:
             content = None
             try:
                 content = read_clean_file(file)

@@ -549,6 +549,35 @@ Bens-MBP:license boyter$ python attempt2.py
 
 That is a seriously cool result. Not only was the code able to identify the licences, it did so with a very percentage of confidence to boot.
 
+There is however one issue I am overlooking, and frankly I am not 100% how this is meant to work out. Take for example a project which includes another project. What license should be displayed for the files that are in the latter? It seems that generally the files should only be included if the license is compatible, but that they fall under the top level license in this case. However it would be very nice to see this information. While the license file itself will be marked as being some other license, knowing that the files under it fall under that license would be very helpful.
+
+The last issue is what to do when there are multiple license files in the root directory. GCC is an example of this and it has 4 licenses defined in the root. The idea being you take which one is most applicable to your project.
+
+0.999792347852 GPL-2.0 /gcc/COPYING
+0.999922926136 LGPL-2.1 /gcc/COPYING.LIB
+0.99967961278 GPL-3.0 /gcc/COPYING3
+0.999902746595 LGPL-3.0 /gcc/COPYING3.LIB
+
+Looking at the SPDX specification the rule is to define them as being under all. I this case using the following,
+
+```Representing Multiple Licenses
+
+Multiple licenses can be represented using a SPDX license expression as defined in Appendix IV.  A set of licenses must be enclosed in parentheses (this is a convention for SPDX expressions).  As further described there:
+
+When there is a choice between licenses ("disjunctive license"), they should be separated with "OR". If presented with a choice between two or more licenses, use the disjunctive binary "OR" operator to construct a new license expression.
+Similarly when multiple licenses need to be simultaneously applied ("conjunctive license"), they should be separated with "AND". If required to simultaneously comply with two or more licenses, use the conjunctive binary "AND" operator to construct a new license expression.
+In some cases, a set of license terms apply except under special circumstances, in this case, use the "WITH" operator followed by one of the recognized exception identifiers.
+Sometimes a set of license terms apply except under special circumstances. In this case, use the binary "WITH" operator to construct a new license expression to represent the special exception situation.
+Examples:
+
+SPDX-License-Identifier: (GPL-2.0 OR MIT)
+SPDX-License-Identifier: (LGPL-2.1 AND BSD-2-CLAUSE)
+SPDX-License-Identifier: (GPL-2.0+ WITH Bison-exception-2.2)```
+
+Taken from https://spdx.org/spdx-specification-21-web-version Appendix V: Using SPDX short identifiers in Source Files
+ 
+Fair enough. We then need to write one last version of our license guesser which will use everything done above BUT support multiple licenses and look for license files inside root directories and make anything below it as belonging to that one.
+
 
 Of course this isnt foolproof. We can always fall back to the vector space if we cannot find anything.
 
