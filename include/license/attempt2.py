@@ -134,8 +134,7 @@ if __name__ == '__main__':
             try:
                 content = read_clean_file(file)
             except:
-                # We have issues reading binary files, just swallow the error
-                pass
+                pass  # We have issues reading binary files, just swallow the error
 
             if content:
                 matches = {}
