@@ -108,7 +108,7 @@ class TestIntegration(unittest.TestCase):
             'api/repo/reindex/',
             'api/repo/index/',
         ]
-        
+
         for url in urls:
             url = 'http://%s/%s' % (host, url)
             data = urllib2.urlopen(url)
