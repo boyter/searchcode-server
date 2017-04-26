@@ -549,6 +549,116 @@ Bens-MBP:license boyter$ python attempt2.py
 
 That is a seriously cool result. Not only was the code able to identify the licences, it did so with a very percentage of confidence to boot.
 
+I tried running it over a collection of projects I had checked out including GCC, Linux and Wordpress
+
+0.993261478239 BSD-3-Clause-Clear /Users/boyter/Documents/Projects/armory-react/LICENSE
+0.999679612780 GPL-3.0 /Users/boyter/Documents/Projects/decodingcaptchas/LICENSE
+0.980796066053 OFL-1.1 /Users/boyter/Documents/Projects/decodingcaptchas/lib/font/source-sans-pro/LICENSE
+0.999692799354 GPL-3.0 /Users/boyter/Documents/Projects/freemoz/LICENSE
+0.999792347852 GPL-2.0 /Users/boyter/Documents/Projects/gcc/COPYING
+0.999922926136 LGPL-2.1 /Users/boyter/Documents/Projects/gcc/COPYING.LIB
+0.999679612780 GPL-3.0 /Users/boyter/Documents/Projects/gcc/COPYING3
+0.999902746595 LGPL-3.0 /Users/boyter/Documents/Projects/gcc/COPYING3.LIB
+0.999792347852 GPL-2.0 /Users/boyter/Documents/Projects/gcc/gcc/COPYING
+0.999932589474 LGPL-2.1 /Users/boyter/Documents/Projects/gcc/gcc/COPYING.LIB
+0.999679612780 GPL-3.0 /Users/boyter/Documents/Projects/gcc/gcc/COPYING3
+0.999902746595 LGPL-3.0 /Users/boyter/Documents/Projects/gcc/gcc/COPYING3.LIB
+0.858896713823 GPL-2.0 /Users/boyter/Documents/Projects/gcc/gcc/df-core.c
+0.999532020106 GFDL-1.3 /Users/boyter/Documents/Projects/gcc/gcc/ada/doc/share/gnu_free_documentation_license.rst
+0.948529328513 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/gcc/testsuite/gcc.c-torture/execute/pr20527-1.c
+0.994200247145 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/gcc/testsuite/gcc.dg/params/LICENSE
+0.999792347852 GPL-2.0 /Users/boyter/Documents/Projects/gcc/include/COPYING
+0.999679612780 GPL-3.0 /Users/boyter/Documents/Projects/gcc/include/COPYING3
+0.889767272339 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/alloc.c
+0.899838703127 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/atomic.c
+0.883378984629 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/backtrace.c
+0.885232659466 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/btest.c
+0.866517942966 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/dwarf.c
+0.881126480326 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/elf.c
+0.876148037216 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/fileline.c
+0.862314849462 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/mmap.c
+0.876559695369 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/mmapio.c
+0.903997364404 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/nounwind.c
+0.880387358104 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/pecoff.c
+0.872402129061 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/posix.c
+0.881550515104 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/print.c
+0.878971997218 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/read.c
+0.880857671076 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/simple.c
+0.897738871764 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/sort.c
+0.890041393843 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/state.c
+0.874782494001 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/stest.c
+0.897023027383 bzip2-1.0.6 /Users/boyter/Documents/Projects/gcc/libbacktrace/unknown.c
+0.879821572348 MITNFA /Users/boyter/Documents/Projects/gcc/libffi/src/mips/ffi.c
+0.997055163924 LGPL-2.1 /Users/boyter/Documents/Projects/gcc/libiberty/copying-lib.texi
+0.999932589474 LGPL-2.1 /Users/boyter/Documents/Projects/gcc/libiberty/COPYING.LIB
+0.899167675944 Intel /Users/boyter/Documents/Projects/gcc/liboffloadmic/runtime/liboffload_error.c
+0.889543866358 Intel /Users/boyter/Documents/Projects/gcc/liboffloadmic/runtime/liboffload_msg.c
+0.887357763796 Intel /Users/boyter/Documents/Projects/gcc/liboffloadmic/runtime/orsl-lite/lib/orsl-lite.c
+0.999932589474 LGPL-2.1 /Users/boyter/Documents/Projects/gcc/libquadmath/COPYING.LIB
+0.857337014417 NCSA /Users/boyter/Documents/Projects/gcc/libsanitizer/LICENSE.TXT
+1.000000000000 BSL-1.0 /Users/boyter/Documents/Projects/gcc/zlib/contrib/dotzlib/LICENSE_1_0.txt
+0.998470560414 GPL-2.0 /Users/boyter/Documents/Projects/linux/COPYING
+0.999831352903 LGPL-2.0 /Users/boyter/Documents/Projects/linux/arch/sparc/lib/COPYING.LIB
+0.997101938433 GPL-2.0 /Users/boyter/Documents/Projects/linux/Documentation/networking/LICENSE.qlcnic
+0.997101938433 GPL-2.0 /Users/boyter/Documents/Projects/linux/Documentation/networking/LICENSE.qlge
+0.997004626197 GPL-2.0 /Users/boyter/Documents/Projects/linux/Documentation/scsi/LICENSE.qla2xxx
+0.997004626197 GPL-2.0 /Users/boyter/Documents/Projects/linux/Documentation/scsi/LICENSE.qla4xxx
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c3xxx/adf_c3xxx_hw_data.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c3xxx/adf_drv.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c3xxxvf/adf_c3xxxvf_hw_data.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c3xxxvf/adf_drv.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c62x/adf_c62x_hw_data.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c62x/adf_drv.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c62xvf/adf_c62xvf_hw_data.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_c62xvf/adf_drv.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_accel_engine.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_admin.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_aer.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_cfg.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_ctl_drv.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_dev_mgr.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_hw_arbiter.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_init.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_isr.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_sriov.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_transport.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_transport_debug.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_vf2pf_msg.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/adf_vf_isr.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/qat_algs.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/qat_asym_algs.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/qat_crypto.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/qat_hal.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_common/qat_uclo.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_dh895xcc/adf_dh895xcc_hw_data.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_dh895xcc/adf_drv.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_dh895xccvf/adf_dh895xccvf_hw_data.c
+0.900564102581 Intel /Users/boyter/Documents/Projects/linux/drivers/crypto/qat/qat_dh895xccvf/adf_drv.c
+0.998958351972 GPL-2.0 /Users/boyter/Documents/Projects/linux/drivers/staging/rtl8192e/license
+0.999594583136 GPL-2.0 /Users/boyter/Documents/Projects/linux/drivers/staging/rtl8192u/copying
+0.999792347852 GPL-2.0 /Users/boyter/Documents/Projects/linux/tools/usb/usbip/COPYING
+0.952930843666 Sleepycat /Users/boyter/Documents/Projects/pathos/dill-0.2.1/LICENSE
+0.952930843666 Sleepycat /Users/boyter/Documents/Projects/pathos/pathos-master/LICENSE
+0.952930843666 Sleepycat /Users/boyter/Documents/Projects/pathos/pox-0.2/LICENSE
+0.987991559152 MIT /Users/boyter/Documents/Projects/phonecat/LICENSE
+1.000000000000 Apache-2.0 /Users/boyter/Documents/Projects/python-goose/LICENSE.txt
+1.000000000000 Apache-2.0 /Users/boyter/Documents/Projects/searchcode/searchcode/searchcode/static/admin/fonts/LICENSE.txt
+0.987991559152 MIT /Users/boyter/Documents/Projects/searchcode/searchcode/searchcode/static/admin/js/vendor/xregexp/LICENSE-XREGEXP.txt
+0.988840442861 Fair-Source-0.9 /Users/boyter/Documents/Projects/searchcode-server/LICENSE.txt
+0.985719098155 MIT /Users/boyter/Documents/Projects/searchcode-server/src/main/resources/public/js/cache.js
+0.985719098155 MIT /Users/boyter/Documents/Projects/searchcode-server/target/classes/public/js/cache.js
+0.999268167835 LGPL-2.1 /Users/boyter/Documents/Projects/seo/vendor/videlalvaro/php-amqplib/LICENSE
+0.999692799354 GPL-3.0 /Users/boyter/Documents/Projects/SingleBugs/LICENSE
+0.999692799354 GPL-3.0 /Users/boyter/Documents/Projects/testing/LICENSE
+0.997865652460 GPL-2.0 /Users/boyter/Documents/Projects/wordpress/license.txt
+0.999792346238 GPL-2.0 /Users/boyter/Documents/Projects/wordpress/wp-content/themes/twentyfourteen/genericons/LICENSE.txt
+0.999792346238 GPL-2.0 /Users/boyter/Documents/Projects/wordpress/wp-content/themes/twentythirteen/fonts/LICENSE.txt
+0.999792346238 GPL-2.0 /Users/boyter/Documents/Projects/wordpress/wp-includes/js/plupload/license.txt
+0.999932589474 LGPL-2.1 /Users/boyter/Documents/Projects/wordpress/wp-includes/js/tinymce/license.txt
+
+Rather cool. Lots of licenses identified with quite a lot of confidence.
+
 There is however one issue I am overlooking, and frankly I am not 100% how this is meant to work out. Take for example a project which includes another project. What license should be displayed for the files that are in the latter? It seems that generally the files should only be included if the license is compatible, but that they fall under the top level license in this case. However it would be very nice to see this information. While the license file itself will be marked as being some other license, knowing that the files under it fall under that license would be very helpful.
 
 The last issue is what to do when there are multiple license files in the root directory. GCC is an example of this and it has 4 licenses defined in the root. The idea being you take which one is most applicable to your project.
@@ -576,10 +686,9 @@ SPDX-License-Identifier: (GPL-2.0+ WITH Bison-exception-2.2)```
 
 Taken from https://spdx.org/spdx-specification-21-web-version Appendix V: Using SPDX short identifiers in Source Files
  
-Fair enough. We then need to write one last version of our license guesser which will use everything done above BUT support multiple licenses and look for license files inside root directories and make anything below it as belonging to that one.
+Fair enough. We then need to write one last version of our license guesser which will use everything done above BUT support multiple licenses and look for license files inside root directories and make anything below it as belonging to that one, unless of course there is another license file or it is over-ridden by the header.
 
-
-Of course this isnt foolproof. We can always fall back to the vector space if we cannot find anything.
+For this I simply copied the existing attempt2.py and created attempt3.py which should hopefully be the last version for this. What we now need to do is walk the tree, and every time we encounter a license file, keep track of the license that the file should be under, and then pop the license off when we exit that directory.
 
 
 
