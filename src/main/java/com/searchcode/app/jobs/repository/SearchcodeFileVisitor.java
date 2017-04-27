@@ -59,19 +59,15 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             // This needs to be the primary key of the file
             fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
 
-            List<String> codeLines;
-            try {
-                codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, this.indexBaseRepoJob.MAXFILELINEDEPTH);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + filePath +" in repo " + repoName);
-                if (this.indexBaseRepoJob.LOGINDEXED) {
-                    reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
-                }
+
+            IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
+            if (codeLinesReturn.isError()) {
                 fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
                 return FileVisitResult.CONTINUE;
             }
 
-            if (Singleton.getSearchCodeLib().isMinified(codeLines, fileName)) {
+
+            if (Singleton.getSearchCodeLib().isMinified(codeLinesReturn.getCodeLines(), fileName)) {
                 Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
                 if (this.indexBaseRepoJob.LOGINDEXED) {
                     reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
@@ -80,7 +76,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.CONTINUE;
             }
 
-            if (codeLines.isEmpty()) {
+            if (codeLinesReturn.getCodeLines().isEmpty()) {
                 Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
                 if (this.indexBaseRepoJob.LOGINDEXED) {
                     reportList.add(new String[]{fileToString, "excluded", "empty file"});
@@ -89,26 +85,26 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.CONTINUE;
             }
 
-            if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLines, reportList)) {
+            if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
                 return FileVisitResult.CONTINUE;
             }
 
             String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
-            String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLines);
+            String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLinesReturn.getCodeLines());
 
 
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
 
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
-            String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLines, newString, this.repoName, fileRepoLocations, Singleton.getSearchCodeLib());
+            String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoName, fileRepoLocations, Singleton.getSearchCodeLib());
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             } else {
-                Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             }
 
             if (this.indexBaseRepoJob.LOGINDEXED) {

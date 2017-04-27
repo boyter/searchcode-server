@@ -21,7 +21,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -40,7 +39,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.*;
 
@@ -264,56 +262,48 @@ public abstract class IndexBaseRepoJob implements Job {
             changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
             changedFile = changedFile.replace("//", "/");
 
-            String md5Hash;
-            List<String> codeLines;
+            CodeLinesReturn codeLinesReturn = this.getCodeLines(changedFile, reportList);
+            if (codeLinesReturn.isError()) { break; }
 
-            try {
-                codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
-                break;
-            }
-
-            if (scl.isMinified(codeLines, fileName)) {
+            if (scl.isMinified(codeLinesReturn.getCodeLines(), fileName)) {
                 Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
                 reportList.add(new String[]{changedFile, "excluded", "appears to be minified"});
                 break;
             }
 
-            if (codeLines.isEmpty()) {
+            if (codeLinesReturn.getCodeLines().isEmpty()) {
                 Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
                 reportList.add(new String[]{changedFile, "excluded", "empty file"});
                 break;
             }
 
-            if (this.determineBinary(changedFile, fileName, codeLines, reportList)) {
+            if (this.determineBinary(changedFile, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 break;
             }
 
-            md5Hash = this.getFileMd5(changedFile);
+            String md5Hash = this.getFileMd5(changedFile);
 
-            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLines);
+            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLinesReturn.getCodeLines());
 
             String fileLocation = getRelativeToProjectPath(path.toString(), changedFile);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
             String repoLocationRepoNameLocationFilename = changedFile;
 
             String newString = this.getBlameFilePath(fileLocationFilename);
-            String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
+            String codeOwner = getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
 
             reportList.add(new String[]{changedFile, "included", ""});
 
 
             if (this.LOWMEMORY) {
                 try {
-                    Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                    Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
                 } catch (IOException ex) {
                     Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 }
             } else {
-                Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             }
         }
 
@@ -487,6 +477,27 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     /*
+     * The below are shared between the delta updates and path walk
+     */
+
+    public CodeLinesReturn getCodeLines(String changedFile, List<String[]> reportList) {
+        List<String> codeLines = new ArrayList<>();
+        boolean error = false;
+
+        try {
+            codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
+        } catch (IOException ex) {
+            error = true;
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
+            }
+        }
+
+        return new CodeLinesReturn(codeLines, reportList, error);
+    }
+
+    /*
      * The below are are shared among all extending classes
      */
     public String getBlameFilePath(String fileLocationFilename) {
@@ -556,6 +567,30 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (!success) {
             throw new IOException("Unable to delete directory " + file.getAbsolutePath());
+        }
+    }
+
+    public class CodeLinesReturn {
+        private final List<String> codeLines;
+        private final boolean error;
+        private final List<String[]> reportList;
+
+        public CodeLinesReturn(List<String> codeLines, List<String[]> reportList, boolean error) {
+            this.codeLines = codeLines;
+            this.reportList = reportList;
+            this.error = error;
+        }
+
+        public List<String> getCodeLines() {
+            return codeLines;
+        }
+
+        public List<String[]> getReportList() {
+            return reportList;
+        }
+
+        public boolean isError() {
+            return error;
         }
     }
 }

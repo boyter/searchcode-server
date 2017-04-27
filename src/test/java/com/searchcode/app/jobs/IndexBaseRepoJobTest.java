@@ -1,6 +1,7 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
@@ -12,6 +13,9 @@ import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Matchers.anyBoolean;
@@ -77,5 +81,28 @@ public class IndexBaseRepoJobTest extends TestCase {
         assertThat(spy.LOWMEMORY).isTrue();
         verify(spy).getNextQueuedRepo();
         verify(spy, times(2)).getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean());
+    }
+
+    public void testGetCodeLinesLogIndexedInvalid() {
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        indexGitRepoJob.LOGINDEXED = true;
+        List<String[]> reportList = new ArrayList<>();
+
+        IndexBaseRepoJob.CodeLinesReturn codeLines = indexGitRepoJob.getCodeLines("", reportList);
+
+        assertThat(codeLines.isError()).isTrue();
+        assertThat(codeLines.getReportList().get(0)[1]).isEqualTo("excluded");
+        assertThat(codeLines.getReportList().get(0)[2]).isEqualTo("unable to guess guess file encoding");
+    }
+
+    public void testGetCodeLinesLogNotIndexedInvalid() {
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        indexGitRepoJob.LOGINDEXED = false;
+        List<String[]> reportList = new ArrayList<>();
+
+        IndexBaseRepoJob.CodeLinesReturn codeLines = indexGitRepoJob.getCodeLines("", reportList);
+
+        assertThat(codeLines.isError()).isTrue();
+        assertThat(codeLines.getReportList().isEmpty()).isTrue();
     }
 }
