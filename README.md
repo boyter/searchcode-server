@@ -192,7 +192,7 @@ Change Log
 ==========
 
 XX XXXXX XXXX - 1.3.10
-
+ - Set follow symlinks to be configurable through properties file https://github.com/boyter/searchcode-server/issues/99
 
 13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
