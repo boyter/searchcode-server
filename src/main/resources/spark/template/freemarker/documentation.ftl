@@ -654,6 +654,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Should the matching logic default to AND matching where nothing is specified. If set to true all queries will be similar to "import AND junit". If set to false all queries will be similar to "import OR junit". Default logic can be overridden by explicitly adding search operators. Defaults to true.</dd>
               <dt>log_indexed</dt>
               <dd>If set to true a csv containing the results of the last index run will be written to the log directory with the repository name as the filename. Can be used to determine why files are being indexed or not. Defaults to false.</dd>
+              <dt>follow_links</dt>
+              <dd>Boolean value true or false. If set to true indicates that symbolic links should be followed when indexing using file paths. Can be enabled if required to walk repositories containing symlinks. Be careful, this can produce infinite loops. Defaults to false.</dd>
             </dl>
 
         </p>

@@ -49,7 +49,8 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean LOWMEMORY = true;
     public int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
-    public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
+    public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false"));
+    public boolean FOLLOWLINKS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
     public boolean haveRepoResult = false;
     public CodeIndexer codeIndexer = Singleton.getCodeIndexer();
 
@@ -338,19 +339,18 @@ public abstract class IndexBaseRepoJob implements Job {
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
-        CodeSearcher codeSearcher = new CodeSearcher();
-        
-        Map<String, String> fileLocationsMap = new HashMap<>();
 
-        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
-
-        // Convert once outside the main loop
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-
         SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoName, fileRepoLocations, repoRemoteLocation);
 
         try {
-            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, searchcodeFileVisitor);
+            if (this.FOLLOWLINKS) {
+                Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, searchcodeFileVisitor);
+            }
+            else {
+                Files.walkFileTree(path, searchcodeFileVisitor);
+            }
+
         } catch (IOException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
@@ -360,6 +360,7 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         if (existingRepo) {
+            CodeSearcher codeSearcher = new CodeSearcher();
             this.cleanMissingPathFiles(codeSearcher, repoName, searchcodeFileVisitor.fileLocationsMap);
         }
     }
