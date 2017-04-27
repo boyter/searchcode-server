@@ -47,7 +47,7 @@ import java.util.*;
 public abstract class IndexBaseRepoJob implements Job {
 
     public boolean LOWMEMORY = true;
-    protected int SLEEPTIME = 5000;
+    public int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
     public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
     public boolean haveRepoResult = false;
@@ -338,7 +338,6 @@ public abstract class IndexBaseRepoJob implements Job {
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib();
         CodeSearcher codeSearcher = new CodeSearcher();
         
         Map<String, String> fileLocationsMap = new HashMap<>();
@@ -347,107 +346,21 @@ public abstract class IndexBaseRepoJob implements Job {
 
         // Convert once outside the main loop
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-        boolean lowMemory = this.LOWMEMORY;
 
-        // Used to hold the reports of what was indexed
-        List<String[]> reportList = new ArrayList<>();
+        SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoName, fileRepoLocations, repoRemoteLocation);
 
         try {
-            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                try {
-                    if (shouldJobPauseOrTerminate()) {
-                        return FileVisitResult.TERMINATE;
-                    }
-
-                    // Convert Path file to unix style that way everything is easier to reason about
-                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                    String fileName = file.getFileName().toString();
-                    String repoLocationRepoNameLocationFilename = fileToString;
-
-                    if (ignoreFile(fileParent)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    // This needs to be the primary key of the file
-                    fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
-
-                    List<String> codeLines;
-                    try {
-                        codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
-                        }
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (scl.isMinified(codeLines, fileName)) {
-                        Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
-                        }
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (codeLines.isEmpty()) {
-                        Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "excluded", "empty file"});
-                        }
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (determineBinary(fileToString, fileName, codeLines, reportList)) {
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    String md5Hash = getFileMd5(fileToString);
-                    String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLines);
-
-
-                    String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
-                    String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
-
-                    String newString = getBlameFilePath(fileLocationFilename);
-                    String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-
-                    if (lowMemory) { // TODO this should be inside the indexer class not in here
-                        Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } else {
-                        Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                        codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    }
-
-                    if (LOGINDEXED) {
-                        reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
-                    }
-                }
-                catch(Exception ex) {
-                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                }
-
-                // Continue at all costs
-                return FileVisitResult.CONTINUE;
-                }
-            });
+            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, searchcodeFileVisitor);
         } catch (IOException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
 
         if (this.LOGINDEXED) {
-            logIndexed(repoName, reportList);
+            logIndexed(repoName, searchcodeFileVisitor.reportList);
         }
 
         if (existingRepo) {
-            this.cleanMissingPathFiles(codeSearcher, repoName, fileLocationsMap);
+            this.cleanMissingPathFiles(codeSearcher, repoName, searchcodeFileVisitor.fileLocationsMap);
         }
     }
 
