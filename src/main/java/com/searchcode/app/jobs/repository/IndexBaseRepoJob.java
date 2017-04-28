@@ -21,7 +21,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -40,16 +39,16 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
 
     public boolean LOWMEMORY = true;
-    protected int SLEEPTIME = 5000;
+    public int SLEEPTIME = 5000;
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
-    public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false")); // TODO make this configurable
+    public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false"));
+    public boolean FOLLOWLINKS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
     public boolean haveRepoResult = false;
     public CodeIndexer codeIndexer = Singleton.getCodeIndexer();
 
@@ -254,7 +253,7 @@ public abstract class IndexBaseRepoJob implements Job {
         List<String[]> reportList = new ArrayList<>();
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
-            if (this.shouldJobPauseOrTerminate() == true) {
+            if (this.shouldJobPauseOrTerminate()) {
                 return;
             }
 
@@ -263,56 +262,41 @@ public abstract class IndexBaseRepoJob implements Job {
             changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
             changedFile = changedFile.replace("//", "/");
 
-            String md5Hash;
-            List<String> codeLines;
+            CodeLinesReturn codeLinesReturn = this.getCodeLines(changedFile, reportList);
+            if (codeLinesReturn.isError()) { break; }
 
-            try {
-                codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
+            IsMinifiedReturn isMinified = this.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
+            if (isMinified.isMinified()) { break; }
+
+            if (this.checkIfEmpty(codeLinesReturn.getCodeLines(), changedFile, reportList)) {
                 break;
             }
 
-            if (scl.isMinified(codeLines, fileName)) {
-                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
-                reportList.add(new String[]{changedFile, "excluded", "appears to be minified"});
+            if (this.determineBinary(changedFile, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 break;
             }
 
-            if (codeLines.isEmpty()) {
-                Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
-                reportList.add(new String[]{changedFile, "excluded", "empty file"});
-                break;
-            }
-
-            if (this.determineBinary(changedFile, fileName, codeLines, reportList)) {
-                break;
-            }
-
-            md5Hash = this.getFileMd5(changedFile);
-
-            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLines);
-
-            String fileLocation = getRelativeToProjectPath(path.toString(), changedFile);
+            String md5Hash = this.getFileMd5(changedFile);
+            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLinesReturn.getCodeLines());
+            String fileLocation = this.getRelativeToProjectPath(path.toString(), changedFile);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
             String repoLocationRepoNameLocationFilename = changedFile;
-
             String newString = this.getBlameFilePath(fileLocationFilename);
-            String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-
-            reportList.add(new String[]{changedFile, "included", ""});
-
+            String codeOwner = this.getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
 
             if (this.LOWMEMORY) {
                 try {
-                    Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                    Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
                 } catch (IOException ex) {
                     Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 }
             } else {
-                Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
+                Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+            }
+
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{changedFile, "included", ""});
             }
         }
 
@@ -338,116 +322,29 @@ public abstract class IndexBaseRepoJob implements Job {
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
     public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib();
-        CodeSearcher codeSearcher = new CodeSearcher();
-        
-        Map<String, String> fileLocationsMap = new HashMap<>();
 
-        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
-
-        // Convert once outside the main loop
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-        boolean lowMemory = this.LOWMEMORY;
-
-        // Used to hold the reports of what was indexed
-        List<String[]> reportList = new ArrayList<>();
+        SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoName, fileRepoLocations, repoRemoteLocation);
 
         try {
-            Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                try {
-                    if (shouldJobPauseOrTerminate()) {
-                        return FileVisitResult.TERMINATE;
-                    }
+            if (this.FOLLOWLINKS) {
+                Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, searchcodeFileVisitor);
+            }
+            else {
+                Files.walkFileTree(path, searchcodeFileVisitor);
+            }
 
-                    // Convert Path file to unix style that way everything is easier to reason about
-                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                    String fileName = file.getFileName().toString();
-                    String repoLocationRepoNameLocationFilename = fileToString;
-
-                    if (ignoreFile(fileParent)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    // This needs to be the primary key of the file
-                    fileLocationsMap.put(repoLocationRepoNameLocationFilename, null);
-
-                    List<String> codeLines;
-                    try {
-                        codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
-                    } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "excluded", "unable to guess guess file encoding"});
-                        }
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (scl.isMinified(codeLines, fileName)) {
-                        Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
-                        }
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (codeLines.isEmpty()) {
-                        Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                        if (LOGINDEXED) {
-                            reportList.add(new String[]{fileToString, "excluded", "empty file"});
-                        }
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (determineBinary(fileToString, fileName, codeLines, reportList)) {
-                        fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    String md5Hash = getFileMd5(fileToString);
-                    String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLines);
-
-
-                    String fileLocation = getRelativeToProjectPath(path.toString(), fileToString);
-                    String fileLocationFilename = getFileLocationFilename(fileToString, fileRepoLocations);
-
-                    String newString = getBlameFilePath(fileLocationFilename);
-                    String codeOwner = getCodeOwner(codeLines, newString, repoName, fileRepoLocations, scl);
-
-                    if (lowMemory) { // TODO this should be inside the indexer class not in here
-                        Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    } else {
-                        Singleton.incrementCodeIndexLinesCount(codeLines.size());
-                        codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLines.size(), StringUtils.join(codeLines, " "), repoRemoteLocation, codeOwner));
-                    }
-
-                    if (LOGINDEXED) {
-                        reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
-                    }
-                }
-                catch(Exception ex) {
-                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path +" in repo " + repoName);
-                }
-
-                // Continue at all costs
-                return FileVisitResult.CONTINUE;
-                }
-            });
         } catch (IOException ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
         }
 
         if (this.LOGINDEXED) {
-            logIndexed(repoName, reportList);
+            logIndexed(repoName, searchcodeFileVisitor.reportList);
         }
 
         if (existingRepo) {
-            this.cleanMissingPathFiles(codeSearcher, repoName, fileLocationsMap);
+            CodeSearcher codeSearcher = new CodeSearcher();
+            this.cleanMissingPathFiles(codeSearcher, repoName, searchcodeFileVisitor.fileLocationsMap);
         }
     }
 
@@ -495,22 +392,6 @@ public abstract class IndexBaseRepoJob implements Job {
         return filePath.replace(projectPath, Values.EMPTYSTRING);
     }
 
-    /**
-     * Shared method which performs all logic for determining and doing if
-     * the file is believed to be binary
-     */
-    public boolean determineBinary(String fileLocation, String fileName, List<String> codeLines, List<String[]> reportList) {
-        SearchcodeLib scl = new SearchcodeLib();
-        BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
-
-        if (binaryFinding.isBinary()) {
-            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileLocation);
-            reportList.add(new String[]{ fileLocation, "excluded", binaryFinding.getReason() });
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * Attempts to get MD5 for file on disk
@@ -571,6 +452,68 @@ public abstract class IndexBaseRepoJob implements Job {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " logIndexed for " + repoName + "\n with message: " + ex.getMessage());
         }
     }
+
+    /*
+     * The below are shared between the delta updates and path walk
+     */
+
+    public CodeLinesReturn getCodeLines(String changedFile, List<String[]> reportList) {
+        List<String> codeLines = new ArrayList<>();
+        boolean error = false;
+
+        try {
+            codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
+        } catch (IOException ex) {
+            error = true;
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
+            }
+        }
+
+        return new CodeLinesReturn(codeLines, reportList, error);
+    }
+
+    public IsMinifiedReturn getIsMinified(List<String> codeLines, String fileName, List<String[]> reportList) {
+        boolean isMinified = false;
+
+        if (Singleton.getSearchCodeLib().isMinified(codeLines, fileName)) {
+            isMinified = true;
+            Singleton.getLogger().info("Appears to be minified will not index  " + fileName);
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{fileName, "excluded", "appears to be minified"});
+            }
+        }
+
+        return new IsMinifiedReturn(isMinified, reportList);
+    }
+
+    public boolean determineBinary(String fileLocation, String fileName, List<String> codeLines, List<String[]> reportList) {
+        BinaryFinding binaryFinding = Singleton.getSearchCodeLib().isBinary(codeLines, fileName);
+
+        if (binaryFinding.isBinary()) {
+            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileLocation);
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{fileLocation, "excluded", binaryFinding.getReason()});
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean checkIfEmpty(List<String> codeLines, String filename, List<String[]> reportList) {
+        if (codeLines.isEmpty()) {
+            Singleton.getLogger().info("Unable to guess encoding type or file is empty " + filename);
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{filename, "excluded", "empty file"});
+            }
+            return true;
+        }
+
+        return false;
+    }
+
 
     /*
      * The below are are shared among all extending classes
@@ -642,6 +585,48 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (!success) {
             throw new IOException("Unable to delete directory " + file.getAbsolutePath());
+        }
+    }
+
+    public class CodeLinesReturn {
+        private final List<String> codeLines;
+        private final boolean error;
+        private final List<String[]> reportList;
+
+        public CodeLinesReturn(List<String> codeLines, List<String[]> reportList, boolean error) {
+            this.codeLines = codeLines;
+            this.reportList = reportList;
+            this.error = error;
+        }
+
+        public List<String> getCodeLines() {
+            return codeLines;
+        }
+
+        public List<String[]> getReportList() {
+            return reportList;
+        }
+
+        public boolean isError() {
+            return error;
+        }
+    }
+
+    public class IsMinifiedReturn {
+        private final boolean isMinified;
+        private final List<String[]> reportList;
+
+        public IsMinifiedReturn(boolean isMinified, List<String[]> reportList) {
+            this.isMinified = isMinified;
+            this.reportList = reportList;
+        }
+
+        public boolean isMinified() {
+            return isMinified;
+        }
+
+        public List<String[]> getReportList() {
+            return reportList;
         }
     }
 }

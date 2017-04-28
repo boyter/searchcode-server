@@ -137,8 +137,8 @@ number_git_processors=${number_git_processors}
 number_svn_processors=${number_svn_processors}
 number_file_processors=${number_file_processors}
 default_and_match=${default_and_match}
-log_indexed=${log_indexed}</textarea>
-
+log_indexed=${log_indexed}
+follow_links=${follow_links}</textarea>
 
 
         </div>
