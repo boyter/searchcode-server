@@ -265,11 +265,8 @@ public abstract class IndexBaseRepoJob implements Job {
             CodeLinesReturn codeLinesReturn = this.getCodeLines(changedFile, reportList);
             if (codeLinesReturn.isError()) { break; }
 
-            if (scl.isMinified(codeLinesReturn.getCodeLines(), fileName)) {
-                Singleton.getLogger().info("Appears to be minified will not index  " + changedFile);
-                reportList.add(new String[]{changedFile, "excluded", "appears to be minified"});
-                break;
-            }
+            IsMinifiedReturn isMinified = this.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
+            if (isMinified.isMinified()) { break; }
 
             if (codeLinesReturn.getCodeLines().isEmpty()) {
                 Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
@@ -285,12 +282,12 @@ public abstract class IndexBaseRepoJob implements Job {
 
             String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLinesReturn.getCodeLines());
 
-            String fileLocation = getRelativeToProjectPath(path.toString(), changedFile);
+            String fileLocation = this.getRelativeToProjectPath(path.toString(), changedFile);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
             String repoLocationRepoNameLocationFilename = changedFile;
 
             String newString = this.getBlameFilePath(fileLocationFilename);
-            String codeOwner = getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
+            String codeOwner = this.getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
 
             reportList.add(new String[]{changedFile, "included", ""});
 
@@ -497,6 +494,20 @@ public abstract class IndexBaseRepoJob implements Job {
         return new CodeLinesReturn(codeLines, reportList, error);
     }
 
+    public IsMinifiedReturn getIsMinified(List<String> codeLines, String fileName, List<String[]> reportList) {
+        boolean isMinified = false;
+
+        if (Singleton.getSearchCodeLib().isMinified(codeLines, fileName)) {
+            isMinified = true;
+            Singleton.getLogger().info("Appears to be minified will not index  " + fileName);
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{fileName, "excluded", "appears to be minified"});
+            }
+        }
+
+        return new IsMinifiedReturn(isMinified, reportList);
+    }
+
     /*
      * The below are are shared among all extending classes
      */
@@ -591,6 +602,24 @@ public abstract class IndexBaseRepoJob implements Job {
 
         public boolean isError() {
             return error;
+        }
+    }
+
+    public class IsMinifiedReturn {
+        private final boolean isMinified;
+        private final List<String[]> reportList;
+
+        public IsMinifiedReturn(boolean isMinified, List<String[]> reportList) {
+            this.isMinified = isMinified;
+            this.reportList = reportList;
+        }
+
+        public boolean isMinified() {
+            return isMinified;
+        }
+
+        public List<String[]> getReportList() {
+            return reportList;
         }
     }
 }

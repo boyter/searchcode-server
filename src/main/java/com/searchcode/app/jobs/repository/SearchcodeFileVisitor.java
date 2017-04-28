@@ -67,14 +67,9 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
 
-            if (Singleton.getSearchCodeLib().isMinified(codeLinesReturn.getCodeLines(), fileName)) {
-                Singleton.getLogger().info("Appears to be minified will not index " + fileToString);
-                if (this.indexBaseRepoJob.LOGINDEXED) {
-                    reportList.add(new String[]{fileToString, "excluded", "appears to be minified"});
-                }
-                fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
-                return FileVisitResult.CONTINUE;
-            }
+            IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
+            if (isMinified.isMinified()) { return FileVisitResult.CONTINUE; }
+
 
             if (codeLinesReturn.getCodeLines().isEmpty()) {
                 Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
