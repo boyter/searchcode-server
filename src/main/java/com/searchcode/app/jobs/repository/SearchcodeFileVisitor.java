@@ -83,15 +83,14 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
             String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
             String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLinesReturn.getCodeLines());
-
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
-
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoName, fileRepoLocations, Singleton.getSearchCodeLib());
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
                 Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+
             } else {
                 Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 Singleton.getCodeIndexQueue().add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
@@ -110,7 +109,9 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
     }
 
     @Override
-    public FileVisitResult visitFileFailed(Object file, IOException exc) throws IOException {
+    public FileVisitResult visitFileFailed(Object file, IOException ex) throws IOException {
+        java.nio.file.Path filePath = (java.nio.file.Path)file;
+        reportList.add(new String[]{filePath.toString(), "excluded", ex.toString()});
         return FileVisitResult.CONTINUE;
     }
 
