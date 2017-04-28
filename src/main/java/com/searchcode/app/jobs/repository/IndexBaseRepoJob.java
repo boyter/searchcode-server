@@ -268,9 +268,7 @@ public abstract class IndexBaseRepoJob implements Job {
             IsMinifiedReturn isMinified = this.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) { break; }
 
-            if (codeLinesReturn.getCodeLines().isEmpty()) {
-                Singleton.getLogger().info("Unable to guess encoding type or file is empty " + changedFile);
-                reportList.add(new String[]{changedFile, "excluded", "empty file"});
+            if (this.checkIfEmpty(codeLinesReturn.getCodeLines(), changedFile, reportList)) {
                 break;
             }
 
@@ -288,10 +286,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
             String newString = this.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
-
-            reportList.add(new String[]{changedFile, "included", ""});
-
-
+            
             if (this.LOWMEMORY) {
                 try {
                     Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
@@ -301,6 +296,10 @@ public abstract class IndexBaseRepoJob implements Job {
             } else {
                 Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+            }
+
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{changedFile, "included", ""});
             }
         }
 
@@ -396,22 +395,6 @@ public abstract class IndexBaseRepoJob implements Job {
         return filePath.replace(projectPath, Values.EMPTYSTRING);
     }
 
-    /**
-     * Shared method which performs all logic for determining and doing if
-     * the file is believed to be binary
-     */
-    public boolean determineBinary(String fileLocation, String fileName, List<String> codeLines, List<String[]> reportList) {
-        SearchcodeLib scl = new SearchcodeLib();
-        BinaryFinding binaryFinding = scl.isBinary(codeLines, fileName);
-
-        if (binaryFinding.isBinary()) {
-            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileLocation);
-            reportList.add(new String[]{ fileLocation, "excluded", binaryFinding.getReason() });
-            return true;
-        }
-
-        return false;
-    }
 
     /**
      * Attempts to get MD5 for file on disk
@@ -507,6 +490,33 @@ public abstract class IndexBaseRepoJob implements Job {
 
         return new IsMinifiedReturn(isMinified, reportList);
     }
+
+    public boolean determineBinary(String fileLocation, String fileName, List<String> codeLines, List<String[]> reportList) {
+        BinaryFinding binaryFinding = Singleton.getSearchCodeLib().isBinary(codeLines, fileName);
+
+        if (binaryFinding.isBinary()) {
+            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileLocation);
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{fileLocation, "excluded", binaryFinding.getReason()});
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean checkIfEmpty(List<String> codeLines, String filename, List<String[]> reportList) {
+        if (codeLines.isEmpty()) {
+            Singleton.getLogger().info("Unable to guess encoding type or file is empty " + filename);
+            if (this.LOGINDEXED) {
+                reportList.add(new String[]{filename, "excluded", "empty file"});
+            }
+            return true;
+        }
+
+        return false;
+    }
+
 
     /*
      * The below are are shared among all extending classes

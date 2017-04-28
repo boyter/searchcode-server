@@ -71,14 +71,10 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             if (isMinified.isMinified()) { return FileVisitResult.CONTINUE; }
 
 
-            if (codeLinesReturn.getCodeLines().isEmpty()) {
-                Singleton.getLogger().info("Unable to guess encoding type or file is empty " + fileToString);
-                if (this.indexBaseRepoJob.LOGINDEXED) {
-                    reportList.add(new String[]{fileToString, "excluded", "empty file"});
-                }
-                fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
+            if (this.indexBaseRepoJob.checkIfEmpty(codeLinesReturn.getCodeLines(), fileName, reportList)) {
                 return FileVisitResult.CONTINUE;
             }
+
 
             if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 fileLocationsMap.remove(repoLocationRepoNameLocationFilename);
@@ -87,7 +83,6 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
             String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
             String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLinesReturn.getCodeLines());
-
 
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
