@@ -253,7 +253,7 @@ public abstract class IndexBaseRepoJob implements Job {
         List<String[]> reportList = new ArrayList<>();
 
         for(String changedFile: repositoryChanged.getChangedFiles()) {
-            if (this.shouldJobPauseOrTerminate() == true) {
+            if (this.shouldJobPauseOrTerminate()) {
                 return;
             }
 
@@ -277,16 +277,13 @@ public abstract class IndexBaseRepoJob implements Job {
             }
 
             String md5Hash = this.getFileMd5(changedFile);
-
             String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLinesReturn.getCodeLines());
-
             String fileLocation = this.getRelativeToProjectPath(path.toString(), changedFile);
             String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
             String repoLocationRepoNameLocationFilename = changedFile;
-
             String newString = this.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
-            
+
             if (this.LOWMEMORY) {
                 try {
                     Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
