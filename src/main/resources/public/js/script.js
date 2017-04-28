@@ -77,6 +77,11 @@ var SearchModel = {
     revisionfilters: m.prop([]),
     deletedfilters: m.prop([]),
 
+    // Text filters for select filters
+    langfiltertext: m.prop(''),
+    ownerfiltertext: m.prop(''),
+    repofiltertext: m.prop(''),
+
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
@@ -118,6 +123,10 @@ var SearchModel = {
         SearchModel.yearmonthdayfilters([]);
         SearchModel.revisionfilters([]);
         SearchModel.deletedfilters([]);
+
+        SearchModel.langfiltertext('');
+        SearchModel.ownerfiltertext('');
+        SearchModel.repofiltertext('');
     },
     toggleinstant: function() {
         if (window.localStorage) {
@@ -939,19 +948,18 @@ var SearchRepositoriesFilterComponent = {
         
         var showall = false;
         var trimlength = 5;
-        var filtervalue = '';
 
         return {
             trimrepo: function (languagefilters) {
                 var toreturn = languagefilters;
 
-                if (filtervalue.length === 0 && !showall) {
+                if (SearchModel.repofiltertext().length === 0 && !showall) {
                     toreturn = _.first(toreturn, trimlength);
                 }
 
-                if (filtervalue.length !== 0) {
+                if (SearchModel.repofiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.repoName.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.repoName.toLowerCase().indexOf(SearchModel.repofiltertext()) !== -1; 
                     } );
                 }
 
@@ -970,13 +978,13 @@ var SearchRepositoriesFilterComponent = {
                 SearchModel.togglefilter('repo', repo);
             },
             filtervalue: function(value) {
-                filtervalue = value;
+                SearchModel.repofiltertext(value);
             },
             hasfilter: function() {
-                return filtervalue.length !== 0;
+                return SearchModel.repofiltertext().length !== 0;
             },
             getfiltervalue: function() {
-                return filtervalue;
+                return SearchModel.repofiltertext();
             }
         }
     },
@@ -1027,19 +1035,18 @@ var SearchLanguagesFilterComponent = {
 
         var showall = false;
         var trimlength = 5;
-        var filtervalue = '';
         
         return {
             trimlanguage: function (languagefilters) {
                 var toreturn = languagefilters;
 
-                if (filtervalue.length === 0 && !showall) {
+                if (SearchModel.langfiltertext().length === 0 && !showall) {
                     toreturn = _.first(toreturn, trimlength);
                 }
 
-                if (filtervalue.length !== 0) {
+                if (SearchModel.langfiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.languageName.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.languageName.toLowerCase().indexOf(SearchModel.langfiltertext()) !== -1; 
                     });
                 }
 
@@ -1058,13 +1065,13 @@ var SearchLanguagesFilterComponent = {
                 SearchModel.togglefilter('language', language);
             },
             filtervalue: function(value) {
-                filtervalue = value;
+                SearchModel.langfiltertext(value);
             },
             hasfilter: function() {
-                return filtervalue.length !== 0;
+                return SearchModel.langfiltertext().length !== 0;
             },
             getfiltervalue: function() {
-                return filtervalue;
+                return SearchModel.langfiltertext();
             }
         }
     },
@@ -1116,19 +1123,18 @@ var SearchOwnersFilterComponent = {
 
         var showall = false;
         var trimlength = 5;
-        var filtervalue = '';
         
         return {
             trimlanguage: function (ownerfilters) {
                 var toreturn = ownerfilters;
 
-                if (filtervalue.length === 0 && !showall) {
+                if (SearchModel.ownerfiltertext().length === 0 && !showall) {
                     toreturn = _.first(toreturn, trimlength);
                 }
 
-                if (filtervalue.length !== 0) {
+                if (SearchModel.ownerfiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.owner.toLowerCase().indexOf(SearchModel.ownerfiltertext()) !== -1; 
                     });
                 }
 
@@ -1150,13 +1156,13 @@ var SearchOwnersFilterComponent = {
                 }
             },
             filtervalue: function(value) {
-                filtervalue = value;
+                SearchModel.ownerfiltertext(value);
             },
             hasfilter: function() {
-                return filtervalue.length !== 0;
+                return SearchModel.ownerfiltertext().length !== 0;
             },
             getfiltervalue: function() {
-                return filtervalue;
+                return SearchModel.ownerfiltertext();
             }
         }
     },
