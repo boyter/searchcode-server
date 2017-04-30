@@ -116,6 +116,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
 
     public void testDetermineBinary() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
+        gitRepoJob.LOGINDEXED = true;
         List<String[]> reportList = new ArrayList<>();
 
         boolean result = gitRepoJob.determineBinary("", "", new ArrayList<>(), reportList);
