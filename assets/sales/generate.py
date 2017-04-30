@@ -22,6 +22,9 @@ config = [{
         'file': 'pricing.html',
         'title': 'Community Download and Pricing for searchcode server'
     }, {
+        'file': 'contact.html',
+        'title': 'Sales contact for searchcode server'
+    }, {
         'directory': './knowledge-base/',
         'footer': './generic/kb_footer.html',
         'title': 'Knowledge Base Article'
