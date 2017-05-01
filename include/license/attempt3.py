@@ -126,7 +126,7 @@ def read_clean_file(filename):
 if __name__ == '__main__':
     licenses = load_database()
 
-    project_directory = '/Users/boyter/Documents/Projects/linux/'
+    project_directory = '/Users/boyter/Documents/Projects/gcc/'
     license_queue = deque()
 
     for root, dirs, files in os.walk(project_directory):
@@ -151,4 +151,17 @@ if __name__ == '__main__':
             for license in current_licenses:
                 t = list(set(t + [x['license']['shortname'] for x in license]))
 
-            print file, ' '.join(t)
+            content = None
+            try:
+                content = read_clean_file(file)
+            except:
+                pass  # We have issues reading binary files, just swallow the error
+
+            if content:
+                matches = {}
+                guess = guess_license(content, licenses), file
+
+                if len(guess[0]) != 0:
+                    t = t + [guess[0][0]['license']['shortname']]
+
+            print file, ' '.join(list(set(t)))

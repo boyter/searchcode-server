@@ -758,7 +758,9 @@ The root of the project is dual licensed under GPL-2.0 and GPL-3.0 which makes e
 
 Pretty happy with the result. I ran it against GCC and the Linux Kernel. The output for both are too large to post on this blog but you can view the GCC one as a gist https://gist.github.com/boyter/ee534011cf512ba7e2992ecdef87523c 
 
-Well that about covers that. Everything seems to work as I would exepct and it would be reasonably easy at this point to take the code and produce a full blown SPDX parser. I will leave that as an excercise for the reader (unless it turns out I need one at a later date).
+The last part was to add back the file check so that we can identify license headers. Thankfully this was just a short tweak. Of course the generation is now rather slow due to add the addtional processing but it seems to work pretty well.
+
+Well that about covers that. Everything seems to work as I would exepct and it would be reasonably easy at this point to take the code and produce a full blown SPDX parser. I will leave that as an excercise for the reader (unless it turns out I need one at a later date). 
 
 
 
