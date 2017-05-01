@@ -1,0 +1,49 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">What size server does searchcode server require?</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">The recommended server depends on how many repositories you are planning to index and the size of them on disk. While searchcode server can scale from Atom netbooks to Xeon CPU's know what you need is a matter of knowing the number of repositories and their size on disk. The below are a list of things to keep in mind.</p>
+            
+            <p class="em">
+            <ol>
+                <li>You will need 20% extra disk space on top of the size of all the repositories you want to index.</li>
+                <li>Use as fast a disk as possible. SSD drives are ideal for searchcode server.</li>
+                <li>If you have many CPU's and repositories increase the values number_git_processors number_svn_processors and number_file_processors.</li>
+                <li>If using a t2 instance type from AWS you will want to configure <a href="/knowledge-base/how-to-control-searchcode-server-cpu-usage.html">CPU usage</a> to avoid using all the credits</li>
+                <li>Generally only large amounts of RAM are required if indexing very large repositories. 8 Gb is usually more than enough for most installs, but searchcode server can be configured to use less RAM if required.</li>
+                <li>If in doubt faster CPU and Disk is the best option.</li>
+            </ol>
+            </p>
+
+            <p class="em">The following are examples of several machines configured to run searchcode.</p>
+            <p class="em"><a href="http://demo.searchcodeserver.com/">searchcode server demo</a><br>
+            7+ repositories.<br>
+            Total size on disk ~1.5 Gb.<br>
+            Multi-tennant VPS instance.<br> 
+            1 CPU, 256 Mb RAM.</p>
+
+            <p class="em">600+ repositories.<br>
+            Total size on disk ~300 Gb.<br>
+            AWS VPS.<br> 
+            AWS t2.large instance.<br>
+            99% of queries return in less than 1 second.</p>
+
+            <p class="em">1 repository.<br>
+            Total size on disk ~1000 Gb.<br>
+            Dedicated instance.<br> 
+            Dedicated machine with 32 Gb RAM and 8 CPU's.<br>
+            99% of queries return in less than 1 second.</p>
+        </div>
+      </div>

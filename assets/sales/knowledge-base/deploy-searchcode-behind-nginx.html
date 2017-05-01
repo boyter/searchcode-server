@@ -1,0 +1,49 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to deploy searchcode server behind nginx</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">If you want to have a public facing searchcode server instance it is suggested that you deploy behind a reverse proxy such as nginx. The main reason being that you can easily attach SSL certificates and it will help protect searchcode server from excessive load.</p>
+            
+
+            <p class="em">The below is an example config that could be used for nginx to reverse proxy back to searchcode.</p>
+            
+<pre><code>upstream searchcode_app_server {
+    server localhost:8080;
+}
+
+server {
+
+    listen   80;
+
+    server_name yoursearchcodeinstance.com;
+
+    access_log /tmp/nginx-access.log;
+    error_log /tmp/nginx-error.log;
+
+    server_tokens off;
+
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+        proxy_pass http://searchcode_app_server;
+    }
+}
+</code></pre>
+        
+        <p class="em">If you do deploy searchcode server as such you should also change the searchcode.properties file setting <code>only_localhost=false</code> to <code>only_localhost=true</code> to prevent users being able to hit searchcode on the default port of 8080.</p>
+
+        </div>
+      </div>
