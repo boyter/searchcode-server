@@ -93,6 +93,7 @@ def _keyword_guess(check_license, licenses):
 
     return matching
 
+
 def guess_license(check_license, licenses):
     matching = _keyword_guess(check_license, licenses)
 
@@ -125,11 +126,10 @@ def read_clean_file(filename):
 if __name__ == '__main__':
     licenses = load_database()
 
-    project_directory = '/Users/boyter/Documents/Projects/decodingcaptchas/'
+    project_directory = '/Users/boyter/Documents/Projects/linux/'
     license_queue = deque()
 
     for root, dirs, files in os.walk(project_directory):
-        # print 'ROOT', root 
         possible_license_files = [x for x in files if 'license' in x.lower() or 'copying' in x.lower()]
         for possible_file in [root + '/' + x for x in possible_license_files]:
             potential_license = read_clean_file(possible_file)
@@ -141,15 +141,14 @@ if __name__ == '__main__':
                     print '>>>>>>>', possible_file, guess['license']['shortname']
                 license_queue.append(guesses)
 
-            # Should loop this such we pop every one that is no longer appliable
-            # if root not in license_queue[-1][0]['root']:
-            #     license_queue.pop()
+        if license_queue[-1][0]['root'] not in root:
+            license_queue.pop()
 
         for file in [root + '/' + x for x in files if x.endswith('.js') or x.endswith('.java') or x.endswith('.py') or x.endswith('.c') or x.endswith('.css')]:
             current_licenses = list(license_queue)
 
             t = []
             for license in current_licenses:
-                t = t + [x['license']['shortname'] for x in license]
+                t = list(set(t + [x['license']['shortname'] for x in license]))
 
             print file, ' '.join(t)
