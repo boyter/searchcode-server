@@ -67,6 +67,8 @@ public class Values {
     public static final String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
     public static final String CLASSIFIER_DATABASE_LOCATION = "classifier_database_location";
     public static final String DEFAULT_CLASSIFIER_DATABASE_LOCATION = "./include/classifier/database.json";
+    public static final String LICENSE_DATABASE_LOCATION = "license_database_location";
+    public static final String DEFAULT_LICENSE_DATABASE_LOCATION = "./include/license/license.json";
     public static final String HIGHLIGHT_LINE_LIMIT = "highlight_lines_limit";
     public static final String DEFAULT_HIGHLIGHT_LINE_LIMIT = "3000";
     public static final String BINARY_WHITE_LIST = "binary_extension_white_list";
