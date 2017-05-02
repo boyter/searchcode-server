@@ -47,14 +47,11 @@ public class EnqueueRepositoryJob implements Job {
 
             Data data = Singleton.getData();
 
-            String dataByName = data.getDataByName(Values.PERSISTENT_DELETE_QUEUE, "[]");
-            Gson gson = new Gson();
-            ArrayList arrayList = gson.fromJson(dataByName, ArrayList.class);
-
+            List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
             List<RepoResult> collect = repoResultList.stream()
-                                                     .filter(x -> !arrayList.contains(x.getName()))
+                                                     .filter(x -> !persistentDelete.contains(x.getName()))
                                                      .collect(Collectors.toList());
-            
+
             for (RepoResult rr: collect) {
                 switch (rr.getScm().toLowerCase()) {
                     case "git":

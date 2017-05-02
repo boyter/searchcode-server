@@ -382,15 +382,7 @@ public class AdminRouteService {
 
         if (rr != null) {
             Singleton.getUniqueDeleteRepoQueue().add(rr);
-            String dataByName = this.data.getDataByName(Values.PERSISTENT_DELETE_QUEUE, "[]");
-
-            Gson gson = new Gson();
-            ArrayList<String> arrayList = gson.fromJson(dataByName, ArrayList.class);
-            if (!arrayList.contains(rr.getName())) {
-                arrayList.add(rr.getName());
-            }
-
-            this.data.saveData(Values.PERSISTENT_DELETE_QUEUE, gson.toJson(arrayList));
+            Singleton.getDataService().addToPersistentDelete(rr.getName());
         }
     }
 
