@@ -310,14 +310,8 @@ public class App {
 
             get("/delete/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                String repoName = request.queryParams("repoName");
-                Repo repo = Singleton.getRepo();
-                RepoResult rr = repo.getRepoByName(repoName);
-
-                if (rr != null) {
-                    Singleton.getUniqueDeleteRepoQueue().add(rr);
-                }
-
+                AdminRouteService adminRouteService = new AdminRouteService();
+                adminRouteService.deleteRepo(request, response);
                 return true;
             }, new JsonTransformer());
 

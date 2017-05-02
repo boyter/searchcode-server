@@ -11,6 +11,7 @@
 package com.searchcode.app.service.route;
 
 
+import com.google.gson.Gson;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
@@ -32,22 +33,26 @@ import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AdminRouteService {
 
-    private Repo repo;
-    private JobService jobService;
+    private final Data data;
+    private final Repo repo;
+    private final JobService jobService;
 
     public AdminRouteService() {
         this.repo = Singleton.getRepo();
+        this.data = Singleton.getData();
         this.jobService = Singleton.getJobService();
     }
 
-    public AdminRouteService(Repo repo, JobService jobService) {
+    public AdminRouteService(Repo repo, Data data, JobService jobService) {
         this.repo = repo;
+        this.data = data;
         this.jobService = jobService;
     }
 
@@ -368,6 +373,24 @@ public class AdminRouteService {
                 this.repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
                 this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
             }
+        }
+    }
+
+    public void deleteRepo(Request request, Response response) {
+        String repoName = request.queryParams("repoName");
+        RepoResult rr = this.repo.getRepoByName(repoName);
+
+        if (rr != null) {
+            Singleton.getUniqueDeleteRepoQueue().add(rr);
+            String dataByName = this.data.getDataByName(Values.PERSISTENT_DELETE_QUEUE, "[]");
+
+            Gson gson = new Gson();
+            ArrayList<String> arrayList = gson.fromJson(dataByName, ArrayList.class);
+            if (!arrayList.contains(rr.getName())) {
+                arrayList.add(rr.getName());
+            }
+
+            this.data.saveData(Values.PERSISTENT_DELETE_QUEUE, gson.toJson(arrayList));
         }
     }
 

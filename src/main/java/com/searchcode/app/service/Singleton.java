@@ -191,14 +191,16 @@ public final class Singleton {
 
     public static synchronized Scheduler getScheduler() {
 
-        if (scheduler == null) {
-            try {
-                SchedulerFactory sf = new StdSchedulerFactory();
-                scheduler = sf.getScheduler();
-            } catch (SchedulerException ex) {
-                Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        try {
+            if (scheduler == null || scheduler.isShutdown()) {
+                try {
+                    SchedulerFactory sf = new StdSchedulerFactory();
+                    scheduler = sf.getScheduler();
+                } catch (SchedulerException ex) {
+                    Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+                }
             }
-        }
+        } catch (SchedulerException e) {}
 
         return scheduler;
     }
