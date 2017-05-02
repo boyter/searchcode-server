@@ -10,9 +10,7 @@
 
 package com.searchcode.app.service;
 
-import com.google.gson.Gson;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.jobs.*;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
@@ -22,7 +20,6 @@ import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
@@ -35,7 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -53,7 +49,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class JobService implements IJobService {
 
     private IRepo repo = null;
-    private Data data = null;
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 1; // TODO allow this to be configurable
@@ -68,16 +63,8 @@ public class JobService implements IJobService {
 
     public JobService() {
         this.repo = Singleton.getRepo();
-        this.data = Singleton.getData();
-        try {
-            this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
-        }
-        catch(NumberFormatException ex) {}
-
-        try {
-            this.FILEINDEXUPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES));
-        }
-        catch(NumberFormatException ex) {}
+        this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
+        this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
     }
 
     /**
@@ -247,8 +234,20 @@ public class JobService implements IJobService {
 
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
+
+            this.addPersistentDeleteToQueue();
+
         } catch (SchedulerException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+    }
+
+    private void addPersistentDeleteToQueue() {
+        for (String name: Singleton.getDataService().getPersistentDelete()) {
+            RepoResult repoByName = this.repo.getRepoByName(name);
+            if (repoByName != null) {
+                Singleton.getUniqueDeleteRepoQueue().add(repoByName);
+            }
         }
     }
 
@@ -287,11 +286,11 @@ public class JobService implements IJobService {
     @Override
     public void initialJobs() {
         try {
-            this.startRepositoryJobs();
-            this.startEnqueueJob();
             this.startDeleteJob();
             this.startSpellingJob();
             this.startIndexerJob();
+            this.startRepositoryJobs();
+            this.startEnqueueJob();
         } catch (SchedulerException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }

@@ -10,9 +10,7 @@
 
 package com.searchcode.app.jobs;
 
-import com.google.gson.Gson;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -22,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * The job which deletes repositories from the database index and disk where one exists in the deletion queue.
@@ -33,7 +30,7 @@ import java.util.ArrayList;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!Singleton.getBackgroundJobsEnabled()) {
             return;
         }
 
@@ -44,7 +41,6 @@ public class DeleteRepositoryJob implements Job {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
             Repo repo = Singleton.getRepo();
-            Data data = Singleton.getData();
 
             rr = deleteRepoQueue.poll();
             if (rr == null) {
@@ -70,14 +66,7 @@ public class DeleteRepositoryJob implements Job {
             repo.deleteRepoByName(rr.getName());
 
             // Remove from the persistent queue
-            String dataByName = data.getDataByName(Values.PERSISTENT_DELETE_QUEUE, "[]");
-
-            Gson gson = new Gson();
-            ArrayList<String> arrayList = gson.fromJson(dataByName, ArrayList.class);
-            if (arrayList.contains(rr.getName())) {
-                arrayList.remove(rr.getName());
-                data.saveData(Values.PERSISTENT_DELETE_QUEUE, gson.toJson(arrayList));
-            }
+            Singleton.getDataService().removeFromPersistentDelete(rr.getName());
         }
         catch (Exception ex) {
             if (rr != null) {

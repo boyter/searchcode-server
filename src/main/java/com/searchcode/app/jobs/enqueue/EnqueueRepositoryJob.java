@@ -10,15 +10,11 @@
 
 package com.searchcode.app.jobs.enqueue;
 
-import com.google.gson.Gson;
-import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Data;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,8 +41,7 @@ public class EnqueueRepositoryJob implements Job {
             List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
             Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
 
-            Data data = Singleton.getData();
-
+            // Filter out those queued to be deleted
             List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
             List<RepoResult> collect = repoResultList.stream()
                                                      .filter(x -> !persistentDelete.contains(x.getName()))
