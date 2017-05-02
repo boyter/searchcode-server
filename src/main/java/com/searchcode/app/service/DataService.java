@@ -15,6 +15,10 @@ public class DataService {
         this.data = Singleton.getData();
     }
 
+    public DataService(Data data) {
+        this.data = data;
+    }
+
     public void addToPersistentDelete(String value) {
         List<String> persistentDelete = this.getPersistentDelete();
         persistentDelete.add(value);

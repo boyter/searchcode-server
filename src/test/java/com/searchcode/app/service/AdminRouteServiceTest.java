@@ -74,10 +74,9 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testPostRepoRepoNamesEmptyNothing() {
         Repo mockRepo = Mockito.mock(Repo.class);
-        Data mockData = Mockito.mock(Data.class);
         JobService mockJobService = Mockito.mock(JobService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockData, mockJobService);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn(new String[0]);
@@ -93,12 +92,11 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testPostRepoMultipleRepo() {
         Repo mockRepo = Mockito.mock(Repo.class);
-        Data mockData = Mockito.mock(Data.class);
         JobService mockJobService = Mockito.mock(JobService.class);
 
         when(mockRepo.saveRepo(any())).thenReturn(true);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockData, mockJobService);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
@@ -117,17 +115,17 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testDeleteRepo() {
         Repo mockRepo = Mockito.mock(Repo.class);
-        Data mockData = Mockito.mock(Data.class);
         JobService mockJobService = Mockito.mock(JobService.class);
+        DataService mockDataService = Mockito.mock(DataService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockData, mockJobService);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, mockDataService);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParams("repoName")).thenReturn("myRepo");
         when(mockRepo.getRepoByName("myRepo")).thenReturn(new RepoResult());
-        when(mockData.getDataByName(Values.PERSISTENT_DELETE_QUEUE, "[]")).thenReturn("[]");
+
 
         adminRouteService.deleteRepo(mockRequest, null);
-        verify(mockData, times(1)).saveData(any(), any());
+        verify(mockDataService, times(1)).addToPersistentDelete("");
     }
 }

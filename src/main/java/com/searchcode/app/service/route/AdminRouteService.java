@@ -21,10 +21,7 @@ import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeSearcher;
-import com.searchcode.app.service.JobService;
-import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.StatsService;
+import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,20 +37,20 @@ import java.util.Map;
 
 public class AdminRouteService {
 
-    private final Data data;
     private final Repo repo;
     private final JobService jobService;
+    private final DataService dataService;
 
     public AdminRouteService() {
         this.repo = Singleton.getRepo();
-        this.data = Singleton.getData();
         this.jobService = Singleton.getJobService();
+        this.dataService = Singleton.getDataService();
     }
 
-    public AdminRouteService(Repo repo, Data data, JobService jobService) {
+    public AdminRouteService(Repo repo, JobService jobService, DataService dataService) {
         this.repo = repo;
-        this.data = data;
         this.jobService = jobService;
+        this.dataService = dataService;
     }
 
     public String getStat(Request request, Response response) {
@@ -382,7 +379,7 @@ public class AdminRouteService {
 
         if (rr != null) {
             Singleton.getUniqueDeleteRepoQueue().add(rr);
-            Singleton.getDataService().addToPersistentDelete(rr.getName());
+            this.dataService.addToPersistentDelete(rr.getName());
         }
     }
 
