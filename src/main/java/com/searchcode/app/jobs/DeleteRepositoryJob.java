@@ -11,11 +11,9 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
