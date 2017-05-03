@@ -20,6 +20,7 @@ import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * The job which deletes repositories from the database index and disk where one exists in the deletion queue.
@@ -34,24 +35,22 @@ public class DeleteRepositoryJob implements Job {
             return;
         }
 
-        UniqueRepoQueue deleteRepoQueue = Singleton.getUniqueDeleteRepoQueue();
-        RepoResult rr = null;
+        List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
+        if (persistentDelete.isEmpty()) {
+            return;
+        }
+
+        RepoResult rr = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
+        if (rr == null) {
+            return;
+        }
 
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            Repo repo = Singleton.getRepo();
-
-            rr = deleteRepoQueue.poll();
-            if (rr == null) {
-                return;
-            }
-
             Singleton.getUniqueGitRepoQueue().delete(rr);
 
             if (Singleton.getRunningIndexRepoJobs().containsKey(rr.getName())) {
-                // Put back into delete queue and quit
-                deleteRepoQueue.add(rr);
                 return;
             }
 
@@ -63,15 +62,11 @@ public class DeleteRepositoryJob implements Job {
             FileUtils.deleteDirectory(new File(repoLocations + rr.getName() + "/"));
 
             // Remove from the database
-            repo.deleteRepoByName(rr.getName());
+            Singleton.getRepo().deleteRepoByName(rr.getName());
 
             // Remove from the persistent queue
             Singleton.getDataService().removeFromPersistentDelete(rr.getName());
         }
-        catch (Exception ex) {
-            if (rr != null) {
-                deleteRepoQueue.add(rr);
-            }
-        }
+        catch (Exception ignored) {}
     }
 }

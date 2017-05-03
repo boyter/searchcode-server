@@ -69,7 +69,6 @@ public final class Singleton {
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
-    private static UniqueRepoQueue uniqueDeleteRepoQueue = null; // Used to queue the next repository to be deleted
 
     public static synchronized void incrementCodeIndexLinesCount(int incrementBy) {
         codeIndexLinesCount = codeIndexLinesCount + incrementBy;
@@ -111,14 +110,6 @@ public final class Singleton {
         }
 
         return uniqueSvnRepoQueue;
-    }
-
-    public static synchronized UniqueRepoQueue getUniqueDeleteRepoQueue() {
-        if (uniqueDeleteRepoQueue == null) {
-            uniqueDeleteRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
-        }
-
-        return uniqueDeleteRepoQueue;
     }
 
     /**

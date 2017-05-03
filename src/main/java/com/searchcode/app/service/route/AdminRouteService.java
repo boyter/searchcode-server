@@ -11,7 +11,6 @@
 package com.searchcode.app.service.route;
 
 
-import com.google.gson.Gson;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
@@ -30,7 +29,6 @@ import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,7 +139,7 @@ public class AdminRouteService {
         map.put("sysArch", statsService.getArch());
         map.put("sysVersion", statsService.getOsVersion());
         map.put("processorCount", statsService.getProcessorCount());
-        map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
+        map.put("deletionQueue", Singleton.getDataService().getPersistentDelete().size());
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
@@ -378,7 +376,6 @@ public class AdminRouteService {
         RepoResult rr = this.repo.getRepoByName(repoName);
 
         if (rr != null) {
-            Singleton.getUniqueDeleteRepoQueue().add(rr);
             this.dataService.addToPersistentDelete(rr.getName());
         }
     }
@@ -437,7 +434,7 @@ public class AdminRouteService {
             case "servertime":
                 return new Date().toString();
             case "deletionqueue":
-                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
+                return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
                 return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
             case "infologs":

@@ -234,20 +234,8 @@ public class JobService implements IJobService {
 
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
-
-            this.addPersistentDeleteToQueue();
-
         } catch (SchedulerException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
-        }
-    }
-
-    private void addPersistentDeleteToQueue() {
-        for (String name: Singleton.getDataService().getPersistentDelete()) {
-            RepoResult repoByName = this.repo.getRepoByName(name);
-            if (repoByName != null) {
-                Singleton.getUniqueDeleteRepoQueue().add(repoByName);
-            }
         }
     }
 
