@@ -42,6 +42,7 @@ public class DeleteRepositoryJob implements Job {
 
         RepoResult rr = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
         if (rr == null) {
+            Singleton.getDataService().removeFromPersistentDelete(persistentDelete.get(0));
             return;
         }
 
