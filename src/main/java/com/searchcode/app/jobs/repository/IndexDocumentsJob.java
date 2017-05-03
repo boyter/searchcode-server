@@ -26,7 +26,7 @@ import java.io.IOException;
 public class IndexDocumentsJob implements Job {
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!Singleton.getBackgroundJobsEnabled()) {
             return;
         }
         

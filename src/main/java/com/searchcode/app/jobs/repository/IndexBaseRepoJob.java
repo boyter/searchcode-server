@@ -422,12 +422,12 @@ public abstract class IndexBaseRepoJob implements Job {
      * true if the job should be terminated and false if it should continue to run
      */
     public boolean shouldJobPauseOrTerminate() {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!Singleton.getBackgroundJobsEnabled()) {
             return true;
         }
 
         while (Singleton.getCodeIndexer().shouldPauseAdding()) {
-            if (Singleton.getBackgroundJobsEnabled() == false) {
+            if (!Singleton.getBackgroundJobsEnabled()) {
                 return true;
             }
 
