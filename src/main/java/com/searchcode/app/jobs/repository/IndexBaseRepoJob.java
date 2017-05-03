@@ -252,8 +252,12 @@ public abstract class IndexBaseRepoJob implements Job {
         // Used to hold the reports of what was indexed
         List<String[]> reportList = new ArrayList<>();
 
-        for(String changedFile: repositoryChanged.getChangedFiles()) {
+        for (String changedFile: repositoryChanged.getChangedFiles()) {
             if (this.shouldJobPauseOrTerminate()) {
+                return;
+            }
+
+            if (Singleton.getDataService().getPersistentDelete().contains(repoName)) {
                 return;
             }
 
