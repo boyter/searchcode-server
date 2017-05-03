@@ -12,6 +12,7 @@ package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
@@ -29,8 +30,8 @@ public class ApiRouteService {
 
     private final IApiService apiService;
     private final IJobService jobService;
-    private final IRepo repo;
-    private final UniqueRepoQueue uniqueDeleteQueue;
+    private final DataService dataService;
+    private final Repo repo;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
@@ -38,15 +39,15 @@ public class ApiRouteService {
     public ApiRouteService() {
         this.apiService = Singleton.getApiService();
         this.jobService = Singleton.getJobService();
+        this.dataService = Singleton.getDataService();
         this.repo = Singleton.getRepo();
-        this.uniqueDeleteQueue = Singleton.getUniqueDeleteRepoQueue();
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, IRepo repo, UniqueRepoQueue uniqueDeleteQueue){
+    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService){
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
-        this.uniqueDeleteQueue = uniqueDeleteQueue;
+        this.dataService = dataService;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -204,8 +205,7 @@ public class ApiRouteService {
             return new ApiResponse(false, "repository already deleted");
         }
 
-        this.uniqueDeleteQueue.add(rr);
-
+        this.dataService.addToPersistentDelete(rr.getName());
         return new ApiResponse(true, "repository queued for deletion");
     }
 

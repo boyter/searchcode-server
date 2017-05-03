@@ -19,21 +19,15 @@ db.commit()
 cursor.execute('INSERT INTO api (publickey,privatekey,lastused,data) VALUES (?,?,?,?)', (publickey,privatekey,'',''))
 db.commit()
 
+for x in xrange(15000):
 
-blns = None
-try:
-    blns = open('./assets/blns/blns.txt')
-except:
-    blns = open('../blns/blns.txt')
-
-for line in blns:
-    reponame = line
-    repourl = line
+    reponame = "myrepo%s" % (x)
+    repourl = "myrepourl"
     repotype = "git"
-    repousername = line
-    repopassword = line
-    reposource = line
-    repobranch = line
+    repousername = ""
+    repopassword = ""
+    reposource = ""
+    repobranch = "master"
 
     message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s" % (
             urllib.quote_plus(publickey),
@@ -50,11 +44,12 @@ for line in blns:
 
     url = "http://localhost:8080/api/repo/add/?sig=%s&%s" % (urllib.quote_plus(sig), message)
 
-    if len(url) < 2000:
-        data = urllib2.urlopen(url)
+    data = urllib2.urlopen(url)
+    data = data.read()
 
-        if 200 != data.getcode():
-            print "Response not 200"
+    data = json.loads(data)
+    print data['sucessful'], data['message']
+
 
     message = "pub=%s&reponame=%s" % (
             urllib.quote_plus(publickey),
@@ -62,16 +57,15 @@ for line in blns:
         )
 
     sig = hmac(privatekey, message, sha1).hexdigest()
+
     url = "http://localhost:8080/api/repo/delete/?sig=%s&%s" % (urllib.quote_plus(sig), message)
 
-    if len(url) < 2000:
-        data = urllib2.urlopen(url)
+    data = urllib2.urlopen(url)
+    data = data.read()
 
-        if 200 != data.getcode():
-            print "Response not 200"
-
+    data = json.loads(data)
+    print data['sucessful'], data['message']
 
 
 cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
-cursor.execute("DELETE FROM repo")
 db.commit()

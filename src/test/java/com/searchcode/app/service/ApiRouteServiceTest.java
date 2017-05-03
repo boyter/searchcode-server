@@ -1,7 +1,6 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
-import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
@@ -20,6 +19,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 public class ApiRouteServiceTest extends TestCase {
+
     public void testRepositoryReindexApiNotEnabled() {
         ApiRouteService apiRouteService = new ApiRouteService();
         apiRouteService.apiEnabled = false;
@@ -325,11 +325,11 @@ public class ApiRouteServiceTest extends TestCase {
     public void testRepoDeleteNoAuthReponame() {
         Request mockRequest = Mockito.mock(Request.class);
         Repo mockRepo = Mockito.mock(Repo.class);
-        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+        DataService dataServiceMock = Mockito.mock(DataService.class);
 
         when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, uniqueRepoQueue);
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, dataServiceMock);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -339,7 +339,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("repository queued for deletion");
         assertThat(apiResponse.isSucessful()).isTrue();
-        assertThat(uniqueRepoQueue.size()).isEqualTo(1);
+        verify(dataServiceMock, times(1)).addToPersistentDelete("");
     }
 
     public void testRepoDeleteAuthReponameNoPub() {
@@ -349,7 +349,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, uniqueRepoQueue);
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -369,7 +369,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, uniqueRepoQueue);
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -392,7 +392,7 @@ public class ApiRouteServiceTest extends TestCase {
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
         when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, uniqueRepoQueue);
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -410,13 +410,13 @@ public class ApiRouteServiceTest extends TestCase {
     public void testRepoDeleteAuthReponameAuth() {
         Request mockRequest = Mockito.mock(Request.class);
         Repo mockRepo = Mockito.mock(Repo.class);
-        UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
+        DataService dataServiceMock = Mockito.mock(DataService.class);
         ApiService mockApiService = Mockito.mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=unit-test", ApiService.HmacType.SHA1)).thenReturn(true);
         when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, uniqueRepoQueue);
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, dataServiceMock);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -428,7 +428,8 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("repository queued for deletion");
         assertThat(apiResponse.isSucessful()).isTrue();
-        assertThat(uniqueRepoQueue.size()).isEqualTo(1);
+        verify(dataServiceMock, times(1)).addToPersistentDelete("");
+
     }
 
     /////////////////////////////////////////////////////////////////////

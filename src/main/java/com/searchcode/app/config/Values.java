@@ -130,6 +130,9 @@ public class Values {
     // Cache lookup values
     public static final String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
 
+    // Used for things stored in data table
+    public static final String PERSISTENT_DELETE_QUEUE = "persistent-delete-queue";
+
     // Job values used in the quartz jobs
 
     // Used for lookups from the data database table

@@ -49,7 +49,7 @@ public class Data implements IData {
     public synchronized String getDataByName(String key) {
         String value = null;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -79,7 +79,7 @@ public class Data implements IData {
         String existing = this.getDataByName(key);
         boolean isNew = false;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
 
         try {
@@ -112,7 +112,7 @@ public class Data implements IData {
 
     public synchronized void createTableIfMissing() {
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 

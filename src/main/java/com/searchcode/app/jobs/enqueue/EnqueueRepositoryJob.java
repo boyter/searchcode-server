@@ -16,6 +16,7 @@ import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for adding all of the repositories inside the database into the queues. There will be a queue
@@ -26,7 +27,7 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class EnqueueRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!Singleton.getBackgroundJobsEnabled()) {
             return;
         }
 
@@ -39,7 +40,14 @@ public class EnqueueRepositoryJob implements Job {
             // Get all of the repositories and enqueue them
             List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
             Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-            for(RepoResult rr: repoResultList) {
+
+            // Filter out those queued to be deleted
+            List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
+            List<RepoResult> collect = repoResultList.stream()
+                                                     .filter(x -> !persistentDelete.contains(x.getName()))
+                                                     .collect(Collectors.toList());
+
+            for (RepoResult rr: collect) {
                 switch (rr.getScm().toLowerCase()) {
                     case "git":
                         Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());

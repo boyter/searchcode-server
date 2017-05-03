@@ -56,6 +56,7 @@ public final class Singleton {
     private static Data data = null;
     private static Api api = null;
     private static ApiService apiService = null;
+    private static DataService dataService = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
     private static JobService jobService = null;
@@ -68,7 +69,6 @@ public final class Singleton {
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
-    private static UniqueRepoQueue uniqueDeleteRepoQueue = null; // Used to queue the next repository to be deleted
 
     public static synchronized void incrementCodeIndexLinesCount(int incrementBy) {
         codeIndexLinesCount = codeIndexLinesCount + incrementBy;
@@ -110,14 +110,6 @@ public final class Singleton {
         }
 
         return uniqueSvnRepoQueue;
-    }
-
-    public static synchronized UniqueRepoQueue getUniqueDeleteRepoQueue() {
-        if (uniqueDeleteRepoQueue == null) {
-            uniqueDeleteRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
-        }
-
-        return uniqueDeleteRepoQueue;
     }
 
     /**
@@ -191,14 +183,16 @@ public final class Singleton {
 
     public static synchronized Scheduler getScheduler() {
 
-        if (scheduler == null) {
-            try {
-                SchedulerFactory sf = new StdSchedulerFactory();
-                scheduler = sf.getScheduler();
-            } catch (SchedulerException ex) {
-                Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        try {
+            if (scheduler == null || scheduler.isShutdown()) {
+                try {
+                    SchedulerFactory sf = new StdSchedulerFactory();
+                    scheduler = sf.getScheduler();
+                } catch (SchedulerException ex) {
+                    Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+                }
             }
-        }
+        } catch (SchedulerException e) {}
 
         return scheduler;
     }
@@ -296,6 +290,14 @@ public final class Singleton {
         }
 
         return apiService;
+    }
+
+    public static synchronized DataService getDataService() {
+        if (dataService == null) {
+            dataService = new DataService();
+        }
+
+        return dataService;
     }
 
     public static synchronized void setJobService(JobService jobService) {

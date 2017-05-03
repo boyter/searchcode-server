@@ -20,10 +20,7 @@ import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeSearcher;
-import com.searchcode.app.service.JobService;
-import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.StatsService;
+import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,17 +35,20 @@ import java.util.Map;
 
 public class AdminRouteService {
 
-    private Repo repo;
-    private JobService jobService;
+    private final Repo repo;
+    private final JobService jobService;
+    private final DataService dataService;
 
     public AdminRouteService() {
         this.repo = Singleton.getRepo();
         this.jobService = Singleton.getJobService();
+        this.dataService = Singleton.getDataService();
     }
 
-    public AdminRouteService(Repo repo, JobService jobService) {
+    public AdminRouteService(Repo repo, JobService jobService, DataService dataService) {
         this.repo = repo;
         this.jobService = jobService;
+        this.dataService = dataService;
     }
 
     public String getStat(Request request, Response response) {
@@ -139,7 +139,7 @@ public class AdminRouteService {
         map.put("sysArch", statsService.getArch());
         map.put("sysVersion", statsService.getOsVersion());
         map.put("processorCount", statsService.getProcessorCount());
-        map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
+        map.put("deletionQueue", Singleton.getDataService().getPersistentDelete().size());
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
@@ -371,6 +371,15 @@ public class AdminRouteService {
         }
     }
 
+    public void deleteRepo(Request request, Response response) {
+        String repoName = request.queryParams("repoName");
+        RepoResult rr = this.repo.getRepoByName(repoName);
+
+        if (rr != null) {
+            this.dataService.addToPersistentDelete(rr.getName());
+        }
+    }
+
     public String checkVersion() {
         String version;
         try {
@@ -425,7 +434,7 @@ public class AdminRouteService {
             case "servertime":
                 return new Date().toString();
             case "deletionqueue":
-                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
+                return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
                 return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
             case "infologs":

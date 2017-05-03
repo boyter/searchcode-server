@@ -46,6 +46,10 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.TERMINATE;
             }
 
+            if (Singleton.getDataService().getPersistentDelete().contains(this.repoName)) {
+                return FileVisitResult.TERMINATE;
+            }
+
             // Convert Path file to unix style that way everything is easier to reason about
             String fileParent = FilenameUtils.separatorsToUnix(filePath.getParent().toString());
             String fileToString = FilenameUtils.separatorsToUnix(filePath.toString());

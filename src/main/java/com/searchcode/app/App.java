@@ -14,7 +14,6 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
-import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.JsonTransformer;
@@ -310,14 +309,8 @@ public class App {
 
             get("/delete/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                String repoName = request.queryParams("repoName");
-                Repo repo = Singleton.getRepo();
-                RepoResult rr = repo.getRepoByName(repoName);
-
-                if (rr != null) {
-                    Singleton.getUniqueDeleteRepoQueue().add(rr);
-                }
-
+                AdminRouteService adminRouteService = new AdminRouteService();
+                adminRouteService.deleteRepo(request, response);
                 return true;
             }, new JsonTransformer());
 

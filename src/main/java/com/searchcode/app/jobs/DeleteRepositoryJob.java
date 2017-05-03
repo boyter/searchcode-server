@@ -11,18 +11,14 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
 import java.io.File;
-import java.util.AbstractMap;
+import java.util.List;
 
 /**
  * The job which deletes repositories from the database index and disk where one exists in the deletion queue.
@@ -33,28 +29,27 @@ import java.util.AbstractMap;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!Singleton.getBackgroundJobsEnabled()) {
             return;
         }
 
-        UniqueRepoQueue deleteRepoQueue = Singleton.getUniqueDeleteRepoQueue();
-        RepoResult rr = null;
+        List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
+        if (persistentDelete.isEmpty()) {
+            return;
+        }
+
+        RepoResult rr = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
+        if (rr == null) {
+            Singleton.getDataService().removeFromPersistentDelete(persistentDelete.get(0));
+            return;
+        }
 
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            Repo repo = Singleton.getRepo();
-
-            rr = deleteRepoQueue.poll();
-            if (rr == null) {
-                return;
-            }
-
             Singleton.getUniqueGitRepoQueue().delete(rr);
 
             if (Singleton.getRunningIndexRepoJobs().containsKey(rr.getName())) {
-                // Put back into delete queue and quit
-                deleteRepoQueue.add(rr);
                 return;
             }
 
@@ -66,12 +61,11 @@ public class DeleteRepositoryJob implements Job {
             FileUtils.deleteDirectory(new File(repoLocations + rr.getName() + "/"));
 
             // Remove from the database
-            repo.deleteRepoByName(rr.getName());
+            Singleton.getRepo().deleteRepoByName(rr.getName());
+
+            // Remove from the persistent queue
+            Singleton.getDataService().removeFromPersistentDelete(rr.getName());
         }
-        catch (Exception ex) {
-            if (rr != null) {
-                deleteRepoQueue.add(rr);
-            }
-        }
+        catch (Exception ignored) {}
     }
 }
