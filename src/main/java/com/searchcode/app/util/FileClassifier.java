@@ -19,6 +19,7 @@ import java.util.List;
 public class FileClassifier {
 
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.CLASSIFIER_DATABASE_LOCATION, Values.DEFAULT_CLASSIFIER_DATABASE_LOCATION);
+    public boolean DEEP_GUESS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.DEEP_GUESS_FILES, Values.DEFAULT_DEEP_GUESS_FILES));
     private List<FileClassifierResult> database = new ArrayList<>();
 
     public FileClassifier() {
@@ -53,6 +54,10 @@ public class FileClassifier {
         Object[] matching = this.database.stream().filter(x -> ArrayUtils.contains(x.extensions, extension)).toArray();
         if (matching.length == 0) {
             // Check against all using the pattern and see if we can guess
+            if (this.DEEP_GUESS) {
+                return this.deepGuess(fileName, codeLines);
+            }
+
             return "Unknown";
         }
 
@@ -61,27 +66,7 @@ public class FileClassifier {
         }
 
         // More then one possible match, check which one is most likely is and return that
-        String languageGuess = Values.EMPTYSTRING;
-        int bestKeywords = 0;
-
-        // This is hideous, need to look at performance at some point
-        // but should be acceptable for now since it only runs when we have
-        // multiple entries
-        for(Object c: matching) {
-            FileClassifierResult fileClassifierResult = (FileClassifierResult)c;
-            int matchingKeywords = 0;
-            for(String line: codeLines) {
-                line = line.toLowerCase().replaceAll("[^A-Za-z]", " ");
-                for(String keyword: fileClassifierResult.keywords) {
-                    matchingKeywords += StringUtils.countMatches(line, keyword);
-                }
-            }
-
-            if (matchingKeywords > bestKeywords) {
-                bestKeywords = matchingKeywords;
-                languageGuess = fileClassifierResult.language;
-            }
-        }
+        String languageGuess = this.guessLanguage(codeLines, matching);
 
         // If there is still no decision then go for the first match
         if (Singleton.getHelpers().isNullEmptyOrWhitespace(languageGuess)) {
@@ -91,6 +76,34 @@ public class FileClassifier {
         return languageGuess;
     }
 
+    public String deepGuess(String fileName, List<String> codeLines) {
+        Object[] matching = this.database.stream().filter(x -> x.keywords.length != 0).toArray();
+        String languageGuess = guessLanguage(codeLines, matching);
+        return languageGuess;
+    }
+
+    private String guessLanguage(List<String> codeLines, Object[] matching) {
+        // More then one possible match, check which one is most likely is and return that
+        String languageGuess = "Unknown";
+        int bestKeywords = 0;
+
+        for (Object c: matching) {
+            FileClassifierResult fileClassifierResult = (FileClassifierResult)c;
+            int matchingKeywords = 0;
+            for (String line: codeLines) {
+                line = line.toLowerCase().replaceAll("[^A-Za-z]", " ");
+                for (String keyword: fileClassifierResult.keywords) {
+                    matchingKeywords += StringUtils.countMatches(line, keyword);
+                }
+            }
+
+            if (matchingKeywords > bestKeywords) {
+                bestKeywords = matchingKeywords;
+                languageGuess = fileClassifierResult.language;
+            }
+        }
+        return languageGuess;
+    }
 
 
     /**

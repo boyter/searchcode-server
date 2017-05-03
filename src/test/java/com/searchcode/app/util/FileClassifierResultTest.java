@@ -67,7 +67,7 @@ public class FileClassifierResultTest extends TestCase {
         assertEquals("Jenkins Buildfile", language);
     }
 
-    public void testLanguageGuesseKotlin() {
+    public void testLanguageGuesserKotlin() {
         FileClassifier fileClassifier = new FileClassifier();
         String language = fileClassifier.languageGuesser("test.kt", new ArrayList<>());
         assertEquals("Kotlin", language);
@@ -107,5 +107,34 @@ public class FileClassifierResultTest extends TestCase {
 
         String language = fileClassifier.languageGuesser("test.java", codeLines);
         assertEquals("Java", language);
+    }
+
+    public void testLanguageGuesserNoMatching() {
+        FileClassifier fileClassifier = new FileClassifier();
+        fileClassifier.DEEP_GUESS = true;
+        ArrayList<String> lines = new ArrayList<String>() {{
+            add("#include<stdio.h>");
+            add("int main(void) {");
+            add("printf(\"Hello World\\n\");");
+            add("return 0;");
+            add("}");
+        }};
+
+        String language = fileClassifier.languageGuesser("noidea", lines);
+        assertEquals("C", language);
+    }
+
+    public void testDeepGuess() {
+        FileClassifier fileClassifier = new FileClassifier();
+        ArrayList<String> lines = new ArrayList<String>() {{
+            add("#include<stdio.h>");
+            add("int main(void) {");
+            add("printf(\"Hello World\\n\");");
+            add("return 0;");
+            add("}");
+        }};
+
+        String language = fileClassifier.deepGuess("noidea", lines);
+        assertEquals("C", language);
     }
 }

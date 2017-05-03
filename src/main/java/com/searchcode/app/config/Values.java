@@ -101,6 +101,8 @@ public class Values {
     public static final String DEFAULT_ENCRYPTION_KEY = "39dc5f2168e412be3a9faf9d08482114";
     public static final String FOLLOW_LINKS = "follow_links";
     public static final String DEFAULT_FOLLOW_LINKS = "false";
+    public static final String DEEP_GUESS_FILES = "deep_guess_files";
+    public static final String DEFAULT_DEEP_GUESS_FILES = "false";
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";
