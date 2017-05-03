@@ -1053,5 +1053,12 @@
       "patch"
     ],
     "keywords": []
+  },
+  {
+    "language": "Cocoapod",
+    "extensions": [
+      "cocoapod"
+    ],
+    "keywords": []
   }
 ]
