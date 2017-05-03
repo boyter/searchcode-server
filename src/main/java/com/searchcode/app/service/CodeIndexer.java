@@ -64,12 +64,12 @@ public class CodeIndexer {
         int codeIndexLinesCount = Singleton.getCodeIndexLinesCount();
 
         if (indexQueueSize > MAX_INDEX_SIZE) {
-            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger then " + MAX_INDEX_SIZE);
+            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
             return true;
         }
 
         if (codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
-            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger then " + MAX_LINES_INDEX_SIZE);
+            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
             return true;
         }
 
@@ -92,7 +92,7 @@ public class CodeIndexer {
         }
 
         if (loadAverage >= loadValue) {
-            Singleton.getLogger().info("Load Average higher then set value. Pausing indexing.");
+            Singleton.getLogger().info("Load Average higher than set value. Pausing indexing.");
             return true;
         }
 
