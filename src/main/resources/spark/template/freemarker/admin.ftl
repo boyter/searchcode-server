@@ -138,7 +138,8 @@ number_svn_processors=${number_svn_processors}
 number_file_processors=${number_file_processors}
 default_and_match=${default_and_match}
 log_indexed=${log_indexed}
-follow_links=${follow_links}</textarea>
+follow_links=${follow_links}
+deep_guess_files=${deep_guess_files}</textarea>
 
 
         </div>

@@ -656,8 +656,9 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>If set to true a csv containing the results of the last index run will be written to the log directory with the repository name as the filename. Can be used to determine why files are being indexed or not. Defaults to false.</dd>
               <dt>follow_links</dt>
               <dd>Boolean value true or false. If set to true indicates that symbolic links should be followed when indexing using file paths. Can be enabled if required to walk repositories containing symlinks. Be careful, this can produce infinite loops. Defaults to false.</dd>
+              <dt>deep_guess_files</dt>
+              <dd>Boolean value true or false. If set to true when a file is encountered that cannot be classified though naming conventions its keywords will be analysed and a best guess made. This can be CPU heavy or incorrectly classify some files. Defaults to false.</dd>
             </dl>
-
         </p>
 
         <p>

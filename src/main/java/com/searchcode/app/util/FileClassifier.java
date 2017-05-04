@@ -78,8 +78,7 @@ public class FileClassifier {
 
     public String deepGuess(String fileName, List<String> codeLines) {
         Object[] matching = this.database.stream().filter(x -> x.keywords.length != 0).toArray();
-        String languageGuess = guessLanguage(codeLines, matching);
-        return languageGuess;
+        return this.guessLanguage(codeLines, matching);
     }
 
     private String guessLanguage(List<String> codeLines, Object[] matching) {
