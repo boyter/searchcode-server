@@ -35,16 +35,34 @@
             <td>${totalCodeLines}</td>
           </tr>
           <tr>
-              <td><span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> ${totalLanguages} Languages</td>
-              <td>
-                  <#list languageFacet>
-                  <#items as result>
-                      ${result.languageName} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
-                  </#items>
-                  </#list>
+              <td colspan="2">
+                <span class="glyphicon glyphicon-asterisk" aria-hidden="true"></span> ${totalLanguages} Languages<br /><br />
+
+                  <table>
+                      <tr>
+                          <td valign="top">
+                              <strong>By File Count</strong><br />
+                              <#list languageFacet>
+                              <#items as result>
+                                  ${result.languageName} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
+                              </#items>
+                              </#list>
+                          </td>
+                          <td valign="top">
+                              <strong>By Line Count</strong><br />
+                              <#list codeByLines>
+                              <#items as result>
+                                  ${result.languageName} <small style="color: #999;">${result.count} lines ${(result.count / totalCodeLines * 100)?ceiling}% of project</small><br />
+                              </#items>
+                              </#list>
+                          </td>
+                      </tr>
+                  </table>
               </td>
-              <td><span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${totalOwners} Code Owners</td>
-              <td>
+              <td colspan="2">
+              <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${totalOwners} Code Owners<br /><br />
+
+              <strong>By File Count</strong><br />
                   <#list ownerFacet>
                   <#items as result>
                       ${result.owner} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />

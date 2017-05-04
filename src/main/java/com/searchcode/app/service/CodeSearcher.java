@@ -13,6 +13,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.util.*;
+import com.searchcode.app.util.Properties;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.facet.FacetResult;
@@ -33,8 +34,8 @@ import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Does all of the queries which happen against the Lucene index, including search queries and working out
@@ -159,6 +160,7 @@ public class CodeSearcher implements ICodeSearcher {
         int totalFiles = 0;
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
+        List<CodeFacetLanguage> codeByLines = new ArrayList<>();
         SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
 
         try {
@@ -172,13 +174,32 @@ public class CodeSearcher implements ICodeSearcher {
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
             ScoreDoc[] hits = results.scoreDocs;
 
+            Map<String, Integer> linesCount = new HashMap<>();
+
             for (int i = 0; i < results.totalHits; i++) {
                 Document doc = searcher.doc(hits[i].doc);
 
                 if (!searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
-                    totalCodeLines += Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
+                    int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
+                    totalCodeLines += lines;
+                    String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+
+                    if (linesCount.containsKey(languageName)) {
+                        linesCount.put(languageName, linesCount.get(languageName) + lines);
+                    }
+                    else {
+                        linesCount.put(languageName, lines);
+                    }
                 }
             }
+
+
+
+            for (String key: linesCount.keySet()) {
+                codeByLines.add(new CodeFacetLanguage(key, linesCount.get(key)));
+            }
+            codeByLines.sort((a, b) -> b.getCount() - a.getCount());
+
 
             totalFiles = results.totalHits;
             codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
@@ -190,7 +211,7 @@ public class CodeSearcher implements ICodeSearcher {
             LOGGER.severe("CodeSearcher getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
-        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, repoFacetOwners);
+        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, codeByLines, repoFacetOwners);
     }
 
     /**

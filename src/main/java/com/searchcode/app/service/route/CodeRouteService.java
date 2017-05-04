@@ -246,6 +246,7 @@ public class CodeRouteService {
         map.put("totalCodeLines", projectStats.getTotalCodeLines());
         map.put("languageFacet", projectStats.getCodeFacetLanguages());
         map.put("ownerFacet", projectStats.getRepoFacetOwner());
+        map.put("codeByLines", projectStats.getCodeByLines());
 
         double estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
         map.put("estimatedEffort", estimatedEffort);
