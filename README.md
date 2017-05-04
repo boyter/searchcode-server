@@ -145,6 +145,8 @@ Enter the default password Adm1n234 (change this via the properties file)
 to add git repositories. If you need help check the documentation page (link at the bottom
 of every page).
 
+To setup using Ubuntu as an Update or SystemD job see https://searchcodeserver.com/knowledge-base/upstart-and-systemd-startup-scripts-for-ubuntu.html
+
 Upgrades
 --------
 
