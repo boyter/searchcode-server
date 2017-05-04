@@ -193,13 +193,10 @@ public class CodeSearcher implements ICodeSearcher {
                 }
             }
 
-
-
             for (String key: linesCount.keySet()) {
                 codeByLines.add(new CodeFacetLanguage(key, linesCount.get(key)));
             }
             codeByLines.sort((a, b) -> b.getCount() - a.getCount());
-
 
             totalFiles = results.totalHits;
             codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);

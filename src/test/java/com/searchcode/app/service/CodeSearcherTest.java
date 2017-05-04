@@ -53,5 +53,6 @@ public class CodeSearcherTest extends TestCase {
         assertThat(projectStats.getCodeFacetLanguages().get(0).getCount()).isEqualTo(1);
         assertThat(projectStats.getRepoFacetOwner().get(0).getOwner()).isEqualTo("/");
         assertThat(projectStats.getRepoFacetOwner().get(0).getCount()).isEqualTo(1);
+        assertThat(projectStats.getCodeByLines().size()).isEqualTo(1);
     }
 }
