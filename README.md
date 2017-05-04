@@ -197,6 +197,7 @@ XX XXXXX XXXX - 1.3.10
  - Set follow symlinks to be configurable through properties file https://github.com/boyter/searchcode-server/issues/99
  - Clicking Remove will also clear the text box filters https://github.com/boyter/searchcode-server/issues/98
  - Improved stop/reset jobs logic, deleted jobs persist on searchcode restart https://github.com/boyter/searchcode-server/issues/41
+ - Add logic to calculate project stats by lines not files and display next to existing https://github.com/boyter/searchcode-server/issues/103
 
 13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
