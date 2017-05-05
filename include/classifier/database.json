@@ -71,7 +71,8 @@
     "language": "C/C++Header",
     "extensions": [
       "h",
-      "hpp"
+      "hpp",
+      "hxx"
     ],
     "keywords": ["the", "const", "define", "void", "typename", "boost", "class", "int", "type", "return", "bool", "this", "for", "ace", "and", "endif", "char", "include", "template", "typedef", "public", "size", "virtual", "value", "license", "struct", "string", "not", "static", "name", "file", "long", "defined", "that", "std", "with", "data", "unsigned", "inline", "use", "list", "extern", "software", "object", "you", "set", "iterator", "end", "get", "ifndef", "version", "fp8", "any", "function", "copyright", "from", "namespace", "hpp", "code", "base", "are", "null", "stlp", "error", "have", "ptr", "operator", "vector", "max", "free", "key", "tuple", "will", "can", "has", "used", "see", "without", "else", "all", "gnu", "param", "copy", "uint32", "mpl", "s32", "result", "index", "general", "private", "time", "map", "handle", "new", "under", "true", "pointer", "internal", "default", "but", "first", "array", "param1", "only", "false", "double", "returns", "gtest", "param2", "impl", "should", "other", "state", "param3", "source", "node", "event", "tag", "http", "interface", "aux", "start", "inc", "number", "library", "param4", "128", "ifdef", "iteration", "write", "distributed", "param5", "call", "float", "warranty", "reference", "when", "item", "cast", "flags", "may", "param6", "buffer", "which", "undef", "pos", "must", "foundation", "next", "message", "detail", "out", "traits", "param7", "api", "thread", "stream", "enum", "left", "length", "check", "config", "org", "implied", "header", "last", "count", "param8", "block", "read", "info", "begin", "mode", "func", "offset", "purpose", "nsstring", "method", "www", "more", "declare", "mask", "param9", "handler", "current", "test", "rettype", "while", "str", "format", "fold", "wxstring", "functions", "seq", "field", "case", "line", "using", "make", "f32"]
   },
@@ -80,7 +81,8 @@
     "extensions": [
       "cpp",
       "cc",
-      "c"
+      "c",
+      "cxx"
     ],
     "keywords": ["the", "0000000000000000", "return", "const", "void", "5000000000000000", "this", "int", "2500000000000000", "for", "7500000000000000", "else", "case", "ace", "name", "type", "string", "include", "false", "char", "true", "null", "size", "bool", "std", "and", "break", "data", "value", "new", "50000000000000000", "result", "static", "25000000000000000", "file", "get", "unsigned", "not", "set", "end", "0x00", "str", "75000000000000000", "item", "class", "that", "error", "object", "code", "list", "player", "public", "with", "count", "spell", "out", "handle", "target", "from", "uint32", "license", "info", "index", "cast", "check", "0x20", "s32", "map", "soap", "key", "function", "node", "test", "endif", "add", "max", "iter", "swig", "printf", "buffer", "iterator", "any", "length", "unit", "delete", "event", "begin", "use", "free", "message", "start", "ptr", "have", "can", "state", "text", "offset", "default", "width", "are", "msg", "assert", "has", "software", "llvm", "define", "time", "next", "pos", "all", "append", "first", "bwapi", "err", "base", "float", "args", "line", "context", "source", "creature", "while", "sizeof", "path", "back", "version", "entry", "will", "gnu", "f32", "block", "copy", "number", "push", "len", "mask", "height", "virtual", "current", "log", "you", "flags", "input", "double", "read", "color", "general", "only", "but", "see", "without", "0x65", "num", "buf", "empty", "template", "defined", "struct", "mode", "vector", "llsd", "expr", "switch", "handler", "second", "should", "flag", "array", "instance", "register", "arg", "getattr", "val", "debug", "0x64", "clear", "status", "write", "init", "group", "endl", "find", "field", "long", "call", "copyright", "timer", "create", "continue", "isolate", "src", "itr", "left", "output", "module", "format", "namespace", "one", "0x74", "rect"]
   },
@@ -158,7 +160,12 @@
     "language": "Fortran 77",
     "extensions": [
       "f",
-      "f77"
+      "f77",
+      "for",
+      "ftn",
+      "fpp",
+      "f95",
+      "f03"
     ],
     "keywords": ["the", "then", "call", "end", "and", "integer", "for", "else", "continue", "info", "real", "array", "matrix", "zero", "dimension", "input", "max", "precision", "double", "not", "endif", "one", "lda", "write", "return", "work", "subroutine", "this", "0d0", "grid", "data", "enddo", "are", "number", "with", "abs", "output", "dwork", "min", "alpha", "from", "temp", "character", "parameter", "uplo", "intent", "external", "exit", "upper", "arguments", "lsame", "that", "set", "value", "read", "ldb", "error", "part", "routine", "must", "leading", "triangular", "use", "entry", "compute", "logical", "format", "beta", "first", "parameters", "print", "incx", "100", "used", "complex", "file", "true", "iwork", "form", "local", "nout", "its", "values", "start", "lower", "test", "ierr", "nmax", "order", "tau", "sqrt", "scalar", "scale", "vector", "time", "norm", "index", "unit", "workspace", "eps", "where", "which", "functions", "wrf", "type", "nrhs", "lwork", "elements", "implicit", "eigenvalues", "only", "common", "trans", "out", "ldc", "intrinsic", "right", "sum", "block", "size", "contains", "diagonal", "0e0", "all", "function", "see", "status", "ims", "column", "infot", "kts", "false", "version", "transpose", "level", "columns", "ite", "univ", "ime", "system", "none", "include", "case", "jms", "will", "left", "kte", "contain", "program", "side", "jme", "computed", "result", "specifies", "name", "purpose", "ldwork", "two", "each", "loop", "check", "lapack", "incy", "get", "fmt", "when", "xerbla", "has", "ith", "vectors", "step", "mode", "err", "diag", "kms", "scalars", "solution", "ide", "element", "row", "than", "factor", "code", "goto", "tol", "rwork", "stored", "new", "message", "but", "jde", "int", "module", "software", "config", "statements", "jts", "trim", "least", "any"]
   },
@@ -166,7 +173,12 @@
     "language": "Fortran 90",
     "extensions": [
       "f90",
-      "f90"
+      "f",
+      "for",
+      "ftn",
+      "fpp",
+      "f95",
+      "f03"
     ],
     "keywords": ["error", "err", "call", "the", "type", "field", "number", "set", "equations", "999", "solver", "integer", "variable", "then", "local", "end", "intent", "endif", "matrix", "basis", "case", "not", "idx", "string", "intg", "for", "flag", "else", "problem", "associated", "mesh", "pointer", "component", "subroutine", "interface", "parameter", "variables", "node", "and", "trim", "value", "element", "data", "return", "nodes", "cmfe", "mapping", "loop", "get", "vstring", "out", "values", "interpolation", "write", "cmiss", "vector", "user", "region", "real", "dependent", "matrices", "control", "domain", "exits", "output", "setup", "subtype", "elements", "use", "enddo", "distributed", "file", "list", "global", "create", "ptr", "cmissintg", "select", "decomposition", "varying", "vrr", "initialise", "linear", "boundary", "map", "geometric", "parameters", "components", "code", "this", "index", "equation", "dynamic", "argument", "default", "point", "cellml", "start", "function", "condition", "dof", "size", "finish", "petsc", "cmissdp", "allocate", "enters", "errors", "row", "analytic", "time", "gauss", "see", "source", "opencmiss", "module", "dimension", "stokes", "character", "with", "diffusion", "conditions", "routines", "invalid", "deriv", "system", "column", "nullify", "mpi", "license", "materials", "new", "darcy", "topology", "public", "coordinate", "check", "len", "hrr", "cmissfield", "flagerror", "method", "version", "first", "update", "sets", "solution", "derivative", "total", "dimensions", "nonlinear", "creation", "solve", "finalise", "solvers", "types", "name", "elasticity", "pressure", "only", "indices", "read", "line", "points", "generated", "from", "geometricfield", "procedure", "has", "navier", "are", "add", "implemented", "finished", "handle", "fields", "action", "deallocate", "general", "maps", "array", "logical", "info", "library", "param", "label", "input", "all", "projection", "goto", "calculate", "plflt", "vrrs", "program", "class", "regionusernumber", "rhs", "true", "var", "int"]
   },
@@ -313,7 +325,6 @@
     "language": "Pascal",
     "extensions": [
       "p",
-      "pp",
       "pas"
     ],
     "keywords": ["end", "begin", "the", "function", "then", "procedure", "result", "and", "integer", "const", "var", "x00", "string", "not", "for", "value", "x14", "else", "name", "xb8", "xd7", "x1e", "x85", "x8f", "false", "xf5", "boolean", "x99", "xcc", "property", "xe1z", "xaeg", "xc2", "type", "this", "endif", "true", "external", "read", "xa3p", "xebq", "nil", "create", "ifdef", "data", "externalsym", "version", "setc", "array", "set", "target", "pointer", "with", "write", "error", "mac", "file", "inc", "cdecl", "class", "exit", "get", "x12", "later", "dispid", "sender", "rcjqu", "length", "x10", "chr", "dword", "count", "add", "x1f", "self", "size", "x11", "index", "x02", "longint", "stdcall", "tobject", "text", "use", "that", "top", "x08", "x06", "x0e", "available", "free", "from", "assigned", "form", "object", "are", "message", "xf6", "xfb", "pchar", "override", "writeln", "byte", "list", "case", "xf9", "record", "eax", "buffer", "info", "you", "mov", "xfd", "public", "key", "x0c", "handle", "defined", "0x00", "return", "shl", "cpu", "widestring", "will", "code", "define", "inherited", "gtk", "x1a", "word", "new", "param", "interface", "source", "item", "field", "can", "all", "call", "default", "try", "carbonlib", "format", "state", "out", "path", "only", "xf3", "xe9", "x01", "constructor", "any", "xeb", "status", "color", "but", "mode", "x1c", "char", "xe7", "x0f", "width", "asm", "x1b", "xe1", "xcd", "license", "x9a", "stream", "used", "xf1", "while", "sizeof", "len", "xe3", "xfa", "xac", "copy", "virtual", "xe5", "xae", "xc3", "xb2", "image", "x83", "x8d", "xed", "xdd", "localize", "x81", "x87", "xbe", "x1d", "333333", "x91", "xecq", "255", "flags", "filename", "values"]
@@ -354,7 +365,9 @@
     "extensions": [
       "cgi",
       "pl",
-      "pm"
+      "pm",
+      "pm6",
+      "pod"
     ],
     "keywords": ["the", "self", "sub", "name", "return", "for", "file", "print", "and", "use", "this", "text", "type", "new", "get", "test", "not", "value", "shift", "args", "else", "data", "line", "from", "defined", "with", "that", "html", "error", "unless", "item", "you", "class", "undef", "can", "set", "perl", "local", "push", "are", "end", "version", "list", "config", "user", "default", "all", "elsif", "table", "key", "object", "die", "head1", "will", "string", "cut", "ref", "start", "head2", "package", "path", "method", "module", "time", "foreach", "out", "next", "returns", "code", "href", "output", "session", "bio", "http", "map", "query", "options", "index", "open", "template", "log", "opt", "dir", "example", "length", "has", "constr", "form", "mml", "hash", "input", "result", "files", "add", "foo", "last", "function", "url", "delete", "while", "array", "var", "check", "arg", "title", "read", "usage", "keys", "eval", "content", "param", "dbh", "tag", "have", "size", "env", "see", "write", "seq", "require", "one", "server", "should", "val", "app", "only", "status", "join", "header", "create", "strict", "any", "obj", "like", "more", "values", "number", "base", "make", "sql", "which", "count", "debug", "bin", "used", "mode", "cache", "filename", "your", "group", "but", "blog", "command", "first", "parse", "exists", "description", "host", "close", "split", "row", "lib", "cmd", "run", "scalar", "cgi", "select", "opts", "save", "int", "option", "max", "current", "event", "entry", "request", "find", "tests", "when", "format", "info", "long", "conf", "isa", "methods", "some", "cpan", "source", "message", "directory", "mkdebug", "label", "field", "bioperl", "where", "system", "usr", "other", "load", "pid"]
   },
@@ -590,7 +603,12 @@
   {
     "language": "Markdown",
     "extensions": [
-      "md"
+      "md",
+      "markdown",
+      "mdown",
+      "mdwn",
+      "mkdn",
+      "mkd"
     ],
     "keywords": []
   },
@@ -660,7 +678,10 @@
   {
     "language": "Delphi",
     "extensions": [
-      "delphi"
+      "delphi",
+      "pas",
+      "dfm",
+      "nfm"
     ],
     "keywords": []
   },
@@ -917,7 +938,10 @@
   {
     "language": "Clojure",
     "extensions": [
-      "clj"
+      "clj",
+      "cljs",
+      "cljc",
+      "cljx"
     ],
     "keywords": ["the", "defn", "let", "name", "test", "clojure", "map", "and", "nil", "this", "for", "file", "str", "with", "not", "get", "string", "true", "type", "first", "deftest", "value", "set", "when", "def", "args", "java", "use", "are", "from", "seq", "key", "list", "all", "count", "path", "core", "new", "that", "returns", "lang", "class", "testing", "form", "body", "default", "http", "false", "data", "state", "project", "foo", "keys", "org", "doc", "out", "node", "format", "only", "apply", "add", "result", "make", "can", "case", "function", "user", "print", "gen", "you", "any", "url", "assoc", "options", "var", "symbol", "params", "method", "meta", "read", "create", "array", "int", "request", "index", "coll", "number", "html", "val", "text", "into", "next", "return", "start", "time", "find", "input", "com", "error", "root", "clj", "table", "util", "will", "object", "action", "empty", "size", "line", "which", "tag", "exception", "content", "write", "software", "given", "require", "context", "one", "println", "vector", "code", "added", "ref", "opts", "defmethod", "server", "message", "stemming", "session", "dir", "run", "arg", "query", "connection", "filter", "update", "env", "thread", "license", "instance", "recur", "stream", "defmacro", "inc", "max", "bar", "main", "remove", "range", "expr", "info", "current", "values", "repl", "output", "rest", "item", "config", "conj", "throw", "source", "else", "handler", "version", "should", "last", "namespace", "base", "must", "init", "cond", "atom", "integer", "msg", "terms", "sym", "end", "reduce", "target", "binding", "group", "more", "found", "event", "client", "distribution", "buffer", "system", "parse", "keyword", "spec", "other", "public", "log", "contains", "nth", "loop", "using", "field"]
   },
@@ -1058,6 +1082,50 @@
     "language": "Cocoapod",
     "extensions": [
       "cocoapod"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "F#",
+    "extensions": [
+      "fs",
+      "fsi",
+      "fsx"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Mathematica",
+    "extensions": [
+      "m",
+      "wl"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Parrot",
+    "extensions": [
+      "pir",
+      "pasm",
+      "pmc",
+      "ops",
+      "pod",
+      "pg",
+      "tg"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Puppet",
+    "extensions": [
+      "pp"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Rakefile",
+    "extensions": [
+      "rakefile"
     ],
     "keywords": []
   }
