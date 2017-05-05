@@ -1128,5 +1128,35 @@
       "rakefile"
     ],
     "keywords": []
+  },
+  {
+    "language": "PKGBUILD",
+    "extensions": [
+      "pkgbuild"
+    ],
+    "keywords": ["pkgname", "pkgver", "arch", "license"]
+  },
+  {
+    "language": "Cargo File",
+    "extensions": [
+      "toml"
+    ],
+    "keywords": ["package", "name", "version", "authors", "dependencies"]
+  },
+  {
+    "language": "Lock File",
+    "extensions": [
+      "lock"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "License",
+    "extensions": [
+      "license",
+      "copying",
+      "copying3"
+    ],
+    "keywords": []
   }
 ]
