@@ -199,6 +199,7 @@ XX XXXXX XXXX - 1.3.10
  - Improved stop/reset jobs logic, deleted jobs persist on searchcode restart https://github.com/boyter/searchcode-server/issues/41
  - Add logic to calculate project stats by lines not files and display next to existing https://github.com/boyter/searchcode-server/issues/103
  - Deep guess logic added to guess a files type based on keyword heuristic's https://github.com/boyter/searchcode-server/issues/105
+ - Additional languages added to classifier database, F#, Mathematica, Parrot, Puppet, Rakefile
 
 13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
