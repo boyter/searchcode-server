@@ -31,6 +31,20 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getSevereLogs()).hasSize(1);
     }
 
+    public void testLoggerWrapperSearchAdd() {
+        LoggerWrapper logger = new LoggerWrapper();
+        assertThat(logger.getSearchLogs()).isEmpty();
+        logger.searchLog("test");
+        assertThat(logger.getSearchLogs()).hasSize(1);
+    }
+
+    public void testLoggerWrapperApiAdd() {
+        LoggerWrapper logger = new LoggerWrapper();
+        assertThat(logger.getApiLogs()).isEmpty();
+        logger.apiLog("test");
+        assertThat(logger.getApiLogs()).hasSize(1);
+    }
+
     public void testLoggerWrapperAll() {
         LoggerWrapper logger = new LoggerWrapper();
         assertThat(logger.getAllLogs()).isEmpty();

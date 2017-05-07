@@ -36,6 +36,7 @@ public class LoggerWrapper {
     private EvictingQueue warningRecentCache = null;
     private EvictingQueue severeRecentCache = null;
     private EvictingQueue searchLog = null;
+    private EvictingQueue apiLog = null;
 
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
@@ -125,6 +126,7 @@ public class LoggerWrapper {
         this.warningRecentCache = EvictingQueue.create(1000);
         this.severeRecentCache = EvictingQueue.create(1000);
         this.searchLog = EvictingQueue.create(1000);
+        this.apiLog = EvictingQueue.create(1000);
     }
 
     public synchronized void clearAllLogs() {
@@ -133,6 +135,7 @@ public class LoggerWrapper {
         this.warningRecentCache.clear();
         this.severeRecentCache.clear();
         this.searchLog.clear();
+        this.apiLog.clear();
     }
 
     public synchronized void info(String toLog) {
@@ -148,7 +151,7 @@ public class LoggerWrapper {
                 System.out.println(message);
             }
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void warning(String toLog) {
@@ -165,7 +168,7 @@ public class LoggerWrapper {
                 System.out.println(message);
             }
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void severe(String toLog) {
@@ -182,7 +185,7 @@ public class LoggerWrapper {
                 System.out.println(message);
             }
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void searchLog(String toLog) {
@@ -191,7 +194,16 @@ public class LoggerWrapper {
         try {
             this.searchLog.add(message);
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
+    }
+
+    public synchronized void apiLog(String toLog) {
+        String message = "API: " + new Date().toString() + ": " + toLog;
+
+        try {
+            this.apiLog.add(message);
+        }
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized List<String> getAllLogs() {
@@ -200,7 +212,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.allCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -211,7 +223,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.infoRecentCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -222,7 +234,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.warningRecentCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -233,7 +245,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.severeRecentCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -244,7 +256,18 @@ public class LoggerWrapper {
             values = new ArrayList(this.searchLog);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
+
+        return values;
+    }
+
+    public synchronized List<String> getApiLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.apiLog);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -253,10 +276,6 @@ public class LoggerWrapper {
         int levelValue = level.intValue();
         int mainValue = this.LOGLEVELENUM.intValue();
 
-        if (levelValue >= mainValue) {
-            return true;
-        }
-
-        return false;
+        return levelValue >= mainValue;
     }
 }
