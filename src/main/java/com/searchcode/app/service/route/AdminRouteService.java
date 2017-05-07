@@ -248,6 +248,9 @@ public class AdminRouteService {
             case "SEARCH":
                 logs = this.getStat("searchlogs");
                 break;
+            case "API":
+                logs = this.getStat("apiLogs");
+                break;
             case "SEVERE":
             default:
                 logs = this.getStat("severelogs");
@@ -438,14 +441,14 @@ public class AdminRouteService {
                 return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
                 return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
-            case "infologs":
-                return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
             case "warninglogs":
                 return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
             case "severelogs":
                 return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
             case "searchlogs":
                 return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+            case "apilogs":
+                return StringUtils.join(Singleton.getLogger().getApiLogs(), System.lineSeparator());
             case "threads":
                 return "" + java.lang.Thread.activeCount();
             case "paused":

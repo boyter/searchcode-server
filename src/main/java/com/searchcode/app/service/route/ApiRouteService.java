@@ -11,7 +11,6 @@
 package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.api.ApiResponse;
@@ -19,7 +18,6 @@ import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.UniqueRepoQueue;
 import spark.Request;
 import spark.Response;
 
@@ -76,6 +74,7 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repositoryReindex API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
@@ -83,6 +82,7 @@ public class ApiRouteService {
         boolean result = this.jobService.rebuildAll();
         if (result) {
             this.jobService.forceEnqueue();
+            Singleton.getLogger().apiLog("Valid signed repositoryReindex API call using publicKey=" + publicKey);
             return new ApiResponse(true, "reindex forced");
         }
 
@@ -109,7 +109,7 @@ public class ApiRouteService {
         if (request.queryParams().contains("reponame")) {
             CodeSearcher codeSearcher = new CodeSearcher();
             ProjectStats projectStats = codeSearcher.getProjectStats(request.queryParams("reponame"));
-            return "" + projectStats.getTotalFiles();
+            return Values.EMPTYSTRING + projectStats.getTotalFiles();
         }
 
         return Values.EMPTYSTRING;
@@ -154,14 +154,15 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repoList API call using publicKey=" + publicKey);
                 return new RepoResultApiResponse(false, "invalid signed url", null);
             }
         }
 
         List<RepoResult> repoResultList = repo.getAllRepo();
 
+        Singleton.getLogger().apiLog("Valid signed repoList API call using publicKey=" + publicKey);
         return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
-
     }
 
     public ApiResponse repoDelete(Request request, Response response) {
@@ -196,6 +197,7 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repoDelete API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
@@ -206,6 +208,8 @@ public class ApiRouteService {
         }
 
         this.dataService.addToPersistentDelete(rr.getName());
+
+        Singleton.getLogger().apiLog("Valid signed repoDelete API call using publicKey=" + publicKey);
         return new ApiResponse(true, "repository queued for deletion");
     }
 
@@ -277,13 +281,13 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repoAdd API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
 
 
-        // Clean
-        if (repobranch == null || repobranch.trim().equals(Values.EMPTYSTRING)) {
+        if (repobranch.trim().equals(Values.EMPTYSTRING)) {
             repobranch = "master";
         }
 
@@ -300,6 +304,8 @@ public class ApiRouteService {
 
         this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}"));
 
+
+        Singleton.getLogger().apiLog("Valid signed repoAdd API call using publicKey=" + publicKey);
         return new ApiResponse(true, "added repository successfully");
     }
 }
