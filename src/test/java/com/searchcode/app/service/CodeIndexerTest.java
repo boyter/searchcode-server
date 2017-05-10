@@ -4,6 +4,8 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import junit.framework.TestCase;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexableField;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
 import org.mockito.Mockito;
 
@@ -97,6 +99,34 @@ public class CodeIndexerTest extends TestCase {
 
         // Reset
         Singleton.setStatsService(new StatsService());
+    }
+
+    public void testBuildDocument() {
+        CodeIndexer codeIndexer = new CodeIndexer();
+        Document indexableFields = codeIndexer.buildDocument(new CodeIndexDocument(
+                "repoLocationRepoNameLocationFilename",
+                "repo Name",
+                "fileName",
+                "fileLocation",
+                "fileLocationFilename",
+                "md5hash",
+                "language Name",
+                10,
+                "contents",
+                "repoRemoteLocation",
+                "code Owner"
+        ));
+
+        assertThat(indexableFields.getFields().size()).isEqualTo(16);
+
+        IndexableField[] fields = indexableFields.getFields(Values.REPONAME);
+        assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
+
+        fields = indexableFields.getFields(Values.LANGUAGENAME);
+        assertThat(fields[0].stringValue()).isEqualTo("language_Name");
+
+        fields = indexableFields.getFields(Values.CODEOWNER);
+        assertThat(fields[0].stringValue()).isEqualTo("code_Owner");
     }
 
     // TODO expand on these tests

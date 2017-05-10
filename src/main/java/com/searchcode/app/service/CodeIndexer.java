@@ -157,7 +157,6 @@ public class CodeIndexer {
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
         FacetsConfig facetsConfig;
-        SearchcodeLib searchcodeLib = new SearchcodeLib();
 
         indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
@@ -172,57 +171,13 @@ public class CodeIndexer {
                 Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
                 Singleton.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
 
-                Document doc = new Document();
-                // Path is the primary key for documents
-                // needs to include repo location, project name and then filepath including file
-                Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
-                doc.add(pathField);
-
                 // Add in facets
                 facetsConfig = new FacetsConfig();
                 facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
                 facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                 facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
 
-                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
-                    doc.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
-                }
-                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
-                    doc.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
-                }
-                if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
-                    doc.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
-                }
-
-                // TODO Is this even required anymore?
-                searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
-
-                StringBuilder indexContents = new StringBuilder();
-
-                indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
-                indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
-                indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
-                indexContents.append(codeIndexDocument.getFileLocation());
-                indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
-                indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
-                indexContents.append(searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
-                indexContents.append(searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
-                String toIndex = indexContents.toString().toLowerCase();
-
-                doc.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
-                doc.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
-                doc.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
-                doc.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
-                doc.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
-                doc.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
-                doc.add(new  IntField(Values.CODELINES,            codeIndexDocument.getCodeLines(), Field.Store.YES));
-                doc.add(new TextField(Values.CONTENTS,             toIndex, Field.Store.NO));
-                doc.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-                doc.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
-                doc.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
-
-                // Extra metadata in this case when it was last indexed
-                doc.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
+                Document doc = this.buildDocument(codeIndexDocument);
 
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
 
@@ -246,13 +201,61 @@ public class CodeIndexer {
         }
     }
 
+    public Document buildDocument(CodeIndexDocument codeIndexDocument) {
+        SearchcodeLib searchcodeLib = Singleton.getSearchcodeLib(Singleton.getData());
+        Document document = new Document();
+        // Path is the primary key for documents
+        // needs to include repo location, project name and then filepath including file
+        Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
+        document.add(pathField);
+
+        if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+            document.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
+        }
+        if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+            document.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
+        }
+        if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+            document.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
+        }
+
+        // TODO Is this even required anymore?
+        searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
+
+        StringBuilder indexContents = new StringBuilder();
+
+        indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+        indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
+        indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
+        indexContents.append(codeIndexDocument.getFileLocation());
+        indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
+        indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
+        indexContents.append(searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
+        indexContents.append(searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
+        String toIndex = indexContents.toString().toLowerCase();
+
+        document.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+        document.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
+        document.add(new IntField(Values.CODELINES,             codeIndexDocument.getCodeLines(), Field.Store.YES));
+        document.add(new TextField(Values.CONTENTS,             toIndex, Field.Store.NO));
+        document.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+        document.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
+
+        // Extra metadata in this case when it was last indexed
+        document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
+        return document;
+    }
+
     /**
      * Given a queue of documents to index, index them by popping the queue limited to 1000 items.
      * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
      * index.
      * TODO investigate how Lucene deals with multiple writes
-     * TODO make the 1000 limit configurable
-     * TODO there appears to be something in here causing some serious slowdowns
      */
     public synchronized void indexTimeDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         // Index all documents and commit at the end for performance gains
