@@ -14,10 +14,10 @@ footer = './generic/footer.html'
 
 config = [{
         'file': 'index.html',
-        'title': 'Powerful Code Search in Your Cloud'
+        'title': 'searchcode server | Development Productivity through Powerful Code Search'
     }, {
         'file': 'features.html',
-        'title': 'Features of searchcode server'
+        'title': 'Productivity features of searchcode server'
     }, {
         'file': 'pricing.html',
         'title': 'Community Download and Pricing for searchcode server'
