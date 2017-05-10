@@ -31,6 +31,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
 import java.util.Queue;
@@ -46,10 +47,14 @@ public class CodeIndexer {
     private static int MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
     private static int INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
     private final SearchcodeLib searchcodeLib;
+    private final Path INDEX_LOCATION;
+    private final Path FACET_LOCATION;
 
 
     public CodeIndexer() {
         this.searchcodeLib = Singleton.getSearchCodeLib();
+        this.INDEX_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
+        this.FACET_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
     }
 
     /**
@@ -156,8 +161,8 @@ public class CodeIndexer {
      * TODO investigate how Lucene deals with multiple writes
      */
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
-        Directory indexDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
-        Directory facetDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
+        Directory indexDirectory = FSDirectory.open(this.INDEX_LOCATION);
+        Directory facetDirectory = FSDirectory.open(this.FACET_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
