@@ -44,6 +44,7 @@ public class CodeIndexer {
 
     private static int MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
     private static int MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+    private static int INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
     private final SearchcodeLib searchcodeLib;
 
 
@@ -169,6 +170,7 @@ public class CodeIndexer {
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
+            int count = 0;
 
             while (codeIndexDocument != null) {
                 Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
@@ -184,7 +186,13 @@ public class CodeIndexer {
 
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
 
-                codeIndexDocument = codeIndexDocumentQueue.poll();
+                count++;
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
+                    codeIndexDocument = null;
+                }
+                else {
+                    codeIndexDocument = codeIndexDocumentQueue.poll();
+                }
             }
         }
         finally {
@@ -268,6 +276,7 @@ public class CodeIndexer {
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
+            int count = 0;
 
             while (codeIndexDocument != null) {
                 Singleton.getLogger().info("Indexing time file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
@@ -345,7 +354,13 @@ public class CodeIndexer {
 
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxoWriter, doc));
 
-                codeIndexDocument = codeIndexDocumentQueue.poll();
+                count++;
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
+                    codeIndexDocument = null;
+                }
+                else {
+                    codeIndexDocument = codeIndexDocumentQueue.poll();
+                }
             }
         }
         finally {
