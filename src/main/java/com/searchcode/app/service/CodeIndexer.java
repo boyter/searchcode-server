@@ -49,11 +49,14 @@ public class CodeIndexer {
     private final SearchcodeLib searchcodeLib;
     private final Path INDEX_LOCATION;
     private final Path FACET_LOCATION;
-
+    private final StatsService statsService;
+    private final Data data;
 
     public CodeIndexer() {
+        this.data = Singleton.getData();
+        this.statsService = Singleton.getStatsService();
         this.searchcodeLib = Singleton.getSearchCodeLib();
-        this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE)
+        this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
         this.INDEX_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
@@ -95,11 +98,8 @@ public class CodeIndexer {
      * inside the settings page mute the index for a while
      */
     public synchronized boolean shouldBackOff() {
-        Data data = Singleton.getData();
-        StatsService statsService = Singleton.getStatsService();
-
-        Double loadValue = Double.parseDouble(data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE));
-        Double loadAverage = Double.parseDouble(statsService.getLoadAverage());
+        Double loadValue = Double.parseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE));
+        Double loadAverage = Double.parseDouble(this.statsService.getLoadAverage());
 
         if (loadValue <= 0) {
             return false;
@@ -158,7 +158,7 @@ public class CodeIndexer {
     }
 
     /**
-     * Given a queue of documents to index, index them by popping the queue limited to 1000 items.
+     * Given a queue of documents to index, index them by popping the queue limited to default of 1000 items.
      * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
      * index.
      * TODO investigate how Lucene deals with multiple writes
@@ -184,7 +184,6 @@ public class CodeIndexer {
                 Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
                 Singleton.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
 
-                // Add in facets
                 facetsConfig = new FacetsConfig();
                 facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
                 facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
@@ -393,7 +392,7 @@ public class CodeIndexer {
      * element and passes it in.
      */
     public synchronized void indexTimeDocument(CodeIndexDocument codeIndexDocument) throws IOException {
-        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(codeIndexDocument);
         indexTimeDocuments(queue);
     }

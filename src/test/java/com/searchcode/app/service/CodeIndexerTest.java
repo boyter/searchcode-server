@@ -86,18 +86,15 @@ public class CodeIndexerTest extends TestCase {
         Singleton.setData(dataMock);
 
         assertThat(Singleton.getCodeIndexer().shouldBackOff()).isTrue();
-        // Reset
         Singleton.setStatsService(new StatsService());
     }
 
-    public void testShouldBackOffWhenLoadZero() {
+    public void testShouldNotBackOffWhenLoadZero() {
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
         Singleton.setStatsService(statsServiceMock);
 
         assertThat(Singleton.getCodeIndexer().shouldBackOff()).isFalse();
-
-        // Reset
         Singleton.setStatsService(new StatsService());
     }
 
