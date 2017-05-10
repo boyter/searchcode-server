@@ -127,6 +127,10 @@ public class CodeIndexerTest extends TestCase {
 
         fields = indexableFields.getFields(Values.CODEOWNER);
         assertThat(fields[0].stringValue()).isEqualTo("code_Owner");
+
+        // Verifies that we ran through the pipeline
+        fields = indexableFields.getFields(Values.CONTENTS);
+        assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename  file name filelocationfilename filelocation contents contents contents contents contents contents");
     }
 
     // TODO expand on these tests

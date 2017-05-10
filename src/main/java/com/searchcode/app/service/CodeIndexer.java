@@ -44,7 +44,12 @@ public class CodeIndexer {
 
     private static int MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
     private static int MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
-    private static int INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
+    private final SearchcodeLib searchcodeLib;
+
+
+    public CodeIndexer() {
+        this.searchcodeLib = Singleton.getSearchCodeLib();
+    }
 
     /**
      * Returns true if indexing should be paused, false otherwise
@@ -150,7 +155,6 @@ public class CodeIndexer {
      * TODO investigate how Lucene deals with multiple writes
      */
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
-        // Index all documents and commit at the end for performance gains
         Directory indexDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION)));
         Directory facetDirectory = FSDirectory.open(Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION)));
 
@@ -165,7 +169,6 @@ public class CodeIndexer {
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
-            int count = 0;
 
             while (codeIndexDocument != null) {
                 Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
@@ -181,13 +184,7 @@ public class CodeIndexer {
 
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
 
-                count++;
-                if (count >= INDEX_QUEUE_BATCH_SIZE) {
-                    codeIndexDocument = null;
-                }
-                else {
-                    codeIndexDocument = codeIndexDocumentQueue.poll();
-                }
+                codeIndexDocument = codeIndexDocumentQueue.poll();
             }
         }
         finally {
@@ -202,37 +199,34 @@ public class CodeIndexer {
     }
 
     public Document buildDocument(CodeIndexDocument codeIndexDocument) {
-        SearchcodeLib searchcodeLib = Singleton.getSearchcodeLib(Singleton.getData());
         Document document = new Document();
         // Path is the primary key for documents
         // needs to include repo location, project name and then filepath including file
         Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
         document.add(pathField);
 
-        if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName()) == false) {
+        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName())) {
             document.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
         }
-        if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName()) == false) {
+        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName())) {
             document.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
         }
-        if (Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner()) == false) {
+        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner())) {
             document.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
         }
 
-        // TODO Is this even required anymore?
-        searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
+        this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
 
         StringBuilder indexContents = new StringBuilder();
 
-        indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
-        indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
+        indexContents.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+        indexContents.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
         indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
         indexContents.append(codeIndexDocument.getFileLocation());
-        indexContents.append(searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
-        indexContents.append(searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
-        indexContents.append(searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
-        indexContents.append(searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
-        String toIndex = indexContents.toString().toLowerCase();
+        indexContents.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
+        indexContents.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
+        indexContents.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
+        indexContents.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
 
         document.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
@@ -241,7 +235,7 @@ public class CodeIndexer {
         document.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
         document.add(new IntField(Values.CODELINES,             codeIndexDocument.getCodeLines(), Field.Store.YES));
-        document.add(new TextField(Values.CONTENTS,             toIndex, Field.Store.NO));
+        document.add(new TextField(Values.CONTENTS,             indexContents.toString().toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
         document.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
@@ -265,7 +259,6 @@ public class CodeIndexer {
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         FacetsConfig facetsConfig;
-        SearchcodeLib scl = new SearchcodeLib();
 
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
@@ -275,7 +268,6 @@ public class CodeIndexer {
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
-            int count = 0;
 
             while (codeIndexDocument != null) {
                 Singleton.getLogger().info("Indexing time file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
@@ -325,9 +317,9 @@ public class CodeIndexer {
 
                 String indexContents = Values.EMPTYSTRING;
 
-                indexContents += scl.splitKeywords(codeIndexDocument.getContents());
-                indexContents += scl.codeCleanPipeline(codeIndexDocument.getContents());
-                scl.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
+                indexContents += this.searchcodeLib.splitKeywords(codeIndexDocument.getContents());
+                indexContents += this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents());
+                this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents()); // Store in spelling corrector
 
                 indexContents = indexContents.toLowerCase();
 
@@ -353,13 +345,7 @@ public class CodeIndexer {
 
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxoWriter, doc));
 
-                count++;
-                if (count >= INDEX_QUEUE_BATCH_SIZE) {
-                    codeIndexDocument = null;
-                }
-                else {
-                    codeIndexDocument = codeIndexDocumentQueue.poll();
-                }
+                codeIndexDocument = codeIndexDocumentQueue.poll();
             }
         }
         finally {
