@@ -25,6 +25,9 @@ config = [{
         'file': 'contact.html',
         'title': 'Sales contact for searchcode server'
     }, {
+        'file': 'developer-productivity-tools.html',
+        'title': 'Tools that Drive Developer Productivity'
+    }, {
         'directory': './knowledge-base/',
         'footer': './generic/kb_footer.html',
         'title': 'Knowledge Base Article'
