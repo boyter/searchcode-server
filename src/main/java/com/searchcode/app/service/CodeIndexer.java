@@ -53,9 +53,13 @@ public class CodeIndexer {
     private final Data data;
 
     public CodeIndexer() {
-        this.data = Singleton.getData();
-        this.statsService = Singleton.getStatsService();
-        this.searchcodeLib = Singleton.getSearchCodeLib();
+        this(Singleton.getData(), Singleton.getStatsService(), Singleton.getSearchCodeLib());
+    }
+
+    public CodeIndexer(Data data, StatsService statsService, SearchcodeLib searchcodeLib) {
+        this.data = data;
+        this.statsService = statsService;
+        this.searchcodeLib = searchcodeLib;
         this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);

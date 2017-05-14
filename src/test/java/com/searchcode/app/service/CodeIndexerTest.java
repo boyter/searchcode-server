@@ -82,20 +82,19 @@ public class CodeIndexerTest extends TestCase {
 
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
-        Singleton.setStatsService(statsServiceMock);
-        Singleton.setData(dataMock);
 
-        assertThat(Singleton.getCodeIndexer().shouldBackOff()).isTrue();
-        Singleton.setStatsService(new StatsService());
+        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null);
+        assertThat(codeIndexer.shouldBackOff()).isTrue();
     }
 
     public void testShouldNotBackOffWhenLoadZero() {
+        Data dataMock = Mockito.mock(Data.class);
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
-        Singleton.setStatsService(statsServiceMock);
+        when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        assertThat(Singleton.getCodeIndexer().shouldBackOff()).isFalse();
-        Singleton.setStatsService(new StatsService());
+        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null);
+        assertThat(codeIndexer.shouldBackOff()).isFalse();
     }
 
     public void testBuildDocument() {
