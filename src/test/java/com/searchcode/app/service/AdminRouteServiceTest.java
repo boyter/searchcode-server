@@ -64,7 +64,31 @@ public class AdminRouteServiceTest extends TestCase {
         AdminRouteService adminRouteService = new AdminRouteService(null, null, null, sharedServiceMock, statsServiceMock);
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
-        for(String stat: statValue) {
+        for (String stat: statValue) {
+            Request mockRequest = Mockito.mock(Request.class);
+
+            Set<String> returnSet = new HashSet<>();
+            returnSet.add("statname");
+
+            when(mockRequest.queryParams()).thenReturn(returnSet);
+            when(mockRequest.queryParams("statname")).thenReturn(stat);
+
+            String result = adminRouteService.getStat(mockRequest, null);
+            assertThat(result).as("For value %s", stat).isNotEmpty();
+        }
+    }
+
+    public void testGetStatLogs() {
+        AdminRouteService adminRouteService = new AdminRouteService();
+        
+        Singleton.getLogger().apiLog("test");
+        Singleton.getLogger().warning("test");
+        Singleton.getLogger().searchLog("test");
+        Singleton.getLogger().severe("test");
+        Singleton.getLogger().info("test");
+
+        List<String> statValue = Arrays.asList("alllogs", "infologs", "warninglogs", "severelogs", "searchlogs", "apilogs");
+        for (String stat: statValue) {
             Request mockRequest = Mockito.mock(Request.class);
 
             Set<String> returnSet = new HashSet<>();

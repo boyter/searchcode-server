@@ -107,7 +107,7 @@ public class IndexBaseRepoJobTest extends TestCase {
         assertThat(codeLines.getReportList().isEmpty()).isTrue();
     }
 
-    public void testGetMinifiedd() {
+    public void testGetMinified() {
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
         indexGitRepoJob.LOGINDEXED = true;
         List<String[]> reportList = new ArrayList<>();
