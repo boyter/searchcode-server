@@ -30,18 +30,14 @@ public class CodeIndexerTest extends TestCase {
     public void testShouldPauseAddingExpectFalse() {
         Data dataMock = Mockito.mock(Data.class);
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
+
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("0");
 
-        Singleton.setStatsService(statsServiceMock);
-        Singleton.setData(dataMock);
-
         Singleton.setPauseBackgroundJobs(false);
 
-        assertThat(Singleton.getCodeIndexer().shouldPauseAdding()).isFalse();
-
-        // Reset
-        Singleton.setStatsService(new StatsService());
+        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null);
+        assertThat(codeIndexer.shouldPauseAdding()).isFalse();
     }
 
     // TODO actually assert something in here

@@ -217,6 +217,9 @@ public class CodeIndexer {
         }
     }
 
+    /**
+     * Builds a document ready to be indexed by lucene
+     */
     public Document buildDocument(CodeIndexDocument codeIndexDocument) {
         Document document = new Document();
         // Path is the primary key for documents
