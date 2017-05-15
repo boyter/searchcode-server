@@ -446,6 +446,8 @@ public class AdminRouteService {
                 return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
                 return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
+            case "infologs":
+                return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
             case "warninglogs":
                 return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
             case "severelogs":
