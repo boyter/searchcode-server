@@ -1,7 +1,5 @@
 package com.searchcode.app.service;
 
-import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.route.AdminRouteService;
@@ -9,13 +7,14 @@ import junit.framework.TestCase;
 import org.mockito.Mockito;
 import spark.Request;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AdminRouteServiceTest extends TestCase {
 
@@ -55,7 +54,14 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testGetStatValuesExpectValue() {
-        AdminRouteService adminRouteService = new AdminRouteService();
+        SharedService sharedServiceMock = Mockito.mock(SharedService.class);
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+
+        when(statsServiceMock.getMemoryUsage(any())).thenReturn("Yep");
+        when(statsServiceMock.getLoadAverage()).thenReturn("Yep");
+        when(statsServiceMock.getUptime()).thenReturn("Yep");
+
+        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, sharedServiceMock, statsServiceMock);
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
         for(String stat: statValue) {
@@ -76,7 +82,7 @@ public class AdminRouteServiceTest extends TestCase {
         Repo mockRepo = Mockito.mock(Repo.class);
         JobService mockJobService = Mockito.mock(JobService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null, null, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn(new String[0]);
@@ -96,7 +102,7 @@ public class AdminRouteServiceTest extends TestCase {
 
         when(mockRepo.saveRepo(any())).thenReturn(true);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null, null, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
@@ -118,7 +124,7 @@ public class AdminRouteServiceTest extends TestCase {
         JobService mockJobService = Mockito.mock(JobService.class);
         DataService mockDataService = Mockito.mock(DataService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, mockDataService);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, mockDataService, null, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParams("repoName")).thenReturn("myRepo");

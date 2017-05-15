@@ -51,15 +51,17 @@ public class CodeIndexer {
     private final Path FACET_LOCATION;
     private final StatsService statsService;
     private final Data data;
+    private final SharedService sharedService;
 
     public CodeIndexer() {
-        this(Singleton.getData(), Singleton.getStatsService(), Singleton.getSearchCodeLib());
+        this(Singleton.getData(), Singleton.getStatsService(), Singleton.getSearchCodeLib(), Singleton.getSharedService());
     }
 
-    public CodeIndexer(Data data, StatsService statsService, SearchcodeLib searchcodeLib) {
+    public CodeIndexer(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
+        this.sharedService = sharedService;
         this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
@@ -73,7 +75,7 @@ public class CodeIndexer {
      */
     public synchronized boolean shouldPauseAdding() {
 
-        if (Singleton.getPauseBackgroundJobs()) {
+        if (this.sharedService.getPauseBackgroundJobs()) {
             return true;
         }
 
@@ -82,7 +84,7 @@ public class CodeIndexer {
         }
 
         int indexQueueSize = Singleton.getCodeIndexQueue().size();
-        int codeIndexLinesCount = Singleton.getCodeIndexLinesCount();
+        int codeIndexLinesCount = this.sharedService.getCodeIndexLinesCount();
 
         if (indexQueueSize > MAX_INDEX_SIZE) {
             Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
@@ -186,7 +188,7 @@ public class CodeIndexer {
 
             while (codeIndexDocument != null) {
                 Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
-                Singleton.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
+                this.sharedService.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
 
                 facetsConfig = new FacetsConfig();
                 facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
@@ -294,7 +296,7 @@ public class CodeIndexer {
 
             while (codeIndexDocument != null) {
                 Singleton.getLogger().info("Indexing time file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
-                Singleton.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
+                this.sharedService.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
 
                 Document doc = new Document();
                 // Path is the primary key for documents

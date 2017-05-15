@@ -23,20 +23,23 @@ public class CodeIndexerTest extends TestCase {
     }
 
     public void testShouldPauseAddingExpectTrue() {
-        Singleton.setPauseBackgroundJobs(true);
-        assertThat(Singleton.getCodeIndexer().shouldPauseAdding()).isTrue();
+        SharedService sharedServiceMock = Mockito.mock(SharedService.class);
+        when(sharedServiceMock.getPauseBackgroundJobs()).thenReturn(true);
+
+        CodeIndexer codeIndexer = new CodeIndexer(null, null, null, sharedServiceMock);
+        assertThat(codeIndexer.shouldPauseAdding()).isTrue();
     }
 
     public void testShouldPauseAddingExpectFalse() {
         Data dataMock = Mockito.mock(Data.class);
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        SharedService sharedServiceMock = Mockito.mock(SharedService.class);
 
+        when(sharedServiceMock.getPauseBackgroundJobs()).thenReturn(false);
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("0");
 
-        Singleton.setPauseBackgroundJobs(false);
-
-        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null);
+        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null, sharedServiceMock);
         assertThat(codeIndexer.shouldPauseAdding()).isFalse();
     }
 
@@ -79,7 +82,7 @@ public class CodeIndexerTest extends TestCase {
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null);
+        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null, null);
         assertThat(codeIndexer.shouldBackOff()).isTrue();
     }
 
@@ -89,7 +92,7 @@ public class CodeIndexerTest extends TestCase {
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null);
+        CodeIndexer codeIndexer = new CodeIndexer(dataMock, statsServiceMock, null, null);
         assertThat(codeIndexer.shouldBackOff()).isFalse();
     }
 

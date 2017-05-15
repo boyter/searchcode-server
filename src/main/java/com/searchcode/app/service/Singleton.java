@@ -42,7 +42,6 @@ public final class Singleton {
     private static AbstractMap<String, RunningIndexJob> runningIndexRepoJobs = null; // Used to know which jobs are currently running
     private static ISpellingCorrector spellingCorrectorInstance = null;
     private static Queue<CodeIndexDocument> codeIndexQueue = null; // Documents ready to be indexed
-    private static int codeIndexLinesCount = 0; // Used to store how many lines we have ready to index for throttling
 
     private static SearchcodeLib searchcodeLib = null;
     private static FileClassifier fileClassifier = null;
@@ -60,35 +59,14 @@ public final class Singleton {
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
     private static JobService jobService = null;
+    private static SharedService sharedService = null;
     private static IDatabaseConfig databaseConfig = null;
     private static CodeIndexer codeIndexer = null;
     private static Helpers helpers = null;
 
-    private static boolean backgroundJobsEnabled = true; // Controls if all background queue jobs should run or not
-    private static boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
-
-    public static synchronized void incrementCodeIndexLinesCount(int incrementBy) {
-        codeIndexLinesCount = codeIndexLinesCount + incrementBy;
-    }
-
-    public static synchronized void decrementCodeIndexLinesCount(int decrementBy) {
-        codeIndexLinesCount = codeIndexLinesCount - decrementBy;
-
-        if (codeIndexLinesCount < 0) {
-            codeIndexLinesCount = 0;
-        }
-    }
-
-    public static synchronized void setCodeIndexLinesCount(int value) {
-        codeIndexLinesCount = value;
-    }
-
-    public static synchronized int getCodeIndexLinesCount() {
-        return codeIndexLinesCount;
-    }
 
     public static synchronized UniqueRepoQueue getUniqueGitRepoQueue() {
         if (uniqueGitRepoQueue == null) {
@@ -143,7 +121,7 @@ public final class Singleton {
 
     public static synchronized Queue<CodeIndexDocument> getCodeIndexQueue() {
         if (codeIndexQueue == null) {
-            codeIndexQueue = new ConcurrentLinkedQueue<CodeIndexDocument>();
+            codeIndexQueue = new ConcurrentLinkedQueue<>();
         }
 
         return codeIndexQueue;
@@ -151,7 +129,7 @@ public final class Singleton {
 
     public static synchronized AbstractMap<String, String> getDataCache() {
         if (dataCache == null) {
-            dataCache = new ConcurrentHashMap<String, String>();
+            dataCache = new ConcurrentHashMap<>();
         }
 
         return dataCache;
@@ -159,7 +137,7 @@ public final class Singleton {
 
     public static synchronized AbstractMap<String, ApiResult> getApiCache() {
         if (apiCache == null) {
-            apiCache = new ConcurrentHashMap<String, ApiResult>();
+            apiCache = new ConcurrentHashMap<>();
         }
 
         return apiCache;
@@ -167,7 +145,7 @@ public final class Singleton {
 
     public static synchronized AbstractMap<String, RepoResult> getRepoCache() {
         if (repoCache == null) {
-            repoCache = new ConcurrentHashMap<String, RepoResult>();
+            repoCache = new ConcurrentHashMap<>();
         }
 
         return repoCache;
@@ -175,7 +153,7 @@ public final class Singleton {
 
     public static synchronized AbstractMap<String, Object> getGenericCache() {
         if (genericCache == null) {
-            genericCache = new ConcurrentHashMap<String, Object>();
+            genericCache = new ConcurrentHashMap<>();
         }
 
         return genericCache;
@@ -231,22 +209,6 @@ public final class Singleton {
         return searchcodeLib;
     }
 
-    public static synchronized boolean getBackgroundJobsEnabled() {
-        return backgroundJobsEnabled;
-    }
-
-    public static synchronized void setBackgroundJobsEnabled(boolean jobsEnabled) {
-        backgroundJobsEnabled = jobsEnabled;
-    }
-
-
-    public static synchronized boolean getPauseBackgroundJobs() {
-        return pauseBackgroundJobs;
-    }
-
-    public static synchronized void setPauseBackgroundJobs(boolean pauseBackgroundJobs) {
-        Singleton.pauseBackgroundJobs = pauseBackgroundJobs;
-    }
 
     public static synchronized StatsService getStatsService() {
         if (statsService == null) {
@@ -310,6 +272,14 @@ public final class Singleton {
         }
 
         return jobService;
+    }
+
+    public static synchronized SharedService getSharedService() {
+        if (sharedService == null) {
+            sharedService = new SharedService();
+        }
+
+        return sharedService;
     }
 
     public static synchronized FileClassifier getFileClassifier() {

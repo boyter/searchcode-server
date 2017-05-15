@@ -97,16 +97,14 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         Singleton.setStatsService(statsServiceMock);
 
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
-        Singleton.setBackgroundJobsEnabled(false);
+        Singleton.getSharedService().setBackgroundJobsEnabled(false);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
-        Singleton.setBackgroundJobsEnabled(true);
+        Singleton.getSharedService().setBackgroundJobsEnabled(true);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
-        Singleton.setPauseBackgroundJobs(true);
-        Singleton.setBackgroundJobsEnabled(false);
+        Singleton.getSharedService().setPauseBackgroundJobs(true);
+        Singleton.getSharedService().setBackgroundJobsEnabled(false);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
 
-        // Reset
-        Singleton.setStatsService(new StatsService());
     }
 
     public void testGetFileMd5() {

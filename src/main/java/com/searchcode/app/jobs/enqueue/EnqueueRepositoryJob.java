@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @DisallowConcurrentExecution
 public class EnqueueRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getBackgroundJobsEnabled()) {
+        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
             return;
         }
 

@@ -329,7 +329,7 @@ public class JobService implements IJobService {
     public boolean rebuildAll() {
         // Turn off everything
         Singleton.getLogger().info("Recrawl and rebuild of index starting");
-        Singleton.setBackgroundJobsEnabled(false);
+        Singleton.getSharedService().setBackgroundJobsEnabled(false);
         try { Thread.sleep(2000); } catch (InterruptedException e) {}
 
         this.shutdownScheduler();
@@ -361,7 +361,7 @@ public class JobService implements IJobService {
             successful = this.attemptMoveToTrash(repoLocation, indexLocation);
         }
 
-        Singleton.setBackgroundJobsEnabled(true);
+        Singleton.getSharedService().setBackgroundJobsEnabled(true);
         this.initialJobs();
         return successful;
     }
@@ -410,7 +410,7 @@ public class JobService implements IJobService {
 
     @Override
     public boolean forceEnqueue() {
-        if (!Singleton.getBackgroundJobsEnabled()) {
+        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
             return false;
         }
 
@@ -426,7 +426,7 @@ public class JobService implements IJobService {
 
     @Override
     public boolean forceEnqueue(RepoResult repoResult) {
-        if (!Singleton.getBackgroundJobsEnabled()) {
+        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
             return false;
         }
 

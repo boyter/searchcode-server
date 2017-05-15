@@ -16,8 +16,8 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.service.SharedService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -56,19 +56,25 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class IndexGitRepoJob extends IndexBaseRepoJob {
 
-    private String GITBINARYPATH;
-    private boolean USESYSTEMGIT;
+    private final String GIT_BINARY_PATH;
+    private boolean USE_SYSTEM_GIT;
 
     public IndexGitRepoJob() {
-        this.GITBINARYPATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
-        this.USESYSTEMGIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
+        this(Singleton.getSharedService());
+    }
 
-        File f = new File(this.GITBINARYPATH);
-        if (this.USESYSTEMGIT && !f.exists()) {
+    public IndexGitRepoJob(SharedService sharedService) {
+        this.GIT_BINARY_PATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
+        this.USE_SYSTEM_GIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
+
+        File f = new File(this.GIT_BINARY_PATH);
+        if (this.USE_SYSTEM_GIT && !f.exists()) {
             Singleton.getLogger().warning("\n///////////////////////////////////////////////////////////////////////////\n// Property git_binary_path in properties file appears to be incorrect.  //\n// Please check the path. Falling back to internal git implementation.   //\n///////////////////////////////////////////////////////////////////////////");
 
-            this.USESYSTEMGIT = false;
+            this.USE_SYSTEM_GIT = false;
         }
+
+        this.sharedService = sharedService;
     }
 
     @Override
@@ -89,7 +95,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     @Override
     public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
         List<CodeOwner> owners;
-        if (this.USESYSTEMGIT) {
+        if (this.USE_SYSTEM_GIT) {
             owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
         } else {
             owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
@@ -119,7 +125,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         List<CodeOwner> codeOwners = new ArrayList<>(codeLinesSize);
 
         // -w is to ignore whitespace bug
-        ProcessBuilder processBuilder = new ProcessBuilder(this.GITBINARYPATH, "blame", "-c", "-w", fileName);
+        ProcessBuilder processBuilder = new ProcessBuilder(this.GIT_BINARY_PATH, "blame", "-c", "-w", fileName);
         // The / part is required due to centos bug for version 1.1.1
         processBuilder.directory(new File(repoLocations + "/" + repoName));
 

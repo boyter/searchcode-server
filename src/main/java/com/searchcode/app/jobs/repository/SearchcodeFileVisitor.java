@@ -95,7 +95,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
 
             } else {
-                Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                Singleton.getSharedService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             }
 

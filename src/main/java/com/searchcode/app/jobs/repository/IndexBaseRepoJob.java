@@ -20,6 +20,7 @@ import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.SharedService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
@@ -51,6 +52,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean FOLLOWLINKS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
     public boolean haveRepoResult = false;
     public CodeIndexer codeIndexer = Singleton.getCodeIndexer();
+    public SharedService sharedService;
 
     /**
      * This method to be implemented by the extending class
@@ -109,7 +111,7 @@ public abstract class IndexBaseRepoJob implements Job {
         this.LOWMEMORY = Boolean.parseBoolean(jobDataMap.get("LOWMEMORY").toString());
         String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
 
-        if (!isEnabled() || !Singleton.getBackgroundJobsEnabled()) {
+        if (!isEnabled() || !this.sharedService.getBackgroundJobsEnabled()) {
             return;
         }
 
@@ -164,9 +166,9 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         // If the last index was not sucessful, then trigger full index
-        boolean indexsuccess = this.checkIndexSucess(repoGitLocation);
+        boolean indexSuccess = this.checkIndexSucess(repoGitLocation);
 
-        if (repositoryChanged.isChanged() || indexsuccess == false) {
+        if (repositoryChanged.isChanged() || indexSuccess == false) {
             Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
             this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
@@ -295,7 +297,7 @@ public abstract class IndexBaseRepoJob implements Job {
                     Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
                 }
             } else {
-                Singleton.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                this.sharedService.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             }
 
@@ -422,12 +424,12 @@ public abstract class IndexBaseRepoJob implements Job {
      * true if the job should be terminated and false if it should continue to run
      */
     public boolean shouldJobPauseOrTerminate() {
-        if (!Singleton.getBackgroundJobsEnabled()) {
+        if (!this.sharedService.getBackgroundJobsEnabled()) {
             return true;
         }
 
         while (Singleton.getCodeIndexer().shouldPauseAdding()) {
-            if (!Singleton.getBackgroundJobsEnabled()) {
+            if (!this.sharedService.getBackgroundJobsEnabled()) {
                 return true;
             }
 
@@ -524,8 +526,7 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public String getBlameFilePath(String fileLocationFilename) {
         String[] split = fileLocationFilename.split("/");
-        String newString = String.join("/", Arrays.asList(split).subList(1, split.length));
-        return newString;
+        return String.join("/", Arrays.asList(split).subList(1, split.length));
     }
 
     public void createCloneUpdateSuccess(String repoLocation) {

@@ -26,7 +26,7 @@ import java.io.IOException;
 public class IndexDocumentsJob implements Job {
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getBackgroundJobsEnabled()) {
+        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
             return;
         }
         
@@ -37,7 +37,7 @@ public class IndexDocumentsJob implements Job {
             if (codeIndexQueueSize != 0) {
                 StatsService statsService = new StatsService();
                 Singleton.getLogger().info("Documents to index: " + codeIndexQueueSize);
-                Singleton.getLogger().info("Lines to index: " + Singleton.getCodeIndexLinesCount());
+                Singleton.getLogger().info("Lines to index: " + Singleton.getSharedService().getCodeIndexLinesCount());
                 Singleton.getLogger().info("Memory Usage: " + statsService.getMemoryUsage(", "));
                 Singleton.getCodeIndexer().indexDocuments(Singleton.getCodeIndexQueue());
             }

@@ -45,7 +45,7 @@ public class IndexGitHistoryJob implements Job {
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(com.searchcode.app.util.Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
             return;
         }
 

@@ -14,9 +14,8 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
+import com.searchcode.app.service.SharedService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
@@ -24,7 +23,7 @@ import org.quartz.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 /**
  * This job is responsible for pulling and indexing file repositories which are kept upto date by some external
@@ -36,22 +35,31 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
     public String repoName;
 
+
+    public IndexFileRepoJob() {
+        this(Singleton.getSharedService());
+    }
+
+    public IndexFileRepoJob(SharedService sharedService) {
+        this.sharedService = sharedService;
+    }
+
     /**
      * The main method used for finding jobs to index and actually doing the work
      */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (isEnabled() == false) {
+        if (!isEnabled()) {
             return;
         }
 
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (!this.sharedService.getBackgroundJobsEnabled()) {
             return;
         }
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        while(Singleton.getCodeIndexer().shouldPauseAdding()) {
+        while (Singleton.getCodeIndexer().shouldPauseAdding()) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }

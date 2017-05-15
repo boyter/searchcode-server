@@ -5,6 +5,7 @@ import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeIndexer;
+import com.searchcode.app.service.SharedService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
@@ -40,8 +41,6 @@ public class IndexBaseRepoJobTest extends TestCase {
         when(mockDetail.getJobDataMap()).thenReturn(mockJobDataMap);
         when(mockContext.getJobDetail()).thenReturn(mockDetail);
         when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
-
-        Singleton.setBackgroundJobsEnabled(true);
     }
 
 
@@ -57,9 +56,12 @@ public class IndexBaseRepoJobTest extends TestCase {
         assertThat(spy.haveRepoResult).isFalse();
     }
 
-
     public void testExecuteHasMethodInQueueNewRepository() throws JobExecutionException {
-        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
+        SharedService sharedServiceMock = mock(SharedService.class);
+        when(sharedServiceMock.getPauseBackgroundJobs()).thenReturn(false);
+        when(sharedServiceMock.getBackgroundJobsEnabled()).thenReturn(true);
+
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob(sharedServiceMock);
         IndexGitRepoJob spy = spy(indexGitRepoJob);
         spy.haveRepoResult = false;
 
@@ -70,7 +72,6 @@ public class IndexBaseRepoJobTest extends TestCase {
         when(spy.isEnabled()).thenReturn(true);
         when(spy.getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
                 .thenReturn(new RepositoryChanged(false, null, null));
-
 
         when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
         spy.codeIndexer = mockCodeIndexer;

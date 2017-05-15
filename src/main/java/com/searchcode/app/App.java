@@ -328,8 +328,8 @@ public class App {
 
             post("/togglepause/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                Singleton.setPauseBackgroundJobs(!Singleton.getPauseBackgroundJobs());
-                return new JsonTransformer().render(Singleton.getPauseBackgroundJobs());
+                Singleton.getSharedService().setPauseBackgroundJobs(!Singleton.getSharedService().getPauseBackgroundJobs());
+                return new JsonTransformer().render(Singleton.getSharedService().getPauseBackgroundJobs());
             });
 
             post("/clearsearchcount/", "application/json", (request, response) -> {

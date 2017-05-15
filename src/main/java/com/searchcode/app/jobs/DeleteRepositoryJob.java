@@ -29,7 +29,7 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getBackgroundJobsEnabled()) {
+        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
             return;
         }
 

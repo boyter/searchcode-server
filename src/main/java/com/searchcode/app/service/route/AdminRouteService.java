@@ -38,17 +38,23 @@ public class AdminRouteService {
     private final Repo repo;
     private final JobService jobService;
     private final DataService dataService;
+    private final SharedService sharedService;
+    private final StatsService statsService;
 
     public AdminRouteService() {
-        this.repo = Singleton.getRepo();
-        this.jobService = Singleton.getJobService();
-        this.dataService = Singleton.getDataService();
+        this(Singleton.getRepo(),
+             Singleton.getJobService(),
+             Singleton.getDataService(),
+             Singleton.getSharedService(),
+             Singleton.getStatsService());
     }
 
-    public AdminRouteService(Repo repo, JobService jobService, DataService dataService) {
+    public AdminRouteService(Repo repo, JobService jobService, DataService dataService, SharedService sharedService, StatsService statsService) {
         this.repo = repo;
         this.jobService = jobService;
         this.dataService = dataService;
+        this.sharedService = sharedService;
+        this.statsService = statsService;
     }
 
     public String getStat(Request request, Response response) {
@@ -87,7 +93,6 @@ public class AdminRouteService {
 
     public Map<String, Object> adminPage(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
-        StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here
         map.put(Values.SQLITE_FILE, Properties.getProperties().getProperty(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE));
@@ -137,14 +142,14 @@ public class AdminRouteService {
         map.put("paused", this.getStat("paused"));
 
 
-        map.put("sysArch", statsService.getArch());
-        map.put("sysVersion", statsService.getOsVersion());
-        map.put("processorCount", statsService.getProcessorCount());
+        map.put("sysArch", this.statsService.getArch());
+        map.put("sysVersion", this.statsService.getOsVersion());
+        map.put("processorCount", this.statsService.getProcessorCount());
         map.put("deletionQueue", Singleton.getDataService().getPersistentDelete().size());
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
+        map.put("index_paused", this.sharedService.getPauseBackgroundJobs() ? "paused" : "running");
 
         return map;
     }
@@ -408,13 +413,13 @@ public class AdminRouteService {
 
         switch (statname.toLowerCase()) {
             case "memoryusage":
-                return Singleton.getStatsService().getMemoryUsage("<br>");
+                return this.statsService.getMemoryUsage("<br>");
             case "loadaverage":
-                return Singleton.getStatsService().getLoadAverage();
+                return this.statsService.getLoadAverage();
             case "uptime":
-                return Singleton.getStatsService().getUptime();
+                return this.statsService.getUptime();
             case "searchcount":
-                return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
+                return Values.EMPTYSTRING + this.statsService.getSearchCount();
             case "runningjobs":
                 StringBuilder stringBuffer = new StringBuilder();
                 for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
@@ -452,7 +457,7 @@ public class AdminRouteService {
             case "threads":
                 return "" + java.lang.Thread.activeCount();
             case "paused":
-                return Singleton.getPauseBackgroundJobs() ? "paused": "running";
+                return this.sharedService.getPauseBackgroundJobs() ? "paused": "running";
         }
 
         return Values.EMPTYSTRING;
