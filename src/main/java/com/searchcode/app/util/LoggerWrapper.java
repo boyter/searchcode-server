@@ -139,7 +139,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void info(String toLog) {
-        String message = "INFO: " + new Date().toString() + ": " + toLog;
+        String message = "INFO: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
         try {
             this.allCache.add(message);
             this.infoRecentCache.add(message);
@@ -155,7 +155,8 @@ public class LoggerWrapper {
     }
 
     public synchronized void warning(String toLog) {
-        String message = "WARNING: " + new Date().toString() + ": " + toLog;
+
+        String message = "WARNING: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.allCache.add(message);
@@ -172,7 +173,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void severe(String toLog) {
-        String message = "SEVERE: " + new Date().toString() + ": " + toLog;
+        String message = "SEVERE: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.allCache.add(message);
@@ -189,7 +190,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void searchLog(String toLog) {
-        String message = "SEARCH: " + new Date().toString() + ": " + toLog;
+        String message = "SEARCH: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.searchLog.add(message);
@@ -198,7 +199,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void apiLog(String toLog) {
-        String message = "API: " + new Date().toString() + ": " + toLog;
+        String message = "API: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.apiLog.add(message);
