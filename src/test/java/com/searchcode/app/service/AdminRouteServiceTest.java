@@ -80,7 +80,7 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testGetStatLogs() {
         AdminRouteService adminRouteService = new AdminRouteService();
-        
+
         Singleton.getLogger().apiLog("test");
         Singleton.getLogger().warning("test");
         Singleton.getLogger().searchLog("test");
