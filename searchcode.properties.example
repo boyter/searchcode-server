@@ -1,4 +1,5 @@
 # searchcode config
+# If setting binary paths on windows use / not \ for directory delimiter
 database=sqlite
 sqlite_file=searchcode.sqlite
 server_port=8080
