@@ -125,6 +125,14 @@ public class App {
                 return new JsonTransformer().render(searchRouteService.codeSearch(request, response));
             });
 
+            get("/codesearch/rss/", (request, response) -> {
+                addXmlHeaders(response);
+                SearchRouteService searchRouteService = new SearchRouteService();
+                Map<String, Object> map = new HashMap<>();
+                map.put("result", searchRouteService.codeSearch(request, response));
+                return new FreeMarkerEngine().render(new ModelAndView(map, "codesearchrss.ftl"));
+            });
+
             get("/timecodesearch/", (request, response) -> {
                 addJsonHeaders(response);
                 TimeSearchRouteService ars = new TimeSearchRouteService();
@@ -433,6 +441,11 @@ public class App {
     private static void addJsonHeaders(Response response) {
         response.header("Content-Encoding", "gzip");
         response.header("Content-Type", "application/json");
+    }
+
+    private static void addXmlHeaders(Response response) {
+        response.header("Content-Encoding", "gzip");
+        response.header("Content-Type", "application/rss+xml; charset=UTF-8");
     }
 
     private static void addAuthenticatedUser(Request request) {
