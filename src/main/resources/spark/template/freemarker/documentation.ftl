@@ -658,6 +658,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Boolean value true or false. If set to true indicates that symbolic links should be followed when indexing using file paths. Can be enabled if required to walk repositories containing symlinks. Be careful, this can produce infinite loops. Defaults to false.</dd>
               <dt>deep_guess_files</dt>
               <dd>Boolean value true or false. If set to true when a file is encountered that cannot be classified though naming conventions its keywords will be analysed and a best guess made. This can be CPU heavy or incorrectly classify some files. Defaults to false.</dd>
+              <dt>host_name</dt>
+              <dd>String value. Set this to the expected DNS host name for your searchcode server instance. This will allow things like RSS links to work.</dd>
             </dl>
         </p>
 

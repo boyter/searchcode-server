@@ -139,7 +139,8 @@ number_file_processors=${number_file_processors}
 default_and_match=${default_and_match}
 log_indexed=${log_indexed}
 follow_links=${follow_links}
-deep_guess_files=${deep_guess_files}</textarea>
+deep_guess_files=${deep_guess_files}
+host_name=${host_name}</textarea>
 
 
         </div>

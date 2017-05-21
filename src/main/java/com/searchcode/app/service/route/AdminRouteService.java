@@ -127,6 +127,7 @@ public class AdminRouteService {
         map.put(Values.TRASH_LOCATION, Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION));
         map.put(Values.FOLLOW_LINKS, Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
         map.put(Values.DEEP_GUESS_FILES, Properties.getProperties().getProperty(Values.DEEP_GUESS_FILES, Values.DEFAULT_DEEP_GUESS_FILES));
+        map.put(Values.HOST_NAME, Properties.getProperties().getProperty(Values.HOST_NAME, Values.DEFAULT_HOST_NAME));
 
 
         map.put("repoCount", this.getStat("repoCount"));
