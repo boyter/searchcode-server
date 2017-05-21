@@ -477,6 +477,37 @@ var SearchModel = {
                         pagequery);
         }
     },
+    getsearchquerystring: function() {
+        // If we have filters append them on
+        var lang = SearchModel.getlangfilters();
+        var repo = SearchModel.getrepofilters();
+        var own = SearchModel.getownfilters();
+        var year = SearchModel.getyearfilters();
+        var ym = SearchModel.getyearmonthfilters();
+        var ymd = SearchModel.getyearmonthdayfilters();
+        var rev = SearchModel.getrevisionfilters();
+        var del = SearchModel.getdeletedfilters();
+
+        var searchpage = 0;
+        var pagequery = ''
+
+        // Stringify and parse to create a copy not a reference
+        SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
+        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
+        SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
+        SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
+        SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
+        SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
+        SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
+        SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
+
+        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+        if (SearchModel.searchhistory() === true ) { 
+            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+        }
+
+        return queryurl;
+    },
     search: function(page, isstatechange) {
         if (SearchModel.currentlyloading()) {
             return;
@@ -485,6 +516,7 @@ var SearchModel = {
         SearchModel.currentlyloading(true);
         m.redraw();
 
+        // TODO the below should be merged with getsearchquerystring
         // If we have filters append them on
         var lang = SearchModel.getlangfilters();
         var repo = SearchModel.getrepofilters();
@@ -719,7 +751,8 @@ var SearchComponent = {
                         }),
                         m.component(FilterOptionsComponent, {
                             filterinstantly: SearchModel.filterinstantly
-                        })
+                        }),
+                        m.component(RSSComponent)
                     ]),
                     m('div.col-md-9.search-results', [
                         m.component(SearchNoResultsComponent, {
@@ -936,6 +969,20 @@ var FilterOptionsComponent = {
                     m('label', [
                         m('input', historyparams),
                         m('span', 'Search Across History')
+                    ])
+                )
+            ])
+        );
+    }
+}
+
+var RSSComponent = {
+    view: function(ctrl, args) {
+        return m('div', 
+            m('div', [
+                m('div.checkbox', 
+                    m('label', [
+                        m('a', {'href': '/api/codesearch/rss/' + SearchModel.getsearchquerystring() }, 'RSS Feed of Search')
                     ])
                 )
             ])

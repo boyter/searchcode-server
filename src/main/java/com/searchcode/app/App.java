@@ -130,6 +130,8 @@ public class App {
                 SearchRouteService searchRouteService = new SearchRouteService();
                 Map<String, Object> map = new HashMap<>();
                 map.put("result", searchRouteService.codeSearch(request, response));
+                map.put("hostname", Properties.getProperties().getProperty(Values.HOST_NAME, Values.DEFAULT_HOST_NAME));
+
                 return new FreeMarkerEngine().render(new ModelAndView(map, "codesearchrss.ftl"));
             });
 

@@ -2,20 +2,20 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>Search for "${result.query}"</title>
-  <link>https://searchcode.com/</link>
+  <link>${hostname}</link>
   <description>Search for "${result.query}"</description>
     <#list result.codeResultList>
     <#items as result>
     <item>
         <title>${result.fileName} in ${result.repoName}</title>
-        <link>https:/searchcode.com/file/${result.codeId}/${result.codePath}</link>
-        <guid>https:/searchcode.com/file/${result.codeId}/${result.codePath}</guid>
+        <link>${hostname}/file/${result.codeId}/${result.codePath}</link>
+        <guid>${hostname}/file/${result.codeId}/${result.codePath}</guid>
         <description>
           &lt;ol class="code-result"&gt;
               <#list result.matchingResults>
                   <#items as line>
                   &lt;li value="${line.lineNumber?c}"&gt;
-                      &lt;a href="https:/searchcode.com/file/${result.documentId?c}/${result.codePath}#${line.lineNumber?c}"&gt;
+                      &lt;a href="${hostname}/file/${result.codeId}/${result.codePath}#${line.lineNumber?c}"&gt;
                           &lt;pre&gt;${line.line?html}&lt;/pre&gt;
                       &lt;/a&gt;
                   &lt;/li&gt;

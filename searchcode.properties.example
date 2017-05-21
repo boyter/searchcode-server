@@ -41,6 +41,7 @@ default_and_match=true
 log_indexed=false
 follow_links=false
 deep_guess_files=false
+host_name=localhost:8080
 # The below will probably be moved into the settings page at some point in the
 # future.
 password=Adm1n234

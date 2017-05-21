@@ -103,6 +103,8 @@ public class Values {
     public static final String DEFAULT_FOLLOW_LINKS = "false";
     public static final String DEEP_GUESS_FILES = "deep_guess_files";
     public static final String DEFAULT_DEEP_GUESS_FILES = "false";
+    public static final String HOST_NAME = "host_name";
+    public static final String DEFAULT_HOST_NAME = "localhost:8080";
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";
