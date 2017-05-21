@@ -63,6 +63,14 @@
       </div>
     </div>
 
+    <div>
+        <div>
+            <div class="checkbox">
+                <label><a href="/api/codesearch/rss/?q=${searchValue?html}">RSS Feed of Search</a></label>
+            </div>
+        </div>
+    </div>
+
     </form>
   </div>
 
