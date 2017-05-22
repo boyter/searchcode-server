@@ -122,6 +122,17 @@
         </tr>
 
         <tr>
+        <td valign="top"><b>Embed</b></td>
+        <td valign="top">
+            <textarea id="embed" maxlength="16000" class="form-control" name="embed" placeholder="<div>Custom HTML</div>">${embed}</textarea>
+        </td>
+        </tr>
+        <tr>
+        <td></td>
+        <td>Empty this field to reset. Use this to embed custom HTML/CSS/JS on all pages excluding the admin pages. Max length of 16000 characters.</td>
+        </tr>
+
+        <tr>
             <td valign="top"><input id="changeSettings" class="btn btn-primary" type="submit" name="Save Settings" value="Save Settings" /></td>
             <td></td>
         </tr>

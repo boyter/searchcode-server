@@ -78,6 +78,7 @@
         </p>
       </div>
     </div>
+    ${embed}
   </body>
 </#compress>
 </html>

@@ -50,6 +50,7 @@
         </p>
       </div>
     </div>
+    ${embed}
   </body>
 </html>
 </#macro>

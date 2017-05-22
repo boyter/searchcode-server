@@ -108,6 +108,15 @@ public class CommonRouteService {
         return Double.parseDouble(backoffValue);
     }
 
+    public static String getEmbed() {
+        if (App.ISCOMMUNITY) {
+            return Values.EMPTYSTRING;
+        }
+
+        Data data = Singleton.getData();
+        return data.getDataByName(Values.EMBED, Values.EMPTYSTRING);
+    }
+
     public static boolean owaspAdvisoriesEnabled() {
         if (App.ISCOMMUNITY) {
             return false;

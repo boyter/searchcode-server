@@ -103,6 +103,7 @@ public class App {
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new FreeMarkerEngine().render(new ModelAndView(map, "documentation.ftl"));
         });
 
@@ -111,6 +112,7 @@ public class App {
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new FreeMarkerEngine().render(new ModelAndView(map, "404.ftl"));
         });
 
@@ -202,6 +204,7 @@ public class App {
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
             return new FreeMarkerEngine().render(new ModelAndView(map, "login.ftl"));
         });
@@ -216,6 +219,7 @@ public class App {
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
             if (request.queryParams().contains("password")) {
                 map.put("passwordInvalid", true);

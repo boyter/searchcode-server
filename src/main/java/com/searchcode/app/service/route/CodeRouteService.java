@@ -114,6 +114,7 @@ public class CodeRouteService {
         map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
     }
 
@@ -217,6 +218,7 @@ public class CodeRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -261,6 +263,7 @@ public class CodeRouteService {
         map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -289,6 +292,7 @@ public class CodeRouteService {
         map.put("previousOffset", indexOffset - 1);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -422,6 +426,7 @@ public class CodeRouteService {
             map.put("isHtml", true);
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "searchresults.ftl");
         }
 
@@ -429,6 +434,7 @@ public class CodeRouteService {
         map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
     }
 
@@ -481,6 +487,7 @@ public class CodeRouteService {
         map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }

@@ -226,6 +226,7 @@ public class AdminRouteService {
         map.put("minifiedLength", Values.EMPTYSTRING + (int) CommonRouteService.getMinifiedLength());
         map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
         map.put("backoffValue", CommonRouteService.getBackoffValue());
+        map.put("embed", CommonRouteService.getEmbed());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put("highlighters", highlighters);
 
@@ -277,6 +278,7 @@ public class AdminRouteService {
 
         String logo = request.queryParams("logo").trim();
         String syntaxHighlighter = request.queryParams("syntaxhighligher");
+        String embed = request.queryParams("embed").trim();
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("averagesalary"));
@@ -323,6 +325,7 @@ public class AdminRouteService {
 
         data.saveData(Values.LOGO, logo);
         data.saveData(Values.SYNTAXHIGHLIGHTER, syntaxHighlighter);
+        data.saveData(Values.EMBED, embed);
 
         // Redo anything that requires updates at this point
         Singleton.getSearchcodeLib(data);

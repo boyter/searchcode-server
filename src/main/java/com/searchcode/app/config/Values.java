@@ -148,6 +148,7 @@ public class Values {
     public static final String OWASPENABLED = "owasp_enabled";
     public static final String LOGO = "logo";
     public static final String BACKOFFVALUE = "backoff_value";
+    public static final String EMBED = "embed";
 
     public static final String DEFAULTSYNTAXHIGHLIGHTER = "github";
     public static final String DEFAULTAVERAGESALARY = "56000";
