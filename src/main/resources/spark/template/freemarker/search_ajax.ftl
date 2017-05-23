@@ -47,6 +47,7 @@
 <script>
 var preload = ${searchResultJson};
 </script>
+${embed}
 </body>
 <script src="/js/script.min.js"></script>
 </html>

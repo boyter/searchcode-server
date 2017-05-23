@@ -129,7 +129,7 @@
         </tr>
         <tr>
         <td></td>
-        <td>Empty this field to reset. Use this to embed custom HTML/CSS/JS on all pages excluding the admin pages. Max length of 16000 characters.</td>
+        <td>Empty this field to reset. Use this to embed custom HTML/CSS/JS on all pages. Max length of 16000 characters.</td>
         </tr>
 
         <tr>

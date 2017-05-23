@@ -151,6 +151,7 @@ public class AdminRouteService {
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put("index_paused", this.sharedService.getPauseBackgroundJobs() ? "paused" : "running");
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -192,6 +193,7 @@ public class AdminRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -209,6 +211,7 @@ public class AdminRouteService {
         map.put("apiAuthentication", apiEnabled && apiAuth);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -269,6 +272,7 @@ public class AdminRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }

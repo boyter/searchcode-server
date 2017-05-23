@@ -265,6 +265,7 @@ public class App {
 
                 map.put("logoImage", CommonRouteService.getLogo());
                 map.put("isCommunity", ISCOMMUNITY);
+                map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_bulk.ftl"));
             });
 

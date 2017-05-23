@@ -105,6 +105,7 @@ public class CodeRouteService {
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "search_ajax.ftl");
         }
 
