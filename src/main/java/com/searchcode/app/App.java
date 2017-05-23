@@ -34,7 +34,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    public static final boolean ISCOMMUNITY = false;
+    public static final boolean ISCOMMUNITY = true;
     public static final String VERSION = "1.3.10";
 
     public static void main(String[] args) {
@@ -313,9 +313,14 @@ public class App {
             post("/repo/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                adminRouteService.postRepo(request, response);
+                String postRepo = adminRouteService.postRepo(request, response);
 
-                response.redirect("/admin/repo/");
+                if ("Add/Add".equals(postRepo)) {
+                    response.redirect("/admin/repo/");
+                } else {
+                    response.redirect("/admin/repolist/");
+                }
+
                 halt();
                 return null;
             });

@@ -365,7 +365,7 @@ public class AdminRouteService {
         }
     }
 
-    public void postRepo(Request request, Response response) {
+    public String postRepo(Request request, Response response) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -373,8 +373,9 @@ public class AdminRouteService {
         String[] repopassword = request.queryParamsValues("repopassword");
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
+        String[] addRepo = request.queryParamsValues("addRepo");
 
-        for(int i=0;i<reponames.length; i++) {
+        for(int i = 0; i < reponames.length; i++) {
             if (reponames[i].trim().length() != 0) {
 
                 String branch = repobranch[i].trim();
@@ -386,6 +387,8 @@ public class AdminRouteService {
                 this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
             }
         }
+
+        return reponames.length != 0 ? addRepo[0] : Values.EMPTYSTRING;
     }
 
     public void deleteRepo(Request request, Response response) {
