@@ -128,6 +128,19 @@ public class ApiRouteService {
         return Values.EMPTYSTRING;
     }
 
+    public RepoResult getRepo(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+            if (reponame == null) {
+                return null;
+            }
+
+            return reponame;
+        }
+
+        return null;
+    }
+
     public RepoResultApiResponse repoList(Request request, Response response) {
         if (!this.apiEnabled) {
             return new RepoResultApiResponse(false, "API not enabled", null);

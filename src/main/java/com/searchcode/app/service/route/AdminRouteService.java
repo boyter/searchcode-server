@@ -190,6 +190,7 @@ public class AdminRouteService {
         map.put("hasNext", (indexOffset + 100) < repoCount);
         map.put("previousOffset", "" + (indexOffset - 100));
         map.put("nextOffset", "" + (indexOffset + 100));
+        map.put("repoCount", this.getStat("repoCount"));
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
@@ -212,6 +213,7 @@ public class AdminRouteService {
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
@@ -232,6 +234,7 @@ public class AdminRouteService {
         map.put("embed", CommonRouteService.getEmbed());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put("highlighters", highlighters);
+        map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
@@ -273,6 +276,7 @@ public class AdminRouteService {
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
@@ -365,7 +369,7 @@ public class AdminRouteService {
         }
     }
 
-    public String postRepo(Request request, Response response) {
+    public void postRepo(Request request, Response response) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -373,7 +377,6 @@ public class AdminRouteService {
         String[] repopassword = request.queryParamsValues("repopassword");
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
-        String[] addRepo = request.queryParamsValues("addRepo");
 
         for(int i = 0; i < reponames.length; i++) {
             if (reponames[i].trim().length() != 0) {
@@ -387,8 +390,6 @@ public class AdminRouteService {
                 this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
             }
         }
-
-        return reponames.length != 0 ? addRepo[0] : Values.EMPTYSTRING;
     }
 
     public void deleteRepo(Request request, Response response) {
@@ -417,7 +418,7 @@ public class AdminRouteService {
         }
     }
 
-    private String getStat(String statname) {
+    public String getStat(String statname) {
         if (statname == null) {
             return Values.EMPTYSTRING;
         }

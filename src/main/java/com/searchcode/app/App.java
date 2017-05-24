@@ -34,7 +34,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    public static final boolean ISCOMMUNITY = true;
+    public static final boolean ISCOMMUNITY = false;
     public static final String VERSION = "1.3.10";
 
     public static void main(String[] args) {
@@ -187,6 +187,11 @@ public class App {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return apiRouteService.getIndexTime(request, response);
                 });
+
+                get("/repo/", "application/json", (request, response) -> {
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return new JsonTransformer().render(apiRouteService.getRepo(request, response));
+                });
             });
         });
 
@@ -261,11 +266,13 @@ public class App {
 
             get("/bulk/", (request, response) -> {
                 checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
                 Map<String, Object> map = new HashMap<>();
 
                 map.put("logoImage", CommonRouteService.getLogo());
                 map.put("isCommunity", ISCOMMUNITY);
                 map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+                map.put("repoCount", adminRouteService.getStat("repoCount"));
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_bulk.ftl"));
             });
 
@@ -313,9 +320,11 @@ public class App {
             post("/repo/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                String postRepo = adminRouteService.postRepo(request, response);
+                adminRouteService.postRepo(request, response);
 
-                if ("Add/Add".equals(postRepo)) {
+                String[] returns = request.queryParamsValues("return");
+
+                if (returns != null) {
                     response.redirect("/admin/repo/");
                 } else {
                     response.redirect("/admin/repolist/");
