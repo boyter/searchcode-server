@@ -26,7 +26,7 @@
       <div class="form-group" id="reponame-formgroup">
         <label for="reponame" class="col-sm-2 control-label">Repository Name</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="reponame" value="" name="reponame" placeholder="Repository Name" />
+          <input type="text" class="form-control" id="reponame" value="" name="reponame" placeholder="Repository Name" required />
           <span id="helpBlock2" class="help-block">Must consist of only only alphanumeric characters or - and be a unique name</span>
         </div>
       </div>
@@ -43,7 +43,7 @@
       <div class="form-group" id="repourl-formgroup">
           <label for="repourl" class="col-sm-2 control-label">Repository Location</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="" id="repourl" name="repourl" placeholder="Repository URL or File Path" />
+            <input type="text" class="form-control" value="" id="repourl" name="repourl" placeholder="Repository URL or File Path" required />
           </div>
       </div>
 
@@ -84,7 +84,7 @@
 
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-          <input type="submit" class="btn btn-primary" name="addRepo" value="Add Repository" />
+          <input id="addRepository" type="submit" class="btn btn-primary" name="addRepo" value="Add Repository" />
         </div>
       </div>
     </form>
@@ -93,8 +93,8 @@
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script>
-$('#reponame').on('input', function() {
-	var input = $(this);
+function validateRepoName(callback) {
+    var input = $('#reponame');
 	var re = /^[a-zA-Z0-9-]*$/;
 	var is_valid = re.test(input.val());
 
@@ -102,26 +102,49 @@ $('#reponame').on('input', function() {
     .done(function(data, textStatus, jqXHR) {
         if (is_valid && input.val() && data === 'null') {
             $('#reponame-formgroup').removeClass('has-error');
+            if (callback) {
+                callback(true);
+            }
         }
         else {
             $('#reponame-formgroup').addClass('has-error');
+            if (callback) {
+                callback(false);
+            }
         }
-
     }).fail(function(xhr, ajaxOptions, thrownError) {
         $('#reponame-formgroup').addClass('has-error');
     });
+}
+
+function validateRepoUrl() {
+    var input = $('#repourl');
+
+    if (input.val()) {
+        $('#repourl-formgroup').removeClass('has-error');
+        return true;
+    }
+    else {
+        $('#repourl-formgroup').addClass('has-error');
+        return false;
+    }
+}
+
+$('#reponame').on('input', validateRepoName);
+$('#repourl').on('input', validateRepoUrl);
+
+$('#addRepository').click( function(event) {
+
+    if (error_free == false || success == false){
+        event.preventDefault();
+    }
+    else{
+        alert('No errors: Form will be submitted');
+        event.preventDefault();
+    }
 });
 
-$('#repourl').on('input', function() {
-	var input = $(this);
 
-	if (input.val()) {
-	    $('#repourl-formgroup').removeClass('has-error');
-    }
-	else {
-	    $('#repourl-formgroup').addClass('has-error');
-    }
-});
 </script>
 
 </@layout.masterTemplate>

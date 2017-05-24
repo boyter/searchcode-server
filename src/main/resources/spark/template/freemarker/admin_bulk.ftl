@@ -22,7 +22,7 @@
 <form method="POST">
 
     <p>You can use this page to insert repositories in bulk up-to 1,000 repositories. Please note that you cannot delete or update repositories using this page. To delete
-    use the <a href="/admin/repo/">Repository Admin</a> page.</p>
+    use the <a href="/admin/repolist/">Repository List</a> page.</p>
     <p>If you need to maintain more than 1,000 repositories is is advised to use the <a href="/documentation/#api">API</a>.</p>
 
 <textarea rows="20" style="width:100%;" name="repos"></textarea>

@@ -135,6 +135,9 @@ public class ApiRouteService {
                 return null;
             }
 
+            reponame.setUsername(null);
+            reponame.setPassword(null);
+
             return reponame;
         }
 

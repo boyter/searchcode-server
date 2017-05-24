@@ -192,6 +192,10 @@ public class App {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.getRepo(request, response));
                 });
+
+                post("/repo/validate/", (request, response) -> {
+                    return null;
+                });
             });
         });
 

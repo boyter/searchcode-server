@@ -63,6 +63,7 @@ public final class Singleton {
     private static IDatabaseConfig databaseConfig = null;
     private static CodeIndexer codeIndexer = null;
     private static Helpers helpers = null;
+    private static ValidatorService validatorService = null;
 
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
@@ -216,6 +217,14 @@ public final class Singleton {
         }
 
         return statsService;
+    }
+
+    public static synchronized ValidatorService getValidatorService() {
+        if (validatorService == null) {
+            validatorService = new ValidatorService();
+        }
+
+        return validatorService;
     }
 
     public static synchronized void setStatsService(StatsService statsService) {
