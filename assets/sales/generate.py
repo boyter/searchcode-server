@@ -28,6 +28,9 @@ config = [{
         'file': 'developer-productivity-tools.html',
         'title': 'Tools that Drive Developer Productivity'
     }, {
+        'file': 'version.json',
+        'title': ''
+    }, {
         'directory': './knowledge-base/',
         'footer': './generic/kb_footer.html',
         'title': 'Knowledge Base Article'
@@ -90,7 +93,10 @@ for conf in config:
             pass
         else:
             with open(target + conf['file'].replace('./', ''), 'w') as myfile:
-                myfile.write(merged_header_template + pre_header + data + pre_footer + footer_template)
+                if '.json' not in conf['file']:
+                    myfile.write(merged_header_template + pre_header + data + pre_footer + footer_template)
+                else:
+                    myfile.write(data)
 
     if 'directory' in conf:
         if not os.path.exists(target + conf['directory']):
