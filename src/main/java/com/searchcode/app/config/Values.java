@@ -35,7 +35,7 @@ public class Values {
     public static final String DEFAULTREPOSITORYLOCATION = "./repo/";
     public static final String CHECKREPOCHANGES = "check_repo_chages";
     public static final String DEFAULTCHECKREPOCHANGES = "600";
-    public static final String CHECKFILEREPOCHANGES = "check_filerepo_chages";
+    public static final String CHECKFILEREPOCHANGES = "check_filerepo_changes";
     public static final String DEFAULTCHECKFILEREPOCHANGES = "3600";
     public static final String SPELLINGCORRECTORSIZE = "spelling_corrector_size";
     public static final String DEFAULTSPELLINGCORRECTORSIZE = "10000";

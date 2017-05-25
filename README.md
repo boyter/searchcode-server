@@ -91,7 +91,7 @@ Then add the git ones as GIT repositories in the application and the file ones a
 set the properties
 
 	check_repo_chages=60
-	check_filerepo_chages=60
+	check_filerepo_changes=60
 
 but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
 to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
@@ -204,6 +204,7 @@ XX XXXXX XXXX - 1.3.10
  - Search results now have RSS feed https://github.com/boyter/searchcode-server/issues/114
  - Can add custom HTML/CSS/JS to all pages https://github.com/boyter/searchcode-server/issues/107
  - Changed validation of repository names such that they must be alphanumeric or - with client and server side validation
+ - Fix spelling of check_filerepo_chages to check_filerepo_changes for properties file
 
 13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83

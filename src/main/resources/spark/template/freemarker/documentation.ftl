@@ -596,7 +596,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Path to where the trash folders will be put. Sometimes files or folders will be created in the repository or index locations which searchcode cannot remove. If found they will be placed into this directory where it is up to a System Administrator to investigate and remove. Usually caused by the immutable bit being set.</dd>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
-              <dt>check_filerepo_chages</dt>
+              <dt>check_filerepo_changes</dt>
               <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
               <dt>only_localhost</dt>
               <dd>Boolean value true or false. Will only process connections on 127.0.0.1 (not localhost) if set to true and return 204 content not found otherwise. By default set to false.</dd>

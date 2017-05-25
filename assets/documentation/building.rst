@@ -80,7 +80,7 @@ set the properties
 .. code-block:: bash
 
 	check_repo_chages=60
-	check_filerepo_chages=60
+	check_filerepo_changes=60
 
 but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
 to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
