@@ -16,6 +16,7 @@ import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
 import spark.Request;
@@ -30,22 +31,21 @@ public class ApiRouteService {
     private final IJobService jobService;
     private final DataService dataService;
     private final Repo repo;
+    private final ValidatorService validatorService;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
     public ApiRouteService() {
-        this.apiService = Singleton.getApiService();
-        this.jobService = Singleton.getJobService();
-        this.dataService = Singleton.getDataService();
-        this.repo = Singleton.getRepo();
+        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService());
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService){
+    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService){
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
         this.dataService = dataService;
+        this.validatorService = validatorService;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -318,8 +318,15 @@ public class ApiRouteService {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}"));
+        RepoResult newRepoResult = new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}");
 
+        ValidatorResult validate = this.validatorService.validate(newRepoResult);
+
+        if (!validate.isValid) {
+            return new ApiResponse(false, validate.reason);
+        }
+
+        this.repo.saveRepo(newRepoResult);
 
         Singleton.getLogger().apiLog("Valid signed repoAdd API call using publicKey=" + publicKey);
         return new ApiResponse(true, "added repository successfully");

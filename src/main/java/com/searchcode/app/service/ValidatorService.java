@@ -1,8 +1,10 @@
 package com.searchcode.app.service;
 
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.model.ValidatorResult;
 
 public class ValidatorService {
 
@@ -16,18 +18,22 @@ public class ValidatorService {
         this.repo = repo;
     }
 
-    public boolean validate(RepoResult repoResult) {
+    public ValidatorResult validate(RepoResult repoResult) {
         if (repoResult == null || repoResult.getName() == null) {
-            return false;
+            return new ValidatorResult(false, "Name cannot be null");
         }
 
         boolean matches = repoResult.getName().matches("^[a-zA-Z0-9-]*$");
 
         if (!matches) {
-            return false;
+            return new ValidatorResult(false, "Name must match the regular expression ^[a-zA-Z0-9-]*$");
         }
 
         RepoResult repoByName = this.repo.getRepoByName(repoResult.getName());
-        return repoByName == null;
+        if (repoByName != null) {
+            return new ValidatorResult(false, "Name must be unique");
+        }
+
+        return new ValidatorResult(true, Values.EMPTYSTRING);
     }
 }
