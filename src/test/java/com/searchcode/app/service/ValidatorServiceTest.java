@@ -1,9 +1,12 @@
 package com.searchcode.app.service;
 
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import junit.framework.TestCase;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ValidatorServiceTest extends TestCase {
 
@@ -26,9 +29,14 @@ public class ValidatorServiceTest extends TestCase {
     }
 
     public void testValidatorServiceExistingName() {
-        ValidatorService validatorService = new ValidatorService();
+        Repo mockRepo = mock(Repo.class);
 
-        boolean validate = validatorService.validate(new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}"));
+        ValidatorService validatorService = new ValidatorService(mockRepo);
+
+        when(mockRepo.getRepoByName("exists")).thenReturn(new RepoResult());
+
+        RepoResult repoResult = new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}");
+        boolean validate = validatorService.validate(repoResult);
         assertThat(validate).isFalse();
     }
 }
