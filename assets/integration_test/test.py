@@ -70,7 +70,7 @@ class TestIntegration(unittest.TestCase):
     def testRepositoryList(self):
         url = "http://%s/repository/list/" % (host)
         data = self.getData(url)
-        self.assertTrue('Repository Name' in data)
+        self.assertTrue('<script src="/js/intercooler-1.0.3.min.js"></script>' in data)
 
     def testNoSearch(self):
         url = "http://%s/?q=&p=0" % (host)
@@ -97,6 +97,12 @@ class TestIntegration(unittest.TestCase):
             url = "http://%s/api/repo/index/?repoUrl=http://test.com/" % (host)
             data = self.getData(url)
             self.assertTrue('Was unable to find repository' in data)
+
+    def test_rss_search(self):
+        url = "http://%s/api/codesearch/rss/?q=test&p=0" % (host)
+        data = self.getData(url)
+        self.assertTrue('title>Search for "test"</title>' in data)
+        self.assertTrue('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' in data)
 
     def testCheckResponseHeadersApi(self):
         urls = [

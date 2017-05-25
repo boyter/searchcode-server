@@ -14,6 +14,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.JsonTransformer;
@@ -192,10 +193,6 @@ public class App {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.getRepo(request, response));
                 });
-
-                post("/repo/validate/", (request, response) -> {
-                    return null;
-                });
             });
         });
 
@@ -260,6 +257,29 @@ public class App {
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo.ftl"));
             });
 
+            post("/repo/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                ValidatorResult validatorResult = adminRouteService.postRepo(request, response);
+
+                if (!validatorResult.isValid) {
+                    Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                    map.put("validatorResult", validatorResult);
+                    return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo.ftl"));
+                }
+
+                String[] returns = request.queryParamsValues("return");
+
+                if (returns != null) {
+                    response.redirect("/admin/repo/");
+                } else {
+                    response.redirect("/admin/repolist/");
+                }
+
+                halt();
+                return null;
+            });
+
             get("/repolist/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
@@ -317,23 +337,6 @@ public class App {
                 adminRouteService.postBulk(request, response);
 
                 response.redirect("/admin/bulk/");
-                halt();
-                return null;
-            });
-
-            post("/repo/", (request, response) -> {
-                checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                adminRouteService.postRepo(request, response);
-
-                String[] returns = request.queryParamsValues("return");
-
-                if (returns != null) {
-                    response.redirect("/admin/repo/");
-                } else {
-                    response.redirect("/admin/repolist/");
-                }
-
                 halt();
                 return null;
             });

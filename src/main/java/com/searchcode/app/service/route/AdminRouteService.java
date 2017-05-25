@@ -20,6 +20,7 @@ import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.IOUtils;
@@ -40,21 +41,24 @@ public class AdminRouteService {
     private final DataService dataService;
     private final SharedService sharedService;
     private final StatsService statsService;
+    private final ValidatorService validatorService;
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
              Singleton.getJobService(),
              Singleton.getDataService(),
              Singleton.getSharedService(),
-             Singleton.getStatsService());
+             Singleton.getStatsService(),
+             Singleton.getValidatorService());
     }
 
-    public AdminRouteService(Repo repo, JobService jobService, DataService dataService, SharedService sharedService, StatsService statsService) {
+    public AdminRouteService(Repo repo, JobService jobService, DataService dataService, SharedService sharedService, StatsService statsService, ValidatorService validatorService) {
         this.repo = repo;
         this.jobService = jobService;
         this.dataService = dataService;
         this.sharedService = sharedService;
         this.statsService = statsService;
+        this.validatorService = validatorService;
     }
 
     public String getStat(Request request, Response response) {
@@ -369,7 +373,7 @@ public class AdminRouteService {
         }
     }
 
-    public void postRepo(Request request, Response response) {
+    public ValidatorResult postRepo(Request request, Response response) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -378,18 +382,28 @@ public class AdminRouteService {
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
 
+        ValidatorResult validate = new ValidatorResult(true, Values.EMPTYSTRING);
+
         for(int i = 0; i < reponames.length; i++) {
-            if (reponames[i].trim().length() != 0) {
 
-                String branch = repobranch[i].trim();
-                if (branch.equals(Values.EMPTYSTRING)) {
-                    branch = "master";
-                }
-
-                this.repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
-                this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
+            String branch = repobranch[i].trim();
+            if (branch.equals(Values.EMPTYSTRING)) {
+                branch = "master";
             }
+
+            RepoResult repoResult = new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}");
+            validate = this.validatorService.validate(repoResult);
+
+            if (!validate.isValid) {
+                validate.setRepoResult(repoResult);
+                return validate;
+            }
+
+            this.repo.saveRepo(repoResult);
+            this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
         }
+
+        return validate;
     }
 
     public void deleteRepo(Request request, Response response) {

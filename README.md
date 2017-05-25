@@ -203,6 +203,7 @@ XX XXXXX XXXX - 1.3.10
  - API auditing via logs added https://github.com/boyter/searchcode-server/issues/57
  - Search results now have RSS feed https://github.com/boyter/searchcode-server/issues/114
  - Can add custom HTML/CSS/JS to all pages https://github.com/boyter/searchcode-server/issues/107
+ - Changed validation of repository names such that they must be alphanumeric or - with client and server side validation
 
 13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83

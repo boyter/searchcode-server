@@ -18,15 +18,17 @@
     </div>
     <div class="col-md-10">
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Admin</h3>
-    <p>You can use this page to add repositories to index or find and remove them from the index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
-    <p>Please note that deleting a repository adds it to queue for deletion and as such may not be removed immediately.</p>
+    <p>You can use this page to add repositories to index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
 
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Add</h3>
-    <form class="form-horizontal" method="POST">
+
+    <#if validatorResult??><div class="alert alert-danger" role="alert">${validatorResult.reason}</div></#if>
+
+    <form class="form-horizontal" method="POST" id="mainForm">
       <div class="form-group" id="reponame-formgroup">
         <label for="reponame" class="col-sm-2 control-label">Repository Name</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="reponame" value="" name="reponame" placeholder="Repository Name" required />
+          <input type="text" class="form-control" id="reponame" value="<#if validatorResult??>${validatorResult.repoResult.name}</#if>" name="reponame" placeholder="Repository Name" required />
           <span id="helpBlock2" class="help-block">Must consist of only only alphanumeric characters or - and be a unique name</span>
         </div>
       </div>
@@ -43,35 +45,35 @@
       <div class="form-group" id="repourl-formgroup">
           <label for="repourl" class="col-sm-2 control-label">Repository Location</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="" id="repourl" name="repourl" placeholder="Repository URL or File Path" required />
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.url}</#if>" id="repourl" name="repourl" placeholder="Repository URL or File Path" required />
           </div>
       </div>
 
       <div class="form-group">
         <label for="repousername" class="col-sm-2 control-label">Repository Username</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" value="" id="repousername" name="repousername" placeholder="Repository username if required" />
+          <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.username}</#if>" id="repousername" name="repousername" placeholder="Repository username if required" />
         </div>
       </div>
 
       <div class="form-group">
           <label for="repopassword" class="col-sm-2 control-label">Repository Password</label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" value="" id="repopassword" name="repopassword" placeholder="Repository password if required" />
+            <input type="password" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.password}</#if>" id="repopassword" name="repopassword" placeholder="Repository password if required" />
           </div>
       </div>
 
       <div class="form-group">
             <label for="reposource" class="col-sm-2 control-label">Repository Source</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" value="" id="reposource" name="reposource" placeholder="URL to repository source location or documentation" />
+              <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="reposource" name="reposource" placeholder="URL to repository source location or documentation" />
             </div>
       </div>
 
       <div class="form-group">
           <label for="repobranch" class="col-sm-2 control-label">Repository Branch</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="master" id="repobranch" name="repobranch" placeholder="For GIT repositories only what branch should be indexed" />
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.branch}<#else>master</#if>" id="repobranch" name="repobranch" placeholder="For GIT repositories only what branch should be indexed" />
           </div>
       </div>
 
@@ -93,7 +95,7 @@
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script>
-function validateRepoName(callback) {
+function validateRepoName() {
     var input = $('#reponame');
 	var re = /^[a-zA-Z0-9-]*$/;
 	var is_valid = re.test(input.val());
@@ -102,15 +104,9 @@ function validateRepoName(callback) {
     .done(function(data, textStatus, jqXHR) {
         if (is_valid && input.val() && data === 'null') {
             $('#reponame-formgroup').removeClass('has-error');
-            if (callback) {
-                callback(true);
-            }
         }
         else {
             $('#reponame-formgroup').addClass('has-error');
-            if (callback) {
-                callback(false);
-            }
         }
     }).fail(function(xhr, ajaxOptions, thrownError) {
         $('#reponame-formgroup').addClass('has-error');
@@ -132,19 +128,6 @@ function validateRepoUrl() {
 
 $('#reponame').on('input', validateRepoName);
 $('#repourl').on('input', validateRepoUrl);
-
-$('#addRepository').click( function(event) {
-
-    if (error_free == false || success == false){
-        event.preventDefault();
-    }
-    else{
-        alert('No errors: Form will be submitted');
-        event.preventDefault();
-    }
-});
-
-
 </script>
 
 </@layout.masterTemplate>
