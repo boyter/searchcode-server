@@ -194,6 +194,8 @@ Change Log
 ==========
 
 XX XXXXX XXXX - 1.3.10
+ - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric or - with client and server side validation
+ - BREAKING CHANGE Fix spelling of check_filerepo_chages to check_filerepo_changes for properties file
  - Set follow symlinks to be configurable through properties file https://github.com/boyter/searchcode-server/issues/99
  - Clicking Remove will also clear the text box filters https://github.com/boyter/searchcode-server/issues/98
  - Improved stop/reset jobs logic, deleted jobs persist on searchcode restart https://github.com/boyter/searchcode-server/issues/41
@@ -203,8 +205,7 @@ XX XXXXX XXXX - 1.3.10
  - API auditing via logs added https://github.com/boyter/searchcode-server/issues/57
  - Search results now have RSS feed https://github.com/boyter/searchcode-server/issues/114
  - Can add custom HTML/CSS/JS to all pages https://github.com/boyter/searchcode-server/issues/107
- - Changed validation of repository names such that they must be alphanumeric or - with client and server side validation
- - Fix spelling of check_filerepo_chages to check_filerepo_changes for properties file
+
 
 13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
