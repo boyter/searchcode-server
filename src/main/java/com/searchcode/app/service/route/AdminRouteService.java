@@ -30,9 +30,7 @@ import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class AdminRouteService {
 
@@ -343,16 +341,17 @@ public class AdminRouteService {
         Singleton.getSearchcodeLib(data);
     }
 
-    public void postBulk(Request request, Response response) {
+    public List<ValidatorResult> postBulk(Request request, Response response) {
         String repos = request.queryParams("repos");
         String repolines[] = repos.split("\\r?\\n");
         Repo repo = Singleton.getRepo();
+
+        List<ValidatorResult> validatorResults = new ArrayList<>();
 
         for(String line: repolines) {
             String[] repoparams = line.split(",", -1);
 
             if (repoparams.length == 7) {
-
                 String branch = repoparams[6].trim();
                 if (branch.equals(Values.EMPTYSTRING)) {
                     branch = "master";
@@ -363,14 +362,26 @@ public class AdminRouteService {
                     scm = "git";
                 }
 
-                RepoResult rr = repo.getRepoByName(repoparams[0]);
+                RepoResult repoResult = new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}");
+                ValidatorResult validate = this.validatorService.validate(repoResult);
 
-                if (rr == null) {
-                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}"));
-                    this.jobService.forceEnqueue(this.repo.getRepoByUrl(repoparams[3]));
+                if (validate.isValid) {
+                    repo.saveRepo(repoResult);
+                    this.jobService.forceEnqueue(repoResult);
+                }
+                else {
+                    validate.setLine(line);
+                    validatorResults.add(validate);
                 }
             }
+            else {
+                ValidatorResult validate = new ValidatorResult(false, "Incorrect number of elements: " + line);
+                validate.setLine(line);
+                validatorResults.add(validate);
+            }
         }
+
+        return validatorResults;
     }
 
     public ValidatorResult postRepo(Request request, Response response) {

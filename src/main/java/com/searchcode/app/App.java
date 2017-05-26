@@ -26,6 +26,7 @@ import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -35,7 +36,7 @@ import static spark.Spark.*;
  */
 public class App {
 
-    public static final boolean ISCOMMUNITY = false;
+    public static final boolean ISCOMMUNITY = true;
     public static final String VERSION = "1.3.10";
 
     public static void main(String[] args) {
@@ -300,6 +301,28 @@ public class App {
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_bulk.ftl"));
             });
 
+            post("/bulk/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                List<ValidatorResult> validatorResults = adminRouteService.postBulk(request, response);
+
+                if (!validatorResults.isEmpty()) {
+                    Map<String, Object> map = new HashMap<>();
+
+                    map.put("logoImage", CommonRouteService.getLogo());
+                    map.put("isCommunity", ISCOMMUNITY);
+                    map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+                    map.put("repoCount", adminRouteService.getStat("repoCount"));
+                    map.put("validatorResults", validatorResults);
+
+                    return new FreeMarkerEngine().render(new ModelAndView(map, "admin_bulk.ftl"));
+                }
+
+                response.redirect("/admin/repolist/");
+                halt();
+                return null;
+            });
+
             get("/settings/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
@@ -327,16 +350,6 @@ public class App {
                 adminRouteService.postSettings(request, response);
 
                 response.redirect("/admin/settings/");
-                halt();
-                return null;
-            });
-
-            post("/bulk/", (request, response) -> {
-                checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                adminRouteService.postBulk(request, response);
-
-                response.redirect("/admin/bulk/");
                 halt();
                 return null;
             });
