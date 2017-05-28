@@ -20,7 +20,7 @@ public class ValidatorServiceTest extends TestCase {
 
     public void testRepoResultValidReponame() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "something", "something", "url", "", "", "source", "branch", "{}"));
+        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some_thing", "something", "url", "", "", "source", "branch", "{}"));
         assertThat(validate.isValid).isTrue();
     }
 

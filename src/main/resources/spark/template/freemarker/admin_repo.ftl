@@ -29,7 +29,7 @@
         <label for="reponame" class="col-sm-2 control-label">Repository Name</label>
         <div class="col-sm-10">
           <input type="text" class="form-control" id="reponame" value="<#if validatorResult??>${validatorResult.repoResult.name}</#if>" name="reponame" placeholder="Repository Name" required />
-          <span id="helpBlock2" class="help-block">Must consist of only only alphanumeric characters or - and be a unique name</span>
+          <span id="helpBlock2" class="help-block">Must consist of only only alphanumeric characters - or _ and be a unique name</span>
         </div>
       </div>
       <div class="form-group">
@@ -97,7 +97,7 @@
 <script>
 function validateRepoName() {
     var input = $('#reponame');
-	var re = /^[a-zA-Z0-9-]*$/;
+	var re = /^[a-zA-Z0-9-_]*$/;
 	var is_valid = re.test(input.val());
 
 	$.ajax('/api/repo/repo/?reponame=' + input.val())

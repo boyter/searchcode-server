@@ -30,10 +30,10 @@ public class ValidatorService {
             return new ValidatorResult(false, "Repository Location cannot be empty or whitespace");
         }
 
-        boolean matches = repoResult.getName().matches("^[a-zA-Z0-9-]*$");
+        boolean matches = repoResult.getName().matches("^[a-zA-Z0-9-_]*$");
 
         if (!matches) {
-            return new ValidatorResult(false, "Repository Name must match the regular expression ^[a-zA-Z0-9-]*$");
+            return new ValidatorResult(false, "Repository Name must match the regular expression ^[a-zA-Z0-9-_]*$");
         }
 
         RepoResult repoByName = this.repo.getRepoByName(repoResult.getName());
