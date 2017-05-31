@@ -128,6 +128,19 @@ public class ApiRouteService {
         return Values.EMPTYSTRING;
     }
 
+    public String getAverageIndexTimeSeconds(Request request, Response response) {
+        if (request.queryParams().contains("reponame")) {
+            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+            if (reponame == null) {
+                return Values.EMPTYSTRING;
+            }
+
+            return "" + reponame.getData().averageIndexTimeSeconds;
+        }
+
+        return Values.EMPTYSTRING;
+    }
+
     public RepoResult getRepo(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
             RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));

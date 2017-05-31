@@ -25,6 +25,7 @@
                     <th>Index Status</th>
                     <th>Last Index Time</th>
                     <th>File Count</th>
+                    <th>Index Time (seconds)</th>
                 </tr>
             </thead>
             <tbody>
@@ -35,6 +36,7 @@
                     <td><span ic-trigger-on="load" ic-poll="30s" ic-src="/admin/api/checkindexstatus/?reponame=${result.name?html}"></span></td>
                     <td><span ic-trigger-on="load" ic-poll="30s" ic-src="/api/repo/indextime/?reponame=${result.name?html}"></span></td>
                     <td><span ic-trigger-on="load" ic-poll="30s" ic-src="/api/repo/filecount/?reponame=${result.name?html}"></span></td>
+                    <td><span ic-trigger-on="load" ic-poll="30s" ic-src="/api/repo/indextimeseconds/?reponame=${result.name?html}"></span></td>
                   </tr>
             </#items>
             </tbody>

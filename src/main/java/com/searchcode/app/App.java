@@ -190,6 +190,11 @@ public class App {
                     return apiRouteService.getIndexTime(request, response);
                 });
 
+                get("/indextimeseconds/", "application/json", (request, response) -> {
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return apiRouteService.getAverageIndexTimeSeconds(request, response);
+                });
+
                 get("/repo/", "application/json", (request, response) -> {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.getRepo(request, response));
