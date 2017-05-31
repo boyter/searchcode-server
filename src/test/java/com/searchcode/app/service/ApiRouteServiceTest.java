@@ -14,6 +14,8 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import spark.Request;
 
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -409,10 +411,10 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoDeleteAuthReponameAuth() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
-        DataService dataServiceMock = Mockito.mock(DataService.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
+        DataService dataServiceMock = mock(DataService.class);
+        ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=unit-test", ApiService.HmacType.SHA1)).thenReturn(true);
         when(mockRepo.getRepoByName("unit-test")).thenReturn(new RepoResult());
@@ -431,6 +433,26 @@ public class ApiRouteServiceTest extends TestCase {
         assertThat(apiResponse.isSucessful()).isTrue();
         verify(dataServiceMock, times(1)).addToPersistentDelete("");
 
+    }
+
+    public void testGetAverageIndexTimeSeconds() {
+        Request mockRequest = mock(Request.class);
+        Repo repoMock = mock(Repo.class);
+
+        when(mockRequest.queryParams("reponame")).thenReturn("somename");
+        when(mockRequest.queryParams()).thenReturn(
+            (new HashMap<String, String>() {{
+                put("reponame", "reponame");
+            }}).keySet()
+        );
+
+        when(repoMock.getRepoByName("somename")).thenReturn(
+            new RepoResult(0, "name", "scm", "url", "username", "password", "source", "branch", "{\"averageIndexTimeSeconds\":1}")
+        );
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null);
+        String averageIndexTimeSeconds = apiRouteService.getAverageIndexTimeSeconds(mockRequest, null);
+        assertThat(averageIndexTimeSeconds).isEqualTo("1");
     }
 
     /////////////////////////////////////////////////////////////////////

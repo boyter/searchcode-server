@@ -117,7 +117,7 @@ public class ApiRouteService {
 
     public String getIndexTime(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+            RepoResult reponame = this.repo.getRepoByName(request.queryParams("reponame"));
             if (reponame == null) {
                 return Values.EMPTYSTRING;
             }
@@ -130,12 +130,12 @@ public class ApiRouteService {
 
     public String getAverageIndexTimeSeconds(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+            RepoResult reponame = this.repo.getRepoByName(request.queryParams("reponame"));
             if (reponame == null) {
                 return Values.EMPTYSTRING;
             }
 
-            return "" + reponame.getData().averageIndexTimeSeconds;
+            return Values.EMPTYSTRING + reponame.getData().averageIndexTimeSeconds;
         }
 
         return Values.EMPTYSTRING;
