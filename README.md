@@ -205,6 +205,7 @@ XX XXXXX XXXX - 1.3.10
  - API auditing via logs added https://github.com/boyter/searchcode-server/issues/57
  - Search results now have RSS feed https://github.com/boyter/searchcode-server/issues/114
  - Can add custom HTML/CSS/JS to all pages https://github.com/boyter/searchcode-server/issues/107
+ - Add average index time seconds to repo overview page https://github.com/boyter/searchcode-server/issues/118
 
 
 13 April 2017 - 1.3.9
