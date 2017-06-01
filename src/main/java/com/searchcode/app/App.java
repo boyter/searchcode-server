@@ -196,6 +196,7 @@ public class App {
                 });
 
                 get("/repo/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.getRepo(request, response));
                 });
