@@ -455,6 +455,27 @@ public class ApiRouteServiceTest extends TestCase {
         assertThat(averageIndexTimeSeconds).isEqualTo("1");
     }
 
+    public void testGetIndexTime() {
+        Request mockRequest = mock(Request.class);
+        Repo repoMock = mock(Repo.class);
+
+        when(mockRequest.queryParams("reponame")).thenReturn("somename");
+        when(mockRequest.queryParams()).thenReturn(
+                (new HashMap<String, String>() {{
+                    put("reponame", "reponame");
+                }}).keySet()
+        );
+
+        when(repoMock.getRepoByName("somename")).thenReturn(
+                new RepoResult(0, "name", "scm", "url", "username", "password", "source", "branch", "\n" +
+                        "{\"rowId\":1,\"name\":\"test\",\"scm\":\"git\",\"url\":\"/test/\",\"username\":\"\",\"password\":\"\",\"source\":\"\",\"branch\":\"master\",\"data\":{\"averageIndexTimeSeconds\":9,\"indexStatus\":\"success\",\"jobRunTime\":{\"seconds\":1496356541,\"nanos\":188000000}}}")
+        );
+
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null);
+        String averageIndexTimeSeconds = apiRouteService.getIndexTime(mockRequest, null);
+        assertThat(averageIndexTimeSeconds).isEqualTo("0 seconds ago");
+    }
+
     /////////////////////////////////////////////////////////////////////
     // TODO expand on the below tests they do not hit all code paths
     /////////////////////////////////////////////////////////////////////
