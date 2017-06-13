@@ -311,7 +311,7 @@ public class CodeRouteService {
 
         if (request.queryParams().contains("q")) {
             String query = request.queryParams("q").trim();
-            String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
+            String altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
             int page = 0;
 
             if (request.queryParams().contains("p")) {
@@ -395,19 +395,19 @@ public class CodeRouteService {
             SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
-            for(CodeFacetRepo f: searchResult.getRepoFacetResults()) {
+            for (CodeFacetRepo f: searchResult.getRepoFacetResults()) {
                 if (Arrays.asList(repos).contains(f.getRepoName())) {
                     f.setSelected(true);
                 }
             }
 
-            for(CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
+            for (CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
                 if (Arrays.asList(langs).contains(f.getLanguageName())) {
                     f.setSelected(true);
                 }
             }
 
-            for(CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
+            for (CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
                 if (Arrays.asList(owners).contains(f.getOwner())) {
                     f.setSelected(true);
                 }
@@ -419,7 +419,7 @@ public class CodeRouteService {
             map.put("langsQueryString", langsQueryString);
             map.put("ownsQueryString", ownsQueryString);
 
-            map.put("altQuery", altquery);
+            map.put("altQuery", altQuery);
 
             map.put("totalPages", searchResult.getPages().size());
 
