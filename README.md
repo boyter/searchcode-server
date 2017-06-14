@@ -193,7 +193,7 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXXX XXXX - 1.3.10
+15 June 2017 - 1.3.10
  - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation
  - BREAKING CHANGE Fix spelling of check_filerepo_chages to check_filerepo_changes for properties file
  - Set follow symlinks to be configurable through properties file https://github.com/boyter/searchcode-server/issues/99
