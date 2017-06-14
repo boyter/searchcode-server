@@ -340,7 +340,7 @@ public class CodeRouteService {
 
                 if (repos.length != 0) {
                     List<String> reposList = Arrays.asList(repos).stream()
-                            .map((s) -> "reponame:" + QueryParser.escape(s))
+                            .map((s) -> "reponame:" + QueryParser.escape(s.replace(" ", "_")))
                             .collect(Collectors.toList());
 
                     reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
@@ -358,7 +358,7 @@ public class CodeRouteService {
 
                 if (langs.length != 0) {
                     List<String> langsList = Arrays.asList(langs).stream()
-                            .map((s) -> "languagename:" + QueryParser.escape(s))
+                            .map((s) -> "languagename:" + QueryParser.escape(s.replace(" ", "_")))
                             .collect(Collectors.toList());
 
                     langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
@@ -376,7 +376,7 @@ public class CodeRouteService {
 
                 if (owners.length != 0) {
                     List<String> ownersList = Arrays.asList(owners).stream()
-                            .map((s) -> "codeowner:" + QueryParser.escape(s))
+                            .map((s) -> "codeowner:" + QueryParser.escape(s.replace(" ", "_")))
                             .collect(Collectors.toList());
 
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
