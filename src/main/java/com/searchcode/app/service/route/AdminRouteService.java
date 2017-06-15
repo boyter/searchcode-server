@@ -85,7 +85,7 @@ public class AdminRouteService {
                 return "Indexed ✓";
             }
 
-            if("indexing".equals(indexStatus)) {
+            if ("indexing".equals(indexStatus)) {
                 return "Indexing...";
             }
         }
