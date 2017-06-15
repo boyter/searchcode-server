@@ -15,7 +15,7 @@
 
        <div class="row top20">
         <div class="container em">
-            <p class="em">Below are a sample upstart and systemd sample startup scripts supplied by Nathanael Anderson <a href="https://github.com/boyter/searchcode-server/issues/106">https://github.com/boyter/searchcode-server/issues/106</a>. They assume that searchcode has been installed to the /opt/searchcode directory and are using version 1.3.9.</p>
+            <p class="em">Below are a sample upstart and systemd sample startup scripts supplied by Nathanael Anderson <a href="https://github.com/boyter/searchcode-server/issues/106">https://github.com/boyter/searchcode-server/issues/106</a>. They assume that searchcode has been installed to the /opt/searchcode directory and are using version 1.3.11.</p>
 
 
 <p class="em">Ubuntu 14.04 - Upstart searchcode.conf file</p>
@@ -30,7 +30,7 @@ limit nofile 999999 999999
 respawn
 
 script
-    exec /usr/bin/java -jar searchcode-1.3.9.jar > /var/log/searchcode.log 2>&1
+    exec /usr/bin/java -jar searchcode-1.3.11.jar > /var/log/searchcode.log 2>&1
 end script
 </code></pre>
 
@@ -40,7 +40,7 @@ Description=SearchCode Server
 
 [Service]
 WorkingDirectory=/opt/searchcode
-ExecStart=/usr/bin/java -jar searchcode-1.3.9.jar
+ExecStart=/usr/bin/java -jar searchcode-1.3.11.jar
 Restart=always
 
 [Install]

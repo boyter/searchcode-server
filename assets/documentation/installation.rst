@@ -93,7 +93,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.10.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.11.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button

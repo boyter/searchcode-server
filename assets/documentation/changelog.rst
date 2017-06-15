@@ -2,7 +2,7 @@
 Change Log
 ==========
 
-XX XXXXX XXXX - 1.3.10
+XX XXXXX XXXX - 1.3.11
 ---------------------
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
  - Add indexer pause button back to admin pages https://github.com/boyter/searchcode-server/issues/84
