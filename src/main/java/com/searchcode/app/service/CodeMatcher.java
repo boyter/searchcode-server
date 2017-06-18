@@ -190,9 +190,9 @@ public class CodeMatcher {
         List<String> splitMatchTerms = new ArrayList<>();
         List<String> newTerms = new ArrayList<>();
 
-        for(String s: matchTerms.trim().split(" ")) {
+        for (String s: matchTerms.trim().split(" ")) {
             if (!s.isEmpty()) {
-                switch(s) {
+                switch (s) {
                     case "AND":
                     case "OR":
                     case "NOT":
@@ -204,28 +204,28 @@ public class CodeMatcher {
             }
         }
 
-        for(String s: splitMatchTerms) {
-            for(String t: s.split("\\.")) {
+        for (String s: splitMatchTerms) {
+            for (String t: s.split("\\.")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split("\\(")) {
+            for (String t: s.split("\\(")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split("\\-")) {
+            for (String t: s.split("\\-")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split("<")) {
+            for (String t: s.split("<")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split(">")) {
+            for (String t: s.split(">")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }

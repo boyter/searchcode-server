@@ -54,7 +54,7 @@ public class ApiService implements IApiService {
 
         String myHmac;
 
-        switch(hmacType) {
+        switch (hmacType) {
             case SHA512:
                 myHmac = HmacUtils.hmacSha512Hex(apiResult.getPrivateKey(), query);
                 break;

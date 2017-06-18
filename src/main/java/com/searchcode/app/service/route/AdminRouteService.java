@@ -250,7 +250,7 @@ public class AdminRouteService {
         }
 
         String logs;
-        switch(level) {
+        switch (level) {
             case "INFO":
                 logs = this.getStat("infologs");
                 break;

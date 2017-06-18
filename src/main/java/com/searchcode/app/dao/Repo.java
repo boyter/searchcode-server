@@ -416,7 +416,7 @@ public class Repo implements IRepo {
                         "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\", \"master\" FROM \"main\".\"y6L0VN5j9eQSg65hWtJJ_repo\"",
                         "DROP TABLE \"y6L0VN5j9eQSg65hWtJJ_repo\"");
 
-                for(String command: commands) {
+                for (String command: commands) {
                     stmt = conn.prepareStatement(command);
                     stmt.execute();
                 }

@@ -145,7 +145,7 @@ public class SearchcodeLib {
 
         boolean ignore;
 
-        switch(languagename) {
+        switch (languagename) {
             case "Unknown":
             case "Text":
             case "JSON":
