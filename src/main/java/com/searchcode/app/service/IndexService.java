@@ -67,6 +67,10 @@ public class IndexService implements IIndexService {
         this.FACET_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
     }
 
+    //////////////////////////////////////////////////////////////
+    // Methods for controlling the index
+    //////////////////////////////////////////////////////////////
+
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {}
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {}
     public synchronized void deleteByCodeId(String codeId) throws IOException {}
@@ -74,7 +78,7 @@ public class IndexService implements IIndexService {
 
 
     //////////////////////////////////////////////////////////////
-    // Methods fof querying the index go below here
+    // Methods for querying the index
     //////////////////////////////////////////////////////////////
 
     /**
