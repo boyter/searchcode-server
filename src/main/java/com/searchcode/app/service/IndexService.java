@@ -25,14 +25,12 @@ import java.util.Queue;
 /**
  * Service to deal with any tasks that involve talking to the index
  */
-public class IndexService {
-    // Indexing methods
+public class IndexService implements IIndexService {
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {}
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {}
     public synchronized void deleteByCodeId(String codeId) throws IOException {}
     public synchronized void deleteByReponame(String repoName) throws IOException {}
 
-    // Searching methods
     public int getTotalNumberDocumentsIndexed() { return 0; };
     public SearchResult search(String queryString, int page) { return null; }
     public CodeResult getByCodeId(String codeId) { return null; }
