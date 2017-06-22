@@ -36,6 +36,7 @@ import java.util.Queue;
 
 /**
  * Service to deal with any tasks that involve talking to the index
+ * specifically
  */
 public class IndexService implements IIndexService {
 
@@ -43,7 +44,7 @@ public class IndexService implements IIndexService {
     private final Data data;
     private final SharedService sharedService;
     private final SearchcodeLib searchcodeLib;
-    private final LoggerWrapper loggerWrapper;
+    private final LoggerWrapper logger;
 
     private final int MAX_INDEX_SIZE;
     private final int MAX_LINES_INDEX_SIZE;
@@ -57,12 +58,12 @@ public class IndexService implements IIndexService {
         this(Singleton.getData(), Singleton.getStatsService(), Singleton.getSearchCodeLib(), Singleton.getSharedService(), Singleton.getLogger());
     }
 
-    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper loggerWrapper) {
+    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper logger) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
         this.sharedService = sharedService;
-        this.loggerWrapper = loggerWrapper;
+        this.logger = logger;
         this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
@@ -90,18 +91,12 @@ public class IndexService implements IIndexService {
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
-        IndexWriter writer = new IndexWriter(dir, iwc);
-
-        try {
+        try (IndexWriter writer = new IndexWriter(dir, iwc)) {
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
             Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
-        }
-        catch (Exception ex) {
-            this.loggerWrapper.warning("ERROR - caught a " + ex.getClass() + " in CodeIndexer\n with message: " + ex.getMessage());
-        }
-        finally {
-            writer.close();
+        } catch (Exception ex) {
+            this.logger.warning("ERROR - caught a " + ex.getClass() + " in CodeIndexer\n with message: " + ex.getMessage());
         }
     }
 
@@ -144,7 +139,7 @@ public class IndexService implements IIndexService {
             reader.close();
         }
         catch (IOException ex) {
-            this.loggerWrapper.info(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.info(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return numDocs;

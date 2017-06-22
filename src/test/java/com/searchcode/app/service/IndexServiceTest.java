@@ -11,13 +11,6 @@ public class IndexServiceTest extends TestCase {
 
     private IndexService indexService = null;
 
-    public void testGetTotalNumberDocumentsIndexed() {
-        this.indexService = new IndexService();
-        int totalNumberDocumentsIndexed = this.indexService.getTotalNumberDocumentsIndexed();
-
-        assertThat(totalNumberDocumentsIndexed).isNotNegative();
-    }
-
     public void testDeleteByCodeId() {
         this.indexService = new IndexService();
         try {
@@ -43,5 +36,14 @@ public class IndexServiceTest extends TestCase {
         Path indexLocationB = this.indexService.getIndexLocation();
 
 //        assertThat(indexLocationA).isNotEqualTo(indexLocationB);
+    }
+
+
+
+    public void testGetTotalNumberDocumentsIndexed() {
+        this.indexService = new IndexService();
+        int totalNumberDocumentsIndexed = this.indexService.getTotalNumberDocumentsIndexed();
+
+        assertThat(totalNumberDocumentsIndexed).isNotNegative();
     }
 }
