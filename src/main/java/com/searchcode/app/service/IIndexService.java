@@ -17,7 +17,7 @@ public interface IIndexService {
     void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException;
     void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException;
     void deleteByCodeId(String codeId) throws IOException;
-    void deleteByReponame(String repoName) throws IOException;
+    void deleteByRepoName(String repoName) throws IOException;
     void flipIndex();
 
     // Searching methods

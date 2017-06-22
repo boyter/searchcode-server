@@ -16,13 +16,16 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
+import com.searchcode.app.util.CodeAnalyzer;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
-import org.apache.lucene.index.DirectoryReader;
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
@@ -73,8 +76,53 @@ public class IndexService implements IIndexService {
 
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {}
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {}
-    public synchronized void deleteByCodeId(String codeId) throws IOException {}
-    public synchronized void deleteByReponame(String repoName) throws IOException {}
+
+    /**
+     * Deletes a file from the index using the code id which seems to be
+     * the most reliable way of doing it. Code id being a hash of the file
+     * name and location.
+     * TODO Update the record and set the facets to a value we can ignore
+     */
+    public synchronized void deleteByCodeId(String codeId) throws IOException {
+        Directory dir = FSDirectory.open(this.INDEX_LOCATION);
+
+        Analyzer analyzer = new CodeAnalyzer();
+        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+
+        IndexWriter writer = new IndexWriter(dir, iwc);
+
+        try {
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+            Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
+            writer.deleteDocuments(query);
+        }
+        catch (Exception ex) {
+            this.loggerWrapper.warning("ERROR - caught a " + ex.getClass() + " in CodeIndexer\n with message: " + ex.getMessage());
+        }
+        finally {
+            writer.close();
+        }
+    }
+
+    /**
+     * Deletes all files that belong to a repository.
+     * TODO I don't think this clears anything from the facets, which it should
+     */
+    public synchronized void deleteByRepoName(String repoName) throws IOException {
+        Directory dir = FSDirectory.open(this.INDEX_LOCATION);
+
+        Analyzer analyzer = new CodeAnalyzer();
+        IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
+        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+
+        IndexWriter writer = new IndexWriter(dir, iwc);
+
+        writer.deleteDocuments(new Term(Values.REPONAME, repoName));
+        writer.close();
+    }
+
+
     public synchronized void flipIndex() {}
 
     public Path getIndexLocation() {
