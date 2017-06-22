@@ -75,7 +75,11 @@ public class IndexService implements IIndexService {
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {}
     public synchronized void deleteByCodeId(String codeId) throws IOException {}
     public synchronized void deleteByReponame(String repoName) throws IOException {}
+    public synchronized void flipIndex() {}
 
+    public Path getIndexLocation() {
+        return this.INDEX_LOCATION;
+    }
 
     //////////////////////////////////////////////////////////////
     // Methods for querying the index
@@ -91,7 +95,7 @@ public class IndexService implements IIndexService {
             numDocs = reader.numDocs();
             reader.close();
         }
-        catch(Exception ex) {
+        catch (IOException ex) {
             this.loggerWrapper.info(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 

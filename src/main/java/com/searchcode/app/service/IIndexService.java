@@ -18,6 +18,7 @@ public interface IIndexService {
     void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException;
     void deleteByCodeId(String codeId) throws IOException;
     void deleteByReponame(String repoName) throws IOException;
+    void flipIndex();
 
     // Searching methods
     int getTotalNumberDocumentsIndexed();
