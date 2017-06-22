@@ -21,6 +21,11 @@ import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.*;
+import org.apache.lucene.facet.FacetsConfig;
+import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetField;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
+import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
@@ -31,6 +36,7 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.Queue;
 
@@ -75,7 +81,112 @@ public class IndexService implements IIndexService {
     // Methods for controlling the index
     //////////////////////////////////////////////////////////////
 
-    public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {}
+    /**
+     * Given a queue of documents to index, index them by popping the queue limited to default of 1000 items.
+     * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
+     * index.
+     * TODO investigate how Lucene deals with multiple writes
+     */
+    public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
+        Directory indexDirectory = FSDirectory.open(this.INDEX_LOCATION);
+        Directory facetDirectory = FSDirectory.open(this.FACET_LOCATION);
+
+        Analyzer analyzer = new CodeAnalyzer();
+        IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
+        FacetsConfig facetsConfig;
+
+        indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+
+        IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
+        TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(facetDirectory);
+
+        try {
+            CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
+            int count = 0;
+
+            while (codeIndexDocument != null) {
+                Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
+                this.sharedService.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
+
+                facetsConfig = new FacetsConfig();
+                facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
+                facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
+                facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
+
+                Document doc = this.buildDocument(codeIndexDocument);
+
+                writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
+
+                count++;
+                if (count >= INDEX_QUEUE_BATCH_SIZE) {
+                    codeIndexDocument = null;
+                }
+                else {
+                    codeIndexDocument = codeIndexDocumentQueue.poll();
+                }
+            }
+        }
+        finally {
+            try {
+                writer.close();
+            }
+            finally {
+                taxonomyWriter.close();
+            }
+            Singleton.getLogger().info("Closing writers");
+        }
+    }
+
+    /**
+     * Builds a document ready to be indexed by lucene
+     */
+    public Document buildDocument(CodeIndexDocument codeIndexDocument) {
+        Document document = new Document();
+        // Path is the primary key for documents
+        // needs to include repo location, project name and then filepath including file
+        Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
+        document.add(pathField);
+
+        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName())) {
+            document.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
+        }
+        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName())) {
+            document.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
+        }
+        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner())) {
+            document.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
+        }
+
+        this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
+
+        StringBuilder indexContents = new StringBuilder();
+
+        indexContents.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+        indexContents.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
+        indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
+        indexContents.append(codeIndexDocument.getFileLocation());
+        indexContents.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
+        indexContents.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
+        indexContents.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
+        indexContents.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
+
+        document.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+        document.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
+        document.add(new IntField(Values.CODELINES,             codeIndexDocument.getCodeLines(), Field.Store.YES));
+        document.add(new TextField(Values.CONTENTS,             indexContents.toString().toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+        document.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
+
+        // Extra metadata in this case when it was last indexed
+        document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
+        return document;
+    }
+
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {}
 
     /**
