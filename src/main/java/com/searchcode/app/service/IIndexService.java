@@ -18,6 +18,8 @@ public interface IIndexService {
     void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException;
     void deleteByCodeId(String codeId) throws IOException;
     void deleteByRepoName(String repoName) throws IOException;
+
+    // Getting the status of the index
     void flipIndex();
 
     // Searching methods
