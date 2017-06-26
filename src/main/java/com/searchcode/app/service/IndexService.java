@@ -87,6 +87,7 @@ public class IndexService implements IIndexService {
      * index.
      * TODO investigate how Lucene deals with multiple writes
      */
+    @Override
     public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         Directory indexDirectory = FSDirectory.open(this.INDEX_LOCATION);
         Directory facetDirectory = FSDirectory.open(this.FACET_LOCATION);
@@ -187,14 +188,13 @@ public class IndexService implements IIndexService {
         return document;
     }
 
-    public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {}
-
     /**
      * Deletes a file from the index using the code id which seems to be
      * the most reliable way of doing it. Code id being a hash of the file
      * name and location.
      * TODO Update the record and set the facets to a value we can ignore
      */
+    @Override
     public synchronized void deleteByCodeId(String codeId) throws IOException {
         Directory dir = FSDirectory.open(this.INDEX_LOCATION);
 
@@ -215,6 +215,7 @@ public class IndexService implements IIndexService {
      * Deletes all files that belong to a repository.
      * TODO I don't think this clears anything from the facets, which it should
      */
+    @Override
     public synchronized void deleteByRepoName(String repoName) throws IOException {
         Directory dir = FSDirectory.open(this.INDEX_LOCATION);
 
@@ -228,8 +229,9 @@ public class IndexService implements IIndexService {
         writer.close();
     }
 
+    @Override
+    public void reindexAll() {}
 
-    public synchronized void flipIndex() {}
 
     public Path getIndexLocation() {
         return this.INDEX_LOCATION;
@@ -242,6 +244,7 @@ public class IndexService implements IIndexService {
     /**
      * Returns the total number of documents that are present in the index at this time
      */
+    @Override
     public int getTotalNumberDocumentsIndexed() {
         int numDocs = 0;
         try {
@@ -257,9 +260,18 @@ public class IndexService implements IIndexService {
     }
 
 
+    @Override
     public SearchResult search(String queryString, int page) { return null; }
+
+    @Override
     public CodeResult getByCodeId(String codeId) { return null; }
+
+    @Override
     public List<String> getRepoDocuments(String repoName, int page) { return null; }
+
+    @Override
     public SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException { return null; }
+
+    @Override
     public List<Integer> calculatePages(int numTotalHits, int noPages) { return null; }
 }

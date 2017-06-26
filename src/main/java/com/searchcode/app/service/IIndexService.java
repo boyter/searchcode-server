@@ -15,12 +15,11 @@ import java.util.Queue;
 public interface IIndexService {
     // Indexing methods
     void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException;
-    void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException;
     void deleteByCodeId(String codeId) throws IOException;
     void deleteByRepoName(String repoName) throws IOException;
 
-    // Getting the status of the index
-    void flipIndex();
+
+    void reindexAll();
 
     // Searching methods
     int getTotalNumberDocumentsIndexed();
