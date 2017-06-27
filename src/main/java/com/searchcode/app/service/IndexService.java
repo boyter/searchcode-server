@@ -15,7 +15,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
-import com.searchcode.app.dto.SearchResult;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.CodeAnalyzer;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
@@ -30,12 +30,15 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Queue;
@@ -82,13 +85,12 @@ public class IndexService implements IIndexService {
     //////////////////////////////////////////////////////////////
 
     /**
-     * Given a queue of documents to index, index them by popping the queue limited to default of 1000 items.
+     * Given a queue of documents to index, index them by popping the queue supplied.
      * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
      * index.
-     * TODO investigate how Lucene deals with multiple writes
      */
     @Override
-    public synchronized void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
+    public synchronized void indexDocument(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
         Directory indexDirectory = FSDirectory.open(this.INDEX_LOCATION);
         Directory facetDirectory = FSDirectory.open(this.FACET_LOCATION);
 
@@ -103,10 +105,9 @@ public class IndexService implements IIndexService {
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
-            int count = 0;
 
             while (codeIndexDocument != null) {
-                Singleton.getLogger().info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
+                this.logger.info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
                 this.sharedService.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
 
                 facetsConfig = new FacetsConfig();
@@ -117,14 +118,7 @@ public class IndexService implements IIndexService {
                 Document doc = this.buildDocument(codeIndexDocument);
 
                 writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
-
-                count++;
-                if (count >= INDEX_QUEUE_BATCH_SIZE) {
-                    codeIndexDocument = null;
-                }
-                else {
-                    codeIndexDocument = codeIndexDocumentQueue.poll();
-                }
+                codeIndexDocument = codeIndexDocumentQueue.poll();
             }
         }
         finally {
@@ -134,7 +128,7 @@ public class IndexService implements IIndexService {
             finally {
                 taxonomyWriter.close();
             }
-            Singleton.getLogger().info("Closing writers");
+            this.logger.info("Closing writers");
         }
     }
 
@@ -213,10 +207,10 @@ public class IndexService implements IIndexService {
 
     /**
      * Deletes all files that belong to a repository.
-     * TODO I don't think this clears anything from the facets, which it should
+     * NB does not clean up from the facets
      */
     @Override
-    public synchronized void deleteByRepoName(String repoName) throws IOException {
+    public synchronized void deleteByRepo(RepoResult repo) throws IOException {
         Directory dir = FSDirectory.open(this.INDEX_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
@@ -225,53 +219,91 @@ public class IndexService implements IIndexService {
 
         IndexWriter writer = new IndexWriter(dir, iwc);
 
-        writer.deleteDocuments(new Term(Values.REPONAME, repoName));
+        writer.deleteDocuments(new Term(Values.REPONAME, repo.getName()));
         writer.close();
+    }
+
+    @Override
+    public void deleteAll() throws IOException {
+
+    }
+
+    @Override
+    public void reindexByRepo(RepoResult repo) {
+
     }
 
     @Override
     public void reindexAll() {}
 
-
-    public Path getIndexLocation() {
-        return this.INDEX_LOCATION;
+    @Override
+    public boolean shouldRepoAdderPause() {
+        return false;
     }
 
-    //////////////////////////////////////////////////////////////
-    // Methods for querying the index
-    //////////////////////////////////////////////////////////////
-
-    /**
-     * Returns the total number of documents that are present in the index at this time
-     */
     @Override
-    public int getTotalNumberDocumentsIndexed() {
-        int numDocs = 0;
+    public boolean shouldRepoJobPause() {
+        return false;
+    }
+
+    @Override
+    public boolean shouldRepoJobExit() {
+        return false;
+    }
+
+    @Override
+    public int getIndexedDocumentCount() {
+        return 0;
+    }
+
+    @Override
+    public CodeResult getCodeResultByCodeId(String codeId) {
+        CodeResult codeResult = null;
+
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_LOCATION));
-            numDocs = reader.numDocs();
+            IndexSearcher searcher = new IndexSearcher(reader);
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+
+            Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
+            logger.info("Query to get by " + Values.CODEID + ":" + QueryParser.escape(codeId));
+
+            TopDocs results = searcher.search(query, 1);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            if (hits.length != 0) {
+                Document doc = searcher.doc(hits[0].doc);
+
+                String filepath = doc.get(Values.PATH);
+
+                List<String> code = new ArrayList<>();
+                try {
+                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                } catch (Exception ex) {
+                    logger.info("Indexed file appears to binary: " + filepath);
+                }
+
+                codeResult = new CodeResult(code, null);
+                codeResult.setFilePath(filepath);
+                codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
+                codeResult.setFileName(doc.get(Values.FILENAME));
+                codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
+                codeResult.setMd5hash(doc.get(Values.MD5HASH));
+                codeResult.setCodeLines(doc.get(Values.CODELINES));
+                codeResult.setDocumentId(hits[0].doc);
+                codeResult.setRepoName(doc.get(Values.REPONAME));
+                codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
+                codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
+                codeResult.setCodeId(doc.get(Values.CODEID));
+            }
+
             reader.close();
         }
-        catch (IOException ex) {
-            this.logger.info(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        catch(Exception ex) {
+            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
-        return numDocs;
+        return codeResult;
     }
-
-
-    @Override
-    public SearchResult search(String queryString, int page) { return null; }
-
-    @Override
-    public CodeResult getByCodeId(String codeId) { return null; }
-
-    @Override
-    public List<String> getRepoDocuments(String repoName, int page) { return null; }
-
-    @Override
-    public SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException { return null; }
-
-    @Override
-    public List<Integer> calculatePages(int numTotalHits, int noPages) { return null; }
 }

@@ -108,7 +108,7 @@ public class Values {
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";
-    public static final String PATH = "path";
+    public static final String PATH = "path"; // The primary key for everything in the index
     public static final String FILELOCATION = "filelocation";
     public static final String FILELOCATIONFILENAME = "filelocationfilename";
     public static final String FILENAME = "filename";

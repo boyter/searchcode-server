@@ -1,31 +1,32 @@
 package com.searchcode.app.service;
 
-
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
-import com.searchcode.app.dto.SearchResult;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
+import com.searchcode.app.model.RepoResult;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Queue;
 
 public interface IIndexService {
-    // Indexing methods
-    void indexDocuments(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException;
+    void indexDocument(Queue<CodeIndexDocument> documentQueue) throws IOException;
+
     void deleteByCodeId(String codeId) throws IOException;
-    void deleteByRepoName(String repoName) throws IOException;
+    void deleteByRepo(RepoResult repo) throws IOException;
+    void deleteAll() throws IOException;
 
-
+    void reindexByRepo(RepoResult repo);
     void reindexAll();
 
-    // Searching methods
-    int getTotalNumberDocumentsIndexed();
-    SearchResult search(String queryString, int page);
-    CodeResult getByCodeId(String codeId);
-    List<String> getRepoDocuments(String repoName, int page);
-    SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException;
-    List<Integer> calculatePages(int numTotalHits, int noPages);
+    boolean shouldRepoAdderPause();
+    boolean shouldRepoJobPause();
+    boolean shouldRepoJobExit();
+
+    int getIndexedDocumentCount();
+
+    CodeResult getCodeResultByCodeId(String codeId);
+//    List<String> getRepoDocuments(String repoName, int page);
+//    List<Integer> calculatePages(int numTotalHits, int noPages);
+//
+//    SearchResult search(String queryString, int page);
+//    SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException;
 }
