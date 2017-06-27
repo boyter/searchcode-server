@@ -20,7 +20,7 @@ public class IndexServiceTest extends TestCase {
     private IndexService indexService = null;
     private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", "repoName", "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, "contents", "repoRemoteLocation", "codeOwner");
 
-    public void testIndexDocument() throws IOException {
+    public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
 
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
@@ -28,8 +28,13 @@ public class IndexServiceTest extends TestCase {
 
         this.indexService.indexDocument(queue);
 
-        CodeResult codeResult = this.indexService.getCodeResultByCodeId("b9cc3f33794cad323047b4e982e8b3849b7422a8");
-        assertThat(codeResult.getCodeId()).isEqualTo("b9cc3f33794cad323047b4e982e8b3849b7422a8");
+        String codeId = "b9cc3f33794cad323047b4e982e8b3849b7422a8";
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(codeId);
+        assertThat(codeResult.getCodeId()).isEqualTo(codeId);
+        this.indexService.deleteByCodeId(codeId);
+
+        codeResult = this.indexService.getCodeResultByCodeId(codeId);
+        assertThat(codeResult).isNull();
     }
 
 
