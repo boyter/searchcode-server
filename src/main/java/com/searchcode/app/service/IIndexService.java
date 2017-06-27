@@ -17,6 +17,9 @@ public interface IIndexService {
     void reindexByRepo(RepoResult repo);
     void reindexAll();
 
+    void flipReadLocation();
+    void flipWriteLocation();
+
     boolean shouldRepoAdderPause();
     boolean shouldRepoJobPause();
     boolean shouldRepoJobExit();

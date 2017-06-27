@@ -59,8 +59,10 @@ public class IndexService implements IIndexService {
     private final int MAX_LINES_INDEX_SIZE;
     private final int INDEX_QUEUE_BATCH_SIZE;
 
-    private final Path INDEX_LOCATION;
-    private final Path FACET_LOCATION;
+    private final Path INDEX_READ_LOCATION;
+    private final Path FACET_READ_LOCATION;
+    private final Path INDEX_WRITE_LOCATION;
+    private final Path FACET_WRITE_LOCATION;
 
 
     public IndexService() {
@@ -77,8 +79,10 @@ public class IndexService implements IIndexService {
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
 
-        this.INDEX_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
-        this.FACET_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
+        this.INDEX_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
+        this.FACET_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
+        this.INDEX_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
+        this.FACET_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
     }
 
     //////////////////////////////////////////////////////////////
@@ -92,8 +96,8 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void indexDocument(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
-        Directory indexDirectory = FSDirectory.open(this.INDEX_LOCATION);
-        Directory facetDirectory = FSDirectory.open(this.FACET_LOCATION);
+        Directory indexDirectory = FSDirectory.open(this.INDEX_READ_LOCATION);
+        Directory facetDirectory = FSDirectory.open(this.FACET_READ_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
@@ -191,7 +195,7 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void deleteByCodeId(String codeId) throws IOException {
-        Directory dir = FSDirectory.open(this.INDEX_LOCATION);
+        Directory dir = FSDirectory.open(this.INDEX_READ_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
@@ -212,7 +216,7 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void deleteByRepo(RepoResult repo) throws IOException {
-        Directory dir = FSDirectory.open(this.INDEX_LOCATION);
+        Directory dir = FSDirectory.open(this.INDEX_READ_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
@@ -236,6 +240,16 @@ public class IndexService implements IIndexService {
 
     @Override
     public void reindexAll() {}
+
+    @Override
+    public void flipReadLocation() {
+
+    }
+
+    @Override
+    public void flipWriteLocation() {
+
+    }
 
     @Override
     public boolean shouldRepoAdderPause() {
@@ -262,7 +276,7 @@ public class IndexService implements IIndexService {
         CodeResult codeResult = null;
 
         try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_LOCATION));
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
             Analyzer analyzer = new CodeAnalyzer();
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
