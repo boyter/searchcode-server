@@ -18,42 +18,48 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class IndexServiceTest extends TestCase {
 
     private IndexService indexService = null;
+    private String codeId = "b9cc3f33794cad323047b4e982e8b3849b7422a8";
     private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", "repoName", "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, "contents", "repoRemoteLocation", "codeOwner");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
 
+
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(this.codeIndexDocument);
-
         this.indexService.indexDocument(queue);
 
-        String codeId = "b9cc3f33794cad323047b4e982e8b3849b7422a8";
-        CodeResult codeResult = this.indexService.getCodeResultByCodeId(codeId);
-        assertThat(codeResult.getCodeId()).isEqualTo(codeId);
-        this.indexService.deleteByCodeId(codeId);
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult.getCodeId()).isEqualTo(this.codeId);
 
-        codeResult = this.indexService.getCodeResultByCodeId(codeId);
+        this.indexService.deleteByCodeId(this.codeId);
+        codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
         assertThat(codeResult).isNull();
     }
 
 
-    public void testDeleteByCodeId() {
+    public void testDeleteByCodeId() throws IOException {
         this.indexService = new IndexService();
-        try {
-            this.indexService.deleteByCodeId("this should not do anything but not blow up either");
-        } catch (IOException ex) {
-            assertThat(true).isFalse();
-        }
+        this.indexService.deleteByCodeId("this should not do anything but not blow up either");
     }
 
-    public void testDeleteByRepoName() {
+    public void testDeleteByRepoName() throws IOException {
         this.indexService = new IndexService();
-        try {
-            this.indexService.deleteByRepo(new RepoResult());
-        } catch (IOException ex) {
-            assertThat(true).isFalse();
-        }
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult.getCodeId()).isEqualTo(this.codeId);
+
+        RepoResult repoResult = new RepoResult();
+        repoResult.setName("repoName");
+
+        this.indexService.deleteByRepo(repoResult);
+
+        codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult).isNull();
     }
 
 
