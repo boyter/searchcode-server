@@ -20,6 +20,7 @@ import com.searchcode.app.util.CodeAnalyzer;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
+import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.facet.FacetsConfig;
@@ -35,6 +36,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -230,7 +232,8 @@ public class IndexService implements IIndexService {
 
     @Override
     public void deleteAll() throws IOException {
-
+        FileUtils.deleteDirectory(this.INDEX_READ_LOCATION.toFile());
+        FileUtils.deleteDirectory(this.INDEX_WRITE_LOCATION.toFile());
     }
 
     @Override
@@ -315,8 +318,8 @@ public class IndexService implements IIndexService {
 
             reader.close();
         }
-        catch(Exception ex) {
-            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        catch (Exception ex) {
+            this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeResult;

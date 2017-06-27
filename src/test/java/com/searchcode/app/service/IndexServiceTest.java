@@ -62,6 +62,22 @@ public class IndexServiceTest extends TestCase {
         assertThat(codeResult).isNull();
     }
 
+    public void testDeleteAll() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult.getCodeId()).isEqualTo(this.codeId);
+
+        this.indexService.deleteAll();
+
+        codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult).isNull();
+    }
+
 
     public void testBuildDocument() {
         this.indexService = new IndexService();
