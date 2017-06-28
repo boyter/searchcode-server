@@ -88,9 +88,9 @@ public class IndexService implements IIndexService {
         this.logger = logger;
         this.helpers = helpers;
 
-        this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
-        this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
-        this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
+        this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
+        this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+        this.INDEX_QUEUE_BATCH_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
 
         this.INDEX_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
         this.FACET_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
@@ -159,13 +159,13 @@ public class IndexService implements IIndexService {
         Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
         document.add(pathField);
 
-        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName())) {
+        if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName())) {
             document.add(new SortedSetDocValuesFacetField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName()));
         }
-        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getRepoName())) {
+        if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getRepoName())) {
             document.add(new SortedSetDocValuesFacetField(Values.REPONAME, codeIndexDocument.getRepoName()));
         }
-        if (!Singleton.getHelpers().isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner())) {
+        if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner())) {
             document.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
         }
 
@@ -315,17 +315,17 @@ public class IndexService implements IIndexService {
             if (hits.length != 0) {
                 Document doc = searcher.doc(hits[0].doc);
 
-                String filepath = doc.get(Values.PATH);
+                String filePath = doc.get(Values.PATH);
 
                 List<String> code = new ArrayList<>();
                 try {
-                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 } catch (Exception ex) {
-                    logger.info("Indexed file appears to binary: " + filepath);
+                    logger.info("Indexed file appears to binary: " + filePath);
                 }
 
                 codeResult = new CodeResult(code, null);
-                codeResult.setFilePath(filepath);
+                codeResult.setFilePath(filePath);
                 codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
                 codeResult.setFileName(doc.get(Values.FILENAME));
                 codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
@@ -417,7 +417,7 @@ public class IndexService implements IIndexService {
 
                 List<String> code = new ArrayList<>();
                 try {
-                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filePath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch (Exception ex) {
                     this.logger.warning("Indexed file appears to binary or missing: " + filePath);
