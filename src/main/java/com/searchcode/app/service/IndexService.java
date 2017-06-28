@@ -334,6 +334,7 @@ public class IndexService implements IIndexService {
     /**
      * Given a query and what page of results we are on return the matching results for that search.
      * Does not escape the query so it allows syntax such as fileName:some*
+     * TODO consider escaping if not a lucene query QueryParserBase.escape(queryString)
      * TODO document the extended syntax to allow raw queries
      */
     @Override
@@ -346,11 +347,11 @@ public class IndexService implements IIndexService {
             IndexSearcher searcher = new IndexSearcher(reader);
 
             Analyzer analyzer = new CodeAnalyzer();
-            // By default we search using Values.CONTENTs unless specified
+            // By default we search using Values.CONTENTs unless specified through fileName:something*
+            // or other raw lucene search
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
-
-            // TODO QueryParserBase.escape(queryString)
             Query query = parser.parse(queryString);
+
             this.logger.info("Searching for: " + query.toString(Values.CONTENTS));
             this.logger.searchLog(query.toString(Values.CONTENTS) + " " + page);
 
@@ -358,7 +359,7 @@ public class IndexService implements IIndexService {
             reader.close();
         }
         catch (Exception ex) {
-            this.logger.warning("ERROR -  caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return searchResult;
@@ -388,18 +389,18 @@ public class IndexService implements IIndexService {
         for (int i = start; i < end; i++) {
             Document doc = searcher.doc(hits[i].doc);
 
-            String filepath = doc.get(Values.PATH);
+            String filePath = doc.get(Values.PATH);
 
-            if (filepath != null) {
+            if (filePath != null) {
                 // This line is occasionally useful for debugging ranking, but not useful enough to have as log info
                 //System.out.println("doc=" + hits[i].doc + " score=" + hits[i].score);
 
                 List<String> code = new ArrayList<>();
                 try {
-                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filePath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch(Exception ex) {
-                    this.logger.warning("Indexed file appears to binary or missing: " + filepath);
+                    this.logger.warning("Indexed file appears to binary or missing: " + filePath);
                 }
 
                 CodeResult codeResult = new CodeResult(code, null);
@@ -467,9 +468,7 @@ public class IndexService implements IIndexService {
                     }
                 }
             }
-        }
-        catch(IOException ex) {}
-        catch(Exception ex) {}
+        } catch (Exception ignore) {}
 
         return codeFacetLanguages;
     }
@@ -498,9 +497,7 @@ public class IndexService implements IIndexService {
                     }
                 }
             }
-        }
-        catch(IOException ex) {}
-        catch(Exception ex) {}
+        } catch (Exception ignore) {}
 
         return codeFacetRepo;
     }
@@ -519,9 +516,9 @@ public class IndexService implements IIndexService {
             FacetResult result = facets.getTopChildren(this.CHILD_FACET_LIMIT, Values.CODEOWNER);
 
             if (result != null) {
-                int stepThru = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
+                int stepThrough = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
 
-                for (int i = 0; i < stepThru; i++) {
+                for (int i = 0; i < stepThrough; i++) {
                     LabelAndValue lv = result.labelValues[i];
 
                     if (lv != null && lv.value != null) {
@@ -529,9 +526,7 @@ public class IndexService implements IIndexService {
                     }
                 }
             }
-        }
-        catch (IOException ex) {}
-        catch (Exception ex) {}
+        } catch (Exception ignore) {}
 
         return codeFacetRepo;
     }
