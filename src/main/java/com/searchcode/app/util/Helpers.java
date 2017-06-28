@@ -14,7 +14,9 @@ package com.searchcode.app.util;
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
@@ -299,6 +301,20 @@ public class Helpers {
     public void closeQuietly(IndexReader reader) {
         try {
             reader.close();
+        }
+        catch (Exception ignored) {}
+    }
+
+    public void closeQuietly(IndexWriter writer) {
+        try {
+            writer.close();
+        }
+        catch (Exception ignored) {}
+    }
+
+    public void closeQuietly(TaxonomyWriter writer) {
+        try {
+            writer.close();
         }
         catch (Exception ignored) {}
     }

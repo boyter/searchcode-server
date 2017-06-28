@@ -142,12 +142,8 @@ public class IndexService implements IIndexService {
             }
         }
         finally {
-            try {
-                writer.close();
-            }
-            finally {
-                taxonomyWriter.close();
-            }
+            this.helpers.closeQuietly(writer);
+            this.helpers.closeQuietly(taxonomyWriter);
             this.logger.info("Closing writers");
         }
     }
@@ -240,7 +236,7 @@ public class IndexService implements IIndexService {
         IndexWriter writer = new IndexWriter(dir, iwc);
 
         writer.deleteDocuments(new Term(Values.REPONAME, repo.getName()));
-        writer.close();
+        this.helpers.closeQuietly(writer);
     }
 
     @Override
