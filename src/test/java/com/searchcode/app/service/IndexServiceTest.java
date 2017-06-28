@@ -3,6 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import junit.framework.TestCase;
 import org.apache.lucene.document.Document;
@@ -109,5 +110,16 @@ public class IndexServiceTest extends TestCase {
         // Verifies that we ran through the pipeline
         fields = indexableFields.getFields(Values.CONTENTS);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename  file name filelocationfilename filelocation contents contents contents contents contents contents");
+    }
+
+    public void testSearch() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        SearchResult contents = this.indexService.search("contents", 0);
+        assertThat(contents.getTotalHits()).isNotZero();
     }
 }

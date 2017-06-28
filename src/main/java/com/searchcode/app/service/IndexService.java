@@ -13,8 +13,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
-import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.CodeAnalyzer;
 import com.searchcode.app.util.LoggerWrapper;
@@ -23,8 +22,11 @@ import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
-import org.apache.lucene.facet.FacetsConfig;
+import org.apache.lucene.facet.*;
+import org.apache.lucene.facet.sortedset.DefaultSortedSetDocValuesReaderState;
+import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetCounts;
 import org.apache.lucene.facet.sortedset.SortedSetDocValuesFacetField;
+import org.apache.lucene.facet.sortedset.SortedSetDocValuesReaderState;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.*;
@@ -66,6 +68,9 @@ public class IndexService implements IIndexService {
     private final Path INDEX_WRITE_LOCATION;
     private final Path FACET_WRITE_LOCATION;
 
+    private int PAGE_LIMIT;
+    private int CHILD_FACET_LIMIT;
+
 
     public IndexService() {
         this(Singleton.getData(), Singleton.getStatsService(), Singleton.getSearchCodeLib(), Singleton.getSharedService(), Singleton.getLogger());
@@ -85,6 +90,8 @@ public class IndexService implements IIndexService {
         this.FACET_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
         this.INDEX_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
         this.FACET_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
+        this.PAGE_LIMIT = 20;
+        this.CHILD_FACET_LIMIT = 200;
     }
 
     //////////////////////////////////////////////////////////////
@@ -161,16 +168,14 @@ public class IndexService implements IIndexService {
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
 
-        StringBuilder indexContents = new StringBuilder();
-
-        indexContents.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
-        indexContents.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName())).append(" ");
-        indexContents.append(codeIndexDocument.getFileLocationFilename()).append(" ");
-        indexContents.append(codeIndexDocument.getFileLocation());
-        indexContents.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents()));
-        indexContents.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()));
-        indexContents.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()));
-        indexContents.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
+        String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
+                this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName()) + " " +
+                codeIndexDocument.getFileLocationFilename() + " " +
+                codeIndexDocument.getFileLocation() +
+                this.searchcodeLib.splitKeywords(codeIndexDocument.getContents()) +
+                this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
+                this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
+                this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents());
 
         document.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
@@ -179,7 +184,7 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
         document.add(new IntField(Values.CODELINES,             codeIndexDocument.getCodeLines(), Field.Store.YES));
-        document.add(new TextField(Values.CONTENTS,             indexContents.toString().toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.CONTENTS,             indexContents.toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
         document.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
@@ -323,5 +328,210 @@ public class IndexService implements IIndexService {
         }
 
         return codeResult;
+    }
+
+    /**
+     * Given a query and what page of results we are on return the matching results for that search
+     */
+    @Override
+    public SearchResult search(String queryString, int page) {
+        SearchResult searchResult = new SearchResult();
+        statsService.incrementSearchCount();
+
+
+        try {
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            Analyzer analyzer = new CodeAnalyzer();
+
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+
+            Query query = parser.parse(queryString);
+            this.logger.info("Searching for: " + query.toString(Values.CONTENTS));
+            this.logger.searchLog(query.toString(Values.CONTENTS) + " " + page);
+
+            searchResult = this.doPagingSearch(reader, searcher, query, page);
+            reader.close();
+        }
+        catch (Exception ex) {
+            this.logger.warning("ERROR -  caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+
+        return searchResult;
+    }
+
+    /**
+     * Only really used internally but does the heavy lifting of actually converting the index document on disk to the
+     * format used internally including reading the file from disk.
+     */
+    public SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException {
+        TopDocs results = searcher.search(query, 20 * this.PAGE_LIMIT); // 20 pages worth of documents
+        ScoreDoc[] hits = results.scoreDocs;
+
+        int numTotalHits = results.totalHits;
+        int start = this.PAGE_LIMIT * page;
+        int end = Math.min(numTotalHits, (this.PAGE_LIMIT * (page + 1)));
+        int noPages = numTotalHits / this.PAGE_LIMIT;
+
+        if (noPages > 20) {
+            noPages = 19;
+        }
+
+        List<Integer> pages = this.calculatePages(numTotalHits, noPages);
+
+        List<CodeResult> codeResults = new ArrayList<>();
+
+        for (int i = start; i < end; i++) {
+            Document doc = searcher.doc(hits[i].doc);
+
+            String filepath = doc.get(Values.PATH);
+
+            if (filepath != null) {
+                // This line is occasionally useful for debugging ranking, but not useful enough to have as log info
+                //System.out.println("doc=" + hits[i].doc + " score=" + hits[i].score);
+
+                List<String> code = new ArrayList<>();
+                try {
+                    // This should probably be limited by however deep we are meant to look into the file
+                    // or the value we use here whichever is less
+                    code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
+                }
+                catch(Exception ex) {
+                    this.logger.warning("Indexed file appears to binary or missing: " + filepath);
+                }
+
+                CodeResult cr = new CodeResult(code, null);
+                cr.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
+                cr.setFileName(doc.get(Values.FILENAME));
+                cr.setLanguageName(doc.get(Values.LANGUAGENAME));
+                cr.setMd5hash(doc.get(Values.MD5HASH));
+                cr.setCodeLines(doc.get(Values.CODELINES));
+                cr.setDocumentId(hits[i].doc);
+                cr.setRepoLocation(doc.get(Values.REPOLOCATION));
+                cr.setRepoName(doc.get(Values.REPONAME));
+                cr.setCodeOwner(doc.get(Values.CODEOWNER));
+                cr.setCodeId(doc.get(Values.CODEID));
+
+                codeResults.add(cr);
+            } else {
+                this.logger.warning((i + 1) + ". " + "No path for this document");
+            }
+        }
+
+        List<CodeFacetLanguage> codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
+        List<CodeFacetRepo> repoFacetLanguages = this.getRepoFacetResults(searcher, reader, query);
+        List<CodeFacetOwner> repoFacetOwner= this.getOwnerFacetResults(searcher, reader, query);
+
+        return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
+    }
+
+    public List<Integer> calculatePages(int numTotalHits, int noPages) {
+        List<Integer> pages = new ArrayList<>();
+        if (numTotalHits != 0) {
+
+            // Account for off by 1 errors
+            if (numTotalHits % 10 == 0) {
+                noPages -= 1;
+            }
+
+            for (int i = 0; i <= noPages; i++) {
+                pages.add(i);
+            }
+        }
+        return pages;
+    }
+
+    /**
+     * Returns the matching language facets for a given query
+     */
+    private List<CodeFacetLanguage> getLanguageFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.LANGUAGENAME);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(this.CHILD_FACET_LIMIT, Values.LANGUAGENAME);
+
+            if (result != null) {
+                int stepThru = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
+
+                for (int i = 0; i < stepThru; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        codeFacetLanguages.add(new CodeFacetLanguage(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        }
+        catch(IOException ex) {}
+        catch(Exception ex) {}
+
+        return codeFacetLanguages;
+    }
+
+    /**
+     * Returns the matching repository facets for a given query
+     */
+    private List<CodeFacetRepo> getRepoFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetRepo> codeFacetRepo = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.REPONAME);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(this.CHILD_FACET_LIMIT, Values.REPONAME);
+
+            if (result != null) {
+                int stepThru = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
+
+                for (int i = 0; i < stepThru; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        codeFacetRepo.add(new CodeFacetRepo(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        }
+        catch(IOException ex) {}
+        catch(Exception ex) {}
+
+        return codeFacetRepo;
+    }
+
+    /**
+     * Returns the matching owner facets for a given query
+     */
+    private List<CodeFacetOwner> getOwnerFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetOwner> codeFacetRepo = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.CODEOWNER);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(this.CHILD_FACET_LIMIT, Values.CODEOWNER);
+
+            if (result != null) {
+                int stepThru = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
+
+                for (int i = 0; i < stepThru; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        codeFacetRepo.add(new CodeFacetOwner(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        }
+        catch (IOException ex) {}
+        catch (Exception ex) {}
+
+        return codeFacetRepo;
     }
 }

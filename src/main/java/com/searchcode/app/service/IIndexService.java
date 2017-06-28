@@ -2,6 +2,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 
 import java.io.IOException;
@@ -30,6 +31,6 @@ public interface IIndexService {
 //    List<String> getRepoDocuments(String repoName, int page);
 //    List<Integer> calculatePages(int numTotalHits, int noPages);
 //
-//    SearchResult search(String queryString, int page);
+    SearchResult search(String queryString, int page);
 //    SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException;
 }
