@@ -369,7 +369,7 @@ public class IndexService implements IIndexService {
      * Only really used internally but does the heavy lifting of actually converting the index document on disk to the
      * format used internally including reading the file from disk.
      */
-    public SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException {
+    private SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException {
         TopDocs results = searcher.search(query, this.NO_PAGES_LIMIT * this.PAGE_LIMIT); // 20 pages worth of documents
         ScoreDoc[] hits = results.scoreDocs;
 

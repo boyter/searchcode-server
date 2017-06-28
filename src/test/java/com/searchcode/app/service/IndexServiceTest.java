@@ -20,7 +20,9 @@ public class IndexServiceTest extends TestCase {
 
     private IndexService indexService = null;
     private String codeId = "b9cc3f33794cad323047b4e982e8b3849b7422a8";
-    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", "repoName", "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, "contents", "repoRemoteLocation", "codeOwner");
+    private String contents = "06e3e59f51894adea03c343910c26282";
+    private String repoName = "b89bb20026ff426dae30ab92e1e59b19";
+    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", this.repoName, "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, this.contents, "repoRemoteLocation", "codeOwner");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -55,7 +57,7 @@ public class IndexServiceTest extends TestCase {
         assertThat(codeResult.getCodeId()).isEqualTo(this.codeId);
 
         RepoResult repoResult = new RepoResult();
-        repoResult.setName("repoName");
+        repoResult.setName(this.repoName);
 
         this.indexService.deleteByRepo(repoResult);
 
@@ -119,7 +121,7 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search("contents", 0);
+        SearchResult contents = this.indexService.search(this.contents, 0);
         assertThat(contents.getTotalHits()).isNotZero();
 
         this.indexService.deleteByCodeId(this.codeId);
@@ -132,8 +134,9 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search("reponame:repoName", 0);
+        SearchResult contents = this.indexService.search("reponame:" + this.repoName, 0);
         assertThat(contents.getTotalHits()).isNotZero();
+        assertThat(contents.getCodeResultList().get(0).codeId).isEqualTo(this.codeId);
 
         this.indexService.deleteByCodeId(this.codeId);
     }
