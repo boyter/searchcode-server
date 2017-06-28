@@ -87,6 +87,7 @@ public class IndexService implements IIndexService {
         this.sharedService = sharedService;
         this.logger = logger;
         this.helpers = helpers;
+
         this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
@@ -403,7 +404,6 @@ public class IndexService implements IIndexService {
         }
 
         List<Integer> pages = this.calculatePages(numTotalHits, noPages);
-
         List<CodeResult> codeResults = new ArrayList<>();
 
         for (int i = start; i < end; i++) {
