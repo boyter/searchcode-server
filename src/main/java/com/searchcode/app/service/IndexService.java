@@ -15,10 +15,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.util.CodeAnalyzer;
-import com.searchcode.app.util.LoggerWrapper;
-import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -57,6 +54,7 @@ public class IndexService implements IIndexService {
     private final SharedService sharedService;
     private final SearchcodeLib searchcodeLib;
     private final LoggerWrapper logger;
+    private final Helpers helpers;
 
     private final int MAX_INDEX_SIZE;
     private final int MAX_LINES_INDEX_SIZE;
@@ -67,21 +65,28 @@ public class IndexService implements IIndexService {
     private final Path INDEX_WRITE_LOCATION;
     private final Path FACET_WRITE_LOCATION;
 
+
     private int PAGE_LIMIT;
     private int NO_PAGES_LIMIT;
     private int CHILD_FACET_LIMIT;
 
 
     public IndexService() {
-        this(Singleton.getData(), Singleton.getStatsService(), Singleton.getSearchCodeLib(), Singleton.getSharedService(), Singleton.getLogger());
+        this(Singleton.getData(),
+                Singleton.getStatsService(),
+                Singleton.getSearchCodeLib(),
+                Singleton.getSharedService(),
+                Singleton.getLogger(),
+                Singleton.getHelpers());
     }
 
-    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper logger) {
+    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper logger, Helpers helpers) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
         this.sharedService = sharedService;
         this.logger = logger;
+        this.helpers = helpers;
         this.MAX_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
@@ -244,11 +249,22 @@ public class IndexService implements IIndexService {
 
     @Override
     public void reindexByRepo(RepoResult repo) {
-
+        // Stop adding to job processing queue
+        // Clear job processing queue queue
+        // CLear index queue
+        // Delete repo from index
+        // Delete repo from db
     }
 
     @Override
-    public void reindexAll() {}
+    public void reindexAll() {
+        // Stop adding to queue
+        // Clear queue
+        // Clear index queue
+        // Delete the indexes
+        // Delete from DB
+        //
+    }
 
     @Override
     public void flipReadLocation() {
@@ -283,9 +299,10 @@ public class IndexService implements IIndexService {
     @Override
     public CodeResult getCodeResultByCodeId(String codeId) {
         CodeResult codeResult = null;
+        IndexReader reader = null;
 
         try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
             Analyzer analyzer = new CodeAnalyzer();
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
@@ -321,11 +338,12 @@ public class IndexService implements IIndexService {
                 codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
                 codeResult.setCodeId(doc.get(Values.CODEID));
             }
-
-            reader.close();
         }
         catch (Exception ex) {
             this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(reader);
         }
 
         return codeResult;
@@ -340,10 +358,11 @@ public class IndexService implements IIndexService {
     @Override
     public SearchResult search(String queryString, int page) {
         SearchResult searchResult = new SearchResult();
-        statsService.incrementSearchCount();
+        this.statsService.incrementSearchCount();
+        IndexReader reader = null;
 
         try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
 
             Analyzer analyzer = new CodeAnalyzer();
@@ -357,10 +376,12 @@ public class IndexService implements IIndexService {
             this.logger.searchLog(query.toString(Values.CONTENTS) + " " + page);
 
             searchResult = this.doPagingSearch(reader, searcher, query, page);
-            reader.close();
         }
         catch (Exception ex) {
             this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(reader);
         }
 
         return searchResult;
@@ -429,7 +450,10 @@ public class IndexService implements IIndexService {
         return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
     }
 
-    public List<Integer> calculatePages(int numTotalHits, int noPages) {
+    /**
+     * Calculate the number of pages which can be searched through
+     */
+    private List<Integer> calculatePages(int numTotalHits, int noPages) {
         List<Integer> pages = new ArrayList<>();
         if (numTotalHits != 0) {
 

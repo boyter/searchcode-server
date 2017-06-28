@@ -14,6 +14,7 @@ package com.searchcode.app.util;
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.index.IndexReader;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
@@ -292,48 +293,55 @@ public class Helpers {
         try {
             resultSet.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
+    }
+
+    public void closeQuietly(IndexReader reader) {
+        try {
+            reader.close();
+        }
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(PreparedStatement preparedStatement) {
         try {
             preparedStatement.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Connection connection) {
         try {
             connection.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Process process) {
         try {
             process.destroy();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(BufferedReader bufferedReader) {
         try {
             bufferedReader.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Repository repository) {
         try {
            repository.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Git git) {
         try {
             git.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 }
