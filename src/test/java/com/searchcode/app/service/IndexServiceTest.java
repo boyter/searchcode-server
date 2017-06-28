@@ -121,5 +121,7 @@ public class IndexServiceTest extends TestCase {
 
         SearchResult contents = this.indexService.search("contents", 0);
         assertThat(contents.getTotalHits()).isNotZero();
+
+        this.indexService.deleteByCodeId(this.codeId);
     }
 }
