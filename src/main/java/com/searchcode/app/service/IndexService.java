@@ -174,6 +174,8 @@ public class IndexService implements IIndexService {
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
 
+        // This is the main pipeline for making code searchable and probably the most important
+        // part of the indexer codebase
         String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
                 this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName()) + " " +
                 codeIndexDocument.getFileLocationFilename() + " " +
