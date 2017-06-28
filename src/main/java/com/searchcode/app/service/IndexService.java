@@ -31,8 +31,6 @@ import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.queryparser.classic.QueryParserBase;
-import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -40,11 +38,13 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Service to deal with any tasks that involve talking to the index
@@ -347,8 +347,9 @@ public class IndexService implements IIndexService {
             IndexSearcher searcher = new IndexSearcher(reader);
 
             Analyzer analyzer = new CodeAnalyzer();
-            // By default we search using Values.CONTENTs unless specified through fileName:something*
-            // or other raw lucene search
+
+            // Values.CONTENTS is the field that QueryParser will search if you don't
+            // prefix it with a field EG. fileName:something* or other raw lucene search
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
             Query query = parser.parse(queryString);
 
@@ -399,7 +400,7 @@ public class IndexService implements IIndexService {
                 try {
                     code = Singleton.getHelpers().readFileLinesGuessEncoding(filePath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
-                catch(Exception ex) {
+                catch (Exception ex) {
                     this.logger.warning("Indexed file appears to binary or missing: " + filePath);
                 }
 
