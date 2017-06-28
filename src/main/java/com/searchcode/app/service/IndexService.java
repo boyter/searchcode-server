@@ -31,6 +31,8 @@ import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParserBase;
+import org.apache.lucene.queryparser.simple.SimpleQueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
@@ -42,10 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Service to deal with any tasks that involve talking to the index
@@ -69,6 +68,7 @@ public class IndexService implements IIndexService {
     private final Path FACET_WRITE_LOCATION;
 
     private int PAGE_LIMIT;
+    private int NO_PAGES_LIMIT;
     private int CHILD_FACET_LIMIT;
 
 
@@ -91,6 +91,7 @@ public class IndexService implements IIndexService {
         this.INDEX_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
         this.FACET_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
         this.PAGE_LIMIT = 20;
+        this.NO_PAGES_LIMIT = 20;
         this.CHILD_FACET_LIMIT = 200;
     }
 
@@ -331,22 +332,24 @@ public class IndexService implements IIndexService {
     }
 
     /**
-     * Given a query and what page of results we are on return the matching results for that search
+     * Given a query and what page of results we are on return the matching results for that search.
+     * Does not escape the query so it allows syntax such as fileName:some*
+     * TODO document the extended syntax to allow raw queries
      */
     @Override
     public SearchResult search(String queryString, int page) {
         SearchResult searchResult = new SearchResult();
         statsService.incrementSearchCount();
 
-
         try {
             IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
 
             Analyzer analyzer = new CodeAnalyzer();
-
+            // By default we search using Values.CONTENTs unless specified
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
 
+            // TODO QueryParserBase.escape(queryString)
             Query query = parser.parse(queryString);
             this.logger.info("Searching for: " + query.toString(Values.CONTENTS));
             this.logger.searchLog(query.toString(Values.CONTENTS) + " " + page);
@@ -366,7 +369,7 @@ public class IndexService implements IIndexService {
      * format used internally including reading the file from disk.
      */
     public SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException {
-        TopDocs results = searcher.search(query, 20 * this.PAGE_LIMIT); // 20 pages worth of documents
+        TopDocs results = searcher.search(query, this.NO_PAGES_LIMIT * this.PAGE_LIMIT); // 20 pages worth of documents
         ScoreDoc[] hits = results.scoreDocs;
 
         int numTotalHits = results.totalHits;
@@ -374,8 +377,8 @@ public class IndexService implements IIndexService {
         int end = Math.min(numTotalHits, (this.PAGE_LIMIT * (page + 1)));
         int noPages = numTotalHits / this.PAGE_LIMIT;
 
-        if (noPages > 20) {
-            noPages = 19;
+        if (noPages > this.NO_PAGES_LIMIT) {
+            noPages = this.NO_PAGES_LIMIT - 1;
         }
 
         List<Integer> pages = this.calculatePages(numTotalHits, noPages);
@@ -393,27 +396,25 @@ public class IndexService implements IIndexService {
 
                 List<String> code = new ArrayList<>();
                 try {
-                    // This should probably be limited by however deep we are meant to look into the file
-                    // or the value we use here whichever is less
                     code = Singleton.getHelpers().readFileLinesGuessEncoding(filepath, Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch(Exception ex) {
                     this.logger.warning("Indexed file appears to binary or missing: " + filepath);
                 }
 
-                CodeResult cr = new CodeResult(code, null);
-                cr.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-                cr.setFileName(doc.get(Values.FILENAME));
-                cr.setLanguageName(doc.get(Values.LANGUAGENAME));
-                cr.setMd5hash(doc.get(Values.MD5HASH));
-                cr.setCodeLines(doc.get(Values.CODELINES));
-                cr.setDocumentId(hits[i].doc);
-                cr.setRepoLocation(doc.get(Values.REPOLOCATION));
-                cr.setRepoName(doc.get(Values.REPONAME));
-                cr.setCodeOwner(doc.get(Values.CODEOWNER));
-                cr.setCodeId(doc.get(Values.CODEID));
+                CodeResult codeResult = new CodeResult(code, null);
+                codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
+                codeResult.setFileName(doc.get(Values.FILENAME));
+                codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
+                codeResult.setMd5hash(doc.get(Values.MD5HASH));
+                codeResult.setCodeLines(doc.get(Values.CODELINES));
+                codeResult.setDocumentId(hits[i].doc);
+                codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
+                codeResult.setRepoName(doc.get(Values.REPONAME));
+                codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
+                codeResult.setCodeId(doc.get(Values.CODEID));
 
-                codeResults.add(cr);
+                codeResults.add(codeResult);
             } else {
                 this.logger.warning((i + 1) + ". " + "No path for this document");
             }
