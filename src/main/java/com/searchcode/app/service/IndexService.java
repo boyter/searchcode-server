@@ -71,7 +71,6 @@ public class IndexService implements IIndexService {
     private int NO_PAGES_LIMIT;
     private int CHILD_FACET_LIMIT;
 
-
     public IndexService() {
         this(Singleton.getData(),
                 Singleton.getStatsService(),
@@ -251,6 +250,8 @@ public class IndexService implements IIndexService {
     public void deleteAll() throws IOException {
         FileUtils.deleteDirectory(this.INDEX_READ_LOCATION.toFile());
         FileUtils.deleteDirectory(this.INDEX_WRITE_LOCATION.toFile());
+
+        // TODO delete from the database here
     }
 
     @Override
