@@ -27,6 +27,7 @@ import org.apache.lucene.facet.sortedset.SortedSetDocValuesReaderState;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.facet.taxonomy.directory.DirectoryTaxonomyWriter;
 import org.apache.lucene.index.*;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -156,7 +157,7 @@ public class IndexService implements IIndexService {
         Document document = new Document();
         // Path is the primary key for documents
         // needs to include repo location, project name and then filepath including file
-        Field pathField = new StringField("path", codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
+        Field pathField = new StringField(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
         document.add(pathField);
 
         if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLanguageName())) {
@@ -213,13 +214,18 @@ public class IndexService implements IIndexService {
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
-        try (IndexWriter writer = new IndexWriter(dir, iwc)) {
-            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
-            Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
+        IndexWriter writer = new IndexWriter(dir, iwc);
+        QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+        Query query;
+
+        try {
+            query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
-        } catch (Exception ex) {
-            this.logger.warning("ERROR - caught a " + ex.getClass() + " in CodeIndexer\n with message: " + ex.getMessage());
+        } catch (ParseException ex) {
+            ex.printStackTrace();
         }
+
+        this.helpers.closeQuietly(writer);
     }
 
     /**
