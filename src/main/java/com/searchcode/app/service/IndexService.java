@@ -16,7 +16,6 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -114,8 +113,8 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void indexDocument(Queue<CodeIndexDocument> codeIndexDocumentQueue) throws IOException {
-        Directory indexDirectory = FSDirectory.open(this.INDEX_READ_LOCATION);
-        Directory facetDirectory = FSDirectory.open(this.FACET_READ_LOCATION);
+        Directory indexDirectory = FSDirectory.open(this.INDEX_WRITE_LOCATION);
+        Directory facetDirectory = FSDirectory.open(this.FACET_WRITE_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);

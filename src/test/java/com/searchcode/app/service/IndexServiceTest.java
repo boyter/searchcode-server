@@ -22,17 +22,19 @@ public class IndexServiceTest extends TestCase {
     private String codeId = "b9cc3f33794cad323047b4e982e8b3849b7422a8";
     private String contents = "06e3e59f51894adea03c343910c26282";
     private String repoName = "b89bb20026ff426dae30ab92e1e59b19";
+    private String languageName = "languageName";
+    private String codeOwner = "codeOwner";
     private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename",
             this.repoName,
             "fileName",
             "fileLocation",
             "fileLocationFilename",
             "md5hash",
-            "languageName",
+            this.languageName,
             100,
             this.contents,
             "repoRemoteLocation",
-            "codeOwner");
+            this.codeOwner);
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -133,7 +135,9 @@ public class IndexServiceTest extends TestCase {
 
         SearchResult contents = this.indexService.search(this.contents, 0);
         assertThat(contents.getTotalHits()).isNotZero();
-
+        assertThat(contents.getLanguageFacetResults().size()).isNotZero();
+        assertThat(contents.getRepoFacetResults().size()).isNotZero();
+        assertThat(contents.getOwnerFacetResults().size()).isNotZero();
         this.indexService.deleteByCodeId(this.codeId);
     }
 
@@ -145,8 +149,20 @@ public class IndexServiceTest extends TestCase {
         this.indexService.indexDocument(queue);
 
         SearchResult contents = this.indexService.search("reponame:" + this.repoName, 0);
+
         assertThat(contents.getTotalHits()).isNotZero();
+        assertThat(contents.getLanguageFacetResults().size()).isNotZero();
+        assertThat(contents.getRepoFacetResults().size()).isNotZero();
+        assertThat(contents.getOwnerFacetResults().size()).isNotZero();
+
         assertThat(contents.getCodeResultList().get(0).codeId).isEqualTo(this.codeId);
+
+        assertThat(contents.getLanguageFacetResults().get(0).getLanguageName()).isEqualTo(this.languageName);
+        assertThat(contents.getLanguageFacetResults().get(0).getCount()).isEqualTo(1);
+        assertThat(contents.getRepoFacetResults().get(0).getRepoName()).isEqualTo(this.repoName);
+        assertThat(contents.getRepoFacetResults().get(0).getCount()).isEqualTo(1);
+        assertThat(contents.getOwnerFacetResults().get(0).getOwner()).isEqualTo(this.codeOwner);
+        assertThat(contents.getOwnerFacetResults().get(0).getCount()).isEqualTo(1);
 
         this.indexService.deleteByCodeId(this.codeId);
     }
