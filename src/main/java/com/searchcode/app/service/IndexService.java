@@ -299,7 +299,21 @@ public class IndexService implements IIndexService {
 
     @Override
     public int getIndexedDocumentCount() {
-        return 0;
+        int numDocs = 0;
+        IndexReader reader = null;
+
+        try {
+            reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            numDocs = reader.numDocs();
+        }
+        catch (Exception ex) {
+            this.logger.info("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(reader);
+        }
+
+        return numDocs;
     }
 
     @Override

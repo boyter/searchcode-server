@@ -138,6 +138,9 @@ public class IndexServiceTest extends TestCase {
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
         assertThat(contents.getOwnerFacetResults().size()).isNotZero();
+
+        assertThat(this.indexService.getIndexedDocumentCount()).isNotZero();
+
         this.indexService.deleteByCodeId(this.codeId);
     }
 
