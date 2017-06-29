@@ -194,6 +194,7 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
         document.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
+        document.add(new TextField(Values.SCHASH,               codeIndexDocument.getSchash(), Field.Store.YES));
 
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
@@ -222,7 +223,7 @@ public class IndexService implements IIndexService {
             query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
         } catch (ParseException ex) {
-            ex.printStackTrace();
+            this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         this.helpers.closeQuietly(writer);

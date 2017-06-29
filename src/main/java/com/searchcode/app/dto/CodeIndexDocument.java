@@ -10,6 +10,7 @@
 
 package com.searchcode.app.dto;
 
+import com.searchcode.app.config.Values;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class CodeIndexDocument {
@@ -30,6 +31,7 @@ public class CodeIndexDocument {
     private String year;
     private String message;
     private String deleted; // Used for time filter to know when this entry was removed
+    private String schash;
 
     public CodeIndexDocument() {}
 
@@ -45,6 +47,7 @@ public class CodeIndexDocument {
         this.setContents(contents);
         this.setRepoRemoteLocation(repoRemoteLocation);
         this.setCodeOwner(codeOwner);
+        this.schash = Values.EMPTYSTRING;
     }
 
     /**
@@ -188,5 +191,13 @@ public class CodeIndexDocument {
 
     public void setYear(String year) {
         this.year = year;
+    }
+
+    public String getSchash() {
+        return schash;
+    }
+
+    public void setSchash(String schash) {
+        this.schash = schash;
     }
 }

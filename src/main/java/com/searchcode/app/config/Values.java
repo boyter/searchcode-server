@@ -126,6 +126,7 @@ public class Values {
     public static final String MESSAGE = "message"; // Contains git commit message
     public static final String DELETED = "deleted";
     public static final String CODEID = "codeid";
+    public static final String SCHASH = "schash"; // Not a real simhash but custom one
 
     // Random
     public static final String USERSESSIONID = "admin_user";

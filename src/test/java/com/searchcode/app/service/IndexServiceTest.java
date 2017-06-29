@@ -22,7 +22,17 @@ public class IndexServiceTest extends TestCase {
     private String codeId = "b9cc3f33794cad323047b4e982e8b3849b7422a8";
     private String contents = "06e3e59f51894adea03c343910c26282";
     private String repoName = "b89bb20026ff426dae30ab92e1e59b19";
-    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename", this.repoName, "fileName", "fileLocation", "fileLocationFilename", "md5hash", "languageName", 100, this.contents, "repoRemoteLocation", "codeOwner");
+    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename",
+            this.repoName,
+            "fileName",
+            "fileLocation",
+            "fileLocationFilename",
+            "md5hash",
+            "languageName",
+            100,
+            this.contents,
+            "repoRemoteLocation",
+            "codeOwner");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -98,7 +108,7 @@ public class IndexServiceTest extends TestCase {
                 "code Owner"
         ));
 
-        AssertionsForClassTypes.assertThat(indexableFields.getFields().size()).isEqualTo(16);
+        AssertionsForClassTypes.assertThat(indexableFields.getFields().size()).isEqualTo(17);
 
         IndexableField[] fields = indexableFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
