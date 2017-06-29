@@ -94,7 +94,7 @@ public class IndexServiceTest extends TestCase {
 
     public void testBuildDocument() {
         this.indexService = new IndexService();
-        Document indexableFields = this.indexService.buildDocument(new CodeIndexDocument(
+        Document indexFields = this.indexService.buildDocument(new CodeIndexDocument(
                 "repoLocationRepoNameLocationFilename",
                 "repo Name",
                 "fileName",
@@ -108,19 +108,19 @@ public class IndexServiceTest extends TestCase {
                 "code Owner"
         ));
 
-        AssertionsForClassTypes.assertThat(indexableFields.getFields().size()).isEqualTo(17);
+        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(17);
 
-        IndexableField[] fields = indexableFields.getFields(Values.REPONAME);
+        IndexableField[] fields = indexFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
 
-        fields = indexableFields.getFields(Values.LANGUAGENAME);
+        fields = indexFields.getFields(Values.LANGUAGENAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("language_Name");
 
-        fields = indexableFields.getFields(Values.CODEOWNER);
+        fields = indexFields.getFields(Values.CODEOWNER);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("code_Owner");
 
         // Verifies that we ran through the pipeline
-        fields = indexableFields.getFields(Values.CONTENTS);
+        fields = indexFields.getFields(Values.CONTENTS);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename  file name filelocationfilename filelocation contents contents contents contents contents contents");
     }
 

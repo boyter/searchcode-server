@@ -16,6 +16,7 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
+import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -331,18 +332,7 @@ public class IndexService implements IIndexService {
                     logger.info("Indexed file appears to binary: " + filePath);
                 }
 
-                codeResult = new CodeResult(code, null);
-                codeResult.setFilePath(filePath);
-                codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-                codeResult.setFileName(doc.get(Values.FILENAME));
-                codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
-                codeResult.setMd5hash(doc.get(Values.MD5HASH));
-                codeResult.setCodeLines(doc.get(Values.CODELINES));
-                codeResult.setDocumentId(hits[0].doc);
-                codeResult.setRepoName(doc.get(Values.REPONAME));
-                codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
-                codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
-                codeResult.setCodeId(doc.get(Values.CODEID));
+                codeResult = this.createCodeResult(code, filePath, doc, hits[0].doc);
             }
         }
         catch (Exception ex) {
@@ -430,18 +420,7 @@ public class IndexService implements IIndexService {
                     this.logger.warning("Indexed file appears to binary or missing: " + filePath);
                 }
 
-                CodeResult codeResult = new CodeResult(code, null);
-                codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-                codeResult.setFileName(doc.get(Values.FILENAME));
-                codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
-                codeResult.setMd5hash(doc.get(Values.MD5HASH));
-                codeResult.setCodeLines(doc.get(Values.CODELINES));
-                codeResult.setDocumentId(hits[i].doc);
-                codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
-                codeResult.setRepoName(doc.get(Values.REPONAME));
-                codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
-                codeResult.setCodeId(doc.get(Values.CODEID));
-
+                CodeResult codeResult = this.createCodeResult(code, Values.EMPTYSTRING, doc, hits[i].doc);
                 codeResults.add(codeResult);
             } else {
                 this.logger.warning((i + 1) + ". " + "No path for this document");
@@ -453,6 +432,24 @@ public class IndexService implements IIndexService {
         List<CodeFacetOwner> repoFacetOwner= this.getOwnerFacetResults(searcher, reader, query);
 
         return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
+    }
+
+    private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId) {
+        CodeResult codeResult = new CodeResult(code, null);
+        codeResult.setFilePath(filePath);
+
+        codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
+        codeResult.setFileName(doc.get(Values.FILENAME));
+        codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
+        codeResult.setMd5hash(doc.get(Values.MD5HASH));
+        codeResult.setCodeLines(doc.get(Values.CODELINES));
+        codeResult.setDocumentId(docId);
+        codeResult.setRepoName(doc.get(Values.REPONAME));
+        codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
+        codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
+        codeResult.setCodeId(doc.get(Values.CODEID));
+
+        return codeResult;
     }
 
     /**
