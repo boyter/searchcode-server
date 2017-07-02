@@ -194,7 +194,7 @@ Change Log
 ==========
 
 XX XXXX XXXX - 1.3.11
-
+ - Add link to repository source on repository overview page https://github.com/boyter/searchcode-server/issues/126
 
 15 June 2017 - 1.3.10
  - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation
