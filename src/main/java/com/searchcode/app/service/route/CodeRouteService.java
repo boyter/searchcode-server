@@ -260,6 +260,7 @@ public class CodeRouteService {
 
         map.put("ownerFacetJson", gson.toJson(projectStats.getRepoFacetOwner()));
         map.put("languageFacetJson", gson.toJson(projectStats.getCodeFacetLanguages()));
+        map.put("source", repository.getSource());
 
         map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());

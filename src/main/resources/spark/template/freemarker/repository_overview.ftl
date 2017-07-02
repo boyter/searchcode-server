@@ -23,7 +23,11 @@
           <tr>
             <td><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Repository</td>
             <td>
-                ${repoLocation}
+                <#if source == "" >
+                    ${repoLocation}
+                <#else>
+                    <a href="${source}">${repoLocation}</a>
+                </#if>
             </td>
             <td><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Total Files</td>
             <td>${totalFiles}</td>
