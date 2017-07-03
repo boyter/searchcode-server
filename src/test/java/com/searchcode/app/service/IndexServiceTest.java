@@ -169,4 +169,33 @@ public class IndexServiceTest extends TestCase {
 
         this.indexService.deleteByCodeId(this.codeId);
     }
+
+    public void testSearchWithFlip() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        // Check on first index
+        SearchResult contents = this.indexService.search(this.contents, 0);
+        assertThat(contents.getTotalHits()).isNotZero();
+
+        // Check on flipped index
+        this.indexService.flipIndex();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+        contents = this.indexService.search(this.contents, 0);
+        assertThat(contents.getTotalHits()).isNotZero();
+        this.indexService.deleteByCodeId(this.codeId);
+        contents = this.indexService.search(this.contents, 0);
+        assertThat(contents.getTotalHits()).isZero();
+
+        // Flip and check on first index
+        this.indexService.flipIndex();
+        contents = this.indexService.search(this.contents, 0);
+        assertThat(contents.getTotalHits()).isNotZero();
+
+        this.indexService.deleteByCodeId(this.codeId);
+    }
 }

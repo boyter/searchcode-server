@@ -50,6 +50,7 @@ import java.util.Queue;
  */
 public class IndexService implements IIndexService {
 
+
     private final StatsService statsService;
     private final Data data;
     private final SharedService sharedService;
@@ -61,10 +62,15 @@ public class IndexService implements IIndexService {
     private final int MAX_LINES_INDEX_SIZE;
     private final int INDEX_QUEUE_BATCH_SIZE;
 
-    private final Path INDEX_READ_LOCATION;
-    private final Path FACET_READ_LOCATION;
-    private final Path INDEX_WRITE_LOCATION;
-    private final Path FACET_WRITE_LOCATION;
+
+    private final Path INDEX_A_LOCATION;
+    private final Path INDEX_B_LOCATION;
+    private final Path FACET_A_LOCATION;
+    private final Path FACET_B_LOCATION;
+
+    private Path INDEX_READ_LOCATION;
+    private Path INDEX_WRITE_LOCATION;
+    private Path FACET_WRITE_LOCATION;
 
 
     private int PAGE_LIMIT;
@@ -92,10 +98,33 @@ public class IndexService implements IIndexService {
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
         this.INDEX_QUEUE_BATCH_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
 
-        this.INDEX_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
-        this.FACET_READ_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
-        this.INDEX_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION));
-        this.FACET_WRITE_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION));
+        // Locations that should never change once class created
+        this.INDEX_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_A);
+        this.INDEX_B_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_B);
+        this.FACET_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION) + "/" + Values.INDEX_A);
+        this.FACET_B_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.FACETSLOCATION, Values.DEFAULTFACETSLOCATION) + "/" + Values.INDEX_B);
+
+        // Where do we think we should be looking
+        String indexRead = this.data.getDataByName(Values.INDEX_READ, Values.INDEX_A);
+        String indexWrite = this.data.getDataByName(Values.INDEX_WRITE, Values.INDEX_A);
+
+        if (indexRead == null || indexWrite == null) {
+            indexRead = Values.INDEX_A;
+            indexWrite = Values.INDEX_A;
+        }
+
+        // If read != write then assume that write was in the process of building
+        // and fall back to the read since it should be more accurate
+        if (!indexRead.equals(indexWrite)) {
+            indexWrite = indexRead;
+        }
+
+        this.INDEX_READ_LOCATION = Values.INDEX_A.equals(indexRead) ? this.INDEX_A_LOCATION : this.INDEX_B_LOCATION;
+        this.INDEX_WRITE_LOCATION = Values.INDEX_A.equals(indexWrite) ? this.INDEX_A_LOCATION : this.INDEX_B_LOCATION;
+
+        // Facet locations are keyed off the index so only needs write location
+        this.FACET_WRITE_LOCATION = Values.INDEX_A.equals(indexRead) ? this.FACET_A_LOCATION : this.FACET_B_LOCATION;
+
         this.PAGE_LIMIT = 20;
         this.NO_PAGES_LIMIT = 20;
         this.CHILD_FACET_LIMIT = 200;
@@ -208,7 +237,7 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void deleteByCodeId(String codeId) throws IOException {
-        Directory dir = FSDirectory.open(this.INDEX_READ_LOCATION);
+        Directory dir = FSDirectory.open(this.INDEX_WRITE_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
@@ -274,14 +303,16 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public void flipReadLocation() {
+    public synchronized void flipIndex() {
+        // Flip internally then update
+        this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
+        this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
+        this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
 
+        //this.data.saveData(Values.INDEX_READ, "");
     }
 
-    @Override
-    public void flipWriteLocation() {
 
-    }
 
     @Override
     public boolean shouldRepoAdderPause() {

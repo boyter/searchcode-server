@@ -150,6 +150,9 @@ public class Values {
     public static final String LOGO = "logo";
     public static final String BACKOFFVALUE = "backoff_value";
     public static final String EMBED = "embed";
+    public static final String INDEX_READ = "index_read"; // Used to know which index we are referring to
+    public static final String INDEX_WRITE = "index_read"; // Used to know which index we are referring to
+
 
     public static final String DEFAULTSYNTAXHIGHLIGHTER = "github";
     public static final String DEFAULTAVERAGESALARY = "56000";
@@ -157,6 +160,8 @@ public class Values {
     public static final String DEFAULTMAXLINEDEPTH = "10000";
     public static final String DEFAULTMINIFIEDLENGTH = "255";
     public static final String DEFAULTBACKOFFVALUE = "0";
+    public static final String INDEX_A = "A";
+    public static final String INDEX_B = "B";
 
     // Used for job status
     public static final String REPO_STATUS_INDEXING = "INDEXING";
