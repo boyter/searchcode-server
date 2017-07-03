@@ -305,11 +305,18 @@ public class IndexService implements IIndexService {
     @Override
     public synchronized void flipIndex() {
         // Flip internally then update
+
         this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
         this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
         this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
 
-        //this.data.saveData(Values.INDEX_READ, "");
+        if (this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION)) {
+            this.data.saveData(Values.INDEX_READ, Values.INDEX_A);
+            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_A);
+        } else {
+            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);
+            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_B);
+        }
     }
 
 

@@ -151,7 +151,7 @@ public class Values {
     public static final String BACKOFFVALUE = "backoff_value";
     public static final String EMBED = "embed";
     public static final String INDEX_READ = "index_read"; // Used to know which index we are referring to
-    public static final String INDEX_WRITE = "index_read"; // Used to know which index we are referring to
+    public static final String INDEX_WRITE = "index_write"; // Used to know which index we are referring to
 
 
     public static final String DEFAULTSYNTAXHIGHLIGHTER = "github";

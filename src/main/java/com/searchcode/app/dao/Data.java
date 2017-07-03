@@ -36,6 +36,7 @@ public class Data implements IData {
     public Data(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.createTableIfMissing();
     }
 
     public synchronized String getDataByName(String key, String defaultValue) {

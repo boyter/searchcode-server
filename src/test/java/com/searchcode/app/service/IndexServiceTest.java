@@ -1,10 +1,15 @@
 package com.searchcode.app.service;
 
+import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
+import com.searchcode.app.util.SearchcodeLib;
 import junit.framework.TestCase;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
@@ -171,7 +176,14 @@ public class IndexServiceTest extends TestCase {
     }
 
     public void testSearchWithFlip() throws IOException {
-        this.indexService = new IndexService();
+        Data data = new Data(new SQLiteMemoryDatabaseConfig(), new Helpers());
+
+        this.indexService = new IndexService(data,
+                Singleton.getStatsService(),
+                Singleton.getSearchCodeLib(),
+                Singleton.getSharedService(),
+                Singleton.getLogger(),
+                Singleton.getHelpers());
 
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(this.codeIndexDocument);
@@ -180,9 +192,13 @@ public class IndexServiceTest extends TestCase {
         // Check on first index
         SearchResult contents = this.indexService.search(this.contents, 0);
         assertThat(contents.getTotalHits()).isNotZero();
+        String read = data.getDataByName(Values.INDEX_READ, Values.INDEX_A);
+        String write = data.getDataByName(Values.INDEX_WRITE, Values.INDEX_A);
 
         // Check on flipped index
         this.indexService.flipIndex();
+        assertThat(data.getDataByName(Values.INDEX_READ)).isNotEqualTo(read);
+        assertThat(data.getDataByName(Values.INDEX_WRITE)).isNotEqualTo(write);
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
         contents = this.indexService.search(this.contents, 0);
@@ -193,6 +209,8 @@ public class IndexServiceTest extends TestCase {
 
         // Flip and check on first index
         this.indexService.flipIndex();
+        assertThat(data.getDataByName(Values.INDEX_READ)).isEqualTo(read);
+        assertThat(data.getDataByName(Values.INDEX_WRITE)).isEqualTo(write);
         contents = this.indexService.search(this.contents, 0);
         assertThat(contents.getTotalHits()).isNotZero();
 
