@@ -8,8 +8,6 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
-import com.searchcode.app.util.SearchcodeLib;
 import junit.framework.TestCase;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;

@@ -302,10 +302,12 @@ public class IndexService implements IIndexService {
         //
     }
 
+    /**
+     * Flips the internal state such that reads and writes point at the other index
+     * and updates the saved state so relaunch works as expected
+     */
     @Override
     public synchronized void flipIndex() {
-        // Flip internally then update
-
         this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
         this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
         this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;

@@ -27,9 +27,5 @@ public interface IIndexService {
     int getIndexedDocumentCount();
 
     CodeResult getCodeResultByCodeId(String codeId);
-//    List<String> getRepoDocuments(String repoName, int page);
-//    List<Integer> calculatePages(int numTotalHits, int noPages);
-//
     SearchResult search(String queryString, int page);
-//    SearchResult doPagingSearch(IndexReader reader, IndexSearcher searcher, Query query, int page) throws IOException;
 }
