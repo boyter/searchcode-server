@@ -37,6 +37,7 @@ public class LoggerWrapper {
     private EvictingQueue severeRecentCache = null;
     private EvictingQueue searchLog = null;
     private EvictingQueue apiLog = null;
+    private EvictingQueue fineRecentCache = null;
 
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
@@ -127,6 +128,7 @@ public class LoggerWrapper {
         this.severeRecentCache = EvictingQueue.create(1000);
         this.searchLog = EvictingQueue.create(1000);
         this.apiLog = EvictingQueue.create(1000);
+        this.fineRecentCache = EvictingQueue.create(1000);
     }
 
     public synchronized void clearAllLogs() {
@@ -136,6 +138,7 @@ public class LoggerWrapper {
         this.severeRecentCache.clear();
         this.searchLog.clear();
         this.apiLog.clear();
+        this.fineRecentCache.clear();
     }
 
     public synchronized void info(String toLog) {
@@ -150,6 +153,14 @@ public class LoggerWrapper {
             if (this.LOGSTDOUT && this.isLoggable(Level.INFO)) {
                 System.out.println(message);
             }
+        }
+        catch (NoSuchElementException ignored) {}
+    }
+
+    public synchronized void fine(String toLog) {
+        String message = "FINE: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+        try {
+            this.fineRecentCache.add(message);
         }
         catch (NoSuchElementException ignored) {}
     }
@@ -222,6 +233,17 @@ public class LoggerWrapper {
         List<String> values = new ArrayList<>();
         try {
             values = new ArrayList(this.infoRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ignored) {}
+
+        return values;
+    }
+
+    public synchronized List<String> getFineLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.fineRecentCache);
             values = Lists.reverse(values);
         }
         catch (ArrayIndexOutOfBoundsException ignored) {}

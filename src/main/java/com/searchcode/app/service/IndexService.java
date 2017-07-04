@@ -463,8 +463,8 @@ public class IndexService implements IIndexService {
             String filePath = doc.get(Values.PATH);
 
             if (filePath != null) {
-                // This line is occasionally useful for debugging ranking, but not useful enough to have as log info
-                //System.out.println("doc=" + hits[i].doc + " score=" + hits[i].score);
+                // This line is occasionally useful for debugging ranking
+                this.logger.fine("doc=" + hits[i].doc + " score=" + hits[i].score);
 
                 List<String> code = new ArrayList<>();
                 try {
