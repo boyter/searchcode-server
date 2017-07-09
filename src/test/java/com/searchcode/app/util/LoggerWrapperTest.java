@@ -148,20 +148,18 @@ public class LoggerWrapperTest extends TestCase {
         Random rand = new Random();
 
         for(int i = 0; i < 100; i++) {
-            new Thread() {
-                public void run() {
-                    int count = 10000;
-                    while (count > 0) {
-                        loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        count--;
-                    }
+            new Thread(() -> {
+                int count = 1000;
+                while (count > 0) {
+                    loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                    loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                    loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                    count--;
                 }
-            }.start();
+            }).start();
         }
 
-        int count = 10000;
+        int count = 1000;
         while (count > 0) {
             loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
