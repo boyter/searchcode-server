@@ -109,7 +109,7 @@ public class LoggerWrapperTest extends TestCase {
         LoggerWrapper logger = new LoggerWrapper();
         Random rand = new Random();
 
-        for (int i = 0; i< 2100; i++) {
+        for (int i = 0; i < 2100; i++) {
             logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.fine(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
