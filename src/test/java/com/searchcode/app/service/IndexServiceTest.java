@@ -12,12 +12,14 @@ import junit.framework.TestCase;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.assertj.core.api.AssertionsForClassTypes;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.when;
 
 public class IndexServiceTest extends TestCase {
 
@@ -213,5 +215,29 @@ public class IndexServiceTest extends TestCase {
         assertThat(contents.getTotalHits()).isNotZero();
 
         this.indexService.deleteByCodeId(this.codeId);
+    }
+
+    public void testShouldBackOffWhenLoadVeryHigh() {
+        Data dataMock = Mockito.mock(Data.class);
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+
+        when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
+        when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
+
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers());
+
+        assertThat(this.indexService.shouldBackOff()).isTrue();
+    }
+
+    public void testShouldNotBackOffWhenLoadZero() {
+        Data dataMock = Mockito.mock(Data.class);
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+
+        when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
+        when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
+
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers());
+
+        assertThat(this.indexService.shouldBackOff()).isFalse();
     }
 }

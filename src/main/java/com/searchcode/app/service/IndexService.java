@@ -62,7 +62,6 @@ public class IndexService implements IIndexService {
     private final int MAX_LINES_INDEX_SIZE;
     private final int INDEX_QUEUE_BATCH_SIZE;
 
-
     private final Path INDEX_A_LOCATION;
     private final Path INDEX_B_LOCATION;
     private final Path FACET_A_LOCATION;
@@ -72,10 +71,11 @@ public class IndexService implements IIndexService {
     private Path INDEX_WRITE_LOCATION;
     private Path FACET_WRITE_LOCATION;
 
-
     private int PAGE_LIMIT;
     private int NO_PAGES_LIMIT;
     private int CHILD_FACET_LIMIT;
+
+    private boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
 
     public IndexService() {
         this(Singleton.getData(),
@@ -322,17 +322,69 @@ public class IndexService implements IIndexService {
     }
 
 
-
+    /**
+     * Should the job which adds repositories to the queue to
+     * be processed pause.
+     */
     @Override
     public boolean shouldRepoAdderPause() {
         return false;
     }
 
+    /**
+     * Should the repo parsers pause from adding documents into
+     * the index queue.
+     */
     @Override
     public boolean shouldRepoJobPause() {
+        if (this.pauseBackgroundJobs) {
+            return true;
+        }
+
+        if (this.shouldBackOff()) {
+            return true;
+        }
+
+        int indexQueueSize = Singleton.getCodeIndexQueue().size();
+        int codeIndexLinesCount = this.sharedService.getCodeIndexLinesCount();
+
+        if (indexQueueSize > MAX_INDEX_SIZE) {
+            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
+            return true;
+        }
+
+        if (codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
+            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
+            return true;
+        }
+
         return false;
     }
 
+    /**
+     * Checks to see how much CPU we are using and if its higher then the limit set
+     * inside the settings page mute the index for a while
+     */
+    public synchronized boolean shouldBackOff() {
+        Double loadValue = Double.parseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE));
+        Double loadAverage = Double.parseDouble(this.statsService.getLoadAverage());
+
+        if (loadValue <= 0) {
+            return false;
+        }
+
+        if (loadAverage >= loadValue) {
+            this.logger.info("Load Average higher than set value. Pausing indexing.");
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Should the repo parsers terminate from adding documents
+     * into the queue.
+     */
     @Override
     public boolean shouldRepoJobExit() {
         return false;
