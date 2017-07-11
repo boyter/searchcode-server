@@ -75,7 +75,10 @@ public class IndexService implements IIndexService {
     private int NO_PAGES_LIMIT;
     private int CHILD_FACET_LIMIT;
 
+    private final Queue<CodeIndexDocument> codeIndexDocumentQueue;
+
     private boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
+    private int codeIndexLinesCount = 0;
 
     public IndexService() {
         this(Singleton.getData(),
@@ -128,6 +131,8 @@ public class IndexService implements IIndexService {
         this.PAGE_LIMIT = 20;
         this.NO_PAGES_LIMIT = 20;
         this.CHILD_FACET_LIMIT = 200;
+
+        this.codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
     }
 
     //////////////////////////////////////////////////////////////
@@ -345,16 +350,16 @@ public class IndexService implements IIndexService {
             return true;
         }
 
-        int indexQueueSize = Singleton.getCodeIndexQueue().size();
-        int codeIndexLinesCount = this.sharedService.getCodeIndexLinesCount();
+
+        int indexQueueSize = this.codeIndexDocumentQueue.size();
 
         if (indexQueueSize > MAX_INDEX_SIZE) {
-            Singleton.getLogger().info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
+            this.logger.info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
             return true;
         }
 
-        if (codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
-            Singleton.getLogger().info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
+        if (this.codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
+            this.logger.info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
             return true;
         }
 
@@ -379,6 +384,26 @@ public class IndexService implements IIndexService {
         }
 
         return false;
+    }
+
+    public synchronized void incrementCodeIndexLinesCount(int incrementBy) {
+        this.codeIndexLinesCount = this.codeIndexLinesCount + incrementBy;
+    }
+
+    public synchronized void decrementCodeIndexLinesCount(int decrementBy) {
+        this.codeIndexLinesCount = this.codeIndexLinesCount - decrementBy;
+
+        if (codeIndexLinesCount < 0) {
+            codeIndexLinesCount = 0;
+        }
+    }
+
+    public synchronized void setCodeIndexLinesCount(int value) {
+        this.codeIndexLinesCount = value;
+    }
+
+    public synchronized int getCodeIndexLinesCount() {
+        return this.codeIndexLinesCount;
     }
 
     /**

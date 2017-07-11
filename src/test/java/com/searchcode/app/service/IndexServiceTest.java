@@ -217,6 +217,22 @@ public class IndexServiceTest extends TestCase {
         this.indexService.deleteByCodeId(this.codeId);
     }
 
+//    public void testShouldRepoJobPause() {
+//        this.indexService = new IndexService();
+//        this.indexService.shouldRepoJobPause();
+//    }
+
+    public void testChangeCodeIndexLinesCount() {
+        this.indexService = new IndexService();
+
+        this.indexService.setCodeIndexLinesCount(0);
+        assertThat(this.indexService.getCodeIndexLinesCount()).isZero();
+        this.indexService.incrementCodeIndexLinesCount(1000);
+        assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(1000);
+        this.indexService.decrementCodeIndexLinesCount(999);
+        assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(1);
+    }
+
     public void testShouldBackOffWhenLoadVeryHigh() {
         Data dataMock = Mockito.mock(Data.class);
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
