@@ -231,6 +231,8 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(1000);
         this.indexService.decrementCodeIndexLinesCount(999);
         assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(1);
+        this.indexService.decrementCodeIndexLinesCount(1000);
+        assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(0);
     }
 
     public void testShouldBackOffWhenLoadVeryHigh() {
