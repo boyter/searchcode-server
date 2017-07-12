@@ -295,6 +295,7 @@ public class IndexService implements IIndexService {
         this.repoJobExit = true;
         // Clear job processing queue queue
         // CLear index queue
+        this.codeIndexDocumentQueue.clear();
         // Delete repo from index
         // Delete repo from db
     }
@@ -302,11 +303,15 @@ public class IndexService implements IIndexService {
     @Override
     public void reindexAll() {
         // Stop adding to queue
+        this.repoAdderPause = true;
+        this.repoJobExit = true;
         // Clear queue
         // Clear index queue
-        // Delete the indexes
-        // Delete from DB
-        //
+        this.codeIndexDocumentQueue.clear();
+
+        // flip write index
+        // 
+
     }
 
     /**
