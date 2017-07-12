@@ -78,6 +78,7 @@ public class IndexService implements IIndexService {
     private final Queue<CodeIndexDocument> codeIndexDocumentQueue;
 
     private boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
+    private boolean repoAdderPause = false;
     private int codeIndexLinesCount = 0;
 
     public IndexService() {
@@ -333,7 +334,7 @@ public class IndexService implements IIndexService {
      */
     @Override
     public boolean shouldRepoAdderPause() {
-        return false;
+        return this.repoAdderPause;
     }
 
     /**

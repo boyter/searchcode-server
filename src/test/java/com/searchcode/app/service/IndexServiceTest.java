@@ -222,6 +222,11 @@ public class IndexServiceTest extends TestCase {
 //        this.indexService.shouldRepoJobPause();
 //    }
 
+    public void testShouldRepoJobPause() {
+        this.indexService = new IndexService();
+        assertThat(this.indexService.shouldRepoAdderPause()).isFalse();
+    }
+
     public void testChangeCodeIndexLinesCount() {
         this.indexService = new IndexService();
 
