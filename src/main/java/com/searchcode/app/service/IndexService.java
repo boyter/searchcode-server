@@ -393,8 +393,8 @@ public class IndexService implements IIndexService {
     public synchronized void decrementCodeIndexLinesCount(int decrementBy) {
         this.codeIndexLinesCount = this.codeIndexLinesCount - decrementBy;
 
-        if (codeIndexLinesCount < 0) {
-            codeIndexLinesCount = 0;
+        if (this.codeIndexLinesCount < 0) {
+            this.codeIndexLinesCount = 0;
         }
     }
 
