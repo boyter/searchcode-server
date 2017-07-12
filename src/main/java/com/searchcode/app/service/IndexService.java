@@ -79,6 +79,7 @@ public class IndexService implements IIndexService {
 
     private boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
     private boolean repoAdderPause = false;
+    private boolean repoJobExit = false;
     private int codeIndexLinesCount = 0;
 
     public IndexService() {
@@ -413,7 +414,7 @@ public class IndexService implements IIndexService {
      */
     @Override
     public boolean shouldRepoJobExit() {
-        return false;
+        return this.repoJobExit;
     }
 
     @Override
