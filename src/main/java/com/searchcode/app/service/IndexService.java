@@ -283,16 +283,16 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public void deleteAll() throws IOException {
+    public synchronized void deleteAll() throws IOException {
         FileUtils.deleteDirectory(this.INDEX_READ_LOCATION.toFile());
         FileUtils.deleteDirectory(this.INDEX_WRITE_LOCATION.toFile());
-
-        // TODO delete from the database here
     }
 
     @Override
     public void reindexByRepo(RepoResult repo) {
         // Stop adding to job processing queue
+        this.repoAdderPause = true;
+        this.repoJobExit = true;
         // Clear job processing queue queue
         // CLear index queue
         // Delete repo from index
@@ -315,19 +315,30 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void flipIndex() {
+        this.flipReadIndex();
+        this.flipWriteIndex();
+    }
+
+    private synchronized void flipReadIndex() {
         this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
-        this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
-        this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
 
         if (this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION)) {
             this.data.saveData(Values.INDEX_READ, Values.INDEX_A);
-            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_A);
         } else {
-            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);
-            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_B);
+            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);;
         }
     }
 
+    private synchronized void flipWriteIndex() {
+        this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
+        this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
+
+        if (this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION)) {
+            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_A);
+        } else {
+            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_B);
+        }
+    }
 
     /**
      * Should the job which adds repositories to the queue to
