@@ -76,6 +76,9 @@ public class IndexService implements IIndexService {
     private int CHILD_FACET_LIMIT;
 
     private final Queue<CodeIndexDocument> codeIndexDocumentQueue;
+    private final UniqueRepoQueue uniqueGitRepoQueue;
+    private final UniqueRepoQueue uniqueFileRepoQueue;
+    private final UniqueRepoQueue uniqueSvnRepoQueue;
 
     private boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
     private boolean repoAdderPause = false;
@@ -135,6 +138,9 @@ public class IndexService implements IIndexService {
         this.CHILD_FACET_LIMIT = 200;
 
         this.codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
+        this.uniqueGitRepoQueue = Singleton.getUniqueGitRepoQueue();
+        this.uniqueSvnRepoQueue = Singleton.getUniqueSvnRepoQueue();
+        this.uniqueFileRepoQueue = Singleton.getUniqueFileRepoQueue();
     }
 
     //////////////////////////////////////////////////////////////
@@ -308,10 +314,14 @@ public class IndexService implements IIndexService {
         // Clear queue
         // Clear index queue
         this.codeIndexDocumentQueue.clear();
+        this.uniqueGitRepoQueue.clear();
+        this.uniqueFileRepoQueue.clear();
+        this.uniqueSvnRepoQueue.clear();
 
         // flip write index
-        // 
-
+        this.flipWriteIndex();
+        // mark that waiting for queue to finish
+        // queue all repos to be parsed
     }
 
     /**
