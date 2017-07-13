@@ -505,6 +505,42 @@ public class IndexService implements IIndexService {
     }
 
     /**
+     * Due to very large repositories (500,000 files) this needs to support
+     * paging. Also need to consider the fact that is a list of strings
+     * TODO maybe convert to hash so lookups are faster
+     */
+    public List<String> getRepoDocuments(String repoName, int page) {
+        int REPOPAGELIMIT = 1000;
+        List<String> fileLocations = new ArrayList<>(REPOPAGELIMIT);
+        int start = REPOPAGELIMIT * page;
+
+        try {
+            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+            Query query = parser.parse(Values.REPONAME + ":" + repoName);
+
+            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
+            int end = Math.min(results.totalHits, (REPOPAGELIMIT * (page + 1)));
+            ScoreDoc[] hits = results.scoreDocs;
+
+            for (int i = start; i < end; i++) {
+                Document doc = searcher.doc(hits[i].doc);
+                fileLocations.add(doc.get(Values.PATH));
+            }
+
+            reader.close();
+        }
+        catch(Exception ex) {
+            this.logger.severe("CodeSearcher getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
+        }
+
+        return fileLocations;
+    }
+
+    /**
      * Given a query and what page of results we are on return the matching results for that search.
      * Does not escape the query so it allows syntax such as fileName:some*
      * TODO consider escaping if not a lucene query QueryParserBase.escape(queryString)

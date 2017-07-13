@@ -15,6 +15,7 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.mockito.Mockito;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -267,5 +268,16 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers());
 
         assertThat(this.indexService.shouldBackOff()).isFalse();
+    }
+
+    public void testGetRepoDocuments() throws IOException {
+        this.indexService = new IndexService();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        List<String> test = this.indexService.getRepoDocuments(this.repoName, 0);
+        assertThat(test.size()).isEqualTo(1);
+        assertThat(test.get(0)).isEqualTo("repoLocationRepoNameLocationFilename");
     }
 }
