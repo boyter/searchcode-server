@@ -16,6 +16,7 @@ import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for adding all of the repositories inside the database into the queues. This one runs slower
@@ -38,14 +39,20 @@ public class EnqueueFileRepositoryJob implements Job {
             // Get all of the repositories and enqueue them
             List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
             Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-            for(RepoResult rr: repoResultList) {
+
+            // Filter out those queued to be deleted
+            List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
+            List<RepoResult> collect = repoResultList.stream()
+                                            .filter(x -> !persistentDelete.contains(x.getName()))
+                                            .collect(Collectors.toList());
+
+            for(RepoResult rr: collect) {
                 switch (rr.getScm().toLowerCase()) {
                     case "file":
                         Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
                         repoQueue.add(rr);
                         break;
                     default:
-                        Singleton.getLogger().info("Unable to determine job type for " + rr.getName());
                         break;
                 }
             }

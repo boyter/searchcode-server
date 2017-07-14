@@ -31,7 +31,9 @@ public class CodeMatcher {
     public int MATCHLINES = Integer.parseInt(Values.DEFAULTMATCHLINES);
     public int MAXLINEDEPTH = Integer.parseInt(Values.DEFAULTMAXLINEDEPTH);
 
-    public CodeMatcher()  {}
+    public CodeMatcher()  {
+        this(Singleton.getData());
+    }
 
     public CodeMatcher(Data data) {
         this.MATCHLINES = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);

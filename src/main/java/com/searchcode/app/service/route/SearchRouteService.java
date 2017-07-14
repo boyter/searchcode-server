@@ -15,6 +15,7 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +31,7 @@ public class SearchRouteService {
 
     public SearchResult codeSearch(Request request, Response response) {
         CodeSearcher cs = new CodeSearcher();
-        CodeMatcher cm = new CodeMatcher(Singleton.getData());
+        CodeMatcher cm = new CodeMatcher();
         SearchcodeLib scl = Singleton.getSearchcodeLib(Singleton.getData());
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {

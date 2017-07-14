@@ -58,7 +58,6 @@ public class EnqueueRepositoryJob implements Job {
                         repoSvnQueue.add(rr);
                         break;
                     default:
-                        Singleton.getLogger().info("Unable to determine SCM type for " + rr.getName() + " " + rr.getScm());
                         break;
                 }
             }
