@@ -5,6 +5,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
@@ -279,5 +280,16 @@ public class IndexServiceTest extends TestCase {
         List<String> test = this.indexService.getRepoDocuments(this.repoName, 0);
         assertThat(test.size()).isEqualTo(1);
         assertThat(test.get(0)).isEqualTo("repoLocationRepoNameLocationFilename");
+    }
+
+    public void testGetProjectStats() throws IOException {
+        this.indexService = new IndexService();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        ProjectStats projectStats = this.indexService.getProjectStats(this.repoName);
+        assertThat(projectStats.getTotalFiles()).isEqualTo(1);
+        assertThat(projectStats.getTotalCodeLines()).isEqualTo(100);
     }
 }

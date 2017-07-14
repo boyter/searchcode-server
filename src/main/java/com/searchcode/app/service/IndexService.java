@@ -16,6 +16,7 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
+import com.searchcode.app.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -39,10 +40,7 @@ import org.apache.lucene.store.FSDirectory;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Service to deal with any tasks that involve talking to the index
@@ -538,6 +536,67 @@ public class IndexService implements IIndexService {
         }
 
         return fileLocations;
+    }
+
+    /**
+     * Collects project stats for a repo given its name
+     */
+    public ProjectStats getProjectStats(String repoName) {
+        int totalCodeLines = 0;
+        int totalFiles = 0;
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
+        List<CodeFacetLanguage> codeByLines = new ArrayList<>();
+
+        IndexReader reader = null;
+
+        try {
+            reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+            Query query = parser.parse(Values.REPONAME + ":" + repoName);
+
+            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            Map<String, Integer> linesCount = new HashMap<>();
+
+            for (int i = 0; i < results.totalHits; i++) {
+                Document doc = searcher.doc(hits[i].doc);
+
+                if (!this.searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
+                    int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
+                    totalCodeLines += lines;
+                    String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+
+                    if (linesCount.containsKey(languageName)) {
+                        linesCount.put(languageName, linesCount.get(languageName) + lines);
+                    }
+                    else {
+                        linesCount.put(languageName, lines);
+                    }
+                }
+            }
+
+            for (String key: linesCount.keySet()) {
+                codeByLines.add(new CodeFacetLanguage(key, linesCount.get(key)));
+            }
+            codeByLines.sort((a, b) -> b.getCount() - a.getCount());
+
+            totalFiles = results.totalHits;
+            codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
+            repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
+        }
+        catch(Exception ex) {
+            this.logger.severe("CodeSearcher getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(reader);
+        }
+
+        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, codeByLines, repoFacetOwners);
     }
 
     /**
