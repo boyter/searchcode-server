@@ -219,19 +219,16 @@ public class IndexServiceTest extends TestCase {
         this.indexService.deleteByCodeId(this.codeId);
     }
 
-//    public void testShouldRepoJobPause() {
-//        this.indexService = new IndexService();
-//        this.indexService.shouldRepoJobPause();
-//    }
-
-    public void testShouldRepoJobPause() {
+    public void testShouldRepoParserJobPause() {
         this.indexService = new IndexService();
-        assertThat(this.indexService.shouldRepoAdderPause()).isFalse();
+        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
+        assertThat(shouldPause).isFalse();
     }
 
-    public void testShouldRepoJobExit() {
+    public void testShouldRepoAdderJobPause() {
         this.indexService = new IndexService();
-        assertThat(this.indexService.shouldRepoJobExit()).isFalse();
+        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
+        assertThat(shouldPause).isFalse();
     }
 
     public void testChangeCodeIndexLinesCount() {
@@ -256,7 +253,7 @@ public class IndexServiceTest extends TestCase {
 
         this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers());
 
-        assertThat(this.indexService.shouldBackOff()).isTrue();
+        assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
     }
 
     public void testShouldNotBackOffWhenLoadZero() {
@@ -268,7 +265,7 @@ public class IndexServiceTest extends TestCase {
 
         this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers());
 
-        assertThat(this.indexService.shouldBackOff()).isFalse();
+        assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isFalse();
     }
 
     public void testGetRepoDocuments() throws IOException {

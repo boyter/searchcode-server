@@ -9,6 +9,12 @@ import java.io.IOException;
 import java.util.Queue;
 
 public interface IIndexService {
+
+    enum JobType {
+        REPO_ADDER,
+        REPO_PARSER,
+    }
+
     void indexDocument(Queue<CodeIndexDocument> documentQueue) throws IOException;
 
     void deleteByCodeId(String codeId) throws IOException;
@@ -20,9 +26,8 @@ public interface IIndexService {
 
     void flipIndex();
 
-    boolean shouldRepoAdderPause();
-    boolean shouldRepoJobPause();
-    boolean shouldRepoJobExit();
+    boolean shouldPause(JobType jobType);
+    boolean shouldExit(JobType jobType);
 
     int getIndexedDocumentCount();
 

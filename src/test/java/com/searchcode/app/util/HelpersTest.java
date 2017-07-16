@@ -96,4 +96,14 @@ public class HelpersTest extends TestCase {
 
         assertThat(this.helpers.ignoreFiles("target")).isFalse();
     }
+
+    public void testTryParseInt() {
+        this.helpers = new Helpers();
+        assertThat(this.helpers.tryParseInt(null, "0")).isZero();
+    }
+
+    public void testTryParseDouble() {
+        this.helpers = new Helpers();
+        assertThat(this.helpers.tryParseDouble(null, "0")).isZero();
+    }
 }

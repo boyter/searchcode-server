@@ -80,8 +80,25 @@ public class Helpers {
         try {
             result = Integer.parseInt(toParse);
         }
-        catch(NumberFormatException ex){
+        catch (NumberFormatException ex){
             result = Integer.parseInt(defaultValue);
+        }
+
+        return result;
+    }
+
+    /**
+     * Similar to the C# Int.TryParse where you pass in a string and if no good it will use the
+     * default value which is also parsed... which seems odd now I think about it
+     */
+    public double tryParseDouble(String toParse, String defaultValue) {
+        double result;
+
+        try {
+            result = Double.parseDouble(toParse);
+        }
+        catch (NumberFormatException | NullPointerException ex){
+            result = Double.parseDouble(defaultValue);
         }
 
         return result;

@@ -357,8 +357,7 @@ public class IndexService implements IIndexService {
      * Should the job which adds repositories to the queue to
      * be processed pause.
      */
-    @Override
-    public boolean shouldRepoAdderPause() {
+    private boolean shouldRepoAdderPause() {
         return this.repoAdderPause;
     }
 
@@ -366,8 +365,7 @@ public class IndexService implements IIndexService {
      * Should the repo parsers pause from adding documents into
      * the index queue.
      */
-    @Override
-    public boolean shouldRepoJobPause() {
+    private boolean shouldRepoJobPause() {
         if (this.pauseBackgroundJobs) {
             return true;
         }
@@ -392,13 +390,31 @@ public class IndexService implements IIndexService {
         return false;
     }
 
+    @Override
+    public boolean shouldPause(JobType jobType) {
+        switch (jobType) {
+            case REPO_ADDER:
+                return this.shouldRepoAdderPause();
+            case REPO_PARSER:
+                return this.shouldBackOff() || this.shouldRepoJobPause();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean shouldExit(JobType jobType) {
+        return false;
+    }
+
     /**
      * Checks to see how much CPU we are using and if its higher then the limit set
      * inside the settings page mute the index for a while
      */
-    public synchronized boolean shouldBackOff() {
-        Double loadValue = Double.parseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE));
-        Double loadAverage = Double.parseDouble(this.statsService.getLoadAverage());
+    private synchronized boolean shouldBackOff() {
+        String dataByName = this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
+        Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
+        Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
 
         if (loadValue <= 0) {
             return false;
@@ -436,7 +452,6 @@ public class IndexService implements IIndexService {
      * Should the repo parsers terminate from adding documents
      * into the queue.
      */
-    @Override
     public boolean shouldRepoJobExit() {
         return this.repoJobExit;
     }
