@@ -49,7 +49,6 @@ public class IndexServiceTest extends TestCase {
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
 
-
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
@@ -339,7 +338,7 @@ public class IndexServiceTest extends TestCase {
         Random rand = new Random();
         this.indexService = new IndexService();
 
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             new Thread(() -> {
                 int count = 10;
                 while (count > 0) {
@@ -408,6 +407,7 @@ public class IndexServiceTest extends TestCase {
             count--;
         }
 
-        Thread.sleep(1000);
+        // Having multiple instances of indexService is a problem
+        Thread.sleep(1500);
     }
 }
