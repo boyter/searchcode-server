@@ -10,6 +10,7 @@ import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.assertj.core.api.AssertionsForClassTypes;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 import java.io.IOException;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -328,5 +330,82 @@ public class IndexServiceTest extends TestCase {
         ProjectStats projectStats = this.indexService.getProjectStats(this.repoName);
         assertThat(projectStats.getTotalFiles()).isEqualTo(1);
         assertThat(projectStats.getTotalCodeLines()).isEqualTo(100);
+    }
+
+    public void testIndexerWithThreads() throws InterruptedException {
+        // You can only prove the presence of concurrent bugs, not their absence.
+        // Although that's true of any code. Anyway let's see if we can identify any...
+
+        Random rand = new Random();
+        this.indexService = new IndexService();
+
+        for(int i = 0; i < 10; i++) {
+            new Thread(() -> {
+                int count = 10;
+                while (count > 0) {
+                    try {
+                        this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                        this.indexService.setCodeIndexLinesCount(rand.nextInt(2000));
+                        this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000));
+                        this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000));
+                        this.indexService.getCodeIndexLinesCount();
+                        this.indexService.deleteByRepo(new RepoResult(0, RandomStringUtils.randomAscii(rand.nextInt(20) + 1), "", "", "", "", "", "", "{}"));
+                        this.indexService.deleteAll();
+                        this.indexService.flipIndex();
+                        this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                        this.indexService.getIndexedDocumentCount();
+                        this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+
+                        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+                        for (int j = 0; j < rand.nextInt(100) + 1; j++) {
+                            queue.add(this.codeIndexDocument);
+                        }
+                        this.indexService.indexDocument(queue);
+                        this.indexService.reindexAll();
+                        this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40));
+                        this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
+                        this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
+                        this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER);
+                        this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER);
+
+                    } catch (IOException e) {
+                        assertThat(true).isFalse();
+                    }
+                    count--;
+                }
+            }).start();
+        }
+
+        int count = 10;
+        while (count > 0) {
+            try {
+                this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                this.indexService.setCodeIndexLinesCount(rand.nextInt(2000));
+                this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000));
+                this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000));
+                this.indexService.getCodeIndexLinesCount();
+                this.indexService.deleteByRepo(new RepoResult(0, RandomStringUtils.randomAscii(rand.nextInt(20) + 1), "", "", "", "", "", "", "{}"));
+                this.indexService.deleteAll();
+                this.indexService.flipIndex();
+                this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                this.indexService.getIndexedDocumentCount();
+                this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+
+                Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+                for (int j = 0; j < rand.nextInt(100) + 1; j++) {
+                    queue.add(this.codeIndexDocument);
+                }
+                this.indexService.indexDocument(queue);
+                this.indexService.reindexAll();
+                this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40));
+                this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
+                this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
+                this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER);
+                this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER);
+            } catch (IOException e) {
+                assertThat(true).isFalse();
+            }
+            count--;
+        }
     }
 }

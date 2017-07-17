@@ -38,6 +38,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -47,7 +48,6 @@ import java.util.*;
  * specifically
  */
 public class IndexService implements IIndexService {
-
 
     private final StatsService statsService;
     private final Data data;
@@ -255,14 +255,16 @@ public class IndexService implements IIndexService {
         IndexWriterConfig iwc = new IndexWriterConfig(analyzer);
         iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
-        IndexWriter writer = new IndexWriter(dir, iwc);
-        QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+        IndexWriter writer = null;
         Query query;
 
         try {
+            writer = new IndexWriter(dir, iwc);
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+
             query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
-        } catch (ParseException ex) {
+        } catch (ParseException | NoSuchFileException ex) {
             this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -306,7 +308,7 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public void reindexAll() {
+    public synchronized void reindexAll() {
         // Stop adding to queue
         this.repoAdderPause = true;
         this.repoJobExit = true;
@@ -368,7 +370,7 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public boolean shouldExit(JobType jobType) {
+    public synchronized boolean shouldExit(JobType jobType) {
         return false;
     }
 
@@ -413,7 +415,7 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public int getIndexedDocumentCount() {
+    public synchronized int getIndexedDocumentCount() {
         int numDocs = 0;
         IndexReader reader = null;
 
@@ -432,7 +434,7 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public CodeResult getCodeResultByCodeId(String codeId) {
+    public synchronized CodeResult getCodeResultByCodeId(String codeId) {
         CodeResult codeResult = null;
         IndexReader reader = null;
 
@@ -512,7 +514,7 @@ public class IndexService implements IIndexService {
     /**
      * Collects project stats for a repo given its name
      */
-    public ProjectStats getProjectStats(String repoName) {
+    public synchronized ProjectStats getProjectStats(String repoName) {
         int totalCodeLines = 0;
         int totalFiles = 0;
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
@@ -577,7 +579,7 @@ public class IndexService implements IIndexService {
      * TODO document the extended syntax to allow raw queries
      */
     @Override
-    public SearchResult search(String queryString, int page) {
+    public synchronized SearchResult search(String queryString, int page) {
         SearchResult searchResult = new SearchResult();
         this.statsService.incrementSearchCount();
         IndexReader reader = null;
