@@ -407,5 +407,7 @@ public class IndexServiceTest extends TestCase {
             }
             count--;
         }
+
+        Thread.sleep(1000);
     }
 }
