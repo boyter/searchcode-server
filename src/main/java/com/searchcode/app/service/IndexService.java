@@ -89,10 +89,11 @@ public class IndexService implements IIndexService {
                 Singleton.getSearchCodeLib(),
                 Singleton.getSharedService(),
                 Singleton.getLogger(),
-                Singleton.getHelpers());
+                Singleton.getHelpers(),
+                Singleton.getCodeIndexQueue());
     }
 
-    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper logger, Helpers helpers) {
+    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
@@ -135,7 +136,7 @@ public class IndexService implements IIndexService {
         this.NO_PAGES_LIMIT = 20;
         this.CHILD_FACET_LIMIT = 200;
 
-        this.codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
+        this.codeIndexDocumentQueue = codeIndexDocumentQueue;
         this.uniqueGitRepoQueue = Singleton.getUniqueGitRepoQueue();
         this.uniqueSvnRepoQueue = Singleton.getUniqueSvnRepoQueue();
         this.uniqueFileRepoQueue = Singleton.getUniqueFileRepoQueue();
@@ -806,11 +807,6 @@ public class IndexService implements IIndexService {
         if (this.pauseBackgroundJobs) {
             return true;
         }
-
-        if (this.shouldBackOff()) {
-            return true;
-        }
-
 
         int indexQueueSize = this.codeIndexDocumentQueue.size();
 
