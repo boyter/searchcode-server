@@ -394,10 +394,12 @@ public class IndexService implements IIndexService {
         return false;
     }
 
+    @Override
     public synchronized void incrementCodeIndexLinesCount(int incrementBy) {
         this.codeIndexLinesCount = this.codeIndexLinesCount + incrementBy;
     }
 
+    @Override
     public synchronized void decrementCodeIndexLinesCount(int decrementBy) {
         this.codeIndexLinesCount = this.codeIndexLinesCount - decrementBy;
 
@@ -406,10 +408,12 @@ public class IndexService implements IIndexService {
         }
     }
 
+    @Override
     public synchronized void setCodeIndexLinesCount(int value) {
         this.codeIndexLinesCount = value;
     }
 
+    @Override
     public synchronized int getCodeIndexLinesCount() {
         return this.codeIndexLinesCount;
     }
@@ -480,6 +484,7 @@ public class IndexService implements IIndexService {
      * paging. Also need to consider the fact that is a list of strings
      * TODO maybe convert to hash so lookups are faster
      */
+    @Override
     public List<String> getRepoDocuments(String repoName, int page) {
         int REPOPAGELIMIT = 1000;
         List<String> fileLocations = new ArrayList<>(REPOPAGELIMIT);
@@ -514,6 +519,7 @@ public class IndexService implements IIndexService {
     /**
      * Collects project stats for a repo given its name
      */
+    @Override
     public synchronized ProjectStats getProjectStats(String repoName) {
         int totalCodeLines = 0;
         int totalFiles = 0;

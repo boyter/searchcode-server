@@ -2,10 +2,12 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Queue;
 
 public interface IIndexService {
@@ -29,8 +31,14 @@ public interface IIndexService {
     boolean shouldPause(JobType jobType);
     boolean shouldExit(JobType jobType);
 
-    int getIndexedDocumentCount();
+    void incrementCodeIndexLinesCount(int incrementBy);
+    void decrementCodeIndexLinesCount(int decrementBy);
+    void setCodeIndexLinesCount(int value);
+    int getCodeIndexLinesCount();
 
+    int getIndexedDocumentCount();
+    ProjectStats getProjectStats(String repoName);
+    List<String> getRepoDocuments(String repoName, int page);
     CodeResult getCodeResultByCodeId(String codeId);
     SearchResult search(String queryString, int page);
 }
