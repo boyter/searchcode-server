@@ -105,5 +105,6 @@ public class HelpersTest extends TestCase {
     public void testTryParseDouble() {
         this.helpers = new Helpers();
         assertThat(this.helpers.tryParseDouble(null, "0")).isZero();
+        assertThat(this.helpers.tryParseDouble("0", "0")).isZero();
     }
 }
