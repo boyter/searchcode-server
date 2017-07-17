@@ -88,7 +88,7 @@ public class Helpers {
     }
 
     /**
-     * Similar to the C# Int.TryParse where you pass in a string and if no good it will use the
+     * Similar to the C# Double.TryParse where you pass in a string and if no good it will use the
      * default value which is also parsed... which seems odd now I think about it
      */
     public double tryParseDouble(String toParse, String defaultValue) {

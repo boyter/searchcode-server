@@ -412,7 +412,6 @@ public class IndexService implements IIndexService {
      * inside the settings page mute the index for a while
      */
     private synchronized boolean shouldBackOff() {
-        String dataByName = this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
         Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
         Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
 

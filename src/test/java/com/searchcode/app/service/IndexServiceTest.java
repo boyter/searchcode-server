@@ -256,6 +256,18 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
     }
 
+    public void testShouldBackOffWhenLoadHigherThanValue() {
+        Data dataMock = Mockito.mock(Data.class);
+        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+
+        when(statsServiceMock.getLoadAverage()).thenReturn("0.21");
+        when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("0.2");
+
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers());
+
+        assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
+    }
+
     public void testShouldNotBackOffWhenLoadZero() {
         Data dataMock = Mockito.mock(Data.class);
         StatsService statsServiceMock = Mockito.mock(StatsService.class);
