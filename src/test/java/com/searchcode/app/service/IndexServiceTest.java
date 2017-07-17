@@ -219,18 +219,6 @@ public class IndexServiceTest extends TestCase {
         this.indexService.deleteByCodeId(this.codeId);
     }
 
-    public void testShouldRepoParserJobPause() {
-        this.indexService = new IndexService();
-        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
-        assertThat(shouldPause).isFalse();
-    }
-
-    public void testShouldRepoAdderJobPause() {
-        this.indexService = new IndexService();
-        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
-        assertThat(shouldPause).isFalse();
-    }
-
     public void testChangeCodeIndexLinesCount() {
         this.indexService = new IndexService();
 
@@ -242,6 +230,18 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(1);
         this.indexService.decrementCodeIndexLinesCount(1000);
         assertThat(this.indexService.getCodeIndexLinesCount()).isEqualTo(0);
+    }
+
+    public void testShouldRepoParserJobPause() {
+        this.indexService = new IndexService();
+        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
+        assertThat(shouldPause).isFalse();
+    }
+
+    public void testShouldRepoAdderJobPause() {
+        this.indexService = new IndexService();
+        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
+        assertThat(shouldPause).isFalse();
     }
 
     public void testShouldBackOffWhenLoadVeryHigh() {

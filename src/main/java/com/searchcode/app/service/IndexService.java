@@ -353,42 +353,6 @@ public class IndexService implements IIndexService {
         }
     }
 
-    /**
-     * Should the job which adds repositories to the queue to
-     * be processed pause.
-     */
-    private boolean shouldRepoAdderPause() {
-        return this.repoAdderPause;
-    }
-
-    /**
-     * Should the repo parsers pause from adding documents into
-     * the index queue.
-     */
-    private boolean shouldRepoJobPause() {
-        if (this.pauseBackgroundJobs) {
-            return true;
-        }
-
-        if (this.shouldBackOff()) {
-            return true;
-        }
-
-
-        int indexQueueSize = this.codeIndexDocumentQueue.size();
-
-        if (indexQueueSize > MAX_INDEX_SIZE) {
-            this.logger.info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
-            return true;
-        }
-
-        if (this.codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
-            this.logger.info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
-            return true;
-        }
-
-        return false;
-    }
 
     @Override
     public boolean shouldPause(JobType jobType) {
@@ -445,14 +409,6 @@ public class IndexService implements IIndexService {
 
     public synchronized int getCodeIndexLinesCount() {
         return this.codeIndexLinesCount;
-    }
-
-    /**
-     * Should the repo parsers terminate from adding documents
-     * into the queue.
-     */
-    public boolean shouldRepoJobExit() {
-        return this.repoJobExit;
     }
 
     @Override
@@ -824,5 +780,50 @@ public class IndexService implements IIndexService {
         } catch (Exception ignore) {}
 
         return codeFacetRepo;
+    }
+
+    /**
+     * Should the repo parsers terminate from adding documents
+     * into the queue.
+     */
+    private boolean shouldRepoJobExit() {
+        return this.repoJobExit;
+    }
+
+    /**
+     * Should the job which adds repositories to the queue to
+     * be processed pause.
+     */
+    private boolean shouldRepoAdderPause() {
+        return this.repoAdderPause;
+    }
+
+    /**
+     * Should the repo parsers pause from adding documents into
+     * the index queue.
+     */
+    private boolean shouldRepoJobPause() {
+        if (this.pauseBackgroundJobs) {
+            return true;
+        }
+
+        if (this.shouldBackOff()) {
+            return true;
+        }
+
+
+        int indexQueueSize = this.codeIndexDocumentQueue.size();
+
+        if (indexQueueSize > MAX_INDEX_SIZE) {
+            this.logger.info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
+            return true;
+        }
+
+        if (this.codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
+            this.logger.info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
+            return true;
+        }
+
+        return false;
     }
 }
