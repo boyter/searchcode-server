@@ -356,7 +356,6 @@ public class IndexServiceTest extends TestCase {
         } catch (IOException e) { assertThat(true).isFalse(); }});
         methodList.add(arg -> this.indexService.reindexAll());
         methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40)));
-
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER));
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER));
         methodList.add(arg -> this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER));
@@ -364,7 +363,7 @@ public class IndexServiceTest extends TestCase {
 
         List<Thread> threadList = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 30; i++) {
             Thread thread = new Thread(() -> {
                 Collections.shuffle(methodList);
                 for (MethodRunner runner: methodList) {
