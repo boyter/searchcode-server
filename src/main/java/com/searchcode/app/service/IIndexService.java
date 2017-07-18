@@ -5,6 +5,7 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
+import org.apache.lucene.document.Document;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +37,7 @@ public interface IIndexService {
     void setCodeIndexLinesCount(int value);
     int getCodeIndexLinesCount();
 
+    Document buildDocument(CodeIndexDocument codeIndexDocument);
     int getIndexedDocumentCount();
     ProjectStats getProjectStats(String repoName);
     List<String> getRepoDocuments(String repoName, int page);

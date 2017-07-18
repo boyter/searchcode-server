@@ -18,9 +18,7 @@ import org.eclipse.jetty.util.ConcurrentArrayQueue;
 import org.mockito.Mockito;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Queue;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -334,80 +332,55 @@ public class IndexServiceTest extends TestCase {
     public void testIndexerWithThreads() throws InterruptedException {
         // You can only prove the presence of concurrent bugs, not their absence.
         // Although that's true of any code. Anyway let's see if we can identify any...
-
         Random rand = new Random();
         this.indexService = new IndexService();
 
-        for (int i = 0; i < 10; i++) {
-            new Thread(() -> {
-                int count = 10;
-                while (count > 0) {
-                    try {
-                        this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        this.indexService.setCodeIndexLinesCount(rand.nextInt(2000));
-                        this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000));
-                        this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000));
-                        this.indexService.getCodeIndexLinesCount();
-                        this.indexService.deleteByRepo(new RepoResult(0, RandomStringUtils.randomAscii(rand.nextInt(20) + 1), "", "", "", "", "", "", "{}"));
-                        this.indexService.deleteAll();
-                        this.indexService.flipIndex();
-                        this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        this.indexService.getIndexedDocumentCount();
-                        this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-
-                        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-                        for (int j = 0; j < rand.nextInt(100) + 1; j++) {
-                            queue.add(this.codeIndexDocument);
-                        }
-                        this.indexService.indexDocument(queue);
-                        this.indexService.reindexAll();
-                        this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40));
-                        this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
-                        this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
-                        this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER);
-                        this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER);
-
-                    } catch (IOException e) {
-                        assertThat(true).isFalse();
-                    }
-                    count--;
-                }
-            }).start();
-        }
-
-        int count = 10;
-        while (count > 0) {
-            try {
-                this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                this.indexService.setCodeIndexLinesCount(rand.nextInt(2000));
-                this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000));
-                this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000));
-                this.indexService.getCodeIndexLinesCount();
-                this.indexService.deleteByRepo(new RepoResult(0, RandomStringUtils.randomAscii(rand.nextInt(20) + 1), "", "", "", "", "", "", "{}"));
-                this.indexService.deleteAll();
-                this.indexService.flipIndex();
-                this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                this.indexService.getIndexedDocumentCount();
-                this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-
-                Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-                for (int j = 0; j < rand.nextInt(100) + 1; j++) {
-                    queue.add(this.codeIndexDocument);
-                }
-                this.indexService.indexDocument(queue);
-                this.indexService.reindexAll();
-                this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40));
-                this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
-                this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
-                this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER);
-                this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER);
-            } catch (IOException e) {
-                assertThat(true).isFalse();
+        List<MethodRunner> methodList = new ArrayList<>();
+        methodList.add(arg -> { try { this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)); } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> this.indexService.setCodeIndexLinesCount(rand.nextInt(2000)));
+        methodList.add(arg -> this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000)));
+        methodList.add(arg -> this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000)));
+        methodList.add(arg -> this.indexService.getCodeIndexLinesCount());
+        methodList.add(arg -> { try { this.indexService.deleteByRepo(new RepoResult(0, RandomStringUtils.randomAscii(rand.nextInt(20) + 1), "", "", "", "", "", "", "{}")); } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> { try { this.indexService.deleteAll(); } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> this.indexService.flipIndex());
+        methodList.add(arg -> this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
+        methodList.add(arg -> this.indexService.getIndexedDocumentCount());
+        methodList.add(arg -> this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
+        methodList.add(arg -> { try {
+            Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+            for (int j = 0; j < rand.nextInt(100) + 1; j++) {
+                queue.add(this.codeIndexDocument);
             }
-            count--;
+            this.indexService.indexDocument(queue);
+        } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> this.indexService.reindexAll());
+        methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40)));
+
+        methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER));
+        methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER));
+        methodList.add(arg -> this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER));
+        methodList.add(arg -> this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER));
+
+        List<Thread> threadList = new ArrayList<>();
+
+        for (int i = 0; i < 10; i++) {
+            Thread thread = new Thread(() -> {
+                Collections.shuffle(methodList);
+                for (MethodRunner runner: methodList) {
+                    runner.run(new Object());
+                }
+            });
+            thread.start();
+           threadList.add(thread);
         }
 
-        // Having multiple instances of indexService is a problem
-        Thread.sleep(1500);
+        for (Thread thread: threadList) {
+            thread.join();
+        }
+    }
+
+    public interface MethodRunner {
+        void run(Object arg);
     }
 }
