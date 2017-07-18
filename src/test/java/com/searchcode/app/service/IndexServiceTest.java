@@ -355,6 +355,7 @@ public class IndexServiceTest extends TestCase {
             this.indexService.indexDocument(queue);
         } catch (IOException e) { assertThat(true).isFalse(); }});
         methodList.add(arg -> this.indexService.reindexAll());
+        methodList.add(arg -> this.indexService.reindexByRepo(new RepoResult()));
         methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40)));
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER));
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER));
