@@ -18,6 +18,7 @@ public interface IIndexService {
         REPO_PARSER,
     }
 
+    void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException;
     void indexDocument(Queue<CodeIndexDocument> documentQueue) throws IOException;
 
     void deleteByCodeId(String codeId) throws IOException;

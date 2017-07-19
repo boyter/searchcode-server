@@ -59,6 +59,18 @@ public class IndexServiceTest extends TestCase {
         assertThat(codeResult).isNull();
     }
 
+    public void testIndexDocumentNoQueueEndToEnd() throws IOException {
+        this.indexService = new IndexService();
+        this.indexService.indexDocument(this.codeIndexDocument);
+
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult.getCodeId()).isEqualTo(this.codeId);
+
+        this.indexService.deleteByCodeId(this.codeId);
+        codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        assertThat(codeResult).isNull();
+    }
+
 
     public void testDeleteByCodeId() throws IOException {
         this.indexService = new IndexService();
@@ -367,6 +379,7 @@ public class IndexServiceTest extends TestCase {
             }
             this.indexService.indexDocument(queue);
         } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> { try { this.indexService.indexDocument(this.codeIndexDocument); } catch (IOException e) { assertThat(true).isFalse(); }});
         methodList.add(arg -> this.indexService.reindexAll());
         methodList.add(arg -> this.indexService.reindexByRepo(new RepoResult()));
         methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40)));
