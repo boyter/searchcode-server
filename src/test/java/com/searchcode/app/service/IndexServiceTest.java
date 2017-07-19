@@ -245,6 +245,19 @@ public class IndexServiceTest extends TestCase {
         assertThat(shouldPause).isFalse();
     }
 
+    public void testShouldRepoAdderJobPauseWhenSet() {
+        this.indexService = new IndexService();
+        this.indexService.setRepoAdderPause(true);
+        boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
+        assertThat(shouldPause).isTrue();
+        assertThat(this.indexService.getRepoAdderPause()).isTrue();
+
+        this.indexService.setRepoAdderPause(false);
+        shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER);
+        assertThat(shouldPause).isFalse();
+        assertThat(this.indexService.getRepoAdderPause()).isFalse();
+    }
+
     public void testShouldRepoParserJobPauseWhenIndexLinesSizeLarge() {
         this.indexService = new IndexService();
         this.indexService.setCodeIndexLinesCount(1000000000);
@@ -361,6 +374,9 @@ public class IndexServiceTest extends TestCase {
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER));
         methodList.add(arg -> this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER));
         methodList.add(arg -> this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER));
+        methodList.add(arg -> this.indexService.setRepoAdderPause(false));
+        methodList.add(arg -> this.indexService.setRepoAdderPause(true));
+        methodList.add(arg -> this.indexService.getRepoAdderPause());
 
         List<Thread> threadList = new ArrayList<>();
 

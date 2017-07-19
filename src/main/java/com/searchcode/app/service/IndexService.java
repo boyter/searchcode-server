@@ -146,6 +146,16 @@ public class IndexService implements IIndexService {
     // Methods for controlling the index
     //////////////////////////////////////////////////////////////
 
+    @Override
+    public boolean getRepoAdderPause() {
+        return this.repoAdderPause;
+    }
+
+    @Override
+    public void setRepoAdderPause(boolean repoAdderPause) {
+        this.repoAdderPause = repoAdderPause;
+    }
+
     /**
      * Given a queue of documents to index, index them by popping the queue supplied.
      * This method must be synchronized as we have not added any logic to deal with multiple threads writing to the
@@ -334,27 +344,6 @@ public class IndexService implements IIndexService {
     public synchronized void flipIndex() {
         this.flipReadIndex();
         this.flipWriteIndex();
-    }
-
-    private synchronized void flipReadIndex() {
-        this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
-
-        if (this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION)) {
-            this.data.saveData(Values.INDEX_READ, Values.INDEX_A);
-        } else {
-            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);;
-        }
-    }
-
-    private synchronized void flipWriteIndex() {
-        this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
-        this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
-
-        if (this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION)) {
-            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_A);
-        } else {
-            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_B);
-        }
     }
 
 
@@ -615,6 +604,27 @@ public class IndexService implements IIndexService {
         }
 
         return searchResult;
+    }
+
+    private synchronized void flipReadIndex() {
+        this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
+
+        if (this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION)) {
+            this.data.saveData(Values.INDEX_READ, Values.INDEX_A);
+        } else {
+            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);;
+        }
+    }
+
+    private synchronized void flipWriteIndex() {
+        this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
+        this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
+
+        if (this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION)) {
+            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_A);
+        } else {
+            this.data.saveData(Values.INDEX_WRITE, Values.INDEX_B);
+        }
     }
 
     /**

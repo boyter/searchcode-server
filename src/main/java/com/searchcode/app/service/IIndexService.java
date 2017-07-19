@@ -29,6 +29,9 @@ public interface IIndexService {
 
     void flipIndex();
 
+    boolean getRepoAdderPause();
+    void setRepoAdderPause(boolean repoAdderPause);
+
     boolean shouldPause(JobType jobType);
     boolean shouldExit(JobType jobType);
 
