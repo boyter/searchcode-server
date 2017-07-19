@@ -59,7 +59,6 @@ public class IndexService implements IIndexService {
 
     private final int MAX_INDEX_SIZE;
     private final int MAX_LINES_INDEX_SIZE;
-    private final int INDEX_QUEUE_BATCH_SIZE;
 
     private final Path INDEX_A_LOCATION;
     private final Path INDEX_B_LOCATION;
@@ -104,7 +103,6 @@ public class IndexService implements IIndexService {
 
         this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
-        this.INDEX_QUEUE_BATCH_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.INDEX_QUEUE_BATCH_SIZE, Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE), Values.DEFAULT_INDEX_QUEUE_BATCH_SIZE);
 
         // Locations that should never change once class created
         this.INDEX_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_A);
@@ -372,26 +370,6 @@ public class IndexService implements IIndexService {
         return false;
     }
 
-    /**
-     * Checks to see how much CPU we are using and if its higher then the limit set
-     * inside the settings page mute the index for a while
-     */
-    private synchronized boolean shouldBackOff() {
-        Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
-        Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
-
-        if (loadValue <= 0) {
-            return false;
-        }
-
-        if (loadAverage >= loadValue) {
-            this.logger.info("Load Average higher than set value. Pausing indexing.");
-            return true;
-        }
-
-        return false;
-    }
-
     @Override
     public synchronized void incrementCodeIndexLinesCount(int incrementBy) {
         this.codeIndexLinesCount = this.codeIndexLinesCount + incrementBy;
@@ -612,6 +590,26 @@ public class IndexService implements IIndexService {
         }
 
         return searchResult;
+    }
+
+    /**
+     * Checks to see how much CPU we are using and if its higher then the limit set
+     * inside the settings page mute the index for a while
+     */
+    private synchronized boolean shouldBackOff() {
+        Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
+        Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
+
+        if (loadValue <= 0) {
+            return false;
+        }
+
+        if (loadAverage >= loadValue) {
+            this.logger.info("Load Average higher than set value. Pausing indexing.");
+            return true;
+        }
+
+        return false;
     }
 
     private synchronized void flipReadIndex() {
