@@ -10,40 +10,49 @@
 
 package com.searchcode.app.jobs.repository;
 
-import com.searchcode.app.service.CodeIndexer;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
+import com.searchcode.app.util.LoggerWrapper;
 import org.quartz.*;
-
-import java.io.IOException;
 
 /**
  * This job is responsible for passing the queue of documents along to be indexed. It does not do much and only exists
- * as a job to allow this to be scheduled in a background thread.
+ * as a job to allow this to be scheduled in a background thread. It also never pauses. To stop it doing anything
+ * the jobs feeding the index queue should be paused.
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class IndexDocumentsJob implements Job {
 
+    private final IndexService indexService;
+    private final LoggerWrapper logger;
+    private final StatsService statsService;
+
+    public IndexDocumentsJob() {
+        this(Singleton.getIndexService(), Singleton.getStatsService(), Singleton.getLogger());
+    }
+
+    public IndexDocumentsJob(IndexService indexService, StatsService statsService, LoggerWrapper logger) {
+        this.indexService = indexService;
+        this.statsService = statsService;
+        this.logger = logger;
+    }
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
-            return;
-        }
-        
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY + 1);
             int codeIndexQueueSize = Singleton.getCodeIndexQueue().size();
 
             if (codeIndexQueueSize != 0) {
-                StatsService statsService = new StatsService();
-                Singleton.getLogger().info("Documents to index: " + codeIndexQueueSize);
-                Singleton.getLogger().info("Lines to index: " + Singleton.getSharedService().getCodeIndexLinesCount());
-                Singleton.getLogger().info("Memory Usage: " + statsService.getMemoryUsage(", "));
-                Singleton.getCodeIndexer().indexDocuments(Singleton.getCodeIndexQueue());
+                this.logger.info("Documents to index: " + codeIndexQueueSize);
+                this.logger.info("Lines to index: " + this.indexService.getCodeIndexLinesCount());
+                this.logger.info("Memory Usage: " + this.statsService.getMemoryUsage(", "));
+                this.indexService.indexDocument(Singleton.getCodeIndexQueue());
             }
         } catch (Exception ex) {
             // Continue at all costs
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            this.logger.warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
         }
     }
 }

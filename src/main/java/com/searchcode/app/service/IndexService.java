@@ -52,7 +52,6 @@ public class IndexService implements IIndexService {
 
     private final StatsService statsService;
     private final Data data;
-    private final SharedService sharedService;
     private final SearchcodeLib searchcodeLib;
     private final LoggerWrapper logger;
     private final Helpers helpers;
@@ -87,17 +86,15 @@ public class IndexService implements IIndexService {
         this(Singleton.getData(),
                 Singleton.getStatsService(),
                 Singleton.getSearchCodeLib(),
-                Singleton.getSharedService(),
                 Singleton.getLogger(),
                 Singleton.getHelpers(),
                 Singleton.getCodeIndexQueue());
     }
 
-    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, SharedService sharedService, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue) {
+    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
-        this.sharedService = sharedService;
         this.logger = logger;
         this.helpers = helpers;
 
@@ -186,7 +183,7 @@ public class IndexService implements IIndexService {
 
             while (codeIndexDocument != null) {
                 this.logger.info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
-                this.sharedService.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
+                this.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
 
                 facetsConfig = new FacetsConfig();
                 facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);

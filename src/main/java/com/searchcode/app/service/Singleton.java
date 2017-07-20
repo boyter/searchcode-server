@@ -59,9 +59,7 @@ public final class Singleton {
     private static TimeSearchRouteService timeSearchRouteService = null;
     private static StatsService statsService = null;
     private static JobService jobService = null;
-    private static SharedService sharedService = null;
     private static IDatabaseConfig databaseConfig = null;
-    private static CodeIndexer codeIndexer = null;
     private static Helpers helpers = null;
     private static ValidatorService validatorService = null;
     private static IndexService indexService = null;
@@ -292,14 +290,6 @@ public final class Singleton {
         return jobService;
     }
 
-    public static synchronized SharedService getSharedService() {
-        if (sharedService == null) {
-            sharedService = new SharedService();
-        }
-
-        return sharedService;
-    }
-
     public static synchronized FileClassifier getFileClassifier() {
         if (fileClassifier == null) {
             fileClassifier = new FileClassifier();
@@ -314,14 +304,6 @@ public final class Singleton {
         }
 
         return databaseConfig;
-    }
-
-    public static synchronized CodeIndexer getCodeIndexer() {
-        if (codeIndexer == null) {
-            codeIndexer = new CodeIndexer();
-        }
-
-        return codeIndexer;
     }
 
     public static synchronized Helpers getHelpers() {

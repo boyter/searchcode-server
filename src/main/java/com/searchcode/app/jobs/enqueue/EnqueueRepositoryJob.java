@@ -10,8 +10,12 @@
 
 package com.searchcode.app.jobs.enqueue;
 
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
@@ -26,8 +30,19 @@ import java.util.stream.Collectors;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class EnqueueRepositoryJob implements Job {
+
+    private final IndexService indexService;
+    private final LoggerWrapper logger;
+    private final Repo repo;
+
+    public EnqueueRepositoryJob() {
+        this.indexService = Singleton.getIndexService();
+        this.repo = Singleton.getRepo();
+        this.logger = Singleton.getLogger();
+    }
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
+        if (this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return;
         }
 
@@ -38,8 +53,7 @@ public class EnqueueRepositoryJob implements Job {
             UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
 
             // Get all of the repositories and enqueue them
-            List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-            Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+            List<RepoResult> repoResultList = this.repo.getAllRepo();
 
             // Filter out those queued to be deleted
             List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
@@ -47,14 +61,16 @@ public class EnqueueRepositoryJob implements Job {
                                                      .filter(x -> !persistentDelete.contains(x.getName()))
                                                      .collect(Collectors.toList());
 
+            this.logger.info("Adding repositories to be indexed. " + collect.size());
+
             for (RepoResult rr: collect) {
                 switch (rr.getScm().toLowerCase()) {
                     case "git":
-                        Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
+                        this.logger.info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
                         repoGitQueue.add(rr);
                         break;
                     case "svn":
-                        Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
+                        this.logger.info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
                         repoSvnQueue.add(rr);
                         break;
                     default:
@@ -62,6 +78,6 @@ public class EnqueueRepositoryJob implements Job {
                 }
             }
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 }

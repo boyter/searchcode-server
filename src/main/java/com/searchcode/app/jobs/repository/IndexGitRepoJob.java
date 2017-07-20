@@ -16,7 +16,7 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
-import com.searchcode.app.service.SharedService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
@@ -60,10 +60,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     private boolean USE_SYSTEM_GIT;
 
     public IndexGitRepoJob() {
-        this(Singleton.getSharedService());
+        this(Singleton.getIndexService());
     }
 
-    public IndexGitRepoJob(SharedService sharedService) {
+    public IndexGitRepoJob(IndexService indexService) {
         this.GIT_BINARY_PATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
         this.USE_SYSTEM_GIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
 
@@ -74,7 +74,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             this.USE_SYSTEM_GIT = false;
         }
 
-        this.sharedService = sharedService;
+        this.indexService = indexService;
     }
 
     @Override

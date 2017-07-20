@@ -37,7 +37,7 @@ public class AdminRouteService {
     private final Repo repo;
     private final JobService jobService;
     private final DataService dataService;
-    private final SharedService sharedService;
+    private final IndexService indexService;
     private final StatsService statsService;
     private final ValidatorService validatorService;
 
@@ -45,16 +45,16 @@ public class AdminRouteService {
         this(Singleton.getRepo(),
              Singleton.getJobService(),
              Singleton.getDataService(),
-             Singleton.getSharedService(),
+             Singleton.getIndexService(),
              Singleton.getStatsService(),
              Singleton.getValidatorService());
     }
 
-    public AdminRouteService(Repo repo, JobService jobService, DataService dataService, SharedService sharedService, StatsService statsService, ValidatorService validatorService) {
+    public AdminRouteService(Repo repo, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService) {
         this.repo = repo;
         this.jobService = jobService;
         this.dataService = dataService;
-        this.sharedService = sharedService;
+        this.indexService = indexService;
         this.statsService = statsService;
         this.validatorService = validatorService;
     }
@@ -152,7 +152,7 @@ public class AdminRouteService {
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put("index_paused", this.sharedService.getPauseBackgroundJobs() ? "paused" : "running");
+        map.put("index_paused", this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused" : "running");
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
@@ -475,8 +475,7 @@ public class AdminRouteService {
             case "repocount":
                 return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
             case "numdocs":
-                CodeSearcher codeSearcher = new CodeSearcher();
-                return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+                return Values.EMPTYSTRING + this.indexService.getIndexedDocumentCount();
             case "servertime":
                 return new Date().toString();
             case "deletionqueue":
@@ -496,7 +495,7 @@ public class AdminRouteService {
             case "threads":
                 return "" + java.lang.Thread.activeCount();
             case "paused":
-                return this.sharedService.getPauseBackgroundJobs() ? "paused": "running";
+                return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused": "running";
         }
 
         return Values.EMPTYSTRING;

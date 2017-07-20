@@ -10,10 +10,6 @@
 
 package com.searchcode.app.service.route;
 
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.google.gson.Gson;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
@@ -22,11 +18,12 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
-import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.route.CommonRouteService;
-import com.searchcode.app.util.*;
+import com.searchcode.app.util.Cocomo2;
+import com.searchcode.app.util.OWASPClassifier;
 import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -34,18 +31,22 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static spark.Spark.halt;
 
 public class CodeRouteService {
 
-    private CodeSearcher codeSearcher;
+    private IndexService indexService;
 
     public CodeRouteService() {
-        this.codeSearcher = new CodeSearcher();
+        this(Singleton.getIndexService());
     }
 
-    public CodeRouteService(CodeSearcher codeSearcher) {
-        this.codeSearcher = codeSearcher;
+    public CodeRouteService(IndexService indexService) {
+        this.indexService = indexService;
     }
 
     public ModelAndView root(Request request, Response response) {
@@ -109,10 +110,8 @@ public class CodeRouteService {
             return new ModelAndView(map, "search_ajax.ftl");
         }
 
-        CodeSearcher cs = new CodeSearcher();
-
         map.put("photoId", CommonRouteService.getPhotoId());
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numDocs", this.indexService.getIndexedDocumentCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
@@ -131,7 +130,7 @@ public class CodeRouteService {
         Cocomo2 coco = new Cocomo2();
 
         String codeId = request.params(":codeid");
-        CodeResult codeResult = this.codeSearcher.getByCodeId(codeId);
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(codeId);
 
         if (codeResult == null) {
             response.redirect("/404/");
@@ -238,7 +237,7 @@ public class CodeRouteService {
             halt();
         }
 
-        ProjectStats projectStats = this.codeSearcher.getProjectStats(repository.getName());
+        ProjectStats projectStats = this.indexService.getProjectStats(repository.getName());
 
 
         map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
@@ -304,7 +303,6 @@ public class CodeRouteService {
         Data data = Singleton.getData();
 
         SearchcodeLib scl = Singleton.getSearchcodeLib(data);
-        CodeSearcher cs = new CodeSearcher();
         CodeMatcher cm = new CodeMatcher(data);
         Map<String, Object> map = new HashMap<>();
 
@@ -393,7 +391,7 @@ public class CodeRouteService {
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);
 
-            SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
+            SearchResult searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
             for (CodeFacetRepo f: searchResult.getRepoFacetResults()) {
@@ -433,7 +431,7 @@ public class CodeRouteService {
         }
 
         map.put("photoId", CommonRouteService.getPhotoId());
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numDocs", this.indexService.getCodeIndexLinesCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
@@ -446,7 +444,6 @@ public class CodeRouteService {
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
 
-        CodeSearcher cs = new CodeSearcher();
         CodeMatcher cm = new CodeMatcher(data);
         Map<String, Object> map = new HashMap<>();
 
@@ -469,7 +466,7 @@ public class CodeRouteService {
 
             String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
 
-            SearchResult searchResult = cs.search(query, page);
+            SearchResult searchResult = this.indexService.search(query, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), altquery, false));
 
 
@@ -486,7 +483,7 @@ public class CodeRouteService {
         }
 
         map.put("photoId", 1);
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numDocs", this.indexService.getIndexedDocumentCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));

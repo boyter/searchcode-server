@@ -14,7 +14,8 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.SharedService;
+import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -33,15 +34,15 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class IndexFileRepoJob extends IndexBaseRepoJob {
 
+    private final IndexService indexService;
     public String repoName;
 
-
     public IndexFileRepoJob() {
-        this(Singleton.getSharedService());
+        this(Singleton.getIndexService());
     }
 
-    public IndexFileRepoJob(SharedService sharedService) {
-        this.sharedService = sharedService;
+    public IndexFileRepoJob(IndexService indexService) {
+        this.indexService = indexService;
     }
 
     /**
@@ -53,7 +54,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
             return;
         }
 
-        if (!this.sharedService.getBackgroundJobsEnabled()) {
+        if (!this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
             return;
         }
 
