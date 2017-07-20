@@ -458,8 +458,7 @@ public class App {
         });
 
     }
-
-
+    
     /**
      * Called on startup to run all the DAO object table creation/migration logic. Slight overhead using this technique.
      * TODO Do the migrations inside the sqlite database so the application does not need to
