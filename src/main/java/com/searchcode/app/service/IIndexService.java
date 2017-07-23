@@ -32,6 +32,7 @@ public interface IIndexService {
 
     boolean getRepoAdderPause();
     void setRepoAdderPause(boolean repoAdderPause);
+    void toggleRepoAdderPause();
 
     boolean shouldPause(JobType jobType);
     boolean shouldExit(JobType jobType);

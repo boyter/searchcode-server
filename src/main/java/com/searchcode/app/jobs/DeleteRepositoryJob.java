@@ -29,10 +29,6 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
-            return;
-        }
-
         List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
         if (persistentDelete.isEmpty()) {
             return;
@@ -54,7 +50,7 @@ public class DeleteRepositoryJob implements Job {
             }
 
             Singleton.getLogger().info("Deleting repository. " + rr.getName());
-            Singleton.getCodeIndexer().deleteByReponame(rr.getName());
+            Singleton.getIndexService().deleteByRepo(rr);
 
             // remove the directory
             String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);

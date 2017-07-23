@@ -14,8 +14,6 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.service.CodeMatcher;
-import com.searchcode.app.service.CodeSearcher;
-import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 public class SearchRouteService {
 
     public SearchResult codeSearch(Request request, Response response) {
-        CodeSearcher cs = new CodeSearcher();
         CodeMatcher cm = new CodeMatcher();
         SearchcodeLib scl = Singleton.getSearchcodeLib(Singleton.getData());
 
@@ -95,7 +92,7 @@ public class SearchRouteService {
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);
 
-            SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
+            SearchResult searchResult = Singleton.getIndexService().search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
             searchResult.setQuery(query);

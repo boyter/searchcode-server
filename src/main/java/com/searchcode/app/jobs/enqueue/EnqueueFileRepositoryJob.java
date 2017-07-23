@@ -11,6 +11,7 @@
 package com.searchcode.app.jobs.enqueue;
 
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
 @DisallowConcurrentExecution
 public class EnqueueFileRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return;
         }
 

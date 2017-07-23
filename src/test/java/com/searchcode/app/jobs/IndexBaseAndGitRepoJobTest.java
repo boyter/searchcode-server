@@ -2,7 +2,7 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.TestHelpers;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
-import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
@@ -97,12 +97,11 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         Singleton.setStatsService(statsServiceMock);
 
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
-        Singleton.getSharedService().setBackgroundJobsEnabled(false);
+        Singleton.getIndexService().setRepoAdderPause(false);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
-        Singleton.getSharedService().setBackgroundJobsEnabled(true);
+        Singleton.getIndexService().setRepoAdderPause(true);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
-        Singleton.getSharedService().setPauseBackgroundJobs(true);
-        Singleton.getSharedService().setBackgroundJobsEnabled(false);
+        Singleton.getIndexService().setRepoAdderPause(true);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
 
     }
@@ -159,31 +158,31 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
 
     public void testMissingPathFilesNoLocations() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
-        CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);
+        IndexService indexServiceMock = mock(IndexService.class);
 
-        when(codeSearcherMock.getRepoDocuments("testRepoName", 0)).thenReturn(new ArrayList<>());
-        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new HashMap<String, String>());
-        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
+        when(indexServiceMock.getRepoDocuments("testRepoName", 0)).thenReturn(new ArrayList<>());
+        gitRepoJob.cleanMissingPathFiles("testRepoName", new HashMap<String, String>());
+        verify(indexServiceMock, times(1)).getRepoDocuments("testRepoName", 0);
     }
 
     public void testMissingPathFilesShouldPage() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
-        CodeSearcher codeSearcherMock = Mockito.mock(CodeSearcher.class);
+        IndexService indexServiceMock = mock(IndexService.class);
 
         List<String> repoReturn = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
             repoReturn.add("string"+i);
         }
 
-        when(codeSearcherMock.getRepoDocuments("testRepoName", 0)).thenReturn(repoReturn);
-        when(codeSearcherMock.getRepoDocuments("testRepoName", 1)).thenReturn(repoReturn);
-        when(codeSearcherMock.getRepoDocuments("testRepoName", 2)).thenReturn(new ArrayList<>());
+        when(indexServiceMock.getRepoDocuments("testRepoName", 0)).thenReturn(repoReturn);
+        when(indexServiceMock.getRepoDocuments("testRepoName", 1)).thenReturn(repoReturn);
+        when(indexServiceMock.getRepoDocuments("testRepoName", 2)).thenReturn(new ArrayList<>());
 
-        gitRepoJob.cleanMissingPathFiles(codeSearcherMock, "testRepoName", new HashMap<String, String>());
+        gitRepoJob.cleanMissingPathFiles("testRepoName", new HashMap<>());
 
-        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 0);
-        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 1);
-        verify(codeSearcherMock, times(1)).getRepoDocuments("testRepoName", 2);
+        verify(indexServiceMock, times(1)).getRepoDocuments("testRepoName", 0);
+        verify(indexServiceMock, times(1)).getRepoDocuments("testRepoName", 1);
+        verify(indexServiceMock, times(1)).getRepoDocuments("testRepoName", 2);
     }
 
     public void testCheckCloneSuccessEmptyReturnsFalse() {

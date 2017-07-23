@@ -55,15 +55,11 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
         }
 
         if (!this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
+            Singleton.getLogger().info("Pausing parser.");
             return;
         }
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
-        while (Singleton.getCodeIndexer().shouldPauseAdding()) {
-            Singleton.getLogger().info("Pausing parser.");
-            return;
-        }
 
         // Pull the next repo to index from the queue
         UniqueRepoQueue repoQueue = this.getNextQueuedRepo();

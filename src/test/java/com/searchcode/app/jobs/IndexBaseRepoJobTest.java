@@ -4,12 +4,10 @@ import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
-import com.searchcode.app.service.SharedService;
-import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
-import org.mockito.Mockito;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -26,21 +24,22 @@ import static org.mockito.Mockito.*;
 public class IndexBaseRepoJobTest extends TestCase {
 
     private JobExecutionContext mockContext;
-    private JobDetail mockDetail;
-    private JobDataMap mockJobDataMap;
-    private CodeIndexer mockCodeIndexer;
+    private JobDetail jobDetailMock;
+    private JobDataMap jobDataMapMock;
+    private IndexService indexServiceMock;
 
     public void setUp() {
-        this.mockContext = Mockito.mock(JobExecutionContext.class);
-        this.mockDetail = Mockito.mock(JobDetail.class);
-        this.mockJobDataMap = Mockito.mock(JobDataMap.class);
-        this.mockCodeIndexer = Mockito.mock(CodeIndexer.class);
+        this.mockContext = mock(JobExecutionContext.class);
+        this.jobDetailMock = mock(JobDetail.class);
+        this.jobDataMapMock = mock(JobDataMap.class);
+        this.indexServiceMock = mock(IndexService.class);
 
-        when(mockJobDataMap.get("REPOLOCATIONS")).thenReturn("");
-        when(mockJobDataMap.get("LOWMEMORY")).thenReturn("true");
-        when(mockDetail.getJobDataMap()).thenReturn(mockJobDataMap);
-        when(mockContext.getJobDetail()).thenReturn(mockDetail);
-        when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
+        when(jobDataMapMock.get("REPOLOCATIONS")).thenReturn("");
+        when(jobDataMapMock.get("LOWMEMORY")).thenReturn("true");
+        when(jobDetailMock.getJobDataMap()).thenReturn(jobDataMapMock);
+        when(mockContext.getJobDetail()).thenReturn(jobDetailMock);
+        when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_ADDER)).thenReturn(false);
+        when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
     }
 
 
@@ -50,18 +49,17 @@ public class IndexBaseRepoJobTest extends TestCase {
         spy.haveRepoResult = false;
 
         when(spy.getNextQueuedRepo()).thenReturn(new UniqueRepoQueue());
-        spy.codeIndexer = mockCodeIndexer;
+        spy.indexService = indexServiceMock;
 
         spy.execute(this.mockContext);
         assertThat(spy.haveRepoResult).isFalse();
     }
 
     public void testExecuteHasMethodInQueueNewRepository() throws JobExecutionException {
-        SharedService sharedServiceMock = mock(SharedService.class);
-        when(sharedServiceMock.getPauseBackgroundJobs()).thenReturn(false);
-        when(sharedServiceMock.getBackgroundJobsEnabled()).thenReturn(true);
+//        when(sharedServiceMock.getPauseBackgroundJobs()).thenReturn(false);
+//        when(sharedServiceMock.getBackgroundJobsEnabled()).thenReturn(true);
 
-        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob(sharedServiceMock);
+        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob(indexServiceMock);
         IndexGitRepoJob spy = spy(indexGitRepoJob);
         spy.haveRepoResult = false;
 
@@ -73,8 +71,8 @@ public class IndexBaseRepoJobTest extends TestCase {
         when(spy.getNewRepository(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
                 .thenReturn(new RepositoryChanged(false, null, null));
 
-        when(mockCodeIndexer.shouldPauseAdding()).thenReturn(false);
-        spy.codeIndexer = mockCodeIndexer;
+        when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
+        spy.indexService = indexServiceMock;
 
         spy.execute(this.mockContext);
 

@@ -107,8 +107,7 @@ public class ApiRouteService {
 
     public String getFileCount(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            CodeSearcher codeSearcher = new CodeSearcher();
-            ProjectStats projectStats = codeSearcher.getProjectStats(request.queryParams("reponame"));
+            ProjectStats projectStats = Singleton.getIndexService().getProjectStats(request.queryParams("reponame"));
             return Values.EMPTYSTRING + projectStats.getTotalFiles();
         }
 

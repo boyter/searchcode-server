@@ -55,8 +55,6 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             this.ENABLED = false;
             Singleton.getLogger().severe("\n///////////////////////////////////////////////////////////////////////////\n// Property svn_binary_path in properties file appears to be incorrect.  //\n// will not be able to index any SVN repository until this is resolved.  //\n///////////////////////////////////////////////////////////////////////////");
         }
-
-        this.sharedService = Singleton.getSharedService();
     }
 
     @Override

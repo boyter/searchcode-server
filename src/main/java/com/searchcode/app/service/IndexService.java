@@ -153,6 +153,11 @@ public class IndexService implements IIndexService {
     }
 
     @Override
+    public void toggleRepoAdderPause() {
+        this.repoAdderPause = !this.repoAdderPause;
+    }
+
+    @Override
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
         Queue<CodeIndexDocument> queue = new ArrayQueue<>();
         queue.add(codeIndexDocument);

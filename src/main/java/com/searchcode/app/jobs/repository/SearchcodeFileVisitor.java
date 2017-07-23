@@ -92,10 +92,10 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoName, fileRepoLocations, Singleton.getSearchCodeLib());
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getCodeIndexer().indexDocument(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
 
             } else {
-                Singleton.getSharedService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             }
 

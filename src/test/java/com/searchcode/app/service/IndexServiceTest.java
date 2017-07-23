@@ -195,7 +195,6 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService(data,
                 Singleton.getStatsService(),
                 Singleton.getSearchCodeLib(),
-                Singleton.getSharedService(),
                 Singleton.getLogger(),
                 Singleton.getHelpers(),
                 Singleton.getCodeIndexQueue());
@@ -287,7 +286,6 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService(Singleton.getData(),
                 Singleton.getStatsService(),
                 Singleton.getSearchCodeLib(),
-                Singleton.getSharedService(),
                 Singleton.getLogger(),
                 Singleton.getHelpers(),
                 queue);
@@ -303,7 +301,7 @@ public class IndexServiceTest extends TestCase {
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers(), null);
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), null);
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
     }
@@ -315,7 +313,7 @@ public class IndexServiceTest extends TestCase {
         when(statsServiceMock.getLoadAverage()).thenReturn("0.21");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("0.2");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers(), null);
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), null);
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
     }
@@ -327,7 +325,7 @@ public class IndexServiceTest extends TestCase {
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, null, Singleton.getLogger(), Singleton.getHelpers(), new ConcurrentArrayQueue<>());
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), new ConcurrentArrayQueue<>());
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isFalse();
     }

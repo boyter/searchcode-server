@@ -412,7 +412,7 @@ public class JobService implements IJobService {
 
     @Override
     public boolean forceEnqueue() {
-        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
@@ -428,7 +428,7 @@ public class JobService implements IJobService {
 
     @Override
     public boolean forceEnqueue(RepoResult repoResult) {
-        if (!Singleton.getSharedService().getBackgroundJobsEnabled()) {
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
