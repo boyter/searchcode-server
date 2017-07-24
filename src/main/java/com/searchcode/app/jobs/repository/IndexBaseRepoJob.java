@@ -50,7 +50,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean LOGINDEXED = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.LOG_INDEXED, "false"));
     public boolean FOLLOWLINKS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
     public boolean haveRepoResult = false;
-    public IndexService indexService;
+    public IndexService indexService = Singleton.getIndexService();
 
     /**
      * This method to be implemented by the extending class
@@ -417,7 +417,7 @@ public abstract class IndexBaseRepoJob implements Job {
      * true if the job should be terminated and false if it should continue to run
      */
     public boolean shouldJobPauseOrTerminate() {
-        if (!this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)) {
+        if (this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)) {
             return true;
         }
 

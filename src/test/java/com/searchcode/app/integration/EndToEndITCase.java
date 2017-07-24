@@ -10,10 +10,8 @@ import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IndexService;
-import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import junit.framework.TestCase;
-import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.Path;
