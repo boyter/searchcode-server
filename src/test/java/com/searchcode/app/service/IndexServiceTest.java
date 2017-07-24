@@ -96,6 +96,11 @@ public class IndexServiceTest extends TestCase {
         assertThat(codeResult).isNull();
     }
 
+    public void testDeleteByRepoNameNull() throws IOException {
+        this.indexService = new IndexService();
+        this.indexService.deleteByRepo(null);
+    }
+
     public void testDeleteAll() throws IOException {
         this.indexService = new IndexService();
 

@@ -296,6 +296,10 @@ public class IndexService implements IIndexService {
      */
     @Override
     public synchronized void deleteByRepo(RepoResult repo) throws IOException {
+        if (repo == null) {
+            return;
+        }
+
         Directory dir = FSDirectory.open(this.INDEX_READ_LOCATION);
 
         Analyzer analyzer = new CodeAnalyzer();
