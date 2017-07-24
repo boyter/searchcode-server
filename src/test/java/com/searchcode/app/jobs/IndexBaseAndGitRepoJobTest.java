@@ -166,8 +166,8 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
     }
 
     public void testMissingPathFilesShouldPage() {
-        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
         IndexService indexServiceMock = mock(IndexService.class);
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob(indexServiceMock);
 
         List<String> repoReturn = new ArrayList<>();
         for(int i = 0; i < 10; i++) {
