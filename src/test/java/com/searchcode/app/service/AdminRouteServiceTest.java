@@ -56,12 +56,16 @@ public class AdminRouteServiceTest extends TestCase {
 
     public void testGetStatValuesExpectValue() {
         StatsService statsServiceMock = mock(StatsService.class);
+        IndexService indexServiceMock = mock(IndexService.class);
 
         when(statsServiceMock.getMemoryUsage(any())).thenReturn("Yep");
         when(statsServiceMock.getLoadAverage()).thenReturn("Yep");
         when(statsServiceMock.getUptime()).thenReturn("Yep");
 
-        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, null, statsServiceMock, null);
+        when(indexServiceMock.getIndexedDocumentCount()).thenReturn(100);
+        when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
+
+        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, indexServiceMock, statsServiceMock, null);
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
         for (String stat: statValue) {
