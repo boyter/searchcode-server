@@ -149,13 +149,13 @@ public class CodeRouteServiceTest extends TestCase {
     }
 
     public void testGetCodeWithParamsWithMatch() {
-        Request request = Mockito.mock(Request.class);
-        Response response = Mockito.mock(Response.class);
-        CodeSearcher codeSearcher = Mockito.mock(CodeSearcher.class);
+        Request request = mock(Request.class);
+        Response response = mock(Response.class);
+        IndexService indexService = mock(IndexService.class);
 
-        CodeRouteService codeRouteService = new CodeRouteService(codeSearcher);
+        CodeRouteService codeRouteService = new CodeRouteService(indexService);
 
-        CodeResult codeResult = new CodeResult(new ArrayList<String>(), new ArrayList<CodeMatchResult>());
+        CodeResult codeResult = new CodeResult(new ArrayList<>(), new ArrayList<>());
         codeResult.setCodeLines("100");
         codeResult.setLanguageName("LanguageName");
         codeResult.setMd5hash("md5hash");
@@ -164,7 +164,7 @@ public class CodeRouteServiceTest extends TestCase {
         codeResult.setCodeOwner("codeOwner");
 
         when(request.params(":codeid")).thenReturn("MATCH-MOCK");
-        when(codeSearcher.getByCodeId("MATCH-MOCK")).thenReturn(codeResult);
+        when(indexService.getCodeResultByCodeId("MATCH-MOCK")).thenReturn(codeResult);
 
         Map<String, Object> map = codeRouteService.getCode(request, response);
 

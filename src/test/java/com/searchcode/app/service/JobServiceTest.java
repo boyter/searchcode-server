@@ -12,7 +12,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class JobServiceTest extends TestCase {
     public void testEnqueueBackgroundEnabledReturnsTrue() {
         JobService jobService = new JobService();
-        Singleton.getSharedService().setBackgroundJobsEnabled(true);
+        Singleton.getIndexService().setRepoAdderPause(true);
 
         boolean result = jobService.forceEnqueue();
         assertThat(result).isTrue();
@@ -20,11 +20,11 @@ public class JobServiceTest extends TestCase {
 
     public void testEnqueueBackgroundDisabledReturnsFalse() {
         JobService jobService = new JobService();
-        Singleton.getSharedService().setBackgroundJobsEnabled(false);
+        Singleton.getIndexService().setRepoAdderPause(false);
         boolean result = jobService.forceEnqueue();
 
         assertThat(result).isFalse();
-        Singleton.getSharedService().setBackgroundJobsEnabled(true);
+        Singleton.getIndexService().setRepoAdderPause(false);
     }
 
     public void testEnqueueByReporesultBackgroundDisabledReturnsFalse() {
@@ -39,7 +39,7 @@ public class JobServiceTest extends TestCase {
 
 
         JobService jobService = new JobService();
-        Singleton.getSharedService().setBackgroundJobsEnabled(true);
+        Singleton.getIndexService().setRepoAdderPause(true);
 
         assertThat(jobService.forceEnqueue(new RepoResult(0, "name", "git", "url", "username", "password", "source", "branch", ""))).isTrue();
         assertThat(jobService.forceEnqueue(new RepoResult(1, "name", "svn", "url", "username", "password", "source", "branch", ""))).isTrue();

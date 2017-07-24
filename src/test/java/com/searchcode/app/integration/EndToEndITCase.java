@@ -45,7 +45,7 @@ public class EndToEndITCase extends TestCase{
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
         indexService.deleteByCodeId(codeId);
-        searchResult = cs.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile2.py")).findFirst().get();

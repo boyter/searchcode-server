@@ -55,14 +55,13 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testGetStatValuesExpectValue() {
-        SharedService sharedServiceMock = Mockito.mock(SharedService.class);
-        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        StatsService statsServiceMock = mock(StatsService.class);
 
         when(statsServiceMock.getMemoryUsage(any())).thenReturn("Yep");
         when(statsServiceMock.getLoadAverage()).thenReturn("Yep");
         when(statsServiceMock.getUptime()).thenReturn("Yep");
 
-        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, sharedServiceMock, statsServiceMock, null);
+        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, null, statsServiceMock, null);
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
         for (String stat: statValue) {

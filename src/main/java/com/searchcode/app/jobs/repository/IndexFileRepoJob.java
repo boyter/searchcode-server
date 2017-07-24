@@ -54,7 +54,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
             return;
         }
 
-        if (!this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
+        if (this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
             Singleton.getLogger().info("Pausing parser.");
             return;
         }
