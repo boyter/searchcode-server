@@ -92,15 +92,19 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
 
     public void testShouldJobTerminate() {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
-        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        StatsService statsServiceMock = mock(StatsService.class);
+
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
         Singleton.setStatsService(statsServiceMock);
 
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
-        Singleton.getIndexService().setRepoAdderPause(false);
-        assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
+
         Singleton.getIndexService().setRepoAdderPause(true);
+        assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
+
+        Singleton.getIndexService().setRepoAdderPause(false);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isFalse();
+
         Singleton.getIndexService().setRepoAdderPause(true);
         assertThat(gitRepoJob.shouldJobPauseOrTerminate()).isTrue();
 
@@ -157,11 +161,11 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
     }
 
     public void testMissingPathFilesNoLocations() {
-        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob();
         IndexService indexServiceMock = mock(IndexService.class);
+        IndexGitRepoJob gitRepoJob = new IndexGitRepoJob(indexServiceMock);
 
         when(indexServiceMock.getRepoDocuments("testRepoName", 0)).thenReturn(new ArrayList<>());
-        gitRepoJob.cleanMissingPathFiles("testRepoName", new HashMap<String, String>());
+        gitRepoJob.cleanMissingPathFiles("testRepoName", new HashMap<>());
         verify(indexServiceMock, times(1)).getRepoDocuments("testRepoName", 0);
     }
 
