@@ -401,7 +401,7 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public synchronized int getIndexedDocumentCount() {
+    public int getIndexedDocumentCount() {
         int numDocs = 0;
         IndexReader reader = null;
 
@@ -420,7 +420,7 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public synchronized CodeResult getCodeResultByCodeId(String codeId) {
+    public CodeResult getCodeResultByCodeId(String codeId) {
         CodeResult codeResult = null;
         IndexReader reader = null;
 
@@ -567,7 +567,7 @@ public class IndexService implements IIndexService {
      * TODO document the extended syntax to allow raw queries
      */
     @Override
-    public synchronized SearchResult search(String queryString, int page) {
+    public SearchResult search(String queryString, int page) {
         SearchResult searchResult = new SearchResult();
         this.statsService.incrementSearchCount();
         IndexReader reader = null;
