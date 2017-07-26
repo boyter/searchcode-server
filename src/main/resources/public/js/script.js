@@ -1870,7 +1870,7 @@ var SearchResultsComponent = {
                                 
                             ])
                         ),
-                        m('ol.code-result', [
+                        SearchModel.compactview() ? m('div') : m('ol.code-result', [
                             _.map(res.matchingResults, function(line) {
                                 return m('li', { value: line.lineNumber }, 
                                     m('a', { 'href':  ctrl.gethreflineno(res, line.lineNumber) },
