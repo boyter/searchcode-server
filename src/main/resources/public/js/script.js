@@ -96,6 +96,7 @@ var SearchModel = {
     currentpage: m.prop(0),
 
     filterinstantly: m.prop(true),
+    compactview: m.prop(false),
 
     // From the response
     totalhits: m.prop(0),
@@ -133,6 +134,12 @@ var SearchModel = {
             localStorage.setItem('toggleinstant', JSON.stringify(!SearchModel.filterinstantly()));
         }
         SearchModel.filterinstantly(!SearchModel.filterinstantly());
+    },
+    togglecompact: function() {
+        if (window.localStorage) {
+            localStorage.setItem('togglecompact', JSON.stringify(!SearchModel.compactview()));
+        }
+        SearchModel.compactview(!SearchModel.compactview());
     },
     togglehistory: function() {
         if (window.localStorage) {
@@ -941,15 +948,23 @@ var FilterOptionsComponent = {
             },
             toggleinstant: function() {
                 SearchModel.toggleinstant();
+            },
+            togglecompact: function() {
+                SearchModel.togglecompact();
             }
         }
     },
     view: function(ctrl, args) {
         var instantparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
+        var compactparams = { type: 'checkbox', onclick: ctrl.togglecompact };
         var historyparams = { type: 'checkbox', onclick: ctrl.togglehistory };
         
         if (SearchModel.filterinstantly()) {
             instantparams.checked = 'checked'
+        }
+
+        if (SearchModel.compactview()) {
+            compactparams.checked = 'checked'
         }
 
         if (SearchModel.searchhistory()) {
@@ -963,6 +978,12 @@ var FilterOptionsComponent = {
                     m('label', [
                         m('input', instantparams),
                         m('span', 'Apply Filters Instantly')
+                    ])
+                ),
+                m('div.checkbox', 
+                    m('label', [
+                        m('input', compactparams),
+                        m('span', 'Compact View')
                     ])
                 ),
                 ff_timesearchenabled === false ? m('span') : m('div.checkbox', 
@@ -1849,7 +1870,7 @@ var SearchResultsComponent = {
                                 
                             ])
                         ),
-                        m('ol.code-result', [
+                        SearchModel.compactview() ? m('div') : m('ol.code-result', [
                             _.map(res.matchingResults, function(line) {
                                 return m('li', { value: line.lineNumber }, 
                                     m('a', { 'href':  ctrl.gethreflineno(res, line.lineNumber) },
