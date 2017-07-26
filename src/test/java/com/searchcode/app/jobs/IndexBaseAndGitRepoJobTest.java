@@ -7,7 +7,6 @@ import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
-import org.mockito.Mockito;
 
 import java.io.File;
 import java.io.IOException;

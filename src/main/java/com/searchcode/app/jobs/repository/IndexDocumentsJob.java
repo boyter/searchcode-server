@@ -10,11 +10,14 @@
 
 package com.searchcode.app.jobs.repository;
 
+import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.LoggerWrapper;
 import org.quartz.*;
+
+import java.util.Queue;
 
 /**
  * This job is responsible for passing the queue of documents along to be indexed. It does not do much and only exists
@@ -28,27 +31,29 @@ public class IndexDocumentsJob implements Job {
     private final IndexService indexService;
     private final LoggerWrapper logger;
     private final StatsService statsService;
+    private final Queue<CodeIndexDocument> indexQueue;
 
     public IndexDocumentsJob() {
-        this(Singleton.getIndexService(), Singleton.getStatsService(), Singleton.getLogger());
+        this(Singleton.getIndexService(), Singleton.getStatsService(), Singleton.getCodeIndexQueue(), Singleton.getLogger());
     }
 
-    public IndexDocumentsJob(IndexService indexService, StatsService statsService, LoggerWrapper logger) {
+    public IndexDocumentsJob(IndexService indexService, StatsService statsService, Queue<CodeIndexDocument> indexQueue, LoggerWrapper logger) {
         this.indexService = indexService;
         this.statsService = statsService;
+        this.indexQueue = indexQueue;
         this.logger = logger;
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY + 1);
-            int codeIndexQueueSize = Singleton.getCodeIndexQueue().size();
+            int codeIndexQueueSize = this.indexQueue.size();
 
             if (codeIndexQueueSize != 0) {
                 this.logger.info("Documents to index: " + codeIndexQueueSize);
                 this.logger.info("Lines to index: " + this.indexService.getCodeIndexLinesCount());
                 this.logger.info("Memory Usage: " + this.statsService.getMemoryUsage(", "));
-                this.indexService.indexDocument(Singleton.getCodeIndexQueue());
+                this.indexService.indexDocument(this.indexQueue);
             }
         } catch (Exception ex) {
             // Continue at all costs
