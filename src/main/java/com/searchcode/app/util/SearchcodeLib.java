@@ -29,28 +29,26 @@ public class SearchcodeLib {
 
     private final ISpellingCorrector spellingCorrector;
     private final FileClassifier fileClassifier;
+    private final int MINIFIED_LENGTH;
 
-    private int MAXSPLITLENGTH = 100000;
-    private Pattern MULTIPLEUPPERCASE = Pattern.compile("[A-Z]{2,}");
-    private int MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
-    public String[] WHITELIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
-    public String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
-    private boolean GUESSBINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
-    private boolean ANDMATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
+    private final int MAX_SPLIT_LENGTH = 100000;
+    private final Pattern MULTIPLE_UPPERCASE = Pattern.compile("[A-Z]{2,}");
+    private final boolean GUESS_BINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
+    private final boolean AND_MATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
 
+    public String[] WHITE_LIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
+    public String[] BLACK_LIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
 
     public SearchcodeLib() {
-        this(Singleton.getSpellingCorrector(), new FileClassifier(), Singleton.getData());
+        this(Singleton.getSpellingCorrector(), new FileClassifier(), Singleton.getData(), Singleton.getHelpers());
     }
 
-    public SearchcodeLib(ISpellingCorrector spellingCorrector, FileClassifier fileClassifier, Data data) {
+    public SearchcodeLib(ISpellingCorrector spellingCorrector, FileClassifier fileClassifier, Data data, Helpers helpers) {
         this.spellingCorrector = spellingCorrector;
         this.fileClassifier = fileClassifier;
 
-        this.MINIFIEDLENGTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
-        if (this.MINIFIEDLENGTH <= 0) {
-            this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
-        }
+        int minifiedLength = helpers.tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
+        this.MINIFIED_LENGTH = minifiedLength <= 0 ? Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH) : minifiedLength;
     }
 
     /**
@@ -74,15 +72,15 @@ public class SearchcodeLib {
         contents = contents.replaceAll("[^a-zA-Z0-9]", " ");
 
         // Performance improvement hack
-        if (contents.length() > this.MAXSPLITLENGTH) {
+        if (contents.length() > this.MAX_SPLIT_LENGTH) {
 
             // Add AAA to ensure we dont split the last word if it was cut off
-            contents = contents.substring(0, MAXSPLITLENGTH) + "AAA";
+            contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
 
         for (String splitContents: contents.split(" ")) {
             if (splitContents.length() >= 7) {
-                Matcher m = MULTIPLEUPPERCASE.matcher(splitContents);
+                Matcher m = MULTIPLE_UPPERCASE.matcher(splitContents);
 
                 if (!m.find()) {
                     String[] splitStrings = splitContents.split("(?=\\p{Upper})");
@@ -106,10 +104,10 @@ public class SearchcodeLib {
         StringBuilder indexContents = new StringBuilder();
 
         // Performance improvement hack
-        if (contents.length() > this.MAXSPLITLENGTH) {
+        if (contents.length() > this.MAX_SPLIT_LENGTH) {
 
             // Add AAA to ensure we dont split the last word if it was cut off
-            contents = contents.substring(0, MAXSPLITLENGTH) + "AAA";
+            contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
 
         // Finds versions with words at the front, eg linux2.7.4
@@ -192,8 +190,8 @@ public class SearchcodeLib {
         }
 
         // Limit to reduce performance impacts
-        if (contents.length() > this.MAXSPLITLENGTH) {
-            contents = contents.substring(0, MAXSPLITLENGTH);
+        if (contents.length() > this.MAX_SPLIT_LENGTH) {
+            contents = contents.substring(0, MAX_SPLIT_LENGTH);
         }
 
         List<String> splitString = Arrays.asList(contents.replaceAll("[^a-zA-Z0-9]", " ").toLowerCase().split(" "));
@@ -218,14 +216,14 @@ public class SearchcodeLib {
 
         String lowerFileName = fileName.toLowerCase();
 
-        for (String extension: this.WHITELIST) {
+        for (String extension: this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return false;
             }
         }
 
         OptionalDouble average = codeLines.stream().map(x -> x.trim().replace(" ", "")).mapToInt(String::length).average();
-        if (average.isPresent() && average.getAsDouble() > this.MINIFIEDLENGTH) {
+        if (average.isPresent() && average.getAsDouble() > this.MINIFIED_LENGTH) {
             return true;
         }
 
@@ -243,14 +241,14 @@ public class SearchcodeLib {
 
         String lowerFileName = fileName.toLowerCase();
         // Check against user set whitelist
-        for (String extension: this.WHITELIST) {
+        for (String extension: this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
 
         // Check against user set blacklist
-        for (String extention: this.BLACKLIST) {
+        for (String extention: this.BLACK_LIST) {
             if (lowerFileName.endsWith("." + extention)) {
                 return new BinaryFinding(true, "appears in extension blacklist");
             }
@@ -266,7 +264,7 @@ public class SearchcodeLib {
         }
 
         // If we aren't meant to guess then assume it isnt binary
-        if (this.GUESSBINARY == false) {
+        if (this.GUESS_BINARY == false) {
             return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 
@@ -384,7 +382,7 @@ public class SearchcodeLib {
      * Parse the query and escape it as per Lucene but without affecting search operators such as AND OR and NOT
      */
     public String formatQueryString(String query) {
-        if (this.ANDMATCH) {
+        if (this.AND_MATCH) {
             return this.formatQueryStringAndDefault(query);
         }
 

@@ -115,8 +115,8 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testIsBinaryWhiteListedPropertyExtension() {
         SearchcodeLib sl = new SearchcodeLib();
-        sl.WHITELIST = new String[1];
-        sl.WHITELIST[0] = "java";
+        sl.WHITE_LIST = new String[1];
+        sl.WHITE_LIST[0] = "java";
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
@@ -130,10 +130,10 @@ public class SearchcodeLibTest extends TestCase {
 
         Data dataMock = mock(Data.class);
 
-        SearchcodeLib sl = new SearchcodeLib(null, fileClassifier, dataMock);
+        SearchcodeLib sl = new SearchcodeLib(null, fileClassifier, dataMock, new Helpers());
 
-        sl.BLACKLIST = new String[1];
-        sl.BLACKLIST[0] = "png";
+        sl.BLACK_LIST = new String[1];
+        sl.BLACK_LIST[0] = "png";
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
@@ -212,7 +212,7 @@ public class SearchcodeLibTest extends TestCase {
 
         ArrayList<String> whiteList = new ArrayList<>();
         whiteList.add("something");
-        sl.WHITELIST = whiteList.toArray(new String[whiteList.size()]);
+        sl.WHITE_LIST = whiteList.toArray(new String[whiteList.size()]);
 
         String minified = "";
         for (int i=0; i < 500; i++) {
@@ -466,7 +466,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltQueries() {
         SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
         Data dataMock = mock(Data.class);
-        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         assertEquals(0, scl.generateAltQueries("supercalifragilisticexpialidocious").size());
         assertEquals("something", scl.generateAltQueries("something*").get(0));
@@ -476,7 +476,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltQueriesOther() {
         SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
         Data dataMock = mock(Data.class);
-        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         spellingCorrector.putWord("deh");
         assertEquals("dep", scl.generateAltQueries("dep*").get(0));
@@ -486,7 +486,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltQueriesAnother() {
         SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
         Data dataMock = mock(Data.class);
-        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         spellingCorrector.putWord("ann");
         assertEquals("stuff OR other", scl.generateAltQueries("stuff AND other").get(1));
@@ -598,25 +598,3 @@ public class SearchcodeLibTest extends TestCase {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
