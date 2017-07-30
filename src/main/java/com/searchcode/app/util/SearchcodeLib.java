@@ -10,16 +10,11 @@
 
 package com.searchcode.app.util;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.dto.FileClassifierResult;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
@@ -32,6 +27,9 @@ import java.util.regex.Pattern;
 
 public class SearchcodeLib {
 
+    private final ISpellingCorrector spellingCorrector;
+    private final FileClassifier fileClassifier;
+
     private int MAXSPLITLENGTH = 100000;
     private Pattern MULTIPLEUPPERCASE = Pattern.compile("[A-Z]{2,}");
     private int MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
@@ -39,18 +37,20 @@ public class SearchcodeLib {
     public String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
     private boolean GUESSBINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
     private boolean ANDMATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
-    public FileClassifier fileClassifier = null;
+
 
     public SearchcodeLib() {
-        fileClassifier = new FileClassifier();
+        this(Singleton.getSpellingCorrector(), new FileClassifier(), Singleton.getData());
     }
 
-    public SearchcodeLib(Data data) {
+    public SearchcodeLib(ISpellingCorrector spellingCorrector, FileClassifier fileClassifier, Data data) {
+        this.spellingCorrector = spellingCorrector;
+        this.fileClassifier = fileClassifier;
+
         this.MINIFIEDLENGTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
         if (this.MINIFIEDLENGTH <= 0) {
             this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
         }
-        fileClassifier = new FileClassifier();
     }
 
     /**
@@ -191,8 +191,6 @@ public class SearchcodeLib {
             return;
         }
 
-        ISpellingCorrector sc = Singleton.getSpellingCorrector();
-
         // Limit to reduce performance impacts
         if (contents.length() > this.MAXSPLITLENGTH) {
             contents = contents.substring(0, MAXSPLITLENGTH);
@@ -207,7 +205,7 @@ public class SearchcodeLib {
 
         for (String s: splitString) {
             if (s.length() >= 3) {
-                sc.putWord(s);
+                this.spellingCorrector.putWord(s);
             }
         }
     }
@@ -485,11 +483,10 @@ public class SearchcodeLib {
             altQueries.add(altquery);
         }
 
-        ISpellingCorrector sc = Singleton.getSpellingCorrector();
         StringBuilder stringBuilder = new StringBuilder();
         for(String word: query.replaceAll(" +", " ").split(" ")) {
             if (!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
-                stringBuilder.append(" ").append(sc.correct(word));
+                stringBuilder.append(" ").append(this.spellingCorrector.correct(word));
             }
         }
         altquery = stringBuilder.toString().trim();

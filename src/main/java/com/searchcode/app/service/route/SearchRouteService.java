@@ -29,7 +29,7 @@ public class SearchRouteService {
 
     public SearchResult codeSearch(Request request, Response response) {
         CodeMatcher cm = new CodeMatcher();
-        SearchcodeLib scl = Singleton.getSearchcodeLib(Singleton.getData());
+        SearchcodeLib scl = Singleton.getSearchcodeLib();
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
             String query = request.queryParams("q").trim();

@@ -336,9 +336,6 @@ public class AdminRouteService {
         data.saveData(Values.LOGO, logo);
         data.saveData(Values.SYNTAXHIGHLIGHTER, syntaxHighlighter);
         data.saveData(Values.EMBED, embed);
-
-        // Redo anything that requires updates at this point
-        Singleton.getSearchcodeLib(data);
     }
 
     public List<ValidatorResult> postBulk(Request request, Response response) {

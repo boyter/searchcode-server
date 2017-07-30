@@ -502,7 +502,7 @@ public class IndexService implements IIndexService {
      * Collects project stats for a repo given its name
      */
     @Override
-    public synchronized ProjectStats getProjectStats(String repoName) {
+    public ProjectStats getProjectStats(String repoName) {
         int totalCodeLines = 0;
         int totalFiles = 0;
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();

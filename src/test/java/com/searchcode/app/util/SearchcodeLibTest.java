@@ -1,5 +1,6 @@
 package com.searchcode.app.util;
 
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.dto.FileClassifierResult;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class SearchcodeLibTest extends TestCase {
 
@@ -115,8 +117,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchcodeLib sl = new SearchcodeLib();
         sl.WHITELIST = new String[1];
         sl.WHITELIST[0] = "java";
-        FileClassifier fileClassifier = new FileClassifier();
-        sl.fileClassifier = fileClassifier;
+
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
@@ -124,14 +125,15 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryBlackListedPropertyExtension() {
-        SearchcodeLib sl = new SearchcodeLib();
+        FileClassifier fileClassifier = new FileClassifier();
+        fileClassifier.setDatabase(new ArrayList<>());
+
+        Data dataMock = mock(Data.class);
+
+        SearchcodeLib sl = new SearchcodeLib(null, fileClassifier, dataMock);
 
         sl.BLACKLIST = new String[1];
         sl.BLACKLIST[0] = "png";
-
-        FileClassifier fileClassifier = new FileClassifier();
-        fileClassifier.setDatabase(new ArrayList<>());
-        sl.fileClassifier = fileClassifier;
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
@@ -462,17 +464,31 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testGenerateAltQueries() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
+        Data dataMock = mock(Data.class);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock);
 
         assertEquals(0, scl.generateAltQueries("supercalifragilisticexpialidocious").size());
         assertEquals("something", scl.generateAltQueries("something*").get(0));
         assertEquals("a b", scl.generateAltQueries("a* b*").get(0));
+    }
 
-        Singleton.getSpellingCorrector().putWord("deh");
+    public void testGenerateAltQueriesOther() {
+        SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
+        Data dataMock = mock(Data.class);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock);
+
+        spellingCorrector.putWord("deh");
         assertEquals("dep", scl.generateAltQueries("dep*").get(0));
         assertEquals("deh", scl.generateAltQueries("den*").get(1));
+    }
 
-        Singleton.getSpellingCorrector().putWord("ann");
+    public void testGenerateAltQueriesAnother() {
+        SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
+        Data dataMock = mock(Data.class);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock);
+
+        spellingCorrector.putWord("ann");
         assertEquals("stuff OR other", scl.generateAltQueries("stuff AND other").get(1));
         assertEquals("stuff other", scl.generateAltQueries("stuff NOT other").get(0));
     }
