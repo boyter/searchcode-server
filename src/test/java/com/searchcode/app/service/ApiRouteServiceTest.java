@@ -14,7 +14,9 @@ import org.mockito.Matchers;
 import org.mockito.Mockito;
 import spark.Request;
 
+import javax.swing.text.html.Option;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -154,11 +156,12 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryIndexApiNoRepositorySupplied() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
-        when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
+        when(mockJobService.forceEnqueue(Matchers.anyObject())).thenReturn(true);
+        when(mockRepo.getRepoByUrl(anyString())).thenReturn(Optional.empty());
 
         ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -168,13 +171,14 @@ public class ApiRouteServiceTest extends TestCase {
         assertThat(apiResponse.isSucessful()).isEqualTo(false);
     }
 
-    public void testRepositoryIndexApiNoMatchinRepo() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+    public void testRepositoryIndexApiNoMatchingRepo() {
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
-        when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
+        when(mockJobService.forceEnqueue(Matchers.anyObject())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("test");
+        when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.empty());
 
         ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -191,7 +195,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("http://test/");
-        when(mockRepo.getRepoByUrl("http://test/")).thenReturn(new RepoResult());
+        when(mockRepo.getRepoByUrl("http://test/")).thenReturn(Optional.of(new RepoResult()));
 
         ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null, null);
         apiRouteService.apiEnabled = true;

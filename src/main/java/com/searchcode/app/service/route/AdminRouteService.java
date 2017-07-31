@@ -408,7 +408,8 @@ public class AdminRouteService {
             }
 
             this.repo.saveRepo(repoResult);
-            this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
+            Optional<RepoResult> repoByUrl = this.repo.getRepoByUrl(repourls[i]);
+            repoByUrl.ifPresent(this.jobService::forceEnqueue);
         }
 
         return validate;

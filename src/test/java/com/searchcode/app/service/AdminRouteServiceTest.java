@@ -8,10 +8,7 @@ import junit.framework.TestCase;
 import org.mockito.Mockito;
 import spark.Request;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Matchers.any;
@@ -125,15 +122,16 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testPostRepoMultipleRepo() {
-        Repo mockRepo = Mockito.mock(Repo.class);
-        JobService mockJobService = Mockito.mock(JobService.class);
-        ValidatorService mockValidatorService = Mockito.mock(ValidatorService.class);
+        Repo mockRepo = mock(Repo.class);
+        JobService mockJobService = mock(JobService.class);
+        ValidatorService mockValidatorService = mock(ValidatorService.class);
 
         when(mockRepo.saveRepo(any())).thenReturn(true);
         when(mockValidatorService.validate(any())).thenReturn(new ValidatorResult(true, ""));
+        when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.of(new RepoResult()));
 
         AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null, null, null, mockValidatorService);
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
         when(mockRequest.queryParamsValues("reposcm")).thenReturn("git,git".split(","));
@@ -142,7 +140,6 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("repopassword")).thenReturn("password,password".split(","));
         when(mockRequest.queryParamsValues("reposource")).thenReturn("source,source".split(","));
         when(mockRequest.queryParamsValues("repobranch")).thenReturn("master,master".split(","));
-
 
         adminRouteService.postRepo(mockRequest, null);
         verify(mockRepo, times(2)).saveRepo(any());

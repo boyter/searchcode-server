@@ -60,7 +60,7 @@ public class RepoTest extends TestCase {
 
     public void testRepoByUrl() {
         this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
+        assertThat(this.repo.getRepoByUrl("myurl").isPresent()).isTrue();
         this.repo.deleteRepoByName("myname");
     }
 

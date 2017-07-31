@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides access to all methods required to get Repo details from the database.
@@ -230,12 +231,12 @@ public class Repo implements IRepo {
     }
 
     @Override
-    public synchronized RepoResult getRepoByUrl(String repositoryUrl) {
+    public synchronized Optional<RepoResult> getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
-            return null;
+            return Optional.empty();
         }
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -271,7 +272,7 @@ public class Repo implements IRepo {
             Singleton.getHelpers().closeQuietly(preparedStatement);
         }
 
-        return result;
+        return Optional.of(result);
     }
 
     @Override

@@ -24,6 +24,7 @@ import spark.Response;
 
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Optional;
 
 public class ApiRouteService {
 
@@ -95,10 +96,10 @@ public class ApiRouteService {
         }
 
         String repoUrl = request.queryParams("repoUrl");
-        RepoResult repoByUrl = this.repo.getRepoByUrl(repoUrl);
+        Optional<RepoResult> repoByUrl = this.repo.getRepoByUrl(repoUrl);
 
-        if (repoByUrl != null) {
-            this.jobService.forceEnqueue(repoByUrl);
+        if (repoByUrl.isPresent()) {
+            this.jobService.forceEnqueue(repoByUrl.get());
             return new ApiResponse(true, "Enqueued repository " + repoUrl);
         }
 
