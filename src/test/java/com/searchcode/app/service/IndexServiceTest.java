@@ -357,6 +357,37 @@ public class IndexServiceTest extends TestCase {
         assertThat(projectStats.getTotalCodeLines()).isEqualTo(100);
     }
 
+    public void testIndexerLock() throws InterruptedException {
+        // You can only prove the presence of concurrent bugs, not their absence.
+        // Although that's true of any code. Anyway let's see if we can identify any...
+        this.indexService = new IndexService();
+
+        List<MethodRunner> methodList = new ArrayList<>();
+        methodList.add(arg -> this.indexService.setCodeIndexLinesCount(100));
+        methodList.add(arg -> this.indexService.incrementCodeIndexLinesCount(1));
+        methodList.add(arg -> this.indexService.decrementCodeIndexLinesCount(1));
+        methodList.add(arg -> this.indexService.getCodeIndexLinesCount());
+
+        List<Thread> threadList = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            Thread thread = new Thread(() -> {
+                Collections.shuffle(methodList);
+                for (MethodRunner runner: methodList) {
+                    runner.run(new Object());
+                }
+            });
+            thread.start();
+            threadList.add(thread);
+        }
+
+        for (Thread thread: threadList) {
+            thread.join();
+        }
+        int codeIndexLinesCount = this.indexService.getCodeIndexLinesCount();
+        assertThat(codeIndexLinesCount).isBetween(99, 101);
+    }
+
     public void testIndexerWithThreads() throws InterruptedException {
         // You can only prove the presence of concurrent bugs, not their absence.
         // Although that's true of any code. Anyway let's see if we can identify any...

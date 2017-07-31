@@ -43,6 +43,7 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Service to deal with any tasks that involve talking to the index
@@ -81,6 +82,8 @@ public class IndexService implements IIndexService {
     private boolean repoAdderPause = false;
     private boolean repoJobExit = false;
     private int codeIndexLinesCount = 0;
+
+    private ReentrantLock codeIndexLinesCountLock = new ReentrantLock();
 
     public IndexService() {
         this(Singleton.getData(),
@@ -376,28 +379,57 @@ public class IndexService implements IIndexService {
         return false;
     }
 
-    @Override
-    public synchronized void incrementCodeIndexLinesCount(int incrementBy) {
-        this.codeIndexLinesCount = this.codeIndexLinesCount + incrementBy;
-    }
 
     @Override
-    public synchronized void decrementCodeIndexLinesCount(int decrementBy) {
-        this.codeIndexLinesCount = this.codeIndexLinesCount - decrementBy;
+    public void incrementCodeIndexLinesCount(int incrementBy) {
+        codeIndexLinesCountLock.lock();
 
-        if (this.codeIndexLinesCount < 0) {
-            this.codeIndexLinesCount = 0;
+        try {
+            this.codeIndexLinesCount = this.codeIndexLinesCount + incrementBy;
+        }
+        finally {
+            codeIndexLinesCountLock.unlock();
         }
     }
 
     @Override
-    public synchronized void setCodeIndexLinesCount(int value) {
-        this.codeIndexLinesCount = value;
+    public void decrementCodeIndexLinesCount(int decrementBy) {
+        codeIndexLinesCountLock.lock();
+
+        try {
+            this.codeIndexLinesCount = this.codeIndexLinesCount - decrementBy;
+
+            if (this.codeIndexLinesCount < 0) {
+                this.codeIndexLinesCount = 0;
+            }
+        }
+        finally {
+            codeIndexLinesCountLock.unlock();
+        }
     }
 
     @Override
-    public synchronized int getCodeIndexLinesCount() {
-        return this.codeIndexLinesCount;
+    public void setCodeIndexLinesCount(int value) {
+        codeIndexLinesCountLock.lock();
+
+        try {
+            this.codeIndexLinesCount = value;
+        }
+        finally {
+            codeIndexLinesCountLock.unlock();
+        }
+    }
+
+    @Override
+    public int getCodeIndexLinesCount() {
+        codeIndexLinesCountLock.lock();
+
+        try {
+            return this.codeIndexLinesCount;
+        }
+        finally {
+            codeIndexLinesCountLock.unlock();
+        }
     }
 
     @Override
