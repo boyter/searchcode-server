@@ -634,7 +634,7 @@ public class IndexService implements IIndexService {
      * Checks to see how much CPU we are using and if its higher then the limit set
      * inside the settings page mute the index for a while
      */
-    private synchronized boolean shouldBackOff() {
+    private boolean shouldBackOff() {
         Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
         Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
 
