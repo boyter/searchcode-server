@@ -13,7 +13,6 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
-import com.searchcode.app.dao.IApi;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.util.Helpers;
 import org.apache.commons.codec.digest.HmacUtils;

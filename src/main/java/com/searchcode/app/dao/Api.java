@@ -45,7 +45,7 @@ public class Api implements IApi {
     public synchronized List<ApiResult> getAllApi() {
         List<ApiResult> apiResults = new ArrayList<>();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -64,7 +64,7 @@ public class Api implements IApi {
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -100,7 +100,7 @@ public class Api implements IApi {
                 result = Optional.of(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -130,7 +130,7 @@ public class Api implements IApi {
 
             successful = true;
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -152,7 +152,7 @@ public class Api implements IApi {
 
             preparedStatement.execute();
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -162,7 +162,7 @@ public class Api implements IApi {
 
     // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -181,7 +181,7 @@ public class Api implements IApi {
                 preparedStatement.execute();
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
