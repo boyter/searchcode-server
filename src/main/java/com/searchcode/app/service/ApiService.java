@@ -18,6 +18,7 @@ import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Deals exclusively with API methods such as validation, creation of keys, deletion etc...
@@ -46,9 +47,9 @@ public class ApiService implements IApiService {
      *
      */
     public boolean validateRequest(String publicKey, String hmac, String query, HmacType hmacType) {
-        ApiResult apiResult = this.api.getApiByPublicKey(publicKey);
+        Optional<ApiResult> apiResult = this.api.getApiByPublicKey(publicKey);
 
-        if (apiResult == null) {
+        if (!apiResult.isPresent()) {
             return false;
         }
 
@@ -56,10 +57,10 @@ public class ApiService implements IApiService {
 
         switch (hmacType) {
             case SHA512:
-                myHmac = HmacUtils.hmacSha512Hex(apiResult.getPrivateKey(), query);
+                myHmac = HmacUtils.hmacSha512Hex(apiResult.get().getPrivateKey(), query);
                 break;
             default:
-                myHmac = HmacUtils.hmacSha1Hex(apiResult.getPrivateKey(), query);
+                myHmac = HmacUtils.hmacSha1Hex(apiResult.get().getPrivateKey(), query);
                 break;
         }
         return myHmac.equals(hmac);

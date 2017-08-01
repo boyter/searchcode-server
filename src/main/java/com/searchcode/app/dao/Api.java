@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides access to all methods required to get API details from the database.
@@ -74,10 +75,10 @@ public class Api implements IApi {
         return apiResults;
     }
 
-    public synchronized ApiResult getApiByPublicKey(String publicKey) {
-        ApiResult result = null;
+    public synchronized Optional<ApiResult> getApiByPublicKey(String publicKey) {
+        Optional<ApiResult> result = Optional.empty();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -96,7 +97,7 @@ public class Api implements IApi {
                 String lastUsed = resultSet.getString("lastused");
                 String data = resultSet.getString("data");
 
-                result = new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data);
+                result = Optional.of(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         }
         catch(SQLException ex) {

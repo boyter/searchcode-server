@@ -4,6 +4,8 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.model.ApiResult;
 import junit.framework.TestCase;
 
+import java.util.Optional;
+
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,7 +14,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestNoMatchingKeyExpectFalse() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(null);
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.empty());
 
         ApiService service = new ApiService(apiMock);
 
@@ -22,7 +24,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestCorrectHmac() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -32,7 +34,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestInCorrectHmac() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -42,7 +44,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testCase1() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -52,7 +54,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testCase2() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -62,7 +64,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testCase3() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -72,7 +74,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestCorrectHmacMethod() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -82,7 +84,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestCorrectHmacMethodSha1() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -92,7 +94,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestCorrectHmacMethodSha512() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 
@@ -102,7 +104,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testValidateRequestInCorrectHmacMethodSha512() {
         Api apiMock = mock(Api.class);
-        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(new ApiResult(1, "publicKey", "privateKey", "", ""));
+        when(apiMock.getApiByPublicKey("publicKey")).thenReturn(Optional.of(new ApiResult(1, "publicKey", "privateKey", "", "")));
 
         ApiService service = new ApiService(apiMock);
 

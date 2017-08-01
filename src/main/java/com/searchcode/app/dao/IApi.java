@@ -14,9 +14,10 @@ package com.searchcode.app.dao;
 import com.searchcode.app.model.ApiResult;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IApi {
-    ApiResult getApiByPublicKey(String publicKey);
+    Optional<ApiResult> getApiByPublicKey(String publicKey);
     List<ApiResult> getAllApi();
     boolean saveApi(ApiResult apiResult);
     void deleteApiByPublicKey(String publicKey);

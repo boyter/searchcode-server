@@ -7,6 +7,8 @@ import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import javax.swing.text.html.Option;
+import java.util.Optional;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -38,10 +40,10 @@ public class ApiTest extends TestCase {
         String randomApiString = this.getRandomString();
 
         this.api.saveApi(new ApiResult(0, randomApiString, "privateKey", "", ""));
-        ApiResult apiResult = this.api.getApiByPublicKey(randomApiString);
+        Optional<ApiResult> apiByPublicKey = this.api.getApiByPublicKey(randomApiString);
 
-        assertThat(apiResult.getPublicKey()).isEqualTo(randomApiString);
-        assertThat(apiResult.getPrivateKey()).isEqualTo("privateKey");
+        assertThat(apiByPublicKey.get().getPublicKey()).isEqualTo(randomApiString);
+        assertThat(apiByPublicKey.get().getPrivateKey()).isEqualTo("privateKey");
 
         this.api.deleteApiByPublicKey(randomApiString);
     }
@@ -52,10 +54,10 @@ public class ApiTest extends TestCase {
         this.api.saveApi(new ApiResult(0, randomApiString, "privateKey", "", ""));
 
         for(int i=0; i < 500; i++) {
-            ApiResult apiResult = this.api.getApiByPublicKey(randomApiString);
+            Optional<ApiResult> apiByPublicKey = this.api.getApiByPublicKey(randomApiString);
 
-            assertThat(apiResult.getPublicKey()).isEqualTo(randomApiString);
-            assertThat(apiResult.getPrivateKey()).isEqualTo("privateKey");
+            assertThat(apiByPublicKey.get().getPublicKey()).isEqualTo(randomApiString);
+            assertThat(apiByPublicKey.get().getPrivateKey()).isEqualTo("privateKey");
         }
 
         this.api.deleteApiByPublicKey(randomApiString);
