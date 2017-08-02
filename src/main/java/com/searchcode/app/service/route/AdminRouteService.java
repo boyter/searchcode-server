@@ -75,11 +75,8 @@ public class AdminRouteService {
 
             IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
 
-            RepoResult repoResult = Singleton.getRepo().getRepoByName(reponame);
-            String indexStatus = Values.EMPTYSTRING;
-            if (repoResult != null) {
-                indexStatus = repoResult.getData().indexStatus;
-            }
+            Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(reponame);
+            String indexStatus = repoResult.map(x -> x.getData().indexStatus).orElse(Values.EMPTYSTRING);
 
             if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
                 return "Indexed ✓";
@@ -417,11 +414,9 @@ public class AdminRouteService {
 
     public void deleteRepo(Request request, Response response) {
         String repoName = request.queryParams("repoName");
-        RepoResult rr = this.repo.getRepoByName(repoName);
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
 
-        if (rr != null) {
-            this.dataService.addToPersistentDelete(rr.getName());
-        }
+        repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
     }
 
     public String checkVersion() {

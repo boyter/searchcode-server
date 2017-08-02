@@ -156,7 +156,7 @@ public class AdminRouteServiceTest extends TestCase {
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParams("repoName")).thenReturn("myRepo");
-        when(mockRepo.getRepoByName("myRepo")).thenReturn(new RepoResult());
+        when(mockRepo.getRepoByName("myRepo")).thenReturn(Optional.of(new RepoResult()));
 
 
         adminRouteService.deleteRepo(mockRequest, null);

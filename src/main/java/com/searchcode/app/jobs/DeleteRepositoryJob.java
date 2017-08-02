@@ -18,7 +18,9 @@ import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The job which deletes repositories from the database index and disk where one exists in the deletion queue.
@@ -29,39 +31,41 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+
         List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
         if (persistentDelete.isEmpty()) {
             return;
         }
 
-        RepoResult rr = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
-        if (rr == null) {
+        Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
+        if (!repoResult.isPresent()) {
             Singleton.getDataService().removeFromPersistentDelete(persistentDelete.get(0));
             return;
         }
 
-        try {
-            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            Singleton.getUniqueGitRepoQueue().delete(rr);
+        repoResult.ifPresent(x -> Singleton.getUniqueGitRepoQueue().delete(x));
 
-            if (Singleton.getRunningIndexRepoJobs().containsKey(rr.getName())) {
-                return;
-            }
-
-            Singleton.getLogger().info("Deleting repository. " + rr.getName());
-            Singleton.getIndexService().deleteByRepo(rr);
-
-            // remove the directory
-            String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
-            FileUtils.deleteDirectory(new File(repoLocations + rr.getName() + "/"));
-
-            // Remove from the database
-            Singleton.getRepo().deleteRepoByName(rr.getName());
-
-            // Remove from the persistent queue
-            Singleton.getDataService().removeFromPersistentDelete(rr.getName());
+        if (Singleton.getRunningIndexRepoJobs().containsKey(repoResult.map(RepoResult::getName).orElse(Values.EMPTYSTRING))) {
+            return;
         }
-        catch (Exception ignored) {}
+
+        repoResult.ifPresent(x -> {
+            try {
+                Singleton.getLogger().info("Deleting repository. " + x.getName());
+                Singleton.getIndexService().deleteByRepo(x);
+                String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+
+                // remove the directory
+                FileUtils.deleteDirectory(new File(repoLocations + x.getName() + "/"));
+
+                // Remove from the database
+                Singleton.getRepo().deleteRepoByName(x.getName());
+
+                // Remove from the persistent queue
+                Singleton.getDataService().removeFromPersistentDelete(x.getName());
+            } catch (IOException ignored) {}
+        });
     }
 }

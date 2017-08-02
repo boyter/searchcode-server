@@ -176,11 +176,8 @@ public class CodeRouteService {
                         Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
         boolean highlight = Singleton.getHelpers().tryParseInt(codeResult.codeLines, "0") <= limit;
 
-        RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
-
-        if (repoResult != null) {
-            map.put("source", repoResult.getSource());
-        }
+        Optional<RepoResult> repoResult = repo.getRepoByName(codeResult.repoName);
+        repoResult.map(x -> map.put("source", x.getSource()));
 
         map.put("fileName", codeResult.fileName);
 
@@ -227,22 +224,24 @@ public class CodeRouteService {
         Map<String, Object> map = new HashMap<>();
 
         String repoName = request.params(":reponame");
-        RepoResult repository = Singleton.getRepo().getRepoByName(repoName);
+        Optional<RepoResult> repository = Singleton.getRepo().getRepoByName(repoName);
         SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
         Cocomo2 coco = new Cocomo2();
         Gson gson = new Gson();
 
-        if (repository == null) {
+        if (!repository.isPresent()) {
             response.redirect("/404/");
             halt();
         }
 
-        ProjectStats projectStats = this.indexService.getProjectStats(repository.getName());
+
+        ProjectStats projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
+                                           .orElse(this.indexService.getProjectStats(Values.EMPTYSTRING));
 
 
         map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
-        map.put("repoLocation", repository.getUrl());
-        map.put("repoBranch", repository.getBranch());
+        repository.ifPresent(x -> map.put("repoLocation", x.getUrl()));
+        repository.ifPresent(x -> map.put("repoBranch", x.getBranch()));
 
         map.put("totalFiles", projectStats.getTotalFiles());
         map.put("totalCodeLines", projectStats.getTotalCodeLines());
@@ -259,7 +258,7 @@ public class CodeRouteService {
 
         map.put("ownerFacetJson", gson.toJson(projectStats.getRepoFacetOwner()));
         map.put("languageFacetJson", gson.toJson(projectStats.getCodeFacetLanguages()));
-        map.put("source", repository.getSource());
+        repository.ifPresent(x -> map.put("source", x.getSource()));
 
         map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());

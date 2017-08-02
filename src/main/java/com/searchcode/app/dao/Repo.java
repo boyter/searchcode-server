@@ -188,14 +188,14 @@ public class Repo implements IRepo {
     }
 
     @Override
-    public synchronized RepoResult getRepoByName(String repositoryName) {
+    public synchronized Optional<RepoResult> getRepoByName(String repositoryName) {
         if (repositoryName == null) {
-            return null;
+            return Optional.empty();
         }
 
-        RepoResult result = null;
+        Optional<RepoResult> result = Optional.empty();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -217,7 +217,7 @@ public class Repo implements IRepo {
                 String repoBranch = resultSet.getString("branch");
                 String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
+                result = Optional.of(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
         catch(SQLException ex) {
@@ -302,7 +302,7 @@ public class Repo implements IRepo {
     // TODO add retry logic here as this can fail and as such should just trigger again
     @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
-        RepoResult existing = this.getRepoByName(repoResult.getName());
+        Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
 
         boolean isNew = false;
 
@@ -312,7 +312,7 @@ public class Repo implements IRepo {
         // Update with new details
         try {
             connection = this.dbConfig.getConnection();
-            if (existing != null) {
+            if (existing.isPresent()) {
                 preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
                 preparedStatement.setString(9, repoResult.getName());
             }

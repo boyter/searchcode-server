@@ -7,6 +7,8 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.util.Helpers;
 
+import java.util.Optional;
+
 public class ValidatorService {
 
     private final Repo repo;
@@ -36,8 +38,8 @@ public class ValidatorService {
             return new ValidatorResult(false, "Repository Name must match the regular expression ^[a-zA-Z0-9-_]*$");
         }
 
-        RepoResult repoByName = this.repo.getRepoByName(repoResult.getName());
-        if (repoByName != null) {
+        Optional<RepoResult> repoByName = this.repo.getRepoByName(repoResult.getName());
+        if (repoByName.isPresent()) {
             return new ValidatorResult(false, "Repository Name must be unique");
         }
 

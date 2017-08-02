@@ -6,6 +6,8 @@ import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,7 +37,7 @@ public class ValidatorServiceTest extends TestCase {
 
         ValidatorService validatorService = new ValidatorService(mockRepo, new Helpers());
 
-        when(mockRepo.getRepoByName("exists")).thenReturn(new RepoResult());
+        when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
 
         RepoResult repoResult = new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}");
         ValidatorResult validate = validatorService.validate(repoResult);

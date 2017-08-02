@@ -193,7 +193,17 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (!filePath.getAbsolutePath().equals("/")) { // Lets really be sure....
                     FileUtils.deleteDirectory(filePath);
                 }
-                this.indexService.deleteByRepo(Singleton.getRepo().getRepoByName(repoName));
+
+                Optional<RepoResult> repoByName = Singleton.getRepo().getRepoByName(repoName);
+
+                repoByName.ifPresent(x -> {
+                    try {
+                        this.indexService.deleteByRepo(x);
+                    } catch (IOException ex) {
+                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+                    }
+                });
+
             } catch (IOException ex) {
                 Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
             }

@@ -6,6 +6,8 @@ import com.searchcode.app.util.AESEncryptor;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class RepoTest extends TestCase {
@@ -31,7 +33,9 @@ public class RepoTest extends TestCase {
 
     public void testRepoSaveDelete() {
         this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        RepoResult result = this.repo.getRepoByName("myname");
+        Optional<RepoResult> repoResult = this.repo.getRepoByName("myname");
+        RepoResult result = repoResult.get();
+
 
         assertThat(result.getName()).isEqualTo("myname");
         assertThat(result.getScm()).isEqualTo("git");
@@ -44,14 +48,14 @@ public class RepoTest extends TestCase {
 
         this.repo.deleteRepoByName("myname");
 
-        result = this.repo.getRepoByName("myname");
-        assertThat(result).isNull();
+        Optional<RepoResult> repoResult2 = this.repo.getRepoByName("myname");
+        assertThat(repoResult2.isPresent()).isFalse();
     }
 
     public void testRepoSaveGetCacheBug() {
         this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
 
-        for (int i = 0 ; i< 200; i++) {
+        for (int i = 0 ; i < 200; i++) {
             assertThat(repo.getRepoByName("myname")).isNotNull();
         }
 
@@ -133,8 +137,8 @@ public class RepoTest extends TestCase {
 
 
     public void testGetRepoByNameUsingNull() {
-        RepoResult repoResult = this.repo.getRepoByName(null);
-        assertThat(repoResult).isNull();
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(null);
+        assertThat(repoResult.isPresent()).isFalse();
     }
 }
 

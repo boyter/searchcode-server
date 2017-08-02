@@ -18,7 +18,7 @@ import java.util.Optional;
 public interface IRepo {
     List<RepoResult> getAllRepo();
     List<RepoResult> getPagedRepo(int offset, int pageSize);
-    RepoResult getRepoByName(String repositoryName);
+    Optional<RepoResult> getRepoByName(String repositoryName);
     Optional<RepoResult> getRepoByUrl(String repositoryUrl);
     boolean saveRepo(RepoResult repoResult);
     void deleteRepoByName(String repositoryName);

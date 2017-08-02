@@ -116,45 +116,41 @@ public class ApiRouteService {
     }
 
     public String getIndexTime(Request request, Response response) {
-        if (request.queryParams().contains("reponame")) {
-            RepoResult reponame = this.repo.getRepoByName(request.queryParams("reponame"));
-            if (reponame == null) {
-                return Values.EMPTYSTRING;
-            }
+        String indexTime = Values.EMPTYSTRING;
 
-            return Singleton.getHelpers().timeAgo(reponame.getData().jobRunTime);
+        if (request.queryParams().contains("reponame")) {
+            Optional<RepoResult> repoResult = this.repo.getRepoByName(request.queryParams("reponame"));
+            indexTime = repoResult.map(x -> Singleton.getHelpers().timeAgo(x.getData().jobRunTime)).orElse(Values.EMPTYSTRING);
         }
 
-        return Values.EMPTYSTRING;
+        return indexTime;
     }
 
     public String getAverageIndexTimeSeconds(Request request, Response response) {
-        if (request.queryParams().contains("reponame")) {
-            RepoResult reponame = this.repo.getRepoByName(request.queryParams("reponame"));
-            if (reponame == null) {
-                return Values.EMPTYSTRING;
-            }
+        String averageIndexTimeSeconds = Values.EMPTYSTRING;
 
-            return Values.EMPTYSTRING + reponame.getData().averageIndexTimeSeconds;
+        if (request.queryParams().contains("reponame")) {
+            Optional<RepoResult> repoResult = this.repo.getRepoByName(request.queryParams("reponame"));
+            averageIndexTimeSeconds = repoResult.map(x -> Values.EMPTYSTRING + x.getData().averageIndexTimeSeconds).orElse(Values.EMPTYSTRING);
         }
 
-        return Values.EMPTYSTRING;
+        return averageIndexTimeSeconds;
     }
 
     public RepoResult getRepo(Request request, Response response) {
+        RepoResult repoResult = null;
+
         if (request.queryParams().contains("reponame")) {
-            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
-            if (reponame == null) {
-                return null;
-            }
+            Optional<RepoResult> reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
 
-            reponame.setUsername(null);
-            reponame.setPassword(null);
-
-            return reponame;
+            repoResult = reponame.map(x -> {
+                x.setUsername(null);
+                x.setPassword(null);
+                return x;
+            }).orElse(null);
         }
 
-        return null;
+        return repoResult;
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {
@@ -231,12 +227,12 @@ public class ApiRouteService {
             }
         }
 
-        RepoResult rr = this.repo.getRepoByName(reponames);
-        if (rr == null) {
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames);
+        if (!repoResult.isPresent()) {
             return new ApiResponse(false, "repository already deleted");
         }
 
-        this.dataService.addToPersistentDelete(rr.getName());
+        repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
 
         Singleton.getLogger().apiLog("Valid signed repoDelete API call using publicKey=" + publicKey);
         return new ApiResponse(true, "repository queued for deletion");
@@ -325,9 +321,9 @@ public class ApiRouteService {
             repotype = "git";
         }
 
-        RepoResult repoResult = this.repo.getRepoByName(reponames);
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames);
 
-        if (repoResult != null) {
+        if (repoResult.isPresent()) {
             return new ApiResponse(false, "repository name already exists");
         }
 
