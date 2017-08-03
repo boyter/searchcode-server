@@ -11,17 +11,19 @@ import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
 import org.mockito.Matchers;
-import org.mockito.Mockito;
 import spark.Request;
 
-import javax.swing.text.html.Option;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 public class ApiRouteServiceTest extends TestCase {
 
@@ -36,8 +38,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryReindexApiAuthNotEnabledRebuildAllWorks() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockJobService.rebuildAll()).thenReturn(true);
 
@@ -53,8 +55,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryReindexApiAuthNotEnabledRebuildAllFails() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockJobService.rebuildAll()).thenReturn(false);
 
@@ -71,8 +73,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryReindexApiAuthEnabledPubMissing() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockJobService.rebuildAll()).thenReturn(true);
 
@@ -86,8 +88,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryReindexApiAuthEnabledSigMissing() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParams("pub")).thenReturn("test");
         when(mockJobService.rebuildAll()).thenReturn(true);
@@ -102,10 +104,10 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryReindexApiAuthEnabledInvalidSig() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        JobService mockJobService = mock(JobService.class);
+        ApiService mockApiService = mock(ApiService.class);
 
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParams("pub")).thenReturn("test");
         when(mockRequest.queryParams("sig")).thenReturn("test");
@@ -123,10 +125,10 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryReindexApiAuthEnabledValidSig() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        JobService mockJobService = mock(JobService.class);
+        ApiService mockApiService = mock(ApiService.class);
 
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParams("pub")).thenReturn("test");
         when(mockRequest.queryParams("sig")).thenReturn("test");
@@ -189,9 +191,9 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepositoryIndexMatchingRepo() {
-        JobService mockJobService = Mockito.mock(JobService.class);
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        JobService mockJobService = mock(JobService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("http://test/");
@@ -218,7 +220,7 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoListApiEnabledNoAuth() {
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
         Repo repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers());
         repo.createTableIfMissing();
 
@@ -234,7 +236,7 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoListApiEnabledAuthMissingPub() {
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
 
         ApiRouteService apiRouteService = new ApiRouteService();
         apiRouteService.apiEnabled = true;
@@ -248,7 +250,7 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoListApiEnabledAuthMissingSig() {
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
 
         ApiRouteService apiRouteService = new ApiRouteService();
         apiRouteService.apiEnabled = true;
@@ -264,8 +266,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoListApiEnabledAuthInvalidSigned() {
-        Request mockRequest = Mockito.mock(Request.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        Request mockRequest = mock(Request.class);
+        ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
@@ -284,9 +286,9 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoListApiEnabledAuthValid() {
-        Request mockRequest = Mockito.mock(Request.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        ApiService mockApiService = mock(ApiService.class);
+        Repo mockRepo = mock(Repo.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(true);
 
@@ -317,7 +319,7 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoDeleteNoAuthNoReponame() {
-        Request mockRequest = Mockito.mock(Request.class);
+        Request mockRequest = mock(Request.class);
 
         ApiRouteService apiRouteService = new ApiRouteService();
         apiRouteService.apiEnabled = true;
@@ -330,9 +332,9 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoDeleteNoAuthReponame() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
-        DataService dataServiceMock = Mockito.mock(DataService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
+        DataService dataServiceMock = mock(DataService.class);
 
         when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
 
@@ -350,8 +352,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoDeleteAuthReponameNoPub() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
         UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
@@ -370,8 +372,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoDeleteAuthReponameNoSig() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
         UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
@@ -391,10 +393,10 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoDeleteAuthReponameFailedAuth() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
         UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
         when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
@@ -495,8 +497,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepoName() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -510,8 +512,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepoUrl() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -526,8 +528,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepotype() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -543,8 +545,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepoUsername() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -561,8 +563,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepoPassword() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -580,8 +582,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepoSource() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -600,8 +602,8 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddMissingRepoBranch() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null);
         apiRouteService.apiEnabled = true;
@@ -644,13 +646,13 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
         assertThat(apiResponse.isSucessful()).isTrue();
-        verify(mockRepo, times(1)).saveRepo(Matchers.<RepoResult>anyObject());
+        verify(mockRepo, times(1)).saveRepo(Matchers.anyObject());
     }
 
     public void testRepoAddAuthPubMissing() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
+        ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
@@ -673,9 +675,9 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddAuthSigMissing() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
+        ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
@@ -699,9 +701,9 @@ public class ApiRouteServiceTest extends TestCase {
     }
 
     public void testRepoAddAuthInvalidSigned() {
-        Request mockRequest = Mockito.mock(Request.class);
-        Repo mockRepo = Mockito.mock(Repo.class);
-        ApiService mockApiService = Mockito.mock(ApiService.class);
+        Request mockRequest = mock(Request.class);
+        Repo mockRepo = mock(Repo.class);
+        ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=test&repourl=test&repotype=test&repousername=test&repopassword=test&reposource=test&repobranch=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
@@ -753,6 +755,6 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
         assertThat(apiResponse.isSucessful()).isTrue();
-        verify(mockRepo, times(1)).saveRepo(Matchers.<RepoResult>anyObject());
+        verify(mockRepo, times(1)).saveRepo(Matchers.anyObject());
     }
 }
