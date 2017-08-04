@@ -419,9 +419,7 @@ public class JobService implements IJobService {
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
         Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-        for(RepoResult rr: repoResultList) {
-            enqueueRepository(rr);
-        }
+        repoResultList.forEach(this::enqueueRepository);
 
         return true;
     }

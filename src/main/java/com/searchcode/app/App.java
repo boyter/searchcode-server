@@ -369,11 +369,14 @@ public class App {
 
             post("/rebuild/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                boolean result = Singleton.getJobService().rebuildAll();
-                if (result) {
-                    Singleton.getJobService().forceEnqueue();
-                }
-                return new JsonTransformer().render(result);
+                Singleton.getIndexService().reindexAll();
+                return new JsonTransformer().render(true);
+            });
+
+            post("/deleteindex/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.getIndexService().deleteAll();
+                return new JsonTransformer().render(true);
             });
 
             post("/forcequeue/", "application/json", (request, response) -> {
