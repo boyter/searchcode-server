@@ -102,7 +102,7 @@ function validateRepoName() {
 
 	$.ajax('/api/repo/repo/?reponame=' + input.val())
     .done(function(data, textStatus, jqXHR) {
-        if (is_valid && input.val() && data === 'null') {
+        if (is_valid && input.val() && (data === 'null' || data === null)) {
             $('#reponame-formgroup').removeClass('has-error');
         }
         else {
