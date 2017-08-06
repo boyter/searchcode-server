@@ -12,6 +12,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.SQLiteDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
@@ -30,6 +31,7 @@ import java.util.AbstractMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Lazy Singleton Implementation
@@ -129,7 +131,8 @@ public final class Singleton {
 
     public static synchronized Queue<CodeIndexDocument> getCodeIndexQueue() {
         if (codeIndexQueue == null) {
-            codeIndexQueue = new ConcurrentLinkedQueue<>();
+            int queueSize = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
+            codeIndexQueue = new LinkedBlockingQueue<>(queueSize);
         }
 
         return codeIndexQueue;
