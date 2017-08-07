@@ -47,10 +47,6 @@ public final class Singleton {
 
     private static SearchcodeLib searchcodeLib = null;
     private static FileClassifier fileClassifier = null;
-    private static AbstractMap<String, String> dataCache = null;
-    private static AbstractMap<String, ApiResult> apiCache = null;
-    private static AbstractMap<String, RepoResult> repoCache = null;
-    private static AbstractMap<String, Object> genericCache = null;
     private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
     private static Repo repo = null;
@@ -136,38 +132,6 @@ public final class Singleton {
         }
 
         return codeIndexQueue;
-    }
-
-    public static synchronized AbstractMap<String, String> getDataCache() {
-        if (dataCache == null) {
-            dataCache = new ConcurrentHashMap<>();
-        }
-
-        return dataCache;
-    }
-
-    public static synchronized AbstractMap<String, ApiResult> getApiCache() {
-        if (apiCache == null) {
-            apiCache = new ConcurrentHashMap<>();
-        }
-
-        return apiCache;
-    }
-
-    public static synchronized AbstractMap<String, RepoResult> getRepoCache() {
-        if (repoCache == null) {
-            repoCache = new ConcurrentHashMap<>();
-        }
-
-        return repoCache;
-    }
-
-    public static synchronized AbstractMap<String, Object> getGenericCache() {
-        if (genericCache == null) {
-            genericCache = new ConcurrentHashMap<>();
-        }
-
-        return genericCache;
     }
 
     public static synchronized Scheduler getScheduler() {
