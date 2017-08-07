@@ -12,14 +12,11 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.SQLiteDatabaseConfig;
-import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RunningIndexJob;
-import com.searchcode.app.model.ApiResult;
-import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.route.TimeSearchRouteService;
 import com.searchcode.app.util.*;
 import org.quartz.Scheduler;
@@ -31,7 +28,6 @@ import java.util.AbstractMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Lazy Singleton Implementation
@@ -127,15 +123,13 @@ public final class Singleton {
 
     public static synchronized Queue<CodeIndexDocument> getCodeIndexQueue() {
         if (codeIndexQueue == null) {
-            int queueSize = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
-            codeIndexQueue = new LinkedBlockingQueue<>(queueSize);
+            codeIndexQueue = new ConcurrentLinkedQueue<>();
         }
 
         return codeIndexQueue;
     }
 
     public static synchronized Scheduler getScheduler() {
-
         try {
             if (scheduler == null || scheduler.isShutdown()) {
                 try {
