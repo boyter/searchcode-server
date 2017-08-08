@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class IndexServiceTest extends TestCase {
@@ -202,7 +203,8 @@ public class IndexServiceTest extends TestCase {
                 Singleton.getSearchCodeLib(),
                 Singleton.getLogger(),
                 Singleton.getHelpers(),
-                Singleton.getCodeIndexQueue());
+                Singleton.getCodeIndexQueue(),
+                Singleton.getJobService());
 
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(this.codeIndexDocument);
@@ -293,44 +295,45 @@ public class IndexServiceTest extends TestCase {
                 Singleton.getSearchCodeLib(),
                 Singleton.getLogger(),
                 Singleton.getHelpers(),
-                queue);
+                queue,
+                Singleton.getJobService());
 
         boolean shouldPause = this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER);
         assertThat(shouldPause).isTrue();
     }
 
     public void testShouldBackOffWhenLoadVeryHigh() {
-        Data dataMock = Mockito.mock(Data.class);
-        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        Data dataMock = mock(Data.class);
+        StatsService statsServiceMock = mock(StatsService.class);
 
         when(statsServiceMock.getLoadAverage()).thenReturn("10000000.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), null);
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), null, null);
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
     }
 
     public void testShouldBackOffWhenLoadHigherThanValue() {
-        Data dataMock = Mockito.mock(Data.class);
-        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        Data dataMock = mock(Data.class);
+        StatsService statsServiceMock = mock(StatsService.class);
 
         when(statsServiceMock.getLoadAverage()).thenReturn("0.21");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("0.2");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), null);
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), null, null);
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isTrue();
     }
 
     public void testShouldNotBackOffWhenLoadZero() {
-        Data dataMock = Mockito.mock(Data.class);
-        StatsService statsServiceMock = Mockito.mock(StatsService.class);
+        Data dataMock = mock(Data.class);
+        StatsService statsServiceMock = mock(StatsService.class);
 
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), new ConcurrentArrayQueue<>());
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), new ConcurrentArrayQueue<>(), null);
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isFalse();
     }

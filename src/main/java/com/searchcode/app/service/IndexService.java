@@ -17,6 +17,7 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -56,6 +57,7 @@ public class IndexService implements IIndexService {
     private final SearchcodeLib searchcodeLib;
     private final LoggerWrapper logger;
     private final Helpers helpers;
+    private final JobService jobService;
 
     private final int MAX_INDEX_SIZE;
     private final int MAX_LINES_INDEX_SIZE;
@@ -94,15 +96,17 @@ public class IndexService implements IIndexService {
                 Singleton.getSearchCodeLib(),
                 Singleton.getLogger(),
                 Singleton.getHelpers(),
-                Singleton.getCodeIndexQueue());
+                Singleton.getCodeIndexQueue(),
+                Singleton.getJobService());
     }
 
-    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue) {
+    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue, JobService jobService) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
         this.logger = logger;
         this.helpers = helpers;
+        this.jobService = jobService;
 
         this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
@@ -339,11 +343,13 @@ public class IndexService implements IIndexService {
     @Override
     public synchronized void reindexAll() {
         // Stop adding to queue
-        this.reindexingAll = true;
-        this.repoAdderPause = true;
-        this.repoJobExit = true;
+        this.reindexingAll = true; // mark that waiting for queue to finish
+        this.repoAdderPause = true; // Required if we have reindexingAll????
+        this.repoJobExit = true;    // Required if we have reindexingAll????
+
         // Clear queue
         // Clear index queue
+        // This should be moved somewhere else I think...
         this.codeIndexDocumentQueue.clear();
         this.uniqueGitRepoQueue.clear();
         this.uniqueFileRepoQueue.clear();
@@ -351,8 +357,8 @@ public class IndexService implements IIndexService {
 
         // flip write index
         this.flipWriteIndex();
-        // mark that waiting for queue to finish
         // queue all repos to be parsed
+        this.jobService.forceEnqueue();
     }
 
     /**
