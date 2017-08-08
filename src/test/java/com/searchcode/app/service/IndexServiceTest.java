@@ -424,6 +424,7 @@ public class IndexServiceTest extends TestCase {
         methodList.add(arg -> this.indexService.setRepoAdderPause(false));
         methodList.add(arg -> this.indexService.setRepoAdderPause(true));
         methodList.add(arg -> this.indexService.getRepoAdderPause());
+        methodList.add(arg -> this.indexService.decrementRepoJobsCount());
 
         List<Thread> threadList = new ArrayList<>();
 

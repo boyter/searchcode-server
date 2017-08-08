@@ -83,6 +83,8 @@ public class IndexService implements IIndexService {
     private boolean repoJobExit = false;
     private int codeIndexLinesCount = 0;
 
+    private int repoJobsCount = 0;
+
     private ReentrantLock codeIndexLinesCountLock = new ReentrantLock();
 
     public IndexService() {
@@ -379,6 +381,13 @@ public class IndexService implements IIndexService {
         return false;
     }
 
+    @Override
+    public synchronized void decrementRepoJobsCount() {
+        if (this.repoJobsCount >= 1) {
+            this.repoJobsCount--;
+        }
+    }
+
 
     @Override
     public void incrementCodeIndexLinesCount(int incrementBy) {
@@ -582,7 +591,7 @@ public class IndexService implements IIndexService {
             codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             this.logger.severe("CodeSearcher getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {

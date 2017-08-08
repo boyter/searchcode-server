@@ -117,7 +117,7 @@ public abstract class IndexBaseRepoJob implements Job {
         // Pull the next repo to index from the queue
         RepoResult repoResult = this.getNextQueuedRepo().poll();
 
-        if (repoResult != null && Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName()) == false) {
+        if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             this.haveRepoResult = true;
             Singleton.getLogger().info("Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
@@ -146,6 +146,9 @@ public abstract class IndexBaseRepoJob implements Job {
                 // Write file indicating we have sucessfully cloned
                 this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getName());
                 this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
+
+                // Mark that this job is finished
+                this.indexService.decrementRepoJobsCount();
             }
             finally {
                 // Clean up the job

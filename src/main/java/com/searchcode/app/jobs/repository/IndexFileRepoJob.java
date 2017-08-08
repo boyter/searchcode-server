@@ -95,6 +95,9 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 repoResult.getData().indexStatus = "success";
                 repoResult.getData().jobRunTime = Instant.now();
                 Singleton.getRepo().saveRepo(repoResult);
+
+                // Mark that this job is finished
+                this.indexService.decrementRepoJobsCount();
             }
             finally {
                 // Clean up the job

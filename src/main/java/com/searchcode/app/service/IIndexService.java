@@ -42,6 +42,8 @@ public interface IIndexService {
     void setCodeIndexLinesCount(int value);
     int getCodeIndexLinesCount();
 
+    void decrementRepoJobsCount();
+
     Document buildDocument(CodeIndexDocument codeIndexDocument);
     int getIndexedDocumentCount();
     ProjectStats getProjectStats(String repoName);
