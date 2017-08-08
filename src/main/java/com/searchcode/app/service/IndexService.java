@@ -84,6 +84,7 @@ public class IndexService implements IIndexService {
     private int codeIndexLinesCount = 0;
 
     private int repoJobsCount = 0;
+    private boolean reindexingAll = false;
 
     private ReentrantLock codeIndexLinesCountLock = new ReentrantLock();
 
@@ -338,6 +339,7 @@ public class IndexService implements IIndexService {
     @Override
     public synchronized void reindexAll() {
         // Stop adding to queue
+        this.reindexingAll = true;
         this.repoAdderPause = true;
         this.repoJobExit = true;
         // Clear queue
@@ -385,6 +387,11 @@ public class IndexService implements IIndexService {
     public synchronized void decrementRepoJobsCount() {
         if (this.repoJobsCount >= 1) {
             this.repoJobsCount--;
+        }
+
+        if (this.repoJobsCount == 0 && this.reindexingAll) {
+            this.reindexingAll = false;
+            this.flipReadIndex();
         }
     }
 
