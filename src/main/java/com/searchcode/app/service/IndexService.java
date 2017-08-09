@@ -168,6 +168,11 @@ public class IndexService implements IIndexService {
     }
 
     @Override
+    public boolean getReindexingAll() {
+        return this.reindexingAll;
+    }
+
+    @Override
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
         Queue<CodeIndexDocument> queue = new ArrayQueue<>();
         queue.add(codeIndexDocument);
@@ -678,7 +683,7 @@ public class IndexService implements IIndexService {
         if (this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION)) {
             this.data.saveData(Values.INDEX_READ, Values.INDEX_A);
         } else {
-            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);;
+            this.data.saveData(Values.INDEX_READ, Values.INDEX_B);
         }
     }
 
@@ -881,7 +886,7 @@ public class IndexService implements IIndexService {
      * be processed pause.
      */
     private boolean shouldRepoAdderPause() {
-        return this.repoAdderPause;
+        return this.reindexingAll || this.repoAdderPause;
     }
 
     /**

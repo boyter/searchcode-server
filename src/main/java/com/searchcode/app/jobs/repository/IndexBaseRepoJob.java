@@ -148,6 +148,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
 
                 // Mark that this job is finished
+                // TODO ensure that this line is covered by tests
                 this.indexService.decrementRepoJobsCount();
             }
             finally {

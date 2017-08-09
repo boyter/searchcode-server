@@ -97,6 +97,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 Singleton.getRepo().saveRepo(repoResult);
 
                 // Mark that this job is finished
+                // TODO ensure that this line is covered by tests
                 this.indexService.decrementRepoJobsCount();
             }
             finally {

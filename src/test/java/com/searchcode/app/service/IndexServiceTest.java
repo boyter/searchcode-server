@@ -360,6 +360,14 @@ public class IndexServiceTest extends TestCase {
         assertThat(projectStats.getTotalCodeLines()).isEqualTo(100);
     }
 
+    public void testReindexAllSetsIndexingStatus() throws IOException {
+        this.indexService = new IndexService();
+
+        assertThat(this.indexService.getReindexingAll()).isFalse();
+        this.indexService.reindexAll();
+        assertThat(this.indexService.getReindexingAll()).isTrue();
+    }
+
     public void testIndexerLock() throws InterruptedException {
         // You can only prove the presence of concurrent bugs, not their absence.
         // Although that's true of any code. Anyway let's see if we can identify any...
@@ -388,7 +396,7 @@ public class IndexServiceTest extends TestCase {
             thread.join();
         }
         int codeIndexLinesCount = this.indexService.getCodeIndexLinesCount();
-        assertThat(codeIndexLinesCount).isBetween(99, 101);
+        assertThat(codeIndexLinesCount).isBetween(98, 102);
     }
 
     public void testIndexerWithThreads() throws InterruptedException {
