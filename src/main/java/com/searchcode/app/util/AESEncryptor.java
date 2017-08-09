@@ -21,7 +21,7 @@ import java.util.Base64;
 public class AESEncryptor {
     private byte[] key;
 
-    private static final String ALGORITHM = "AES";
+    private final String ALGORITHM = "AES";
 
     public AESEncryptor() {
         String encryptionKey = Properties.getProperties().getProperty(Values.ENCRYPTION_KEY, Values.DEFAULT_ENCRYPTION_KEY);
@@ -49,7 +49,6 @@ public class AESEncryptor {
 
         return cipher.doFinal(plainText);
     }
-
 
     public byte[] decrypt(byte[] cipherText) throws Exception {
         SecretKeySpec secretKey = new SecretKeySpec(this.key, this.ALGORITHM);
