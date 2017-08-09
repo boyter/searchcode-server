@@ -16,6 +16,7 @@ public class AESEncryptorTest extends TestCase {
         for (int i = 0; i < 100; i++) {
             AESEncryptor aesEncryptor = new AESEncryptor(RandomStringUtils.randomAscii(rand.nextInt(64) + 1));
             aesEncryptor.encrypt("some text".getBytes());
+            assertThat(aesEncryptor.decryptFromBase64String(aesEncryptor.encryptToBase64String("some text"))).isEqualTo("some text");
         }
     }
 
