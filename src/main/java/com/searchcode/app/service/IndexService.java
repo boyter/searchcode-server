@@ -80,13 +80,15 @@ public class IndexService implements IIndexService {
     private final UniqueRepoQueue uniqueFileRepoQueue;
     private final UniqueRepoQueue uniqueSvnRepoQueue;
 
-    private boolean pauseBackgroundJobs = false; // Controls if all jobs should pause
-    private boolean repoAdderPause = false;
-    private boolean repoJobExit = false;
+    private boolean repoAdderPause = false;     // Controls if repo add job should pause, controlled through the UI
+    private boolean repoJobExit = false;        // Controls if repo indexing jobs should exit instantly
     private int codeIndexLinesCount = 0;
 
-    private int repoJobsCount = 0;
-    private boolean reindexingAll = false;
+    ///////////////////////////////////////////////////////////////////////
+    // The below store state for when the reindexing + flip should occur
+    //////////////////////////////////////////////////////////////////////
+    private boolean reindexingAll = false;      // Are we in reindexing state waiting to flip over
+    private int repoJobsCount = 0;              // If we are reindexing then how many jobs need to finish
 
     private ReentrantLock codeIndexLinesCountLock = new ReentrantLock();
 
@@ -349,7 +351,6 @@ public class IndexService implements IIndexService {
     public synchronized void reindexAll() {
         // Stop adding to queue
         this.reindexingAll = true; // mark that waiting for queue to finish
-        this.repoAdderPause = true; // Required if we have reindexingAll????
         this.repoJobExit = true;    // Required if we have reindexingAll????
 
         // Clear queue
@@ -362,7 +363,9 @@ public class IndexService implements IIndexService {
 
         // flip write index
         this.flipWriteIndex();
+        
         // queue all repos to be parsed
+        this.repoJobExit = false; // TODO add check to see if they have all exited
         this.jobService.forceEnqueue();
     }
 
@@ -391,6 +394,11 @@ public class IndexService implements IIndexService {
 
     @Override
     public synchronized boolean shouldExit(JobType jobType) {
+        switch(jobType) {
+            case REPO_PARSER:
+                return this.repoJobExit;
+        }
+
         return false;
     }
 
@@ -894,10 +902,6 @@ public class IndexService implements IIndexService {
      * the index queue.
      */
     private boolean shouldRepoJobPause() {
-        if (this.pauseBackgroundJobs) {
-            return true;
-        }
-
         int indexQueueSize = this.codeIndexDocumentQueue.size();
 
         if (indexQueueSize > MAX_INDEX_SIZE) {

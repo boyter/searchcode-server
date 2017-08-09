@@ -363,12 +363,18 @@ public class IndexServiceTest extends TestCase {
     public void testReindexAllSetsIndexingStatus() throws IOException {
         this.indexService = new IndexService();
 
-        assertThat(this.indexService.getReindexingAll()).isFalse();
-        this.indexService.reindexAll();
-        assertThat(this.indexService.getReindexingAll()).isTrue();
-        this.indexService.decrementRepoJobsCount();
+        assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
         assertThat(this.indexService.getReindexingAll()).isFalse();
 
+        this.indexService.reindexAll();
+
+        assertThat(this.indexService.getRepoAdderPause()).isFalse();
+        assertThat(this.indexService.getReindexingAll()).isTrue();
+        assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
+
+        this.indexService.decrementRepoJobsCount();
+
+        assertThat(this.indexService.getReindexingAll()).isFalse();
     }
 
     public void testIndexerLock() throws InterruptedException {
