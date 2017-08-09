@@ -17,7 +17,6 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
@@ -350,11 +349,9 @@ public class IndexService implements IIndexService {
     @Override
     public synchronized void reindexAll() {
         // Stop adding to queue
-        this.reindexingAll = true; // mark that waiting for queue to finish
-        this.repoJobExit = true;    // Required if we have reindexingAll????
+        this.reindexingAll = true;
+        this.repoJobExit = true;
 
-        // Clear queue
-        // Clear index queue
         // This should be moved somewhere else I think...
         this.codeIndexDocumentQueue.clear();
         this.uniqueGitRepoQueue.clear();
@@ -363,9 +360,9 @@ public class IndexService implements IIndexService {
 
         // flip write index
         this.flipWriteIndex();
-        
+
         // queue all repos to be parsed
-        this.repoJobExit = false; // TODO add check to see if they have all exited
+        this.repoJobExit = false; // TODO add check to see if they have all exited needs to be fast!!!!!
         this.jobService.forceEnqueue();
     }
 
