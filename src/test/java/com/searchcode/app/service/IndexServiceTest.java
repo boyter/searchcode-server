@@ -366,6 +366,9 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.getReindexingAll()).isFalse();
         this.indexService.reindexAll();
         assertThat(this.indexService.getReindexingAll()).isTrue();
+        this.indexService.decrementRepoJobsCount();
+        assertThat(this.indexService.getReindexingAll()).isFalse();
+
     }
 
     public void testIndexerLock() throws InterruptedException {
