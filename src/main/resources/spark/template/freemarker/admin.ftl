@@ -35,10 +35,10 @@
                     </div>
                     <div class="panel-body">
                         System Load Average: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=loadaverage">${loadAverage}</span>
-                        <br>Uptime: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</span>
+                        <br>Uptime: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=uptime">${uptime}</span>
                         <br>Version: ${version} <a ic-get-from="/admin/checkversion/" ic-indicator="#demo-spinner">(check if latest version)</a>
                                             <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"><img src="/img/loading_small.gif" /></i>
-                        <br>Threads: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=threads">${threads}</span>
+                        <br>Threads: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=threads">${threads}</span>
                         <br>Index Status: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=paused">${paused}</span>
                     </div>
                 </div>
@@ -71,8 +71,8 @@
                     Number of Searches: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</span>
                     <br>Documents Indexed: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</span>
                     <br>
-                    <br>Total Repositories: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span>
-                    <br>Queued for Deletion: <span ic-poll="60s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
+                    <br>Total Repositories: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span>
+                    <br>Queued for Deletion: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
                     </div>
                 </div>
             </div>

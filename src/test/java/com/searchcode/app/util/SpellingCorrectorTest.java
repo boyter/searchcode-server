@@ -5,6 +5,7 @@ import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.List;
 import java.util.Random;
 
 public class SpellingCorrectorTest extends TestCase {
@@ -14,7 +15,7 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testEmptyNullTerms() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         assertNull(sc.correct(null));
         assertEquals("", sc.correct(""));
         assertEquals(" ", sc.correct(" "));
@@ -26,14 +27,14 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testTermsLowercased() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.putWord("UPPERCASE");
         assertTrue(sc.containsWord("uppercase"));
         assertFalse(sc.containsWord("UPPERCASE"));
     }
 
     public void testSpellingCorrectorWordExistsInDictionary() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.putWord("test");
 
         String actual = sc.correct("test");
@@ -41,14 +42,14 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testSpellingCorrectorEmptyDictionary() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         String actual = sc.correct("testz");
         assertEquals("testz", actual);
     }
 
 
     public void testSpellingCorrectorMissingLetter() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.putWord("tests");
 
         String actual = sc.correct("test");
@@ -56,7 +57,7 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testSpellingCorrectorIncorrectLetter() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
 
         sc.putWord("default");
 
@@ -65,7 +66,7 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testSpellingCorrectorExtraLetter() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.putWord("default");
 
         String test = sc.correct("defaults");
@@ -73,7 +74,7 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testSpellingCorrectorTwoMatchesSameLengthWins() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.putWord("test");
         sc.putWord("tests");
 
@@ -82,7 +83,7 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testSpellingCorrectorTwoMatchesOfSameLengthMostCommonWins() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.putWord("testy");
         sc.putWord("testy");
         sc.putWord("testy");
@@ -93,7 +94,7 @@ public class SpellingCorrectorTest extends TestCase {
     }
 
     public void testSpellingCorrectorSecondCycle() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
 
         sc.putWord("test");
 
@@ -105,7 +106,7 @@ public class SpellingCorrectorTest extends TestCase {
      * If there is a performance issue this takes forever to run
      */
     public void testLongStringPerformance() {
-        ISpellingCorrector sc = getSpellingCorrector();
+        ISpellingCorrector sc = this.getSpellingCorrector();
         sc.correct("thisisareallylongstringthatshouldcalusethingstorunreallyslow");
     }
 
@@ -119,6 +120,7 @@ public class SpellingCorrectorTest extends TestCase {
 
         for (int i = 0; i < 100; i++) {
             sc.correct(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1));
+            sc.getSampleWords(10);
         }
     }
 }
