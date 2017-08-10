@@ -92,18 +92,48 @@
 
         <div style="width:100%; display: inline-block;">
 
-            <a data-text="Add all repositories into the index processing queue. Click this if you want to force the index to be updated with newly added repositories." style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Force Index Queue</a>
-            <a data-text="Reset the search count to zero." style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count</a>
-            <a data-text="Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results." style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling</a>
-            <a data-text="Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results." style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a>
-            <a data-text="Delete the entire index. Click this if want to rebuild the entire index. This is the nuclear bomb option." style="width:180px;" ic-post-to="/admin/deleteindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Delete and Rebuild Indexes</a>
-            <a data-text="Pauses the indexer from running. Use this to reduce load on the searchcode server or source control system." style="width:180px;" ic-post-to="/admin/togglepause/" ic-target="#rebuild-target" ic-indicator="#action-spinner" class="btn-function btn btn-danger btn-xs" role="button">Pause/Unpause Indexer</a>
+            <h4>System Actions <small>(warning these can be destructive)</small></h4>
 
-
-            <i id="action-spinner" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i>
-
-            <p><strong id="function-description">&nbsp;</strong></p>
-
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Add all repositories into the index processing queue. Click this if you want to force the index to be updated with newly added repositories.
+                    <i id="action-spinner1" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" ic-indicator="#action-spinner1" class="btn-function btn btn-danger btn-xs" role="button">Force Index Queue</a></td>
+                </tr>
+                 <tr>
+                    <td>Reset the search count to zero.
+                    <i id="action-spinner2" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner2" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count</a></td>
+                </tr>
+                <tr>
+                    <td>Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results.
+                    <i id="action-spinner3" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner3" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling</a></td>
+                </tr>
+                <tr>
+                    <td>Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results.
+                    <i id="action-spinner4" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner4" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a></td>
+                </tr>
+                <tr>
+                    <td>Delete the entire index. Click this if want to rebuild the entire index. This is the nuclear bomb option.
+                    <i id="action-spinner5" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/deleteindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner5" class="btn-function btn btn-danger btn-xs" role="button">Delete and Rebuild Indexes</a></td>
+                </tr>
+                <tr>
+                    <td>Pauses the indexer from running. Use this to reduce load on the searchcode server or source control system.
+                    <i id="action-spinner6" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/togglepause/" ic-target="#rebuild-target" ic-indicator="#action-spinner6" class="btn-function btn btn-danger btn-xs" role="button">Pause / Unpause Indexer</a></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
         <div style="width:100%; display: inline-block;">
@@ -151,19 +181,6 @@ host_name=${host_name}</textarea>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script src="/js/intercooler-1.0.3.min.js"></script>
-
-<script>
-$(document).ready(function(){
-    $('.btn-function').hover(
-        function(e){
-            $('#function-description').html($(this).data('text'));
-        },
-        function(e) {
-            $('#function-description').html('&nbsp;');
-        }
-    );
-});
-</script>
 
 </div>
 

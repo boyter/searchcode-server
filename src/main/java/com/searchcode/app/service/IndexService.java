@@ -337,11 +337,11 @@ public class IndexService implements IIndexService {
     @Override
     public void reindexByRepo(RepoResult repo) {
         // Stop adding to job processing queue
-        this.repoAdderPause = true;
-        this.repoJobExit = true;
+        //this.repoAdderPause = true;
+        //this.repoJobExit = true;
         // Clear job processing queue queue
         // CLear index queue
-        this.codeIndexDocumentQueue.clear();
+        //this.codeIndexDocumentQueue.clear();
         // Delete repo from index
         // Delete repo from db
     }
