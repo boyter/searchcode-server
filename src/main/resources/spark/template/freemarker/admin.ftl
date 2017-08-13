@@ -92,7 +92,7 @@
 
         <div style="width:100%; display: inline-block;">
 
-            <h4>System Actions <small>(warning these can be destructive)</small></h4>
+            <h4>System Actions <small>(warning potentially destructive)</small></h4>
 
             <table class="table">
                 <thead>
@@ -103,34 +103,34 @@
                 </thead>
                 <tbody>
                 <tr>
-                    <td>Add all repositories into the index processing queue. Click this if you want to force the index to be updated with newly added repositories.
+                    <td>Add all repositories into the index processing queue. Repositories are added to the queue when added. Click this if you have set a high value for check_repo_chages or check_filerepo_changes and want to jumpstart the process.
                     <i id="action-spinner1" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
-                    <td><a style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" ic-indicator="#action-spinner1" class="btn-function btn btn-danger btn-xs" role="button">Force Index Queue</a></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" ic-indicator="#action-spinner1" class="btn-function btn btn-default btn-xs" role="button">Force Index Queue</a></td>
                 </tr>
                  <tr>
-                    <td>Reset the search count to zero.
+                    <td>Reset the search count to zero. Useful if you want to determine if anyone is using searchcode server.
                     <i id="action-spinner2" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
-                    <td><a style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner2" class="btn-function btn btn-danger btn-xs" role="button">Clear Search Count</a></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner2" class="btn-function btn btn-default btn-xs" role="button">Clear Search Count</a></td>
                 </tr>
                 <tr>
-                    <td>Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results.
+                    <td>Reset the spelling corrector. When repositories are deleted their suggestions remain in the spelling suggestion list. This will push out suggestions which no longer return results.
                     <i id="action-spinner3" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
-                    <td><a style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner3" class="btn-function btn btn-danger btn-xs" role="button">Reset Spelling</a></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner3" class="btn-function btn btn-default btn-xs" role="button">Reset Spelling</a></td>
                 </tr>
                 <tr>
-                    <td>Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results.
+                    <td>Stops the parsers which download code and then index it from running. Use this to reduce load on searchcode server or source control systems.
+                    <i id="action-spinner6" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/togglepause/" ic-target="#rebuild-target" ic-indicator="#action-spinner6" class="btn-function btn btn-default btn-xs" role="button">Pause / Unpause Indexer</a></td>
+                </tr>
+                <tr>
+                    <td>Click this if want to rebuild the entire index. The index will be rebuilt along the existing index and then swapped to avoid any downtime. Updates in the index will only appear when this process is finished.
+                    <i id="action-spinner5" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/deleteindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner5" class="btn-function btn btn-default btn-xs" role="button">Rebuild Index</a></td>
+                </tr>
+                <tr>
+                    <td>Delete the entire index, checked out code and queue everything to be downloaded and re-indexed. This will start searchcode server as a fresh install with existing repositories. Use this option only as a last resort or if upgrading from older version that is no index compatible.
                     <i id="action-spinner4" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner4" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a></td>
-                </tr>
-                <tr>
-                    <td>Delete the entire index. Click this if want to rebuild the entire index. This is the nuclear bomb option.
-                    <i id="action-spinner5" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
-                    <td><a style="width:180px;" ic-post-to="/admin/deleteindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner5" class="btn-function btn btn-danger btn-xs" role="button">Delete and Rebuild Indexes</a></td>
-                </tr>
-                <tr>
-                    <td>Pauses the indexer from running. Use this to reduce load on the searchcode server or source control system.
-                    <i id="action-spinner6" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
-                    <td><a style="width:180px;" ic-post-to="/admin/togglepause/" ic-target="#rebuild-target" ic-indicator="#action-spinner6" class="btn-function btn btn-danger btn-xs" role="button">Pause / Unpause Indexer</a></td>
                 </tr>
                 </tbody>
             </table>
