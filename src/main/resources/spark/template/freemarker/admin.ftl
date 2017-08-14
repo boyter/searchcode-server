@@ -108,7 +108,7 @@
                     <td><a style="width:180px;" ic-post-to="/admin/forcequeue/" ic-target="#force-target" ic-indicator="#action-spinner1" class="btn-function btn btn-default btn-xs" role="button">Force Index Queue</a></td>
                 </tr>
                  <tr>
-                    <td>Reset the search count to zero. Useful if you want to determine if anyone is using searchcode server.
+                    <td>Reset the number of searches count to zero.
                     <i id="action-spinner2" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/clearsearchcount/" ic-target="#force-target" ic-indicator="#action-spinner2" class="btn-function btn btn-default btn-xs" role="button">Clear Search Count</a></td>
                 </tr>
@@ -172,8 +172,6 @@ log_indexed=${log_indexed}
 follow_links=${follow_links}
 deep_guess_files=${deep_guess_files}
 host_name=${host_name}</textarea>
-
-
         </div>
 
     </div>
