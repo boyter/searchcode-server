@@ -487,8 +487,10 @@ public class AdminRouteService {
                 return StringUtils.join(Singleton.getLogger().getApiLogs(), System.lineSeparator());
             case "threads":
                 return "" + java.lang.Thread.activeCount();
-            case "paused":
+            case "parserpaused":
                 return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused": "running";
+            case "adderpaused":
+                return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? "paused": "running";
         }
 
         return Values.EMPTYSTRING;

@@ -39,7 +39,8 @@
                         <br>Version: ${version} <a ic-get-from="/admin/checkversion/" ic-indicator="#demo-spinner">(check if latest version)</a>
                                             <i id="demo-spinner" class="fa fa-spinner fa-spin" style="display:none"><img src="/img/loading_small.gif" /></i>
                         <br>Threads: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=threads">${threads}</span>
-                        <br>Index Status: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=paused">${paused}</span>
+                        <br>Repo Adder Status: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=adderpaused">${paused}</span>
+                        <br>Repo Parser Status: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=parserpaused">${paused}</span>
                     </div>
                 </div>
             </div>
@@ -118,12 +119,12 @@
                     <td><a style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner3" class="btn-function btn btn-default btn-xs" role="button">Reset Spelling</a></td>
                 </tr>
                 <tr>
-                    <td>Stops the parsers which download code and then index it from running. Use this to reduce load on searchcode server or source control systems.
+                    <td>Stops adding repositories to the queue which feed the parsers to download code. Use this to reduce load on searchcode server or source control systems.
                     <i id="action-spinner6" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/togglepause/" ic-target="#rebuild-target" ic-indicator="#action-spinner6" class="btn-function btn btn-default btn-xs" role="button">Pause / Unpause Indexer</a></td>
                 </tr>
                 <tr>
-                    <td>Click this if want to rebuild the entire index. The index will be rebuilt along the existing index and then swapped to avoid any downtime. Updates in the index will only appear when this process is finished.
+                    <td>Click this if you want to rebuild the entire index. The index will be rebuilt side by side the existing index and then swapped to avoid any downtime. Updates in the index will only appear when this process is finished.
                     <i id="action-spinner5" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/deleteindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner5" class="btn-function btn btn-default btn-xs" role="button">Rebuild Index</a></td>
                 </tr>
