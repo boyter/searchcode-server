@@ -153,56 +153,6 @@ public class EndToEndITCase extends TestCase{
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
-    public void testEndToEndGitDelta() throws IOException {
-        IndexService indexService = new IndexService();
-        IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-        File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndGitTest");
-
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "init", ".");
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"First commit\"");
-
-        // Clone from the above into a new directory
-        File tempPath = TestHelpers.clearAndCreateTempPath("EndToEndGitCloneTest");
-        this.runCommand(tempPath.toString(), this.GITPATH, "clone", directoryWithFiles.toString(), "EndToEndGitTest");
-
-        // Index
-        indexGitRepoJob.indexDocsByPath(Paths.get(tempPath.toString()), "EndToEndGitTest", "", tempPath.toString(), false);
-        SearchResult searchResult = indexService.search("endtoendtestfile", 0);
-        assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
-
-        // Update the source
-        TestHelpers.createFile(directoryWithFiles, "EndToEndTestFile4.cpp", "EndToEndTestFile EndToEndTestFile4");
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "add", ".");
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"Add new\"");
-
-        // Index and lets dance
-        RepositoryChanged repositoryChanged = indexGitRepoJob.updateExistingRepository("EndToEndGitTest", "repoRemoteLocation", "", "", tempPath.toString(), "", false);
-        String repoGitLocation = tempPath.toString() + "/" + "EndToEndGitTest";
-        Path docDir = Paths.get(repoGitLocation);
-        indexGitRepoJob.indexDocsByDelta(docDir, "EndToEndGitTest", tempPath.toString(), "", repositoryChanged);
-
-        searchResult = indexService.search("endtoendtestfile", 0);
-        assertThat(searchResult.getCodeResultList().size()).isEqualTo(4);
-
-        // Update the source
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "rm", "EndToEndTestFile4.cpp");
-        this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"Baleted\"");
-
-        // Index and lets dance
-        repositoryChanged = indexGitRepoJob.updateExistingRepository("EndToEndGitTest", "repoRemoteLocation", "", "", tempPath.toString(), "", false);
-        repoGitLocation = tempPath.toString() + "/" + "EndToEndGitTest";
-        docDir = Paths.get(repoGitLocation);
-        indexGitRepoJob.indexDocsByDelta(docDir, "EndToEndGitTest", tempPath.toString(), "", repositoryChanged);
-
-        searchResult = indexService.search("endtoendtestfile", 0);
-        assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
-
-        indexService.deleteByRepo(new RepoResult(0, "EndToEndGitTest", "", "", "", "", "" ,"", "{}"));
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
-        assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
-    }
-
     private String runCommand(String directory, String... command) throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
 

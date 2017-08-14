@@ -227,107 +227,11 @@ public abstract class IndexBaseRepoJob implements Job {
         String repoGitLocation = repoLocations + "/" + repoName;
         Path docDir = Paths.get(repoGitLocation);
 
-        // Was the previous index sucessful? if not then index by path
-        boolean indexsucess = checkIndexSucess(repoGitLocation);
-        deleteIndexSuccess(repoGitLocation);
-
-        if (!repositoryChanged.isClone() && indexsucess == false) {
-            Singleton.getLogger().info("Failed to index " + repoName + " fully, performing a full index.");
-        }
-
-        if (repositoryChanged.isClone() || indexsucess == false) {
-            Singleton.getLogger().info("Doing full index of files for " + repoName);
-            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
-        }
-        else {
-            Singleton.getLogger().info("Doing delta index of files " + repoName);
-            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged);
-        }
+        Singleton.getLogger().info("Doing full index of files for " + repoName);
+        this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
 
         // Write file indicating that the index was sucessful
         Singleton.getLogger().info("Successfully processed writing index success for " + repoName);
-        createIndexSuccess(repoGitLocation);
-    }
-
-    /**
-     * Indexes all the documents in the repository changed file effectively performing a delta update
-     * Should only be called when there is a genuine update IE something was indexed previously and
-     * has has a new commit.
-     */
-    public void indexDocsByDelta(Path path, String repoName, String repoLocations, String repoRemoteLocation, RepositoryChanged repositoryChanged) {
-        SearchcodeLib scl = Singleton.getSearchCodeLib(); // Should have data object by this point
-        Queue<CodeIndexDocument> codeIndexDocumentQueue = Singleton.getCodeIndexQueue();
-        String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-
-        // Used to hold the reports of what was indexed
-        List<String[]> reportList = new ArrayList<>();
-
-        for (String changedFile: repositoryChanged.getChangedFiles()) {
-            if (this.shouldJobPauseOrTerminate()) {
-                return;
-            }
-
-            if (Singleton.getDataService().getPersistentDelete().contains(repoName)) {
-                return;
-            }
-
-            String[] split = changedFile.split("/");
-            String fileName = split[split.length - 1];
-            changedFile = fileRepoLocations + "/" + repoName + "/" + changedFile;
-            changedFile = changedFile.replace("//", "/");
-
-            CodeLinesReturn codeLinesReturn = this.getCodeLines(changedFile, reportList);
-            if (codeLinesReturn.isError()) { break; }
-
-            IsMinifiedReturn isMinified = this.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
-            if (isMinified.isMinified()) { break; }
-
-            if (this.checkIfEmpty(codeLinesReturn.getCodeLines(), changedFile, reportList)) {
-                break;
-            }
-
-            if (this.determineBinary(changedFile, fileName, codeLinesReturn.getCodeLines(), reportList)) {
-                break;
-            }
-
-            String md5Hash = this.getFileMd5(changedFile);
-            String languageName = Singleton.getFileClassifier().languageGuesser(changedFile, codeLinesReturn.getCodeLines());
-            String fileLocation = this.getRelativeToProjectPath(path.toString(), changedFile);
-            String fileLocationFilename = changedFile.replace(fileRepoLocations, Values.EMPTYSTRING);
-            String repoLocationRepoNameLocationFilename = changedFile;
-            String newString = this.getBlameFilePath(fileLocationFilename);
-            String codeOwner = this.getCodeOwner(codeLinesReturn.getCodeLines(), newString, repoName, fileRepoLocations, scl);
-
-            if (this.LOWMEMORY) {
-                try {
-                    this.indexService.indexDocument(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
-                } catch (IOException ex) {
-                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-                }
-            } else {
-                this.indexService.incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
-                codeIndexDocumentQueue.add(new CodeIndexDocument(repoLocationRepoNameLocationFilename, repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
-            }
-
-            if (this.LOGINDEXED) {
-                reportList.add(new String[]{changedFile, "included", ""});
-            }
-        }
-
-        if (this.LOGINDEXED && reportList.isEmpty() == false) {
-            this.logIndexed(repoName + "_delta", reportList);
-        }
-
-        for (String deletedFile: repositoryChanged.getDeletedFiles()) {
-            deletedFile = fileRepoLocations + "/" + repoName + "/" + deletedFile;
-            deletedFile = deletedFile.replace("//", "/");
-            Singleton.getLogger().info("Missing from disk, removing from index " + deletedFile);
-            try {
-                this.indexService.deleteByCodeId(DigestUtils.sha1Hex(deletedFile));
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByDelta deleteByFileLocationFilename for " + repoName + " " + deletedFile + "\n with message: " + ex.getMessage());
-            }
-        }
     }
 
     /**

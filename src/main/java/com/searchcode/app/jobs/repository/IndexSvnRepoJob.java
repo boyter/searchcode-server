@@ -95,26 +95,10 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         String repoSvnLocation = repoLocations + repoName;
         Path docDir = Paths.get(repoSvnLocation);
 
-        // Was the previous index sucessful? if not then index by path
-        boolean indexsucess = checkIndexSucess(repoSvnLocation);
-        deleteIndexSuccess(repoSvnLocation);
+        Singleton.getLogger().info("Doing full index of files for " + repoName);
+        this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
 
-        if (!repositoryChanged.isClone() && indexsucess == false) {
-            Singleton.getLogger().info("Failed to index " + repoName + " fully, performing a full index.");
-        }
-
-        if (repositoryChanged.isClone() || indexsucess == false) {
-            Singleton.getLogger().info("Doing full index of files for " + repoName);
-            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
-        }
-        else {
-            Singleton.getLogger().info("Doing delta index of files " + repoName);
-            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged);
-        }
-
-        // Write file indicating that the index was sucessful
         Singleton.getLogger().info("Sucessfully processed writing index success for " + repoName);
-        createIndexSuccess(repoSvnLocation);
     }
 
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
