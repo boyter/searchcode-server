@@ -71,9 +71,9 @@
                     <div class="panel-body">
                     Number of Searches: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</span>
                     <br>Documents Indexed: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</span>
-                    <br>
                     <br>Total Repositories: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span>
                     <br>Queued for Deletion: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
+                    <br>Queued for Indexing: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repoqueuesize">${repoQueueSize}</span>
                     </div>
                 </div>
             </div>

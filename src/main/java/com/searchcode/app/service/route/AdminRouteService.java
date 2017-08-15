@@ -140,6 +140,7 @@ public class AdminRouteService {
         map.put("runningJobs", this.getStat("runningJobs"));
         map.put("threads", this.getStat("threads"));
         map.put("paused", this.getStat("paused"));
+        map.put("repoQueueSize", this.getStat("repoqueuesize"));
 
 
         map.put("sysArch", this.statsService.getArch());
@@ -486,7 +487,9 @@ public class AdminRouteService {
             case "apilogs":
                 return StringUtils.join(Singleton.getLogger().getApiLogs(), System.lineSeparator());
             case "threads":
-                return "" + java.lang.Thread.activeCount();
+                return Values.EMPTYSTRING + java.lang.Thread.activeCount();
+            case "repoqueuesize":
+                return Values.EMPTYSTRING + (Singleton.getUniqueGitRepoQueue().size() + Singleton.getUniqueSvnRepoQueue().size() + Singleton.getUniqueFileRepoQueue().size());
             case "parserpaused":
                 return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused": "running";
             case "adderpaused":

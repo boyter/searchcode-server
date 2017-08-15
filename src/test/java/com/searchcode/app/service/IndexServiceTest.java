@@ -361,7 +361,16 @@ public class IndexServiceTest extends TestCase {
     }
 
     public void testReindexAllSetsIndexingStatus() throws IOException {
-        this.indexService = new IndexService();
+        JobService jobServiceMock = mock(JobService.class);
+        when(jobServiceMock.forceEnqueueWithCount()).thenReturn(2);
+
+        this.indexService = new IndexService(Singleton.getData(),
+                Singleton.getStatsService(),
+                Singleton.getSearchCodeLib(),
+                Singleton.getLogger(),
+                Singleton.getHelpers(),
+                Singleton.getCodeIndexQueue(),
+                jobServiceMock);
 
         assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
         assertThat(this.indexService.getReindexingAll()).isFalse();
@@ -373,7 +382,8 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
 
         this.indexService.decrementRepoJobsCount();
-
+        assertThat(this.indexService.getReindexingAll()).isTrue();
+        this.indexService.decrementRepoJobsCount();
         assertThat(this.indexService.getReindexingAll()).isFalse();
     }
 

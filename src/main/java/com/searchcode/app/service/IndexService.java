@@ -348,6 +348,10 @@ public class IndexService implements IIndexService {
 
     @Override
     public synchronized void reindexAll() {
+        if (this.reindexingAll) {
+            return;
+        }
+
         // Stop adding to queue
         this.reindexingAll = true;
         this.repoJobExit = true;
@@ -363,7 +367,7 @@ public class IndexService implements IIndexService {
 
         // queue all repos to be parsed
         this.repoJobExit = false; // TODO add check to see if they have all exited needs to be fast!!!!!
-        this.jobService.forceEnqueue();
+        this.repoJobsCount = this.jobService.forceEnqueueWithCount();
     }
 
     /**
@@ -408,6 +412,7 @@ public class IndexService implements IIndexService {
         if (this.repoJobsCount == 0 && this.reindexingAll) {
             this.reindexingAll = false;
             this.flipReadIndex();
+            this.logger.info("Finished reindex flipping index");
         }
     }
 

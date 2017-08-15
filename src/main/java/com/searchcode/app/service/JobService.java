@@ -425,6 +425,16 @@ public class JobService implements IJobService {
     }
 
     @Override
+    public int forceEnqueueWithCount() {
+        // Get all of the repositories and enqueue them
+        List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
+        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        repoResultList.forEach(this::enqueueRepository);
+
+        return repoResultList.size();
+    }
+
+    @Override
     public boolean forceEnqueue(RepoResult repoResult) {
         if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
