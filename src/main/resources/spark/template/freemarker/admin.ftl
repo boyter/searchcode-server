@@ -175,6 +175,16 @@ deep_guess_files=${deep_guess_files}
 host_name=${host_name}</textarea>
         </div>
 
+        <div style="width:100%; display: inline-block;">
+            <h4>Data Values <small>(from database)</small></h4>
+            <textarea readonly="true" style="width:100%; font-family: monospace; height: 200px;">
+            <#list dataValues>
+            <#items as data>
+${data.key}=${data.value}
+            </#items>
+            </#list></textarea>
+        </div>
+
     </div>
 </div>
 

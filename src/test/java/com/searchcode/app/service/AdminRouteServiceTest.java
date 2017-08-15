@@ -62,7 +62,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(indexServiceMock.getIndexedDocumentCount()).thenReturn(100);
         when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
 
-        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, indexServiceMock, statsServiceMock, null);
+        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, null, indexServiceMock, statsServiceMock, null);
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
         for (String stat: statValue) {
@@ -107,7 +107,7 @@ public class AdminRouteServiceTest extends TestCase {
         Repo mockRepo = Mockito.mock(Repo.class);
         JobService mockJobService = Mockito.mock(JobService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null, null, null, null);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn(new String[0]);
@@ -130,7 +130,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockValidatorService.validate(any())).thenReturn(new ValidatorResult(true, ""));
         when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.of(new RepoResult()));
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, null, null, null, mockValidatorService);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, mockValidatorService);
         Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
@@ -152,7 +152,7 @@ public class AdminRouteServiceTest extends TestCase {
         JobService mockJobService = Mockito.mock(JobService.class);
         DataService mockDataService = Mockito.mock(DataService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService, mockDataService, null, null, null);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, mockDataService, null, null, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParams("repoName")).thenReturn("myRepo");

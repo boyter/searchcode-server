@@ -12,6 +12,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.DataData;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -21,6 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides access to all methods required to get Data details from the database.
@@ -37,6 +40,34 @@ public class Data implements IData {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.createTableIfMissing();
+    }
+
+    public synchronized List<DataData> getAllData() {
+        List<DataData> values = new ArrayList<>();
+
+        Connection connection;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select key,value from \"data\";");
+
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                values.add(new DataData(resultSet.getString("key"), resultSet.getString("value")));
+            }
+        }
+        catch (SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get all data");
+        }
+        finally {
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
+        }
+
+        return values;
     }
 
     public synchronized String getDataByName(String key, String defaultValue) {

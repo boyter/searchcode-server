@@ -35,6 +35,7 @@ import java.util.*;
 public class AdminRouteService {
 
     private final Repo repo;
+    private final Data data;
     private final JobService jobService;
     private final DataService dataService;
     private final IndexService indexService;
@@ -43,6 +44,7 @@ public class AdminRouteService {
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
+             Singleton.getData(),
              Singleton.getJobService(),
              Singleton.getDataService(),
              Singleton.getIndexService(),
@@ -50,8 +52,9 @@ public class AdminRouteService {
              Singleton.getValidatorService());
     }
 
-    public AdminRouteService(Repo repo, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService) {
+    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService) {
         this.repo = repo;
+        this.data = data;
         this.jobService = jobService;
         this.dataService = dataService;
         this.indexService = indexService;
@@ -142,6 +145,7 @@ public class AdminRouteService {
         map.put("paused", this.getStat("paused"));
         map.put("repoQueueSize", this.getStat("repoqueuesize"));
 
+        map.put("dataValues", this.data.getAllData());
 
         map.put("sysArch", this.statsService.getArch());
         map.put("sysVersion", this.statsService.getOsVersion());

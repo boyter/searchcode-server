@@ -131,6 +131,7 @@ public class IndexService implements IIndexService {
         // and fall back to the read since it should be more accurate
         if (!indexRead.equals(indexWrite)) {
             indexWrite = indexRead;
+            this.data.saveData(Values.INDEX_WRITE, indexRead);
         }
 
         this.INDEX_READ_LOCATION = Values.INDEX_A.equals(indexRead) ? this.INDEX_A_LOCATION : this.INDEX_B_LOCATION;
