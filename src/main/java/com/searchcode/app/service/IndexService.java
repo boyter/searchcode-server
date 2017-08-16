@@ -366,6 +366,15 @@ public class IndexService implements IIndexService {
         // flip write index
         this.flipWriteIndex();
 
+        // Delete the new write index locations
+        try {
+            FileUtils.deleteDirectory(this.INDEX_WRITE_LOCATION.toFile());
+            FileUtils.deleteDirectory(this.FACET_WRITE_LOCATION.toFile());
+        } catch (IOException ex) {
+            this.logger.warning("Unable to delete index locations: " + this.INDEX_WRITE_LOCATION.toString());
+            this.logger.warning("Unable to delete index locations: " + this.FACET_WRITE_LOCATION.toString());
+        }
+
         // queue all repos to be parsed
         this.repoJobExit = false; // TODO add check to see if they have all exited needs to be fast!!!!!
         this.repoJobsCount = this.jobService.forceEnqueueWithCount();

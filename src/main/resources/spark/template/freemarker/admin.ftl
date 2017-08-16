@@ -130,11 +130,6 @@
                 </tr>
                 <tr>
                     <td>Click this if you want to rebuild the entire index. The index will be rebuilt side by side the existing index and then swapped to avoid any downtime. Updates in the index will only appear when this process is finished.
-                    <i id="action-spinner5" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
-                    <td><a style="width:180px;" ic-post-to="/admin/deleteindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner5" class="btn-function btn btn-default btn-xs" role="button">Rebuild Index</a></td>
-                </tr>
-                <tr>
-                    <td>Delete the entire index, checked out code and queue everything to be downloaded and re-indexed. This will start searchcode server as a fresh install with existing repositories. Use this option only as a last resort or if upgrading from older version that is no index compatible.
                     <i id="action-spinner4" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner4" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a></td>
                 </tr>
