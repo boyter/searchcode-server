@@ -390,6 +390,12 @@ public class App {
                 return new JsonTransformer().render(Singleton.getIndexService().getRepoAdderPause());
             });
 
+            post("/flipindex/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.getIndexService().flipReadIndex();
+                return new JsonTransformer().render(Values.EMPTYSTRING);
+            });
+
             post("/clearsearchcount/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
                 Singleton.getStatsService().clearSearchCount();

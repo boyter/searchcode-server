@@ -688,7 +688,8 @@ public class IndexService implements IIndexService {
         return false;
     }
 
-    private synchronized void flipReadIndex() {
+    @Override
+    public synchronized void flipReadIndex() {
         this.INDEX_READ_LOCATION = this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
 
         if (this.INDEX_READ_LOCATION.equals(this.INDEX_A_LOCATION)) {
@@ -698,7 +699,8 @@ public class IndexService implements IIndexService {
         }
     }
 
-    private synchronized void flipWriteIndex() {
+    @Override
+    public synchronized void flipWriteIndex() {
         this.INDEX_WRITE_LOCATION = this.INDEX_WRITE_LOCATION.equals(this.INDEX_A_LOCATION) ? this.INDEX_B_LOCATION : this.INDEX_A_LOCATION;
         this.FACET_WRITE_LOCATION = this.FACET_WRITE_LOCATION.equals(this.FACET_A_LOCATION) ? this.FACET_B_LOCATION : this.FACET_A_LOCATION;
 

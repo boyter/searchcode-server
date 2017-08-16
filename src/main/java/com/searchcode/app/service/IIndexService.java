@@ -29,6 +29,8 @@ public interface IIndexService {
     void reindexAll();
 
     void flipIndex();
+    void flipReadIndex();
+    void flipWriteIndex();
 
     boolean getRepoAdderPause();
     void setRepoAdderPause(boolean repoAdderPause);
