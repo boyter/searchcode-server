@@ -97,10 +97,21 @@ public abstract class IndexBaseRepoJob implements Job {
      * Check the file time against
      * @return
      */
-    public boolean isUpdated() {
+    public boolean isUpdated(String fileLocation, Instant lastRunTime) {
+        if (this.indexService.getReindexingAll()) {
+            return true;
+        }
 
+        File file = new File(fileLocation);
+        long lastModified = file.lastModified();
+        long truncatedNow = lastRunTime.toEpochMilli();
 
-        return false;
+        if (lastModified <= truncatedNow ) {
+            // Skip
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -254,7 +265,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public void indexDocsByPath(Path path, RepoResult repoResult, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
 
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-        SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoResult.getName(), fileRepoLocations, repoRemoteLocation);
+        SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoResult, fileRepoLocations, repoRemoteLocation);
 
         try {
             if (this.FOLLOWLINKS) {

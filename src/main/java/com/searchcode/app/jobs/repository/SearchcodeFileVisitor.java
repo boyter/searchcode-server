@@ -2,6 +2,7 @@ package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +17,7 @@ import java.util.*;
 public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
     private final IndexBaseRepoJob indexBaseRepoJob;
-    private final String repoName;
+    private final RepoResult repoResult;
     private final String fileRepoLocations;
     private final String repoRemoteLocation;
 
@@ -24,9 +25,9 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
     public List<String[]> reportList = new ArrayList<>();
     public Map<String, String> fileLocationsMap = new HashMap<>();
 
-    public SearchcodeFileVisitor(IndexBaseRepoJob indexBaseRepoJob, String repoName, String fileRepoLocations, String repoRemoteLocation) {
+    public SearchcodeFileVisitor(IndexBaseRepoJob indexBaseRepoJob, RepoResult repoResult, String fileRepoLocations, String repoRemoteLocation) {
         this.indexBaseRepoJob = indexBaseRepoJob;
-        this.repoName = repoName;
+        this.repoResult = repoResult;
         this.fileRepoLocations = fileRepoLocations;
         this.repoRemoteLocation = repoRemoteLocation;
     }
@@ -46,7 +47,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.TERMINATE;
             }
 
-            if (Singleton.getDataService().getPersistentDelete().contains(this.repoName)) {
+            if (Singleton.getDataService().getPersistentDelete().contains(this.repoResult.getName())) {
                 return FileVisitResult.TERMINATE;
             }
 
@@ -62,6 +63,10 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             // This needs to be the primary key of the file
             fileLocationsMap.put(fileToString, null);
 
+            // If the file has not been updated since the last run then we can skip
+            if (!this.indexBaseRepoJob.isUpdated(fileToString, repoResult.getData().jobRunTime)) {
+                return FileVisitResult.CONTINUE;
+            }
 
             IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
             if (codeLinesReturn.isError()) {
@@ -73,11 +78,9 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) { return FileVisitResult.CONTINUE; }
 
-
             if (this.indexBaseRepoJob.checkIfEmpty(codeLinesReturn.getCodeLines(), fileName, reportList)) {
                 return FileVisitResult.CONTINUE;
             }
-
 
             if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 fileLocationsMap.remove(fileToString);
@@ -89,14 +92,14 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
-            String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoName, fileRepoLocations, Singleton.getSearchCodeLib());
+            String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getName(), fileRepoLocations, Singleton.getSearchCodeLib());
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
 
             } else {
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
-                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoName, fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
             }
 
             if (this.indexBaseRepoJob.LOGINDEXED) {
@@ -104,7 +107,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
         }
         catch(Exception ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + file + " in repo " + this.repoName);
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + file + " in repo " + this.repoResult.getName());
         }
 
         // Continue at all costs
