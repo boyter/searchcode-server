@@ -104,10 +104,11 @@ public abstract class IndexBaseRepoJob implements Job {
 
         File file = new File(fileLocation);
         long lastModified = file.lastModified();
-        long truncatedNow = lastRunTime.toEpochMilli();
+        //long truncatedNow = lastRunTime.minusSeconds(86400).toEpochMilli(); // TODO should this be here?
+        long truncatedNow = lastRunTime.toEpochMilli(); // TODO should this be here?
 
         if (lastModified <= truncatedNow ) {
-            // Skip
+            // Skip the file because we in theory already indexed it
             return false;
         }
 
@@ -182,7 +183,7 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     /**
-     * Determines if anything has changed or if the last index operation faild and if so
+     * Determines if anything has changed or if the last index operation failed and if so
      * triggers the index process.
      */
     public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
@@ -190,13 +191,14 @@ public abstract class IndexBaseRepoJob implements Job {
         boolean indexSuccess = this.checkIndexSucess(repoGitLocation);
 
         if (repositoryChanged.isChanged() || indexSuccess == false) {
+            Instant jobStartTime = Instant.now();
             Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
             this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
             int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
             repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
             repoResult.getData().indexStatus = "success";
-            repoResult.getData().jobRunTime = Instant.now();
+            repoResult.getData().jobRunTime =jobStartTime;
             Singleton.getRepo().saveRepo(repoResult);
         }
     }
