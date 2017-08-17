@@ -13,6 +13,7 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
@@ -91,14 +92,14 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         return false;
     }
 
-    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        String repoSvnLocation = repoLocations + repoName;
+    public void updateIndex(RepoResult repoResult, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+        String repoSvnLocation = repoLocations + repoResult.getName();
         Path docDir = Paths.get(repoSvnLocation);
 
-        Singleton.getLogger().info("Doing full index of files for " + repoName);
-        this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
+        Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
+        this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, existingRepo);
 
-        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoName);
+        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoResult.getName());
     }
 
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {

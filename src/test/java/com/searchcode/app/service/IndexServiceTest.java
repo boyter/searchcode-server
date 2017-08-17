@@ -17,7 +17,10 @@ import org.assertj.core.api.AssertionsForClassTypes;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
 import org.mockito.Mockito;
 
+import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -477,4 +480,22 @@ public class IndexServiceTest extends TestCase {
     public interface MethodRunner {
         void run(Object arg);
     }
+
+//    public void testSomething() {
+//        Instant now = Instant.now().minusSeconds(1000);
+//        File file = new File("/tmp/test");
+//        long lastModified = file.lastModified();
+//
+//        long truncatedNow = now.toEpochMilli();
+//
+//
+//        if (lastModified <= truncatedNow ) {
+//            System.out.println("Skip it");
+//        }
+//        else {
+//            System.out.println("Index it");
+//
+//        }
+//
+//    }
 }

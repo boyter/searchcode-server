@@ -40,6 +40,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
@@ -89,6 +90,17 @@ public abstract class IndexBaseRepoJob implements Job {
 
     public boolean ignoreFile(String fileParent) {
         return true;
+    }
+
+
+    /**
+     * Check the file time against
+     * @return
+     */
+    public boolean isUpdated() {
+
+
+        return false;
     }
 
     /**
@@ -168,7 +180,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (repositoryChanged.isChanged() || indexSuccess == false) {
             Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-            this.updateIndex(repoName, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
+            this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
             int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
             repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
@@ -223,15 +235,15 @@ public abstract class IndexBaseRepoJob implements Job {
      * and if either condition is true triggers a full index otherwise triggers a delta
      * index of the files.
      */
-    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        String repoGitLocation = repoLocations + "/" + repoName;
+    public void updateIndex(RepoResult repoResult, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+        String repoGitLocation = repoLocations + "/" + repoResult.getName();
         Path docDir = Paths.get(repoGitLocation);
 
-        Singleton.getLogger().info("Doing full index of files for " + repoName);
-        this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
+        Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
+        this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, existingRepo);
 
         // Write file indicating that the index was sucessful
-        Singleton.getLogger().info("Successfully processed writing index success for " + repoName);
+        Singleton.getLogger().info("Successfully processed writing index success for " + repoResult.getName());
     }
 
     /**
@@ -239,10 +251,10 @@ public abstract class IndexBaseRepoJob implements Job {
      * Generally this is a slow update used only for the initial clone of a repository
      * NB this can be used for updates but it will be much slower as it needs to to walk the contents of the disk
      */
-    public void indexDocsByPath(Path path, String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
+    public void indexDocsByPath(Path path, RepoResult repoResult, String repoLocations, String repoRemoteLocation, boolean existingRepo) {
 
         String fileRepoLocations = FilenameUtils.separatorsToUnix(repoLocations);
-        SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoName, fileRepoLocations, repoRemoteLocation);
+        SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(this, repoResult.getName(), fileRepoLocations, repoRemoteLocation);
 
         try {
             if (this.FOLLOWLINKS) {
@@ -257,11 +269,11 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         if (this.LOGINDEXED) {
-            logIndexed(repoName, searchcodeFileVisitor.reportList);
+            logIndexed(repoResult.getName(), searchcodeFileVisitor.reportList);
         }
 
         if (existingRepo) {
-            this.cleanMissingPathFiles(repoName, searchcodeFileVisitor.fileLocationsMap);
+            this.cleanMissingPathFiles(repoResult.getName(), searchcodeFileVisitor.fileLocationsMap);
         }
     }
 

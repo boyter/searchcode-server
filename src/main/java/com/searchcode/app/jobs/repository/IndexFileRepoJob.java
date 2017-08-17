@@ -79,8 +79,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
-                String repoName = repoResult.getName();
-                this.repoName = repoName;
+                this.repoName = repoResult.getName();
                 String repoRemoteLocation = repoResult.getUrl();
 
                 String repoLocations = data.get("REPOLOCATIONS").toString();
@@ -88,7 +87,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 Path docDir = Paths.get(repoRemoteLocation);
 
-                this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
+                this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, true);
 
                 int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                 repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;

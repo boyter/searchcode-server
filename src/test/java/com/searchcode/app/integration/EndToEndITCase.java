@@ -29,7 +29,8 @@ public class EndToEndITCase extends TestCase{
         IndexFileRepoJob indexFileRepoJob = new IndexFileRepoJob();
 
         // Index created files
-        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
+
+        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
         SearchResult searchResult = indexService.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
@@ -54,7 +55,7 @@ public class EndToEndITCase extends TestCase{
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
-        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), true);
+        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
         searchResult = indexService.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -78,7 +79,7 @@ public class EndToEndITCase extends TestCase{
         result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"First commit\"");
 
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
+        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
 
         SearchResult searchResult = indexService.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
@@ -99,7 +100,7 @@ public class EndToEndITCase extends TestCase{
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
-        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), true);
+        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
         searchResult = indexService.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -118,7 +119,7 @@ public class EndToEndITCase extends TestCase{
         File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndSvnTest");
 
         IndexSvnRepoJob indexSvnRepoJob = new IndexSvnRepoJob();
-        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), false);
+        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
 
         SearchResult searchResult = indexService.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
@@ -139,7 +140,7 @@ public class EndToEndITCase extends TestCase{
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
-        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), "ENDTOENDTEST", "", directoryWithFiles.toString(), true);
+        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
         searchResult = indexService.search("endtoendtestfile", 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 

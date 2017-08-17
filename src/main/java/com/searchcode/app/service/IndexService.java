@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -362,6 +363,7 @@ public class IndexService implements IIndexService {
         this.uniqueGitRepoQueue.clear();
         this.uniqueFileRepoQueue.clear();
         this.uniqueSvnRepoQueue.clear();
+
 
         // flip write index
         this.flipWriteIndex();
