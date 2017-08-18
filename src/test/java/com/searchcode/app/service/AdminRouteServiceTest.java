@@ -35,7 +35,7 @@ public class AdminRouteServiceTest extends TestCase {
     public void testGetStatValuesExpectEmpty() {
         AdminRouteService adminRouteService = new AdminRouteService();
         Singleton.getLogger().clearAllLogs();
-        List<String> statValue = Arrays.asList(null, "", "runningjobs","alllogs", "infologs", "warninglogs", "severelogs", "searchlogs");
+        List<String> statValue = Arrays.asList(null, "", "alllogs", "infologs", "warninglogs", "severelogs", "searchlogs");
 
         for(String stat: statValue) {
             Request mockRequest = Mockito.mock(Request.class);
@@ -49,6 +49,22 @@ public class AdminRouteServiceTest extends TestCase {
             String result = adminRouteService.getStat(mockRequest, null);
             assertThat(result).as("For value %s", stat).isEmpty();
         }
+    }
+
+    public void testGetStatValuesExpectNbspBecauseIntercoolerJS() {
+        AdminRouteService adminRouteService = new AdminRouteService();
+        Singleton.getLogger().clearAllLogs();
+
+        Request mockRequest = mock(Request.class);
+
+        Set<String> returnSet = new HashSet<>();
+        returnSet.add("statname");
+
+        when(mockRequest.queryParams()).thenReturn(returnSet);
+        when(mockRequest.queryParams("statname")).thenReturn("runningjobs");
+
+        String result = adminRouteService.getStat(mockRequest, null);
+        assertThat(result).as("For value runningjobs").isEqualTo("&nbsp;");
     }
 
     public void testGetStatValuesExpectValue() {

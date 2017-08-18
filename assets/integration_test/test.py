@@ -75,7 +75,7 @@ class TestIntegration(unittest.TestCase):
         url = "http://%s/repository/list/" % (host)
         data = self.getData(url)
         self.assertTrue(
-            '<script src="/js/intercooler-1.0.3.min.js"></script>' in data)
+            '<script src="/js/intercooler-1.1.2.min.js"></script>' in data)
 
     def testNoSearch(self):
         url = "http://%s/?q=&p=0" % (host)

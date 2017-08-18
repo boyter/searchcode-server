@@ -467,6 +467,7 @@ public class AdminRouteService {
                         stringBuffer.append(key).append(" ");
                     }
                 }
+                stringBuffer.append("&nbsp;");
                 return stringBuffer.toString();
             case "spellingcount":
                 return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();

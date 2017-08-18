@@ -479,7 +479,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null);
         String averageIndexTimeSeconds = apiRouteService.getIndexTime(mockRequest, null);
-        assertThat(averageIndexTimeSeconds).isEqualTo("0 seconds ago");
+        assertThat(averageIndexTimeSeconds).contains("years ago");
     }
 
     /////////////////////////////////////////////////////////////////////

@@ -59,5 +59,5 @@
 </div> <!-- end row -->
 
 <script src="/js/jquery-1.11.1.min.js"></script>
-<script src="/js/intercooler-1.0.3.min.js"></script>
+<script src="/js/intercooler-1.1.2.min.js"></script>
 </@layout.masterTemplate>
