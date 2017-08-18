@@ -17,7 +17,7 @@ import java.time.Instant;
 public class RepoData {
     public int averageIndexTimeSeconds = 0;
     public String indexStatus = Values.EMPTYSTRING;
-    public Instant jobRunTime = Instant.now();
+    public Instant jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
 
     public RepoData() {}
 }
