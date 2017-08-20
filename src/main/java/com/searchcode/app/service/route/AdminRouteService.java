@@ -499,6 +499,12 @@ public class AdminRouteService {
                 return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused": "running";
             case "adderpaused":
                 return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? "paused": "running";
+            case "indexreadlocation":
+                return this.indexService.getINDEX_READ_LOCATION().toString();
+            case "indexwritelocation":
+                return this.indexService.getINDEX_WRITE_LOCATION().toString();
+            case "facetwritelocation":
+                return this.indexService.getFACET_WRITE_LOCATION().toString();
         }
 
         return Values.EMPTYSTRING;

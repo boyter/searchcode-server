@@ -382,6 +382,18 @@ public class IndexService implements IIndexService {
         this.repoJobsCount = this.jobService.forceEnqueueWithCount();
     }
 
+    public Path getINDEX_READ_LOCATION() {
+        return INDEX_READ_LOCATION;
+    }
+
+    public Path getINDEX_WRITE_LOCATION() {
+        return INDEX_WRITE_LOCATION;
+    }
+
+    public Path getFACET_WRITE_LOCATION() {
+        return FACET_WRITE_LOCATION;
+    }
+
     /**
      * Flips the internal state such that reads and writes point at the other index
      * and updates the saved state so relaunch works as expected
