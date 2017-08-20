@@ -421,6 +421,10 @@ public class IndexService implements IIndexService {
             this.repoJobsCount--;
         }
 
+        if (this.repoJobsCount < 0) {
+            this.repoJobsCount = 0;
+        }
+
         if (this.repoJobsCount == 0 && this.reindexingAll) {
             this.reindexingAll = false;
             this.flipReadIndex();
