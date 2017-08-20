@@ -417,7 +417,7 @@ public class IndexService implements IIndexService {
 
     @Override
     public synchronized void decrementRepoJobsCount() {
-        if (this.repoJobsCount >= 1) {
+        if (this.repoJobsCount > 0) {
             this.repoJobsCount--;
         }
 
