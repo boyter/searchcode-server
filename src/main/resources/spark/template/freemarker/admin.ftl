@@ -63,29 +63,30 @@
         </div>
 
         <div style="width:100%; display: inline-block;">
-            <div class="col-md-4">
+            <div class="col-md-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Index Status</h3>
                     </div>
                     <div class="panel-body">
-                    Number of Searches: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</span>
-                    <br>Documents Indexed: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</span>
-                    <br>Total Repositories: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span>
-                    <br>Queued for Deletion: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
-                    <br>Queued for Indexing: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repoqueuesize">${repoQueueSize}</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Index Status</h3>
-                    </div>
-                    <div class="panel-body">
-                    Index Read Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexreadlocation"></span>
-                    <br>Index Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexwritelocation"></span>
-                    <br>Facet Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=facetwritelocation"></span>
+
+                    <table style="width:100%;">
+                        <tr>
+                        <td valign="TOP" width="50%">
+                            Number of Searches: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=searchcount">${numSearches}</span>
+                            <br>Documents Indexed: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=numdocs">${numDocs}</span>
+                            <br>Total Repositories: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repocount">${repoCount}</span>
+                            <br>Queued for Deletion: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=deletionqueue">${deletionQueue}</span>
+                            <br>Queued for Indexing: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=repoqueuesize">${repoQueueSize}</span>
+                        </td>
+                        <td valign="TOP"  width="50%">
+                            Index Read Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexreadlocation"></span>
+                            <br>Index Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexwritelocation"></span>
+                            <br>Facet Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=facetwritelocation"></span>
+                        </td>
+                        </tr>
+                    </table>
+
                     </div>
                 </div>
             </div>
