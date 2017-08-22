@@ -105,7 +105,7 @@ public abstract class IndexBaseRepoJob implements Job {
         File file = new File(fileLocation);
         long lastModified = file.lastModified();
         //long truncatedNow = lastRunTime.minusSeconds(86400).toEpochMilli(); // TODO should this be here?
-        long truncatedNow = lastRunTime.toEpochMilli(); // TODO should this be here?
+        long truncatedNow = lastRunTime.toEpochMilli();
 
         if (lastModified <= truncatedNow ) {
             // Skip the file because we in theory already indexed it
