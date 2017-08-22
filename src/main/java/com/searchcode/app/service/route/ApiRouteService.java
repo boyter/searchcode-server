@@ -33,20 +33,22 @@ public class ApiRouteService {
     private final DataService dataService;
     private final Repo repo;
     private final ValidatorService validatorService;
+    private final IndexService indexService;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
     public ApiRouteService() {
-        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService());
+        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService());
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService){
+    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IndexService indexService) {
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
         this.dataService = dataService;
         this.validatorService = validatorService;
+        this.indexService = indexService;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -80,14 +82,9 @@ public class ApiRouteService {
             }
         }
 
-        boolean result = this.jobService.rebuildAll();
-        if (result) {
-            this.jobService.forceEnqueue();
-            Singleton.getLogger().apiLog("Valid signed repositoryReindex API call using publicKey=" + publicKey);
-            return new ApiResponse(true, "reindex forced");
-        }
-
-        return new ApiResponse(false, "was unable to force the index");
+        this.indexService.reindexAll();
+        Singleton.getLogger().apiLog("Valid signed repositoryReindex API call using publicKey=" + publicKey);
+        return new ApiResponse(true, "reindex forced");
     }
 
     public ApiResponse repositoryIndex(Request request, Response response) {
