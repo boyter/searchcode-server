@@ -367,6 +367,13 @@ public class App {
                 return new JsonTransformer().render(true);
             });
 
+            get("/reindex/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                adminRouteService.reindexRepo(request, response);
+                return new JsonTransformer().render(true);
+            });
+
             post("/rebuild/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
                 Singleton.getIndexService().reindexAll();

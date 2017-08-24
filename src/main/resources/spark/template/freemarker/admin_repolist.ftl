@@ -54,7 +54,8 @@
                 <input type="text" value="${result.url?html}" name="repourl" readonly="true">
                 <input type="text" value="${result.source?html}" name="reposource" readonly="true">
                 <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
-                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
+                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
+                <button class="btn btn-sm btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reindex</button>
             </div>
         </#items>
     </#list>
@@ -78,6 +79,18 @@ $(document).ready(function(){
                     alert('Sorry was unable to delete. Please reload the page and try again.');
               });
         }
+    });
+
+    $('button.reindex').click(function(e) {
+        e.preventDefault();
+        var thus = $(this);
+
+        $.ajax('/admin/reindex/?repoName=' + encodeURIComponent(thus.data('id')))
+           .done(function(data, textStatus, jqXHR) {
+                console.log('queued to reindex');
+           }).fail(function(xhr, ajaxOptions, thrownError) {
+                alert('Sorry was unable to delete. Please reload the page and try again.');
+           });
     });
 });
 </script>

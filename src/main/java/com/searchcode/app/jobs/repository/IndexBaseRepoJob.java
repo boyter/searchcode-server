@@ -196,7 +196,7 @@ public abstract class IndexBaseRepoJob implements Job {
             int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
             repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
             repoResult.getData().indexStatus = "success";
-            repoResult.getData().jobRunTime =jobStartTime;
+            repoResult.getData().jobRunTime = jobStartTime;
             Singleton.getRepo().saveRepo(repoResult);
         }
     }

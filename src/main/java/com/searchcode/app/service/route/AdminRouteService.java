@@ -30,6 +30,7 @@ import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.*;
 
 public class AdminRouteService {
@@ -422,6 +423,17 @@ public class AdminRouteService {
         Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
 
         repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
+    }
+
+    public void reindexRepo(Request request, Response response) {
+        String repoName = request.queryParams("repoName");
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
+
+        repoResult.ifPresent(x ->  {
+            x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
+            Singleton.getRepo().saveRepo(x);
+            this.jobService.forceEnqueue(x);
+        });
     }
 
     public String checkVersion() {
