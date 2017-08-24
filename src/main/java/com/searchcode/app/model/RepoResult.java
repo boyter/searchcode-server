@@ -41,9 +41,6 @@ public class RepoResult {
         this.setSource(source);
         this.setBranch(branch);
         this.setData(gson.fromJson(data, RepoData.class));
-
-        RepoData data1 = this.getData();
-        System.out.println(data1);
     }
 
     /**
