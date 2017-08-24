@@ -70,7 +70,6 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
-            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
 
             try {

@@ -25,7 +25,9 @@ public class RepoResult {
     private String branch = "";
     private RepoData data;
 
-    public RepoResult() {}
+    public RepoResult() {
+
+    }
 
     public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
         Gson gson = new Gson();
@@ -39,6 +41,9 @@ public class RepoResult {
         this.setSource(source);
         this.setBranch(branch);
         this.setData(gson.fromJson(data, RepoData.class));
+
+        RepoData data1 = this.getData();
+        System.out.println(data1);
     }
 
     /**
@@ -53,11 +58,7 @@ public class RepoResult {
 
         RepoResult rr = (RepoResult)o;
 
-        if (this.getName().equals(rr.getName())) {
-            return true;
-        }
-
-        return false;
+        return this.getName().equals(rr.getName());
     }
 
     @Override

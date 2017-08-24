@@ -104,7 +104,6 @@ public abstract class IndexBaseRepoJob implements Job {
 
         File file = new File(fileLocation);
         long lastModified = file.lastModified();
-//        long truncatedNow = lastRunTime.minusSeconds(86400).toEpochMilli(); // TODO should this be here?
         long truncatedNow = lastRunTime.minusSeconds(3600).toEpochMilli();
 
         if (lastModified <= truncatedNow ) {
@@ -145,7 +144,6 @@ public abstract class IndexBaseRepoJob implements Job {
             this.haveRepoResult = true;
             Singleton.getLogger().info("Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
-            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
 
             try {

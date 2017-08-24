@@ -50,7 +50,7 @@ public class Repo implements IRepo {
     public synchronized List<RepoResult> getAllRepo() {
         List<RepoResult> repoResults = new ArrayList<>();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -74,7 +74,7 @@ public class Repo implements IRepo {
                 repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -88,20 +88,15 @@ public class Repo implements IRepo {
     @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         List<RepoResult> repoResults = this.getAllRepo();
-        List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
+        List<RepoResult> matchRepoResults = new ArrayList<>();
 
         String[] split = searchTerms.toLowerCase().split(" ");
 
         for(RepoResult rr: repoResults) {
             boolean isMatch = false;
 
-            for(String term: split) {
-                if (rr.toString().toLowerCase().contains(term)) {
-                    isMatch = true;
-                }
-                else {
-                    isMatch = false;
-                }
+            for (String term: split) {
+                isMatch = rr.toString().toLowerCase().contains(term);
             }
 
             if (isMatch) {
@@ -147,7 +142,7 @@ public class Repo implements IRepo {
                 repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -176,7 +171,7 @@ public class Repo implements IRepo {
                 totalCount = resultSet.getInt("totalcount");
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -220,7 +215,7 @@ public class Repo implements IRepo {
                 result = Optional.of(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -373,7 +368,7 @@ public class Repo implements IRepo {
                         "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\" FROM \"main\".\"oXHFcGcd04oXHFcGcd04_repo\"",
                         "DROP TABLE \"oXHFcGcd04oXHFcGcd04_repo\"");
 
-                for(String command: commands) {
+                for (String command: commands) {
                     preparedStatement = connection.prepareStatement(command);
                     preparedStatement.execute();
                 }
