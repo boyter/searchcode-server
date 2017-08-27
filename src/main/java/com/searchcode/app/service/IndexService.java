@@ -364,7 +364,6 @@ public class IndexService implements IIndexService {
         this.uniqueFileRepoQueue.clear();
         this.uniqueSvnRepoQueue.clear();
 
-
         // flip write index
         this.flipWriteIndex();
 
@@ -380,6 +379,12 @@ public class IndexService implements IIndexService {
         // queue all repos to be parsed
         this.repoJobExit = false; // TODO add check to see if they have all exited needs to be fast!!!!!
         this.repoJobsCount = this.jobService.forceEnqueueWithCount();
+
+        if (this.repoJobsCount == 0) {
+            this.reindexingAll = false;
+            this.flipReadIndex();
+            this.logger.info("Finished reindex flipping index");
+        }
     }
 
     public Path getINDEX_READ_LOCATION() {
