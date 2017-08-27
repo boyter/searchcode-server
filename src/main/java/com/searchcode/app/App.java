@@ -403,6 +403,12 @@ public class App {
                 return new JsonTransformer().render(Values.EMPTYSTRING);
             });
 
+            post("/resetindexlinescount/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.getIndexService().setCodeIndexLinesCount(0);
+                return new JsonTransformer().render(Values.EMPTYSTRING);
+            });
+
             post("/clearsearchcount/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
                 Singleton.getStatsService().clearSearchCount();

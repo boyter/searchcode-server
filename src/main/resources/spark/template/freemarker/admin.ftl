@@ -83,6 +83,7 @@
                             Index Read Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexreadlocation"></span>
                             <br>Index Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexwritelocation"></span>
                             <br>Facet Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=facetwritelocation"></span>
+                            <br>Index Lines Count: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=codeindexlinescount"></span>
                         </td>
                         </tr>
                     </table>
@@ -127,6 +128,11 @@
                     <td>Reset the spelling corrector. When repositories are deleted their suggestions remain in the spelling suggestion list. This will push out suggestions which no longer return results.
                     <i id="action-spinner3" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/resetspellingcorrector/" ic-target="#rebuild-target" ic-indicator="#action-spinner3" class="btn-function btn btn-default btn-xs" role="button">Reset Spelling</a></td>
+                </tr>
+                <tr>
+                    <td>Reset the index lines count value. If nothing is being indexed after a while click this button to reset the internal line count value. This should cause the index to start processing again.
+                    <i id="action-spinner8" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/resetindexlinescount/" ic-target="#rebuild-target" ic-indicator="#action-spinner8" class="btn-function btn btn-default btn-xs" role="button">Reset Index Lines</a></td>
                 </tr>
                 <tr>
                     <td>Stops adding repositories to the queue which feed the parsers to download code. Use this to reduce load on searchcode server or source control systems.

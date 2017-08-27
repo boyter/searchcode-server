@@ -517,6 +517,8 @@ public class AdminRouteService {
                 return this.indexService.getINDEX_WRITE_LOCATION().toString();
             case "facetwritelocation":
                 return this.indexService.getFACET_WRITE_LOCATION().toString();
+            case "codeindexlinescount":
+                return Values.EMPTYSTRING + this.indexService.getCodeIndexLinesCount();
         }
 
         return Values.EMPTYSTRING;
