@@ -390,6 +390,28 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.getReindexingAll()).isFalse();
     }
 
+    public void testReindexAllNoReturnSetsIndexingStatus() throws IOException {
+        JobService jobServiceMock = mock(JobService.class);
+        when(jobServiceMock.forceEnqueueWithCount()).thenReturn(0);
+
+        this.indexService = new IndexService(Singleton.getData(),
+                Singleton.getStatsService(),
+                Singleton.getSearchCodeLib(),
+                Singleton.getLogger(),
+                Singleton.getHelpers(),
+                Singleton.getCodeIndexQueue(),
+                jobServiceMock);
+
+        assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
+        assertThat(this.indexService.getReindexingAll()).isFalse();
+
+        this.indexService.reindexAll();
+
+        assertThat(this.indexService.getRepoAdderPause()).isFalse();
+        assertThat(this.indexService.getReindexingAll()).isFalse();
+        assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
+    }
+
     public void testIndexerLock() throws InterruptedException {
         // You can only prove the presence of concurrent bugs, not their absence.
         // Although that's true of any code. Anyway let's see if we can identify any...
