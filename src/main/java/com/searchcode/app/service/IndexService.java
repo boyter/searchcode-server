@@ -219,7 +219,6 @@ public class IndexService implements IIndexService {
         try {
             codeIndexDocumentList.parallelStream()
                     .forEach(x -> {
-
                         this.logger.info("Indexing file " + x.getRepoLocationRepoNameLocationFilename());
                         this.decrementCodeIndexLinesCount(x.getCodeLines());
 
@@ -232,8 +231,7 @@ public class IndexService implements IIndexService {
 
                         try {
                             writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
-                        } catch (Exception ex) {
-                        }
+                        } catch (Exception ignored) {}
                     });
         }
         finally {
@@ -242,7 +240,7 @@ public class IndexService implements IIndexService {
             this.logger.info("Closing writers");
         }
     }
-
+    
     /**
      * Builds a document ready to be indexed by lucene
      */
