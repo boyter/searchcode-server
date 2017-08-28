@@ -46,7 +46,7 @@ public class IndexDocumentsJob implements Job {
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            Thread.currentThread().setPriority(Thread.MIN_PRIORITY + 1);
+            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
             int codeIndexQueueSize = this.indexQueue.size();
 
             if (codeIndexQueueSize != 0) {
