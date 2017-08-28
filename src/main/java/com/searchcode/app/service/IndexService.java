@@ -65,8 +65,6 @@ public class IndexService implements IIndexService {
     private final int MAX_INDEX_SIZE;
     private final int MAX_LINES_INDEX_SIZE;
 
-    private final boolean PARALLEL_INDEX;
-
     private final Path INDEX_A_LOCATION;
     private final Path INDEX_B_LOCATION;
     private final Path FACET_A_LOCATION;
@@ -117,8 +115,6 @@ public class IndexService implements IIndexService {
 
         this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
-
-        this.PARALLEL_INDEX = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.PARALLEL_INDEX, Values.DEFAULT_PARALLEL_INDEX));
 
         // Locations that should never change once class created
         this.INDEX_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_A);
