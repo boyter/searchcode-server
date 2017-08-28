@@ -202,8 +202,7 @@ public class IndexService implements IIndexService {
 
         IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
         TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(facetDirectory);
-
-
+        
         CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
         List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
 
