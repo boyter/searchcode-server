@@ -42,15 +42,18 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 /**
  * Service to deal with any tasks that involve talking to the index
  * specifically
  */
 public class IndexService implements IIndexService {
+
 
     private final StatsService statsService;
     private final Data data;
@@ -61,6 +64,8 @@ public class IndexService implements IIndexService {
 
     private final int MAX_INDEX_SIZE;
     private final int MAX_LINES_INDEX_SIZE;
+
+    private final boolean PARALLEL_INDEX;
 
     private final Path INDEX_A_LOCATION;
     private final Path INDEX_B_LOCATION;
@@ -112,6 +117,8 @@ public class IndexService implements IIndexService {
 
         this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+
+        this.PARALLEL_INDEX = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.PARALLEL_INDEX, Values.DEFAULT_PARALLEL_INDEX));
 
         // Locations that should never change once class created
         this.INDEX_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_A);
@@ -203,21 +210,38 @@ public class IndexService implements IIndexService {
 
         try {
             CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
+            List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
 
             while (codeIndexDocument != null) {
-                this.logger.info("Indexing file " + codeIndexDocument.getRepoLocationRepoNameLocationFilename());
-                this.decrementCodeIndexLinesCount(codeIndexDocument.getCodeLines());
+                codeIndexDocumentList.add(codeIndexDocument);
+                codeIndexDocument = codeIndexDocumentQueue.poll();
+            }
+
+            List<IndexDocumentMap> collect;
+
+            if (this.PARALLEL_INDEX) {
+                collect = codeIndexDocumentList.parallelStream()
+                        .map(x -> new IndexDocumentMap(x, this.buildDocument(x)))
+                        .collect(Collectors.toList());
+            }
+            else {
+                collect = codeIndexDocumentList.stream()
+                        .map(x -> new IndexDocumentMap(x, this.buildDocument(x)))
+                        .collect(Collectors.toList());
+            }
+
+            for (IndexDocumentMap indexDocumentMap : collect) {
+                this.logger.info("Indexing file " + indexDocumentMap.codeIndexDocument.getRepoLocationRepoNameLocationFilename());
+                this.decrementCodeIndexLinesCount(indexDocumentMap.codeIndexDocument.getCodeLines());
 
                 facetsConfig = new FacetsConfig();
                 facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
                 facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                 facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
 
-                Document doc = this.buildDocument(codeIndexDocument);
-
-                writer.updateDocument(new Term(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, doc));
-                codeIndexDocument = codeIndexDocumentQueue.poll();
+                writer.updateDocument(new Term(Values.PATH, indexDocumentMap.codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, indexDocumentMap.getDocument()));
             }
+
         }
         finally {
             this.helpers.closeQuietly(writer);
@@ -952,5 +976,23 @@ public class IndexService implements IIndexService {
         }
 
         return false;
+    }
+
+    public class IndexDocumentMap {
+        private final CodeIndexDocument codeIndexDocument;
+        private final Document document;
+
+        public IndexDocumentMap(CodeIndexDocument codeIndexDocument, Document document) {
+            this.codeIndexDocument = codeIndexDocument;
+            this.document = document;
+        }
+
+        public CodeIndexDocument getCodeIndexDocument() {
+            return codeIndexDocument;
+        }
+
+        public Document getDocument() {
+            return document;
+        }
     }
 }
