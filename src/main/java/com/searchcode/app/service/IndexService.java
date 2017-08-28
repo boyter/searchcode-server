@@ -218,7 +218,7 @@ public class IndexService implements IIndexService {
 
         try {
             codeIndexDocumentList.parallelStream()
-                    .map(x -> {
+                    .forEach(x -> {
 
                         this.logger.info("Indexing file " + x.getRepoLocationRepoNameLocationFilename());
                         this.decrementCodeIndexLinesCount(x.getCodeLines());
@@ -234,11 +234,7 @@ public class IndexService implements IIndexService {
                             writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
                         } catch (Exception ex) {
                         }
-
-                        return true;
-
-                    })
-                    .collect(Collectors.toList());
+                    });
         }
         finally {
             this.helpers.closeQuietly(writer);
