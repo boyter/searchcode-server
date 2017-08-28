@@ -201,47 +201,44 @@ public class IndexService implements IIndexService {
 
         Analyzer analyzer = new CodeAnalyzer();
         IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
-        FacetsConfig facetsConfig;
 
         indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
         IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
         TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(facetDirectory);
 
+
+        CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
+        List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
+
+        while (codeIndexDocument != null) {
+            codeIndexDocumentList.add(codeIndexDocument);
+            codeIndexDocument = codeIndexDocumentQueue.poll();
+        }
+
         try {
-            CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
-            List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
+            codeIndexDocumentList.parallelStream()
+                    .map(x -> {
 
-            while (codeIndexDocument != null) {
-                codeIndexDocumentList.add(codeIndexDocument);
-                codeIndexDocument = codeIndexDocumentQueue.poll();
-            }
+                        this.logger.info("Indexing file " + x.getRepoLocationRepoNameLocationFilename());
+                        this.decrementCodeIndexLinesCount(x.getCodeLines());
 
-            List<IndexDocumentMap> collect;
+                        FacetsConfig facetsConfig = new FacetsConfig();
+                        facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
+                        facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
+                        facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
 
-            if (this.PARALLEL_INDEX) {
-                collect = codeIndexDocumentList.parallelStream()
-                        .map(x -> new IndexDocumentMap(x, this.buildDocument(x)))
-                        .collect(Collectors.toList());
-            }
-            else {
-                collect = codeIndexDocumentList.stream()
-                        .map(x -> new IndexDocumentMap(x, this.buildDocument(x)))
-                        .collect(Collectors.toList());
-            }
+                        Document document = this.buildDocument(x);
 
-            for (IndexDocumentMap indexDocumentMap : collect) {
-                this.logger.info("Indexing file " + indexDocumentMap.codeIndexDocument.getRepoLocationRepoNameLocationFilename());
-                this.decrementCodeIndexLinesCount(indexDocumentMap.codeIndexDocument.getCodeLines());
+                        try {
+                            writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
+                        } catch (Exception ex) {
+                        }
 
-                facetsConfig = new FacetsConfig();
-                facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
-                facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
-                facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
+                        return true;
 
-                writer.updateDocument(new Term(Values.PATH, indexDocumentMap.codeIndexDocument.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, indexDocumentMap.getDocument()));
-            }
-
+                    })
+                    .collect(Collectors.toList());
         }
         finally {
             this.helpers.closeQuietly(writer);
