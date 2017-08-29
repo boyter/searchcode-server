@@ -202,7 +202,7 @@ public class IndexService implements IIndexService {
 
         IndexWriter writer = new IndexWriter(indexDirectory, indexWriterConfig);
         TaxonomyWriter taxonomyWriter = new DirectoryTaxonomyWriter(facetDirectory);
-        
+
         CodeIndexDocument codeIndexDocument = codeIndexDocumentQueue.poll();
         List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
 
@@ -962,23 +962,5 @@ public class IndexService implements IIndexService {
         }
 
         return false;
-    }
-
-    public class IndexDocumentMap {
-        private final CodeIndexDocument codeIndexDocument;
-        private final Document document;
-
-        public IndexDocumentMap(CodeIndexDocument codeIndexDocument, Document document) {
-            this.codeIndexDocument = codeIndexDocument;
-            this.document = document;
-        }
-
-        public CodeIndexDocument getCodeIndexDocument() {
-            return codeIndexDocument;
-        }
-
-        public Document getDocument() {
-            return document;
-        }
     }
 }
