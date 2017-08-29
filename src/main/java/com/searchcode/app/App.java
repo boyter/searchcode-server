@@ -67,6 +67,11 @@ public class App {
             return new FreeMarkerEngine().render(codeRouteService.root(request, response));
         });
 
+        get("/healthcheck/", (request, response) -> {
+            response.header("Content-Encoding", "gzip");
+            return new JsonTransformer().render(true);
+        });
+
         get("/html/", (request, response) -> {
             response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
