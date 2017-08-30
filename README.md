@@ -199,6 +199,7 @@ XX XXXX XXXX - 1.3.11
  - Change check_filerepo_changes to default size of 600 as check is now far more efficient https://github.com/boyter/searchcode-server/issues/133
  - Add ability to reindex without downtime https://github.com/boyter/searchcode-server/issues/129
  - Index now runs in parallel for faster index time https://github.com/boyter/searchcode-server/issues/135
+ - Add simplistic healthcheck endpoint https://github.com/boyter/searchcode-server/issues/138
 
 15 June 2017 - 1.3.10
  - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation

@@ -126,6 +126,9 @@ public class Values {
     public static final String CODEID = "codeid";
     public static final String SCHASH = "schash"; // Not a real simhash but custom one
 
+    // Lucene values for literal search
+    public static final String FILE_NAME_LITERAL = "fn";
+
     // Random
     public static final String USERSESSIONID = "admin_user";
     public static final String EMPTYSTRING = "";

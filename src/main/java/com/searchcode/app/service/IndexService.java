@@ -19,6 +19,7 @@ import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.facet.*;
 import org.apache.lucene.facet.sortedset.DefaultSortedSetDocValuesReaderState;
@@ -268,10 +269,11 @@ public class IndexService implements IIndexService {
                 this.searchcodeLib.splitKeywords(codeIndexDocument.getContents()) +
                 this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
-                this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents());
+                this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
 
         document.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
+        document.add(new TextField(Values.FILE_NAME_LITERAL,    codeIndexDocument.getFileName().toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
         document.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
         document.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));

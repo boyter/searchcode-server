@@ -134,6 +134,12 @@ public class App {
                 return new JsonTransformer().render(searchRouteService.codeSearch(request, response));
             });
 
+            get("/literalcodesearch/", (request, response) -> {
+                addJsonHeaders(response);
+                SearchRouteService searchRouteService = new SearchRouteService();
+                return new JsonTransformer().render(searchRouteService.literalCodeSearch(request, response));
+            });
+
             get("/codesearch/rss/", (request, response) -> {
                 addXmlHeaders(response);
                 SearchRouteService searchRouteService = new SearchRouteService();

@@ -172,6 +172,24 @@ public class IndexServiceTest extends TestCase {
         this.indexService.deleteByCodeId(this.codeId);
     }
 
+    public void testSearchLiteral() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        SearchResult contents = this.indexService.search("contents:" + this.contents + " reponame:" + this.repoName, 0);
+        assertThat(contents.getTotalHits()).isNotZero();
+        assertThat(contents.getLanguageFacetResults().size()).isNotZero();
+        assertThat(contents.getRepoFacetResults().size()).isNotZero();
+        assertThat(contents.getOwnerFacetResults().size()).isNotZero();
+
+        assertThat(this.indexService.getIndexedDocumentCount()).isNotZero();
+
+        this.indexService.deleteByCodeId(this.codeId);
+    }
+
     public void testSearchRepo() throws IOException {
         this.indexService = new IndexService();
 

@@ -97,6 +97,7 @@ var SearchModel = {
 
     filterinstantly: m.prop(true),
     compactview: m.prop(false),
+    literalview: m.prop(false),
 
     // From the response
     totalhits: m.prop(0),
@@ -140,6 +141,12 @@ var SearchModel = {
             localStorage.setItem('togglecompact', JSON.stringify(!SearchModel.compactview()));
         }
         SearchModel.compactview(!SearchModel.compactview());
+    },
+    toggleliteral: function() {
+        if (window.localStorage) {
+            localStorage.setItem('toggleliteral', JSON.stringify(!SearchModel.literalview()));
+        }
+        SearchModel.literalview(!SearchModel.literalview());
     },
     togglehistory: function() {
         if (window.localStorage) {
@@ -560,6 +567,9 @@ var SearchModel = {
         if (SearchModel.searchhistory() === true ) { 
             queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
         }
+        if (SearchModel.literalview() === true) {
+            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+        }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
 
@@ -951,12 +961,17 @@ var FilterOptionsComponent = {
             },
             togglecompact: function() {
                 SearchModel.togglecompact();
+            },
+            toggleliteral: function() {
+                SearchModel.toggleliteral();
+                SearchModel.search();
             }
         }
     },
     view: function(ctrl, args) {
         var instantparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
         var compactparams = { type: 'checkbox', onclick: ctrl.togglecompact };
+        var literalparams = { type: 'checkbox', onclick: ctrl.toggleliteral };
         var historyparams = { type: 'checkbox', onclick: ctrl.togglehistory };
         
         if (SearchModel.filterinstantly()) {
@@ -965,6 +980,10 @@ var FilterOptionsComponent = {
 
         if (SearchModel.compactview()) {
             compactparams.checked = 'checked'
+        }
+
+        if (SearchModel.literalview()) {
+            literalparams.checked = 'checked'
         }
 
         if (SearchModel.searchhistory()) {
@@ -984,6 +1003,17 @@ var FilterOptionsComponent = {
                     m('label', [
                         m('input', compactparams),
                         m('span', 'Compact View')
+                    ])
+                ),
+                m('div.checkbox', 
+                    m('label', [
+                        m('input', literalparams),
+                        m('span', [
+                            m('span', 'Literal Search '),
+                            m('small', 
+                                m('a', '(help)')
+                            )
+                        ])
                     ])
                 ),
                 ff_timesearchenabled === false ? m('span') : m('div.checkbox', 
