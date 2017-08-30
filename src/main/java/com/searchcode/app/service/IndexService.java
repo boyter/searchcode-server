@@ -271,19 +271,22 @@ public class IndexService implements IIndexService {
                 this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
 
-        document.add(new TextField(Values.REPONAME,             codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.FILENAME,             codeIndexDocument.getFileName(), Field.Store.YES));
-        document.add(new TextField(Values.FILE_NAME_LITERAL,    codeIndexDocument.getFileName().toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.FILELOCATION,         codeIndexDocument.getFileLocation(), Field.Store.YES));
-        document.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
-        document.add(new TextField(Values.MD5HASH,              codeIndexDocument.getMd5hash(), Field.Store.YES));
-        document.add(new TextField(Values.LANGUAGENAME,         codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
-        document.add(new IntField(Values.CODELINES,             codeIndexDocument.getCodeLines(), Field.Store.YES));
-        document.add(new TextField(Values.CONTENTS,             indexContents.toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.REPOLOCATION,         codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-        document.add(new TextField(Values.CODEOWNER,            codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.CODEID,               codeIndexDocument.getHash(), Field.Store.YES));
-        document.add(new TextField(Values.SCHASH,               codeIndexDocument.getSchash(), Field.Store.YES));
+        document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.REPO_NAME_LITERAL,        codeIndexDocument.getRepoName().replace(" ", "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILENAME,                 codeIndexDocument.getFileName(), Field.Store.YES));
+        document.add(new TextField(Values.FILE_NAME_LITERAL,        codeIndexDocument.getFileName().toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+        document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    codeIndexDocument.getLanguageName().replace(" ", "_").toLowerCase(), Field.Store.NO));
+        document.add(new IntField(Values.CODELINES,                 codeIndexDocument.getCodeLines(), Field.Store.YES));
+        document.add(new TextField(Values.CONTENTS,                 indexContents.toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.REPOLOCATION,             codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+        document.add(new TextField(Values.CODEOWNER,                codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.OWNER_NAME_LITERAL,       codeIndexDocument.getCodeOwner().replace(" ", "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
+        document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
 
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
