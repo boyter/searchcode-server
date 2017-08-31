@@ -32,10 +32,11 @@ public class CodeIndexDocument {
     private String message;
     private String deleted; // Used for time filter to know when this entry was removed
     private String schash;
+    private String displayLocation; // What we actually should use for UI
 
     public CodeIndexDocument() {}
 
-    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner) {
+    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner, String displayLocation) {
         this.setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
         this.setRepoName(repoName);
         this.setFileName(fileName);
@@ -48,6 +49,7 @@ public class CodeIndexDocument {
         this.setRepoRemoteLocation(repoRemoteLocation);
         this.setCodeOwner(codeOwner);
         this.schash = Values.EMPTYSTRING;
+        this.displayLocation = displayLocation;
     }
 
     /**
@@ -199,5 +201,9 @@ public class CodeIndexDocument {
 
     public void setSchash(String schash) {
         this.schash = schash;
+    }
+
+    public String getDisplayLocation() {
+        return displayLocation;
     }
 }

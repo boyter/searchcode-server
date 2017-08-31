@@ -46,7 +46,8 @@ public class IndexServiceTest extends TestCase {
             100,
             this.contents,
             "repoRemoteLocation",
-            this.codeOwner);
+            this.codeOwner,
+            "mydisplaylocation");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -135,7 +136,8 @@ public class IndexServiceTest extends TestCase {
                 10,
                 "contents",
                 "repoRemoteLocation",
-                "code Owner"
+                "code Owner",
+                "displayLocation"
         ));
 
         AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(22);

@@ -94,12 +94,20 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getName(), fileRepoLocations, Singleton.getSearchCodeLib());
 
+            String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
+            if ("file".equals(this.repoResult.getScm())) {
+                displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
+                if (displayLocation.startsWith("/")) {
+                    displayLocation = displayLocation.substring(displayLocation.indexOf("/") + 1, displayLocation.length());
+                }
+            }
+
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation));
 
             } else {
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
-                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner));
+                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation));
             }
 
             if (this.indexBaseRepoJob.LOGINDEXED) {

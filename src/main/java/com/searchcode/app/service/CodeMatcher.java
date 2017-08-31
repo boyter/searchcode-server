@@ -49,7 +49,7 @@ public class CodeMatcher {
         List<CodeResult> results = new ArrayList<>();
 
         for(CodeResult code: codeResult) {
-            List<CodeMatchResult> result = matchResults(code.getCode(), lstMatchTerms, highlightLine);
+            List<CodeMatchResult> result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
 
             if (result != null) {
                 code.setMatchingResults(result);

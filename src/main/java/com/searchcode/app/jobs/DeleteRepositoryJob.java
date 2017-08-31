@@ -40,6 +40,10 @@ public class DeleteRepositoryJob implements Job {
                 return;
             }
 
+            if (Singleton.getIndexService().getReindexingAll()) {
+                return;
+            }
+
             Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
             if (!repoResult.isPresent()) {
                 Singleton.getDataService().removeFromPersistentDelete(persistentDelete.get(0));

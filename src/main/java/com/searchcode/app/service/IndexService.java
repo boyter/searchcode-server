@@ -271,13 +271,20 @@ public class IndexService implements IIndexService {
                 this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
 
+        String test = codeIndexDocument.getFileLocationFilename()
+                .replace(codeIndexDocument.getRepoName() + "/", "")
+                .replace(" ", "_")
+                .replace("./", "")
+                .replace("/", "_").toLowerCase();
+
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        codeIndexDocument.getRepoName().replace(" ", "_").toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.FILENAME,                 codeIndexDocument.getFileName(), Field.Store.YES));
         document.add(new TextField(Values.FILE_NAME_LITERAL,        codeIndexDocument.getFileName().toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
         document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
-        document.add(new TextField(Values.FILE_LOCATION_LITERAL,    codeIndexDocument.getRepoLocationRepoNameLocationFilename().replace(codeIndexDocument.getRepoRemoteLocation(), "").replace(" ", "_").replace("/", "_"), Field.Store.NO));
+        document.add(new TextField(Values.FILE_LOCATION_LITERAL,    test,
+                                                                    Field.Store.NO));
 
         document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
