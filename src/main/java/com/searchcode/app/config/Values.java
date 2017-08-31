@@ -125,13 +125,14 @@ public class Values {
     public static final String DELETED = "deleted";
     public static final String CODEID = "codeid";
     public static final String SCHASH = "schash"; // Not a real simhash but custom one
+    public static final String DISPLAY_LOCATION = "displaylocation";
 
     // Lucene values for literal search
     public static final String FILE_NAME_LITERAL = "fn";
     public static final String REPO_NAME_LITERAL = "rn";
     public static final String LANGUAGE_NAME_LITERAL = "ln";
     public static final String OWNER_NAME_LITERAL = "on";
-    public static final String FILE_LOCATION_LITERAL = "fl";
+    public static final String DISPLAY_LOCATION_LITERAL = "fl";
 
     // Random
     public static final String USERSESSIONID = "admin_user";
