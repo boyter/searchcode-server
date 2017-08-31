@@ -277,6 +277,8 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.FILE_NAME_LITERAL,        codeIndexDocument.getFileName().toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
         document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+        document.add(new TextField(Values.FILE_LOCATION_LITERAL,    codeIndexDocument.getRepoLocationRepoNameLocationFilename().replace(codeIndexDocument.getRepoRemoteLocation(), "").replace(" ", "_").replace("/", "_"), Field.Store.NO));
+
         document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    codeIndexDocument.getLanguageName().replace(" ", "_").toLowerCase(), Field.Store.NO));

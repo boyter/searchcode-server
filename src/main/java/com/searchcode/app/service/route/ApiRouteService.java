@@ -128,7 +128,7 @@ public class ApiRouteService {
 
         if (request.queryParams().contains("reponame")) {
             Optional<RepoResult> repoResult = this.repo.getRepoByName(request.queryParams("reponame"));
-            averageIndexTimeSeconds = repoResult.map(x -> Values.EMPTYSTRING + x.getData().averageIndexTimeSeconds).orElse(Values.EMPTYSTRING);
+            averageIndexTimeSeconds = repoResult.map(x -> Values.EMPTYSTRING + (x.getData().averageIndexTimeSeconds + 1)).orElse(Values.EMPTYSTRING);
         }
 
         return averageIndexTimeSeconds;

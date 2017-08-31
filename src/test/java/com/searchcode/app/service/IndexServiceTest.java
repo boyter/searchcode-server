@@ -138,7 +138,7 @@ public class IndexServiceTest extends TestCase {
                 "code Owner"
         ));
 
-        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(17);
+        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(22);
 
         IndexableField[] fields = indexFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
@@ -179,7 +179,7 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search("contents:" + this.contents + " reponame:" + this.repoName, 0);
+        SearchResult contents = this.indexService.search(this.contents + " AND rn:" + this.repoName + " AND fn:fileName*", 0);
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();

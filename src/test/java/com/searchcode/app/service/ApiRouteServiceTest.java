@@ -455,7 +455,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null);
         String averageIndexTimeSeconds = apiRouteService.getAverageIndexTimeSeconds(mockRequest, null);
-        assertThat(averageIndexTimeSeconds).isEqualTo("1");
+        assertThat(averageIndexTimeSeconds).isEqualTo("2");
     }
 
     public void testGetIndexTime() {

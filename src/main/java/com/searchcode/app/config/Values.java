@@ -131,6 +131,7 @@ public class Values {
     public static final String REPO_NAME_LITERAL = "rn";
     public static final String LANGUAGE_NAME_LITERAL = "ln";
     public static final String OWNER_NAME_LITERAL = "on";
+    public static final String FILE_LOCATION_LITERAL = "fl";
 
     // Random
     public static final String USERSESSIONID = "admin_user";
