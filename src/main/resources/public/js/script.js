@@ -1880,7 +1880,7 @@ var SearchResultsComponent = {
                 return result.fileName;
             },
             getsmallvalue: function(result){
-                var fixedCodePath = '/' + result.codePath.split('/').slice(1,100000).join('/');
+                var fixedCodePath = '/' + result.displayLocation;
                 return ' | ' + fixedCodePath +' | ' + result.codeLines + ' lines | ' + result.languageName;
             }
         }
