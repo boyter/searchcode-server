@@ -825,6 +825,7 @@ public class IndexService implements IIndexService {
         codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
         codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
         codeResult.setCodeId(doc.get(Values.CODEID));
+        codeResult.setDisplayLocation(doc.get(Values.DISPLAY_LOCATION));
 
         return codeResult;
     }

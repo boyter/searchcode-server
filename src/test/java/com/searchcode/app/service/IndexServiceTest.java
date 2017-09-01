@@ -187,6 +187,8 @@ public class IndexServiceTest extends TestCase {
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
         assertThat(contents.getOwnerFacetResults().size()).isNotZero();
 
+        assertThat(contents.getCodeResultList().get(0).getDisplayLocation()).isEqualTo("mydisplaylocation");
+
         assertThat(this.indexService.getIndexedDocumentCount()).isNotZero();
 
         this.indexService.deleteByCodeId(this.codeId);
