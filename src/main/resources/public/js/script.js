@@ -991,7 +991,7 @@ var FilterOptionsComponent = {
         }
 
         return m('div', 
-            m('h5', 'Filter Options'),
+            m('h5', 'Search Options'),
             m('div', [
                 m('div.checkbox', 
                     m('label', [
@@ -1011,7 +1011,7 @@ var FilterOptionsComponent = {
                         m('span', [
                             m('span', 'Literal Search '),
                             m('small', 
-                                m('a', '(help)')
+                                m('a', {href: '/documentation/#literal'}, '(help)')
                             )
                         ])
                     ])

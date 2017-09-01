@@ -19,6 +19,7 @@
             <h5>Guide</h5>
             <ol class="list-unstyled">
               <li><a href="#searching">Searching</a></li>
+              <li><a href="#literal">Literal Search</a></li>
               <li><a href="#html">HTML Only</a></li>
               <li><a href="#filters">Filters</a></li>
               <li><a href="#owners">Code Owners</li>
@@ -99,6 +100,51 @@
         Syntax highlighting is enabled for all files less than 1000 lines in length.
         </p>
 
+        <h3 id="literal">Literal Search</h3>
+        <p>
+        You can perform a literal search against the index by enabling literal search. To do so check the box "Literal Search" in the Search Options
+        panel of the search result page. This search includes all the standard searches performed by <a href="https://lucene.apache.org/core/5_2_1/queryparser/org/apache/lucene/queryparser/classic/package-summary.html">Lucene</a>.
+        </p>
+
+        <h4>Wildcard Searches</h4>
+        <p>Lucene supports single and multiple character wildcard searches within single terms (not within phrase queries).</p>
+        <p>To perform a single character wildcard search use the "?" symbol.</p>
+        <p>To perform a multiple character wildcard search use the "*" symbol.</p>
+        <p>The single character wildcard search looks for terms that match that with the single character replaced. For example, to search for "text" or "test" you can use the search: <pre class="code">te?t</pre></p>
+        <p>Multiple character wildcard searches looks for 0 or more characters. For example, to search for test, tests or tester, you can use the search: <pre class="code">test*</pre></p>
+        <p>You can also use the wildcard searches in the middle of a term. <pre class="code">te*t</pre></p>
+        <p>Note: You cannot use a * or ? symbol as the first character of a search.</p>
+
+        <h4>Regular Expression Searches</h4>
+        <p>Lucene supports regular expression searches matching a pattern between forward slashes "/". For example to find documents containing "moat" or "boat": <pre class="code">/[mb]oat/</pre></p>
+
+
+        <h4>Fuzzy Searches</h4>
+        <p>Lucene supports fuzzy searches based on Damerau-Levenshtein Distance. To do a fuzzy search use the tilde, "~", symbol at the end of a Single word Term. For example to search for a term similar in spelling to "roam" use the fuzzy search: <pre class="code">roam~</pre></p>
+        <p>This search will find terms like foam and roams.</p>
+        <p>An additional (optional) parameter can specify the maximum number of edits allowed. The value is between 0 and 2, For example: <pre class="code">roam~1</pre></p>
+        <p>The default that is used if the parameter is not given is 2 edit distances.</p>
+
+        <h4>Proximity Searches</h4>
+        <p>Lucene supports finding words are a within a specific distance away. To do a proximity search use the tilde, "~", symbol at the end of a Phrase. For example to search for a "apache" and "jakarta" within 10 words of each other in a document use the search:
+        </p><pre class="code">"jakarta apache"~10</pre>
+
+        <p>
+        The following fields are supported. All spaces and / characters are replaced with _
+         <dl class="dl-horizontal">
+            <dt>fn</dt>
+            <dd>File name. E.G. fn:search*</dd>
+            <dt>rn</dt>
+            <dd>Repository name. E.G. rn:searchcode*</dd>
+            <dt>ln</dt>
+            <dd>Language name. E.G. ln:java OR ln:bourne_again_shell</dd>
+            <dt>on</dt>
+            <dd>Owner name. E.G. on:ben</dd>
+            <dt>fl</dt>
+            <dd>File location. E.G. fl:src*</dd>
+        </dl>
+        </p>
+
         <h3 id="html">HTML Only</h3>
         <p>
         You can search using a pure HTML interface (no javascript) <a href="/html/">by clicking here</a>. Note that this page generally
@@ -122,7 +168,7 @@
         GIT owners are determined by counting the number of lines edited by each user. This is then weighted
         against the last commit time. For example, Bob added a file of 100 lines in length 1 year ago.
         Mary modified 30 lines of the file last week. In this situation Mary would be marked as the owner as she has modified
-        enough of the file and recently enough to be more famililar with it then Bob would be. If she has only modified a single
+        enough of the file and recently enough to be more familiar with it then Bob would be. If she has only modified a single
         line however Bob would still be marked as the owner.
         </p>
         <p>

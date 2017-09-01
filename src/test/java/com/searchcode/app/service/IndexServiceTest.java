@@ -140,7 +140,7 @@ public class IndexServiceTest extends TestCase {
                 "displayLocation"
         ));
 
-        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(22);
+        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(23);
 
         IndexableField[] fields = indexFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
