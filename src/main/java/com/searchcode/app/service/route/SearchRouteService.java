@@ -105,6 +105,9 @@ public class SearchRouteService {
             String cleanQueryString = scl.formatQueryString(query);
             SearchResult searchResult;
 
+            if (query.trim().startsWith("/") && query.trim().endsWith("/")) {
+                isLiteral = true;
+            }
 
             if (isLiteral) {
                 searchResult = Singleton.getIndexService().search(query + reposFilter + langsFilter + ownersFilter + filelocationFilter, page);
