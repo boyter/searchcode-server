@@ -28,91 +28,14 @@ import java.util.stream.Collectors;
 public class SearchRouteService {
 
     public SearchResult codeSearch(Request request, Response response) {
-        CodeMatcher cm = new CodeMatcher();
-        SearchcodeLib scl = Singleton.getSearchcodeLib();
-
-        if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
-            String query = request.queryParams("q").trim();
-
-            int page = 0;
-
-            if (request.queryParams().contains("p")) {
-                try {
-                    page = Integer.parseInt(request.queryParams("p"));
-                    page = page > 19 ? 19 : page;
-                }
-                catch(NumberFormatException ex) {
-                    page = 0;
-                }
-            }
-
-            String[] repos;
-            String[] langs;
-            String[] owners;
-            String reposFilter = Values.EMPTYSTRING;
-            String langsFilter = Values.EMPTYSTRING;
-            String ownersFilter = Values.EMPTYSTRING;
-
-            if (request.queryParams().contains("repo")) {
-                repos = request.queryParamsValues("repo");
-
-                if (repos.length != 0) {
-                    List<String> reposList = Arrays.asList(repos).stream()
-                            .map((s) -> "reponame:" + QueryParser.escape(s.replace(" ", "_")))
-                            .collect(Collectors.toList());
-
-                    reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
-                }
-            }
-
-            if (request.queryParams().contains("lan")) {
-                langs = request.queryParamsValues("lan");
-
-                if (langs.length != 0) {
-                    List<String> langsList = Arrays.asList(langs).stream()
-                            .map((s) -> "languagename:" + QueryParser.escape(s.replace(" ", "_")))
-                            .collect(Collectors.toList());
-
-                    langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
-                }
-            }
-
-            if (request.queryParams().contains("own")) {
-                owners = request.queryParamsValues("own");
-
-                if (owners.length != 0) {
-                    List<String> ownersList = Arrays.asList(owners).stream()
-                            .map((s) -> "codeowner:" + QueryParser.escape(s.replace(" ", "_")))
-                            .collect(Collectors.toList());
-
-                    ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
-                }
-            }
-
-            // split the query escape it and and it together
-            String cleanQueryString = scl.formatQueryString(query);
-
-            SearchResult searchResult = Singleton.getIndexService().search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
-            searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
-
-            searchResult.setQuery(query);
-
-            for(String altQuery: scl.generateAltQueries(query)) {
-                searchResult.addAltQuery(altQuery);
-            }
-
-            // Null out code as it isnt required and there is no point in bloating our ajax requests
-            for(CodeResult codeSearchResult: searchResult.getCodeResultList()) {
-                codeSearchResult.setCode(null);
-            }
-
-            return searchResult;
-        }
-
-        return null;
+        return this.getSearchResult(request, false);
     }
 
     public SearchResult literalCodeSearch(Request request, Response response) {
+        return this.getSearchResult(request, true);
+    }
+
+    private SearchResult getSearchResult(Request request, boolean isLiteral) {
         CodeMatcher cm = new CodeMatcher();
         SearchcodeLib scl = Singleton.getSearchcodeLib();
 
@@ -137,6 +60,7 @@ public class SearchRouteService {
             String reposFilter = Values.EMPTYSTRING;
             String langsFilter = Values.EMPTYSTRING;
             String ownersFilter = Values.EMPTYSTRING;
+            String filelocationFilter = Values.EMPTYSTRING;
 
             if (request.queryParams().contains("repo")) {
                 repos = request.queryParamsValues("repo");
@@ -174,18 +98,33 @@ public class SearchRouteService {
                 }
             }
 
-            SearchResult searchResult = Singleton.getIndexService().search(query + reposFilter + langsFilter + ownersFilter, page);
+            if (request.queryParams().contains("fl")) {
+                filelocationFilter = " && (fl:" + request.queryParams("fl") + "*)";
+            }
+
+            String cleanQueryString = scl.formatQueryString(query);
+            SearchResult searchResult;
+
+
+            if (isLiteral) {
+                searchResult = Singleton.getIndexService().search(query + reposFilter + langsFilter + ownersFilter + filelocationFilter, page);
+            }
+            else {
+                searchResult = Singleton.getIndexService().search(cleanQueryString + reposFilter + langsFilter + ownersFilter + filelocationFilter, page);
+            }
+
+            searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
             // TODO this is the difference between them both
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
             searchResult.setQuery(query);
 
-            for(String altQuery: scl.generateAltQueries(query)) {
+            for (String altQuery: scl.generateAltQueries(query)) {
                 searchResult.addAltQuery(altQuery);
             }
 
             // Null out code as it isnt required and there is no point in bloating our ajax requests
-            for(CodeResult codeSearchResult: searchResult.getCodeResultList()) {
+            for (CodeResult codeSearchResult: searchResult.getCodeResultList()) {
                 codeSearchResult.setCode(null);
             }
 
