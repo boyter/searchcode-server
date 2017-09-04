@@ -64,6 +64,7 @@ var HelperModel = {
 // Model that perfoms the search logic and does the actual search
 var SearchModel = {
     searchvalue: m.prop(''),
+    pathvalue: m.prop(''),
     searchhistory: m.prop(false),
     searchresults: m.prop([]),
 
@@ -125,6 +126,7 @@ var SearchModel = {
         SearchModel.yearmonthdayfilters([]);
         SearchModel.revisionfilters([]);
         SearchModel.deletedfilters([]);
+        SearchModel.pathvalue('');
 
         SearchModel.langfiltertext('');
         SearchModel.ownerfiltertext('');
@@ -159,6 +161,7 @@ var SearchModel = {
         var repos = '';
         var langs = '';
         var owns = '';
+        var path = '';
         var years = '';
         var yearmonths = '';
         var yearmonthdays = '';
@@ -222,6 +225,10 @@ var SearchModel = {
             owns = owns + SearchModel.activeownfilters().join(', ') + '"';
         }
 
+        if (SearchModel.pathvalue() !== '') {
+            path = ' filtered to the path "' + SearchModel.pathvalue().replace(/\_/g, '/') + '"';
+        }
+
         if (SearchModel.activeyearfilters().length != 0) {
             var plural = 'the year';
 
@@ -276,7 +283,7 @@ var SearchModel = {
             yearmonthdays = ' limited to ' + plural  + ' "' + SearchModel.activerevisionfilters().join(', ') + '"';
         }
 
-        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + years + yearmonths + yearmonthdays + revisions;
+        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + years + yearmonths + yearmonthdays + revisions;
     },
     togglefilter: function (type, name) {
         switch(type) {
@@ -502,6 +509,11 @@ var SearchModel = {
         var rev = SearchModel.getrevisionfilters();
         var del = SearchModel.getdeletedfilters();
 
+        var pathvalue = SearchModel.pathvalue();
+        if (pathvalue !== '') {
+            pathvalue = '&fl=' + pathvalue;
+        }
+
         var searchpage = 0;
         var pagequery = ''
 
@@ -515,9 +527,9 @@ var SearchModel = {
         SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
         SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
 
-        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
 
         return queryurl;
@@ -541,6 +553,11 @@ var SearchModel = {
         var rev = SearchModel.getrevisionfilters();
         var del = SearchModel.getdeletedfilters();
 
+        var pathvalue = SearchModel.pathvalue();
+        if (pathvalue !== '') {
+            pathvalue = '&fl=' + pathvalue;
+        }
+
         var searchpage = 0;
         var pagequery = ''
         if(page !== undefined) {
@@ -563,12 +580,12 @@ var SearchModel = {
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
         if (SearchModel.literalview() === true) {
-            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
@@ -915,11 +932,7 @@ var SearchButtonFilterComponent = {
             return m('div');
         }
 
-        if (args.totalhits === 0 && (args.languagefilters.length + args.repofilters.length + args.ownfilters.length === 0)) {
-            return m('div');
-        }
-
-        if (args.totalhits === 0 && (args.languagefilters.length + args.repofilters.length + args.ownfilters.length !== 0)) {
+        if (args.totalhits === 0) {
             return m('div', [
                 m('h5', 'Filter Results'),
                 m('input.btn.btn-xs.btn-success.filter-button', { 
@@ -1880,8 +1893,34 @@ var SearchResultsComponent = {
                 return result.fileName;
             },
             getsmallvalue: function(result){
-                var fixedCodePath = '/' + result.displayLocation;
-                return ' | ' + fixedCodePath +' | ' + result.codeLines + ' lines | ' + result.languageName;
+                return ' | ' + result.codeLines + ' lines | ' + result.languageName;
+            },
+            getlinkvalue: function(result) {
+
+                var split = result.displayLocation.split('/');
+
+                var link = [];
+                var running = '';
+
+                for (var i = 0; i < split.length; i++) {
+                    if (running !== '') {
+                        running += '_'
+                    }
+
+                    running += split[i]; 
+                  
+                    link.push({
+                        'display': split[i],
+                        'value': running
+                    });
+                }
+
+                return _.map(link, function(res) {
+                    return m('a', { onclick: function () { 
+                        SearchModel.pathvalue(res['value']);
+                        SearchModel.search();
+                    }}, '/' + res['display'])
+                });
             }
         }
     },
@@ -1895,7 +1934,11 @@ var SearchResultsComponent = {
                                     m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
                                     m('span', ' in '),
                                     m('a', { href: ctrl.getrepositoryhref(res) }, res.repoName),
-                                    m('small', ctrl.getsmallvalue(res))  
+                                    m('small', [
+                                        m('span', ' '),
+                                        ctrl.getlinkvalue(res),
+                                        ctrl.getsmallvalue(res)
+                                    ])
                                 ]),
                                 
                             ])
