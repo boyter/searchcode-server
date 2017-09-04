@@ -35,7 +35,7 @@ public class CodeAnalyzer extends Analyzer {
     protected TokenStreamComponents createComponents(String fieldName) {
         final Tokenizer source = new CodeTokenizer();
         //TokenStream result = new LengthFilter(source, 0, Integer.MAX_VALUE);
-        TokenStream result = new LengthFilter(source, 0, 100); // should be enough I hope
+        TokenStream result = new LengthFilter(source, 0, 500); // should be enough I hope
         return new TokenStreamComponents(source, result);
     }
 
