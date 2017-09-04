@@ -938,10 +938,14 @@ var SearchButtonFilterComponent = {
         if (args.totalhits === 0) {
             return m('div', [
                 m('h5', 'Filter Results'),
-                m('input.btn.btn-xs.btn-success.filter-button', { 
-                    type: 'submit', 
-                    onclick: function() { args.clearfilters(); args.search(); }, 
-                    value: 'Remove' })
+                m('div.center', 
+                    m('input.btn.btn-xs.btn-success.filter-button', { 
+                        type: 'submit', 
+                        onclick: function() { args.clearfilters(); args.search(); }, 
+                        value: 'Remove' }),
+                    m('span', m.trust('&nbsp;')),
+                    m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
+                )
             ]);
         }
 
