@@ -1230,26 +1230,6 @@ var SearchLanguagesFilterComponent = {
     }
 }
 
-var SearchPathFilterComponent = {
-    controller: function() {
-    },
-    view: function(ctrl, args) {
-        return m('div', [
-            m('h5', 'Path Filter'),
-            m('div.center', 
-                m('input.btn.btn-xs.btn-success.filter-button', { 
-                    type: 'submit', 
-                    disabled: SearchModel.pathvalue() === '',
-                    onclick: function() { SearchModel.pathvalue(''); SearchModel.search(); }, 
-                    value: 'Clear' }
-                ),
-                m('span', m.trust('&nbsp;')),
-                m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
-            )
-        ]);
-    }
-}
-
 var SearchOwnersFilterComponent = {
     controller: function() {
 
@@ -1334,6 +1314,26 @@ var SearchOwnersFilterComponent = {
                 });
             }),
             showmoreless
+        ]);
+    }
+}
+
+var SearchPathFilterComponent = {
+    controller: function() {
+    },
+    view: function(ctrl, args) {
+        return m('div', [
+            m('h5', 'Path Filter'),
+            m('div.center', 
+                m('input.btn.btn-xs.btn-success.filter-button', { 
+                    type: 'submit', 
+                    disabled: SearchModel.pathvalue() === '',
+                    onclick: function() { SearchModel.pathvalue(''); SearchModel.search(); }, 
+                    value: 'Clear' }
+                ),
+                m('span', m.trust('&nbsp;')),
+                m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
+            )
         ]);
     }
 }
@@ -1932,15 +1932,21 @@ var SearchResultsComponent = {
                   
                     link.push({
                         'display': split[i],
-                        'value': running
+                        'value': running,
+                        'last': i === (split.length - 1)
                     });
                 }
 
+                console.log(link);
+
                 return _.map(link, function(res) {
-                    return m('a', { onclick: function () { 
-                        SearchModel.pathvalue(res['value']);
-                        SearchModel.search();
-                    }}, '/' + res['display'])
+                    return res['last'] ? m('span', '/' + res['display']) : m('span', [
+                        m('span', '/'),
+                        m('a', { onclick: function () { 
+                            SearchModel.pathvalue(res['value']);
+                            SearchModel.search();
+                        }}, res['display'])
+                    ]);
                 });
             }
         }
