@@ -201,6 +201,7 @@ XX XXXX XXXX - 1.3.11
  - Index now runs in parallel for faster index time https://github.com/boyter/searchcode-server/issues/135
  - Add simplistic healthcheck endpoint https://github.com/boyter/searchcode-server/issues/138
  - Add literal lucene search option https://github.com/boyter/searchcode-server/issues/89
+ - Add repository path filters to UI https://github.com/boyter/searchcode-server/issues/136
 
 15 June 2017 - 1.3.10
  - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation
