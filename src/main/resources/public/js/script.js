@@ -590,23 +590,25 @@ var SearchModel = {
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
 
-            SearchModel.totalhits(e.totalHits);
-            SearchModel.altquery(e.altQuery);
-            SearchModel.query(e.query);
-            SearchModel.pages(e.pages);
-            SearchModel.currentpage(e.page);
+            if (e !== null) {
+                SearchModel.totalhits(e.totalHits);
+                SearchModel.altquery(e.altQuery);
+                SearchModel.query(e.query);
+                SearchModel.pages(e.pages);
+                SearchModel.currentpage(e.page);
 
-            SearchModel.coderesults(e.codeResultList);
-            SearchModel.repofilters(e.repoFacetResults);
-            SearchModel.languagefilters(e.languageFacetResults);
-            SearchModel.ownerfilters(e.repoOwnerResults);
+                SearchModel.coderesults(e.codeResultList);
+                SearchModel.repofilters(e.repoFacetResults);
+                SearchModel.languagefilters(e.languageFacetResults);
+                SearchModel.ownerfilters(e.repoOwnerResults);
 
-            // History fields
-            SearchModel.repoFacetYear(e.repoFacetYear);
-            SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
-            SearchModel.repoFacetYearMonthDay(e.repoFacetYearMonthDay);
-            SearchModel.repoFacetRevision(e.repoFacetRevision);
-            SearchModel.repoFacetDeleted(e.repoFacetDeleted);
+                // History fields
+                SearchModel.repoFacetYear(e.repoFacetYear);
+                SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
+                SearchModel.repoFacetYearMonthDay(e.repoFacetYearMonthDay);
+                SearchModel.repoFacetRevision(e.repoFacetRevision);
+                SearchModel.repoFacetDeleted(e.repoFacetDeleted);
+            }
 
             SearchModel.currentlyloading(false);
         }).then( function(e) {
@@ -1936,8 +1938,6 @@ var SearchResultsComponent = {
                         'last': i === (split.length - 1)
                     });
                 }
-
-                console.log(link);
 
                 return _.map(link, function(res) {
                     return res['last'] ? m('span', '/' + res['display']) : m('span', [
