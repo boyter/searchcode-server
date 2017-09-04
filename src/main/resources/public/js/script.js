@@ -1234,20 +1234,6 @@ var SearchPathFilterComponent = {
     controller: function() {
     },
     view: function(ctrl, args) {
-        // if (args.totalhits === undefined) {
-        //     return m('div');
-        // }
-
-        // if (args.totalhits === 0) {
-        //     return m('div', [
-        //         m('h5', 'Filter Results'),
-        //         m('input.btn.btn-xs.btn-success.filter-button', { 
-        //             type: 'submit', 
-        //             onclick: function() { args.clearfilters(); args.search(); }, 
-        //             value: 'Remove' })
-        //     ]);
-        // }
-
         return m('div', [
             m('h5', 'Path Filter'),
             m('div.center', 
@@ -1259,12 +1245,6 @@ var SearchPathFilterComponent = {
                 ),
                 m('span', m.trust('&nbsp;')),
                 m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
-                // m('input.btn.btn-xs.btn-success.filter-button', { 
-                //     type: 'submit',
-                //     disabled: SearchModel.filterinstantly(),
-                //     onclick: function() { args.search() }, 
-                //     value: 'Apply' }
-                // )
             )
         ]);
     }
