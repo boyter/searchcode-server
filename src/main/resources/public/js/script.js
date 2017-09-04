@@ -226,7 +226,7 @@ var SearchModel = {
         }
 
         if (SearchModel.pathvalue() !== '') {
-            path = ' filtered to the path "' + SearchModel.pathvalue().replace(/\_/g, '/') + '"';
+            path = ' filtered to the path "/' + SearchModel.pathvalue().replace(/\_/g, '/') + '"';
         }
 
         if (SearchModel.activeyearfilters().length != 0) {
