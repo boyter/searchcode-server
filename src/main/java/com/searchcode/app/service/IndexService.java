@@ -180,6 +180,11 @@ public class IndexService implements IIndexService {
     }
 
     @Override
+    public void resetReindexingAll() {
+        this.reindexingAll = false;
+    }
+
+    @Override
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
         Queue<CodeIndexDocument> queue = new ArrayQueue<>();
         queue.add(codeIndexDocument);

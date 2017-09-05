@@ -36,6 +36,7 @@ public interface IIndexService {
     void setRepoAdderPause(boolean repoAdderPause);
     void toggleRepoAdderPause();
     boolean getReindexingAll();
+    void resetReindexingAll();
 
     boolean shouldPause(JobType jobType);
     boolean shouldExit(JobType jobType);

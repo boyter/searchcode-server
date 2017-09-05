@@ -168,7 +168,7 @@ public class CodeRouteServiceTest extends TestCase {
 
         Map<String, Object> map = codeRouteService.getCode(request, response);
 
-        assertThat(map.get("codePath")).isEqualTo("/");
+        assertThat(map.get("codePath")).isEqualTo("");
         assertThat(map.get("codeLength")).isEqualTo("100");
         assertThat(map.get("languageName")).isEqualTo("LanguageName");
         assertThat(map.get("md5Hash")).isEqualTo("md5hash");

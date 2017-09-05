@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="/css/highlight/default.css">
 <script src="/js/jquery-1.11.1.min.js"></script>
 
-    <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> ${codePath}</h4>
+    <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> /${codePath}</h4>
 
     <table class="table">
         <tbody>

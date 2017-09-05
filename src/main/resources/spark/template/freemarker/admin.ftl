@@ -145,6 +145,11 @@
                     <td><a style="width:180px;" ic-post-to="/admin/flipreadindex/" ic-target="#rebuild-target" ic-indicator="#action-spinner7" class="btn-function btn btn-default btn-xs" role="button">Flip Index</a></td>
                 </tr>
                 <tr>
+                    <td>Enable Repo Adder Status. This will enable job parsers to start running again.
+                    <i id="action-spinner7" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
+                    <td><a style="width:180px;" ic-post-to="/admin/enableadder/" ic-target="#rebuild-target" ic-indicator="#action-spinner7" class="btn-function btn btn-default btn-xs" role="button">Enable Repo Adder</a></td>
+                </tr>
+                <tr>
                     <td>Click this if you want to rebuild the entire index. The index will be rebuilt side by side the existing index and then swapped to avoid any downtime. Updates in the index will only appear when this process is finished.
                     <i id="action-spinner4" class="ic-indicator" style="display:none"><img src="/img/loading_small.gif" /></i></td>
                     <td><a style="width:180px;" ic-post-to="/admin/rebuild/" ic-target="#rebuild-target" ic-indicator="#action-spinner4" class="btn-function btn btn-danger btn-xs" role="button">Recrawl & Rebuild Indexes</a></td>

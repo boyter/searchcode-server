@@ -385,6 +385,14 @@ public class App {
                 return new JsonTransformer().render(true);
             });
 
+
+            post("/enableadder/", "application/json", (request, response) -> {
+                checkLoggedIn(request, response);
+                Singleton.getIndexService().setRepoAdderPause(false);
+                Singleton.getIndexService().resetReindexingAll();
+                return new JsonTransformer().render(true);
+            });
+
             post("/rebuild/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
                 Singleton.getIndexService().reindexAll();
