@@ -308,6 +308,10 @@ public class Helpers {
         return path;
     }
 
+    public String replaceNonAlphanumeric(String toReplace, String replaceWith) {
+        return toReplace.replaceAll("[^A-Za-z0-9]", replaceWith);
+    }
+
     public void closeQuietly(ResultSet resultSet) {
         try {
             resultSet.close();

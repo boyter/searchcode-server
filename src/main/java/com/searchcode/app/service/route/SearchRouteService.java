@@ -15,6 +15,7 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -99,7 +100,7 @@ public class SearchRouteService {
             }
 
             if (request.queryParams().contains("fl")) {
-                filelocationFilter = " && (fl:" + request.queryParams("fl") + "*)";
+                filelocationFilter = " && (fl:" + Singleton.getHelpers().replaceNonAlphanumeric(request.queryParams("fl"), "_") + "*)";
             }
 
             String cleanQueryString = scl.formatQueryString(query);
