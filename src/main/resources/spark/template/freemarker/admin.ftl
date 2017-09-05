@@ -84,6 +84,7 @@
                             <br>Index Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=indexwritelocation"></span>
                             <br>Facet Write Location: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=facetwritelocation"></span>
                             <br>Index Lines Count: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=codeindexlinescount"></span>
+                            <br>Index Queue Count: <span ic-poll="1s" ic-src="/admin/api/getstat/?statname=codeindexqueuesize"></span>
                         </td>
                         </tr>
                     </table>
