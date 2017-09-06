@@ -226,7 +226,7 @@ var SearchModel = {
         }
 
         if (SearchModel.pathvalue() !== '') {
-            path = ' filtered to the path "/' + SearchModel.pathvalue().replace(/\_/g, '/') + '"';
+            path = ' filtered to the path "/' + SearchModel.pathvalue().replace(/\_/g, '/') + '/"';
         }
 
         if (SearchModel.activeyearfilters().length != 0) {
@@ -431,6 +431,15 @@ var SearchModel = {
 
         return own;
     },
+    getpathfilters: function() {
+        var path = '';
+
+        if (SearchModel.pathvalue().length !== 0) {
+            path = '&path=' + encodeURIComponent(SearchModel.pathvalue());
+        }
+
+        return path;
+    },
     getyearfilters: function() {
         var year = '';
 
@@ -484,7 +493,8 @@ var SearchModel = {
                 langfilters: SearchModel.activelangfilters(),
                 repofilters: SearchModel.activerepositoryfilters(),
                 ownfilters: SearchModel.activeownfilters(),
-                currentpage: SearchModel.currentpage()
+                currentpage: SearchModel.currentpage(),
+                pathvalue: SearchModel.getpathfilters()
             }, 'search', '?q=' + 
                         encodeURIComponent(SearchModel.searchvalue()) + 
                         SearchModel.getlangfilters() + 
@@ -494,7 +504,8 @@ var SearchModel = {
                         SearchModel.getyearmonthfilters() + 
                         SearchModel.getyearmonthdayfilters() + 
                         SearchModel.getrevisionfilters() + 
-                        SearchModel.getdeletedfilters() + 
+                        SearchModel.getdeletedfilters() +
+                        SearchModel.getpathfilters() + 
                         pagequery);
         }
     },
@@ -2005,6 +2016,7 @@ window.onpopstate = function(event) {
         SearchModel.repositoryfilters(event.state.repofilters);
         SearchModel.ownfilters(event.state.ownfilters);
         SearchModel.activeownfilters(event.state.ownfilters);
+        SearchModel.pathvalue(event.state.pathvalue);
 
         SearchModel.search(event.state.currentpage, true);
         popstate = true;
@@ -2024,6 +2036,8 @@ if (typeof preload !== 'undefined') {
 
     SearchModel.ownfilters(preload.ownerFacets);
     SearchModel.activeownfilters(preload.ownerFacets);
+
+    SearchModel.pathvalue(preload.pathValue);
 
     SearchModel.search(preload.page, true);
 }

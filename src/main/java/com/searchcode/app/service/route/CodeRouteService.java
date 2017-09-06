@@ -101,8 +101,10 @@ public class CodeRouteService {
                 }
             }
 
+            String pathValue = request.queryParams("path").trim();
+
             map.put("searchValue", query);
-            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList)));
+            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, pathValue)));
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
