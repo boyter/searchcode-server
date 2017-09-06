@@ -101,7 +101,11 @@ public class CodeRouteService {
                 }
             }
 
-            String pathValue = request.queryParams("path").trim();
+
+            String pathValue = Values.EMPTYSTRING;
+            if (request.queryParams().contains("path")) {
+                pathValue = request.queryParams("path").trim();
+            }
 
             map.put("searchValue", query);
             map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, pathValue)));

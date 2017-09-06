@@ -494,7 +494,7 @@ var SearchModel = {
                 repofilters: SearchModel.activerepositoryfilters(),
                 ownfilters: SearchModel.activeownfilters(),
                 currentpage: SearchModel.currentpage(),
-                pathvalue: SearchModel.getpathfilters()
+                pathvalue: SearchModel.pathvalue()
             }, 'search', '?q=' + 
                         encodeURIComponent(SearchModel.searchvalue()) + 
                         SearchModel.getlangfilters() + 
@@ -2046,6 +2046,13 @@ if (typeof preload !== 'undefined') {
 if (window.localStorage) {
     var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
+
+    tmp = JSON.parse(localStorage.getItem('toggleliteral'));
+    tmp !== null ? SearchModel.literalview(tmp) : SearchModel.literalview(true);
+
+    tmp = JSON.parse(localStorage.getItem('togglecompact'));
+    tmp !== null ? SearchModel.compactview(tmp) : SearchModel.compactview(true);
+
     if (ff_timesearchenabled === true) {
         tmp = JSON.parse(localStorage.getItem('togglehistory'));
         tmp !== null ? SearchModel.searchhistory(tmp) : SearchModel.searchhistory(true);
@@ -2053,5 +2060,7 @@ if (window.localStorage) {
 }
 else {
     SearchModel.filterinstantly(true);
+    SearchModel.literalview(false);
+    SearchModel.compactview(false);
     SearchModel.searchhistory(false);
 }
