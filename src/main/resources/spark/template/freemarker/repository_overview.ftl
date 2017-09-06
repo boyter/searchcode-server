@@ -48,7 +48,7 @@
                               <strong>By File Count</strong><br />
                               <#list languageFacet>
                               <#items as result>
-                                  ${result.languageName} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
+                                  <a href="/?q=ln:${result.languageName?lower_case}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
                               </#items>
                               </#list>
                           </td>

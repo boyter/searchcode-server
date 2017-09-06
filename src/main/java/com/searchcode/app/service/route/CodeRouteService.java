@@ -20,10 +20,8 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Cocomo2;
-import com.searchcode.app.util.OWASPClassifier;
+import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -107,8 +105,13 @@ public class CodeRouteService {
                 pathValue = request.queryParams("path").trim();
             }
 
+            boolean isLiteral = false;
+            if (request.queryParams().contains("lit")) {
+                isLiteral = Boolean.parseBoolean(request.queryParams("lit").trim());
+            }
+
             map.put("searchValue", query);
-            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, pathValue)));
+            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, pathValue, isLiteral)));
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
@@ -128,7 +131,6 @@ public class CodeRouteService {
         Map<String, Object> map = new HashMap<>();
 
         Repo repo = Singleton.getRepo();
-        Data data = Singleton.getData();
 
         SearchcodeLib scl = Singleton.getSearchcodeLib();
         OWASPClassifier owaspClassifier = new OWASPClassifier();
@@ -233,7 +235,6 @@ public class CodeRouteService {
 
         ProjectStats projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
                                            .orElse(this.indexService.getProjectStats(Values.EMPTYSTRING));
-
 
         map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
         repository.ifPresent(x -> map.put("repoLocation", x.getUrl()));

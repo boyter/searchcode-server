@@ -13,20 +13,22 @@ package com.searchcode.app.dto;
 import java.util.List;
 
 public class CodePreload {
-    private String query;
-    private int page;
-    private List<String> languageFacets;
-    private List<String> repositoryFacets;
-    private List<String> ownerFacets;
-    private String pathValue;
+    private final boolean isLiteral;
+    private final String query;
+    private final int page;
+    private final List<String> languageFacets;
+    private final List<String> repositoryFacets;
+    private final List<String> ownerFacets;
+    private final String pathValue;
 
-    public CodePreload(String query, int page, List<String> languageFacets, List<String> repositoryFacets, List<String> ownerFacets, String pathValue) {
+    public CodePreload(String query, int page, List<String> languageFacets, List<String> repositoryFacets, List<String> ownerFacets, String pathValue, boolean isLiteral) {
         this.query = query;
         this.page = page;
         this.languageFacets = languageFacets;
         this.repositoryFacets = repositoryFacets;
         this.ownerFacets = ownerFacets;
         this.pathValue = pathValue;
+        this.isLiteral = isLiteral;
     }
 
     public String getQuery() {
@@ -49,8 +51,11 @@ public class CodePreload {
         return ownerFacets;
     }
 
-
     public String getPathValue() {
         return pathValue;
+    }
+
+    public boolean isLiteral() {
+        return isLiteral;
     }
 }

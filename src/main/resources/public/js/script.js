@@ -2038,6 +2038,7 @@ if (typeof preload !== 'undefined') {
     SearchModel.activeownfilters(preload.ownerFacets);
 
     SearchModel.pathvalue(preload.pathValue);
+    SearchModel.literalview(preload.isLiteral);
 
     SearchModel.search(preload.page, true);
 }
