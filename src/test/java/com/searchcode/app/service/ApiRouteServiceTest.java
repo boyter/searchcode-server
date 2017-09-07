@@ -72,8 +72,6 @@ public class ApiRouteServiceTest extends TestCase {
         JobService mockJobService = mock(JobService.class);
         Request mockRequest = mock(Request.class);
 
-        when(mockJobService.rebuildAll()).thenReturn(true);
-
         ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, null, null, null, null);
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
@@ -88,7 +86,6 @@ public class ApiRouteServiceTest extends TestCase {
         Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParams("pub")).thenReturn("test");
-        when(mockJobService.rebuildAll()).thenReturn(true);
 
         ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, null, null, null, null);
         apiRouteService.apiEnabled = true;
@@ -107,7 +104,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         when(mockRequest.queryParams("pub")).thenReturn("test");
         when(mockRequest.queryParams("sig")).thenReturn("test");
-        when(mockJobService.rebuildAll()).thenReturn(true);
+
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
         ApiRouteService apiRouteService = new ApiRouteService(mockApiService, mockJobService, null, null, null, null);
@@ -129,7 +126,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         when(mockRequest.queryParams("pub")).thenReturn("test");
         when(mockRequest.queryParams("sig")).thenReturn("test");
-        when(mockJobService.rebuildAll()).thenReturn(true);
+
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(true);
 
         ApiRouteService apiRouteService = new ApiRouteService(mockApiService, mockJobService, null, null, null, mockIndexService);

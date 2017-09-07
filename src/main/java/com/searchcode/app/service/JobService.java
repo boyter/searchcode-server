@@ -325,49 +325,6 @@ public class JobService implements IJobService {
         }
     }
 
-    @Override
-    public boolean rebuildAll() {
-        // This needs to call the indexer now
-        // Turn off everything
-//        Singleton.getLogger().info("Recrawl and rebuild of index starting");
-//        Singleton.getSharedService().setBackgroundJobsEnabled(false);
-//        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-//
-//        this.shutdownScheduler();
-//
-//        int attempt = 0;
-//        boolean successful = false;
-//
-//        String repoLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
-//        String indexLocation = Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION);
-//
-//        while (attempt < 3) {
-//            try {
-//                attempt++;
-//                FileUtils.deleteDirectory(new File(indexLocation));
-//                FileUtils.deleteDirectory(new File(repoLocation));
-//
-//                successful = true;
-//
-//                Singleton.getLogger().info("Recrawl and rebuild of index successful");
-//                break;
-//            } catch (IOException ex) {
-//                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-//            }
-//
-//            try { Thread.sleep(2000); } catch (InterruptedException e) {}
-//        }
-//
-//        if (!successful) {
-//            successful = this.attemptMoveToTrash(repoLocation, indexLocation);
-//        }
-//
-//        Singleton.getSharedService().setBackgroundJobsEnabled(true);
-//        this.initialJobs();
-//        return successful;
-        return true;
-    }
-
     private void shutdownScheduler() {
         try {
             Singleton.getScheduler().shutdown();

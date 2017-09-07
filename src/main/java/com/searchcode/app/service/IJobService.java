@@ -15,7 +15,6 @@ import com.searchcode.app.model.RepoResult;
 
 public interface IJobService {
     void initialJobs();
-    boolean rebuildAll();
     boolean forceEnqueue();
     int forceEnqueueWithCount();
     boolean forceEnqueue(RepoResult repoResult);
