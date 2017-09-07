@@ -10,12 +10,16 @@
 
 package com.searchcode.app.jobs.enqueue;
 
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +31,21 @@ import java.util.stream.Collectors;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class EnqueueFileRepositoryJob implements Job {
+
+    private final IndexService indexService;
+    private final LoggerWrapper logger;
+    private final Repo repo;
+    private boolean firstRun;
+
+    public EnqueueFileRepositoryJob() {
+        this.indexService = Singleton.getIndexService();
+        this.repo = Singleton.getRepo();
+        this.logger = Singleton.getLogger();
+        this.firstRun = true;
+    }
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
+        if (this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return;
         }
 
@@ -38,8 +55,7 @@ public class EnqueueFileRepositoryJob implements Job {
             UniqueRepoQueue repoQueue = Singleton.getUniqueFileRepoQueue();
 
             // Get all of the repositories and enqueue them
-            List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-            Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+            List<RepoResult> repoResultList = this.repo.getAllRepo();
 
             // Filter out those queued to be deleted
             List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
@@ -47,17 +63,28 @@ public class EnqueueFileRepositoryJob implements Job {
                                             .filter(x -> !persistentDelete.contains(x.getName()))
                                             .collect(Collectors.toList());
 
-            for(RepoResult rr: collect) {
+            this.logger.info("Adding file repositories to be indexed. " + collect.size());
+
+            for (RepoResult rr: collect) {
+                if (this.firstRun) {
+                    rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
+                    this.repo.saveRepo(rr);
+                }
+
                 switch (rr.getScm().toLowerCase()) {
                     case "file":
-                        Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
+                       this.logger.info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
                         repoQueue.add(rr);
                         break;
                     default:
                         break;
                 }
             }
+
+            this.firstRun = false;
         }
-        catch (Exception ex) {}
+        catch (Exception ex) {
+            this.firstRun = false;
+        }
     }
 }

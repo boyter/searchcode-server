@@ -19,6 +19,7 @@ import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,11 +35,13 @@ public class EnqueueRepositoryJob implements Job {
     private final IndexService indexService;
     private final LoggerWrapper logger;
     private final Repo repo;
+    private boolean firstRun;
 
     public EnqueueRepositoryJob() {
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
         this.logger = Singleton.getLogger();
+        this.firstRun = true;
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -64,6 +67,11 @@ public class EnqueueRepositoryJob implements Job {
             this.logger.info("Adding repositories to be indexed. " + collect.size());
 
             for (RepoResult rr: collect) {
+                if (this.firstRun) {
+                    rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
+                    this.repo.saveRepo(rr);
+                }
+
                 switch (rr.getScm().toLowerCase()) {
                     case "git":
                         this.logger.info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
@@ -77,7 +85,11 @@ public class EnqueueRepositoryJob implements Job {
                         break;
                 }
             }
+
+            this.firstRun = false;
         }
-        catch (Exception ignored) {}
+        catch (Exception ignored) {
+            this.firstRun = false;
+        }
     }
 }
