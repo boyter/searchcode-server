@@ -70,6 +70,7 @@ def test_integration():
     local("python ./assets/integration_test/signed_testing.py")
     local("python ./assets/integration_test/signed_testing_sha512.py")
     local("python ./assets/integration_test/signed_fuzz.py")
+    local("python ./assets/integration_test/quote_plus.py")
 
 def stress_test():
     local('python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py')
