@@ -11,7 +11,7 @@ publickey = "APIK-htEIV1L1GrOQhYRovctl2fkxdPf"
 privatekey = "IBrB9m9bbxBaoK86D8XcS7jtaA52rcok"
 
 for x in range(0, 10):
-    reponame = "myrepo%s" % (x) 
+    reponame = "myrepo%s" % (x)
     repourl = "/Users/boyter/test2"
     repotype = "git"
     repousername = ""
