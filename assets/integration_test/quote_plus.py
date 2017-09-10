@@ -49,7 +49,7 @@ data = data.read()
 
 parsed = json.loads(data)
 
-assert parsed['message'] == 'invalid signed url'
+assert parsed['message'] == 'added repository successfully', parsed['message']
 
 
 cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))

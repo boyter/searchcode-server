@@ -302,6 +302,13 @@ public class ApiRouteService {
             ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
+            // https://github.com/boyter/searchcode-server/issues/134
+            if (!validRequest) {
+                toValidate = toValidate.replace("+", "%20");
+                hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+                validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
+            }
+
             if (!validRequest) {
                 Singleton.getLogger().apiLog("Invalid signed repoAdd API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
