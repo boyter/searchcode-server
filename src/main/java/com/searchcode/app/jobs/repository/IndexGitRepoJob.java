@@ -20,6 +20,7 @@ import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.Timer;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.BlameCommand;
@@ -95,11 +96,13 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     @Override
     public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
         List<CodeOwner> owners;
+        Timer timer = Singleton.getNewTimer();
         if (this.USE_SYSTEM_GIT) {
             owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
         } else {
             owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
         }
+        Singleton.getLogger().fine("GIT Blame Info Time: " + timer.toc());
 
         return scl.codeOwner(owners);
     }

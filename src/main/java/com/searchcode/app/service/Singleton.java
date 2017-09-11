@@ -62,6 +62,10 @@ public final class Singleton {
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
 
+    public static Timer getNewTimer() {
+        return new Timer();
+    }
+
     public static synchronized UniqueRepoQueue getUniqueGitRepoQueue() {
         if (uniqueGitRepoQueue == null) {
             uniqueGitRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());

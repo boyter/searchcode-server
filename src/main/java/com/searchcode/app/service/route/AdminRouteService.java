@@ -270,6 +270,9 @@ public class AdminRouteService {
             case "API":
                 logs = this.getStat("apiLogs");
                 break;
+            case "FINE":
+                logs = this.getStat("finelogs");
+                break;
             case "SEVERE":
             default:
                 logs = this.getStat("severelogs");
@@ -498,6 +501,8 @@ public class AdminRouteService {
                 return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
             case "warninglogs":
                 return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
+            case "finelogs":
+                return StringUtils.join(Singleton.getLogger().getFineLogs(), System.lineSeparator());
             case "severelogs":
                 return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
             case "searchlogs":
