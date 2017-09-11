@@ -202,6 +202,8 @@ XX XXXX XXXX - 1.3.11
  - Add simplistic healthcheck endpoint https://github.com/boyter/searchcode-server/issues/138
  - Add literal lucene search option https://github.com/boyter/searchcode-server/issues/89
  - Add repository path filters to UI https://github.com/boyter/searchcode-server/issues/136
+ - Can filter down to language or owner from project overview page https://github.com/boyter/searchcode-server/issues/127
+ - Signed API add now supports %20 or + for spaces https://github.com/boyter/searchcode-server/issues/134
 
 15 June 2017 - 1.3.10
  - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation
