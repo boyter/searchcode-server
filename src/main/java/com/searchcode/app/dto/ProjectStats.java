@@ -17,6 +17,7 @@ public class ProjectStats {
     private List<CodeFacetLanguage> codeFacetLanguages;
     private List<CodeFacetLanguage> codeByLines;
     private List<CodeFacetOwner> repoFacetOwner;
+
     private int totalCodeLines;
     private int totalFiles;
 

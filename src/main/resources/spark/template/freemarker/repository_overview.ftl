@@ -44,11 +44,11 @@
 
                   <table>
                       <tr>
-                          <td valign="top">
+                          <td valign="top" style="padding-right: 50px;">
                               <strong>By File Count</strong><br />
                               <#list languageFacet>
                               <#items as result>
-                                  <a href="/?q=ln:${result.languageName?lower_case}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
+                                  <a href="/?q=ln:${result.languageNameSearchable}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
                               </#items>
                               </#list>
                           </td>
@@ -56,7 +56,7 @@
                               <strong>By Line Count</strong><br />
                               <#list codeByLines>
                               <#items as result>
-                                  ${result.languageName} <small style="color: #999;">${result.count} lines ${(result.count / totalCodeLines * 100)?ceiling}% of project</small><br />
+                                   <a href="/?q=ln:${result.languageNameSearchable}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} lines ${(result.count / totalCodeLines * 100)?ceiling}% of project</small><br />
                               </#items>
                               </#list>
                           </td>
@@ -69,7 +69,7 @@
               <strong>By File Count</strong><br />
                   <#list ownerFacet>
                   <#items as result>
-                      ${result.owner} <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
+                      <a href="/?q=on:${result.ownerSearchable}&repo=${repoName?html}&lit=true">${result.owner}</a> <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
                   </#items>
                   </#list>
               </td>

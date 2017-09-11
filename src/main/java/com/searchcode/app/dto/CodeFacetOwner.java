@@ -11,6 +11,7 @@
 package com.searchcode.app.dto;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.service.Singleton;
 
 public class CodeFacetOwner {
     public String owner = Values.EMPTYSTRING;
@@ -44,5 +45,9 @@ public class CodeFacetOwner {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getOwnerSearchable() {
+        return Singleton.getHelpers().replaceNonAlphanumeric(this.owner.toLowerCase(), "_");
     }
 }

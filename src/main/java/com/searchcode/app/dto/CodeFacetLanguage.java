@@ -11,6 +11,7 @@
 package com.searchcode.app.dto;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.service.Singleton;
 
 public class CodeFacetLanguage {
     public String languageName = Values.EMPTYSTRING;
@@ -44,5 +45,9 @@ public class CodeFacetLanguage {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getLanguageNameSearchable() {
+        return Singleton.getHelpers().replaceNonAlphanumeric(this.languageName.toLowerCase(), "_");
     }
 }
