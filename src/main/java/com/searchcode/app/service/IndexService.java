@@ -17,6 +17,7 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.Timer;
 import org.apache.commons.io.FileUtils;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
@@ -230,9 +231,11 @@ public class IndexService implements IIndexService {
 
                         Document document = this.buildDocument(x);
 
+                        Timer timer = Singleton.getNewTimer();
                         try {
                             writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
                         } catch (Exception ignored) {}
+                        this.logger.fine("indexDocument:updateDocument:" + timer.toc());
                     });
         }
         finally {
@@ -248,6 +251,7 @@ public class IndexService implements IIndexService {
     @Override
     public Document buildDocument(CodeIndexDocument codeIndexDocument) {
         Document document = new Document();
+
         // Path is the primary key for documents
         // needs to include repo location, project name and then filepath including file
         Field pathField = new StringField(Values.PATH, codeIndexDocument.getRepoLocationRepoNameLocationFilename(), Field.Store.YES);
@@ -267,6 +271,7 @@ public class IndexService implements IIndexService {
 
         // This is the main pipeline for making code searchable and probably the most important
         // part of the indexer codebase
+        Timer timer = Singleton.getNewTimer();
         String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
                 this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName()) + " " +
                 codeIndexDocument.getFileLocationFilename() + " " +
@@ -275,6 +280,7 @@ public class IndexService implements IIndexService {
                 this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
+        this.logger.fine("buildDocument:codeCleanPipeline:" + timer.toc());
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceNonAlphanumeric(codeIndexDocument.getRepoName(), "_").toLowerCase(), Field.Store.NO));
