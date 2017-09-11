@@ -123,6 +123,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
     /**
      * Only works if we have path to GIT
+     * Should change over to git log -n 1 --pretty=format:%an -- README.md
      */
     public List<CodeOwner> getBlameInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         List<CodeOwner> codeOwners = new ArrayList<>(codeLinesSize);
