@@ -283,21 +283,21 @@ public class IndexService implements IIndexService {
         this.logger.fine("buildDocument:codeCleanPipeline:" + timer.toc());
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceNonAlphanumeric(codeIndexDocument.getRepoName(), "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.FILENAME,                 codeIndexDocument.getFileName(), Field.Store.YES));
-        document.add(new TextField(Values.FILE_NAME_LITERAL,        this.helpers.replaceNonAlphanumeric(codeIndexDocument.getFileName(), "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILE_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getFileName()).toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
         document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
         document.add(new TextField(Values.DISPLAY_LOCATION,         codeIndexDocument.getDisplayLocation(), Field.Store.YES));
-        document.add(new TextField(Values.DISPLAY_LOCATION_LITERAL, this.helpers.replaceNonAlphanumeric(codeIndexDocument.getDisplayLocation(), "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.DISPLAY_LOCATION_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getDisplayLocation()).toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    this.helpers.replaceNonAlphanumeric(codeIndexDocument.getLanguageName(), "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    this.helpers.replaceForIndex(codeIndexDocument.getLanguageName()).toLowerCase(), Field.Store.NO));
         document.add(new IntField(Values.CODELINES,                 codeIndexDocument.getCodeLines(), Field.Store.YES));
         document.add(new TextField(Values.CONTENTS,                 indexContents.toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.REPOLOCATION,             codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
         document.add(new TextField(Values.CODEOWNER,                codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceNonAlphanumeric(codeIndexDocument.getCodeOwner(), "_").toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
         document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
 
@@ -647,7 +647,7 @@ public class IndexService implements IIndexService {
 
             Analyzer analyzer = new CodeAnalyzer();
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
-            Query query = parser.parse(Values.REPONAME + ":" + repoName);
+            Query query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
 
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
             ScoreDoc[] hits = results.scoreDocs;

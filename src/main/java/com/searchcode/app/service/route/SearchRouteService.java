@@ -68,7 +68,7 @@ public class SearchRouteService {
 
                 if (repos.length != 0) {
                     List<String> reposList = Arrays.asList(repos).stream()
-                            .map((s) -> "reponame:" + QueryParser.escape(s.replace(" ", "_")))
+                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
@@ -80,7 +80,7 @@ public class SearchRouteService {
 
                 if (langs.length != 0) {
                     List<String> langsList = Arrays.asList(langs).stream()
-                            .map((s) -> "languagename:" + QueryParser.escape(s.replace(" ", "_")))
+                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
@@ -92,7 +92,7 @@ public class SearchRouteService {
 
                 if (owners.length != 0) {
                     List<String> ownersList = Arrays.asList(owners).stream()
-                            .map((s) -> "codeowner:" + QueryParser.escape(s.replace(" ", "_")))
+                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
