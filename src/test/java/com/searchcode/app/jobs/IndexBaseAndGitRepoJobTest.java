@@ -5,8 +5,16 @@ import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
+import com.searchcode.app.util.Timer;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.LogCommand;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.File;
 import java.io.IOException;
@@ -207,4 +215,44 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         File toCheck = new File(projectLocation.getAbsolutePath());
         assertThat(toCheck.exists()).isFalse();
     }
+
+    // TODO implement this to speed up the Owner portion
+//    public void testTesty() throws IOException, GitAPIException {
+//        //public List<CodeOwner> getBlameInfo(int codeLinesSize, String repoName, String repoLocations, String fileName) {
+//
+//        // The / part is required due to centos bug for version 1.1.1
+//        // This appears to be correct
+//        String repoLoc = "/Users/boyter/Documents/Projects/searchcode-server/.git";
+////
+//        Timer timer = Singleton.getNewTimer();
+//        Repository localRepository = new FileRepository(new File(repoLoc));
+//        System.out.println("" + timer.toc());
+////
+////        Git git = new Git(localRepository);
+////        Iterable<RevCommit> logs = git.log().call();
+////
+////        for(RevCommit rev: logs) {
+////            String message = rev.getFullMessage();
+////            String author = rev.getAuthorIdent().getName();
+////            System.out.println(author);
+////        }
+//
+//
+//        timer.tic();
+//        Git git = new Git(localRepository);
+//        System.out.println("" + timer.toc());
+//
+//        LogCommand logCommand = git.log()
+//                .add(git.getRepository().resolve(Constants.HEAD))
+//                .addPath("README.md");
+//
+//        timer.tic();
+//        for (RevCommit revCommit: logCommand.call()) {
+//            System.out.println(revCommit.getAuthorIdent().getName());
+//            break;
+//        }
+//        System.out.println("" + timer.toc());
+//
+//
+//    }
 }
