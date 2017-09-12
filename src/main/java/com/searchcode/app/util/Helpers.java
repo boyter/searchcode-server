@@ -309,7 +309,7 @@ public class Helpers {
     }
 
     public String replaceForIndex(String toReplace) {
-        return this.replaceNonAlphanumeric(toReplace, "_");
+        return this.replaceNonAlphanumeric(toReplace, "_").toLowerCase();
     }
 
     public String replaceNonAlphanumeric(String toReplace, String replaceWith) {

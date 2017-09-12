@@ -108,6 +108,13 @@ public class HelpersTest extends TestCase {
         assertThat(this.helpers.tryParseDouble("0", "0")).isZero();
     }
 
+    public void testReplaceForIndex() {
+        assertThat(this.helpers.replaceForIndex("Something")).isEqualTo("something");
+        assertThat(this.helpers.replaceForIndex("Something123")).isEqualTo("something123");
+        assertThat(this.helpers.replaceForIndex("Something.123")).isEqualTo("something_123");
+        assertThat(this.helpers.replaceForIndex("Something 123")).isEqualTo("something_123");
+    }
+
     public void testReplaceNonAlphanumeric() {
         this.helpers = new Helpers();
         assertThat(this.helpers.replaceNonAlphanumeric("Something", "")).isEqualTo("Something");
