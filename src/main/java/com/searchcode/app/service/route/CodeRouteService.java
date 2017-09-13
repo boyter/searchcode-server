@@ -232,9 +232,8 @@ public class CodeRouteService {
             halt();
         }
 
-
         ProjectStats projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
-                                           .orElse(this.indexService.getProjectStats(Values.EMPTYSTRING));
+                                              .orElse(this.indexService.getProjectStats(Values.EMPTYSTRING));
 
         map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
         repository.ifPresent(x -> map.put("repoLocation", x.getUrl()));

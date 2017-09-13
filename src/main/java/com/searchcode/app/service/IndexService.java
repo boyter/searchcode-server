@@ -608,7 +608,7 @@ public class IndexService implements IIndexService {
 
             Analyzer analyzer = new CodeAnalyzer();
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
-            Query query = parser.parse(Values.REPONAME + ":" + repoName);
+            Query query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
 
             TopDocs results = searcher.search(query, Integer.MAX_VALUE);
             int end = Math.min(results.totalHits, (REPOPAGELIMIT * (page + 1)));
@@ -622,7 +622,7 @@ public class IndexService implements IIndexService {
             reader.close();
         }
         catch(Exception ex) {
-            this.logger.severe("CodeSearcher getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
+            this.logger.severe("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
         }
 
         return fileLocations;
@@ -633,6 +633,10 @@ public class IndexService implements IIndexService {
      */
     @Override
     public ProjectStats getProjectStats(String repoName) {
+        if (this.helpers.isNullEmptyOrWhitespace(repoName)) {
+            return new ProjectStats(0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        }
+
         int totalCodeLines = 0;
         int totalFiles = 0;
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
@@ -681,7 +685,7 @@ public class IndexService implements IIndexService {
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
         }
         catch (Exception ex) {
-            this.logger.severe("CodeSearcher getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);

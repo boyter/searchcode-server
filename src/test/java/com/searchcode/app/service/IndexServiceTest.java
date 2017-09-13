@@ -201,7 +201,8 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search("reponame:" + this.repoName, 0);
+        Helpers helpers = new Helpers();
+        SearchResult contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), 0);
 
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
