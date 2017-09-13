@@ -180,25 +180,16 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    /**
-     * Determines if anything has changed or if the last index operation failed and if so
-     * triggers the index process.
-     */
     public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        // If the last index was not sucessful, then trigger full index
-        boolean indexSuccess = this.checkIndexSucess(repoGitLocation);
+        Instant jobStartTime = Instant.now();
+        Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
+        this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
-        if (repositoryChanged.isChanged() || indexSuccess == false) {
-            Instant jobStartTime = Instant.now();
-            Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
-            this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
-
-            int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
-            repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
-            repoResult.getData().indexStatus = "success";
-            repoResult.getData().jobRunTime = jobStartTime;
-            Singleton.getRepo().saveRepo(repoResult);
-        }
+        int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
+        repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+        repoResult.getData().indexStatus = "success";
+        repoResult.getData().jobRunTime = jobStartTime;
+        Singleton.getRepo().saveRepo(repoResult);
     }
 
     /**
