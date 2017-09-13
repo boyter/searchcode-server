@@ -193,7 +193,7 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXX XXXX - 1.3.11
+XX XXXX XXXX - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
  - Add link to repository source on repository overview page https://github.com/boyter/searchcode-server/issues/126
  - Removed property index_queue_batch_size as it is no longer required
  - Change check_filerepo_changes to default size of 600 as check is now far more efficient https://github.com/boyter/searchcode-server/issues/133
