@@ -248,8 +248,8 @@ public class SearchcodeLib {
         }
 
         // Check against user set blacklist
-        for (String extention: this.BLACK_LIST) {
-            if (lowerFileName.endsWith("." + extention)) {
+        for (String extension: this.BLACK_LIST) {
+            if (lowerFileName.endsWith("." + extension) || lowerFileName.equals(extension)) {
                 return new BinaryFinding(true, "appears in extension blacklist");
             }
         }
@@ -264,7 +264,7 @@ public class SearchcodeLib {
         }
 
         // If we aren't meant to guess then assume it isnt binary
-        if (this.GUESS_BINARY == false) {
+        if (!this.GUESS_BINARY) {
             return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 

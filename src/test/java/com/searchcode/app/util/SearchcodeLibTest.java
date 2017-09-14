@@ -54,6 +54,18 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).contains(" install_something ");
     }
 
+    public void testIsBinaryBlackListWithNoDotFileName() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("a");
+
+        sl.BLACK_LIST = new String[1];
+        sl.BLACK_LIST[0] = "license";
+
+        assertTrue(sl.isBinary(codeLines, "license").isBinary());
+    }
+
     public void testIsBinary() {
         SearchcodeLib sl = new SearchcodeLib();
 
