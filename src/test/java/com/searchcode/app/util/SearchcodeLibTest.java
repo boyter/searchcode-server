@@ -117,8 +117,8 @@ public class SearchcodeLibTest extends TestCase {
 
         FileClassifier fileClassifier = new FileClassifier();
 
-        for(FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
-            for(String extension: fileClassifierResult.extensions) {
+        for (FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
+            for (String extension: fileClassifierResult.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
             }

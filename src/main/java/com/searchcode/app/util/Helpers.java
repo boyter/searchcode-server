@@ -316,6 +316,16 @@ public class Helpers {
         return toReplace.replaceAll("[^A-Za-z0-9]", replaceWith);
     }
 
+    public boolean allUnique(List<String> strings) {
+        HashSet<String> set = new HashSet<>();
+        for (String s: strings) {
+            if (! set.add(s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void closeQuietly(ResultSet resultSet) {
         try {
             resultSet.close();

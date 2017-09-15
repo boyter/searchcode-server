@@ -31,6 +31,17 @@ public class FileClassifierResultTest extends TestCase {
         assertThat(languageGuess).isEqualTo("boyterlang");
     }
 
+    public void testIdentifyLanguageAdditionalDots() {
+        List<FileClassifierResult> database = new ArrayList<>();
+        database.add(new FileClassifierResult("Typescript", "ts", ""));
+        database.add(new FileClassifierResult("Typings Definition", "d.ts", ""));
+
+        FileClassifier fileClassifier = new FileClassifier(database);
+        String languageGuess = fileClassifier.languageGuesser("test.d.ts", new ArrayList<>());
+
+        assertThat(languageGuess).isEqualTo("Typings Definition");
+    }
+
     public void testLanguageGuesserText() {
         FileClassifier fileClassifier = new FileClassifier();
         String language = fileClassifier.languageGuesser("test.txt", new ArrayList<>());

@@ -6,10 +6,7 @@ import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Matchers.any;
@@ -122,5 +119,23 @@ public class HelpersTest extends TestCase {
         assertThat(this.helpers.replaceNonAlphanumeric("Something.123", "")).isEqualTo("Something123");
         assertThat(this.helpers.replaceNonAlphanumeric("Something.123", "_")).isEqualTo("Something_123");
         assertThat(this.helpers.replaceNonAlphanumeric("Something 123", "_")).isEqualTo("Something_123");
+    }
+
+    public void testAllUnique() {
+        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
+            add("a");
+            add("a");
+        }})).isFalse();
+
+        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
+            add("a");
+            add("b");
+        }})).isTrue();
+
+        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
+            add("a");
+            add("b");
+            add("b");
+        }})).isFalse();
     }
 }
