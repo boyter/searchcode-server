@@ -85,7 +85,7 @@ public class FileClassifier {
         // More than one possible match check if one is a better fit
         if (this.helpers.allUnique(matchingExtensions)) {
             Optional<String> longest = matchingExtensions.stream()
-                                        .sorted((e1, e2) -> e1.length() > e2.length() ? -1 : 1)
+                                        .sorted(String::compareTo)
                                         .findFirst();
 
             if (longest.isPresent()) {
