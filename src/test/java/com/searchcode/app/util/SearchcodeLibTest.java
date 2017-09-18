@@ -72,7 +72,7 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("a");
 
-        assertFalse(sl.isBinary(codeLines, "").isBinary());
+        assertFalse(sl.isBinary(codeLines, "somefilename").isBinary());
     }
 
     public void testIsBinaryAllNonAscii() {
@@ -81,33 +81,33 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你");
 
-        assertTrue(sl.isBinary(codeLines, "").isBinary());
+        assertTrue(sl.isBinary(codeLines, "somefilename").isBinary());
     }
 
     public void testIsBinaryFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertFalse(sl.isBinary(codeLines, "").isBinary());
+        assertFalse(sl.isBinary(codeLines, "somefilename").isBinary());
     }
 
     public void testIsBinaryTrue() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
-            minified += "你";
+            minified.append("你");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertTrue(sl.isBinary(codeLines, "").isBinary());
+        assertTrue(sl.isBinary(codeLines, "somefilename").isBinary());
     }
 
     public void testIsBinaryWhiteListedExtension() {
@@ -162,14 +162,14 @@ public class SearchcodeLibTest extends TestCase {
     public void testIsBinaryEdge1() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 95; i++) {
-            minified += "你";
+            minified.append("你");
         }
-        minified += "aaaaa";
+        minified.append("aaaaa");
 
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
         assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
     }
@@ -177,14 +177,14 @@ public class SearchcodeLibTest extends TestCase {
     public void testIsBinaryEdge2() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 96; i++) {
-            minified += "你";
+            minified.append("你");
         }
-        minified += "aaaa";
+        minified.append("aaaa");
 
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
         assertTrue(sl.isBinary(codeLines, "").isBinary());
     }
@@ -192,28 +192,28 @@ public class SearchcodeLibTest extends TestCase {
     public void testIsBinaryEdge3() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 200; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
 
         for (int i=0; i < 200; i++) {
-            codeLines.add(minified);
+            codeLines.add(minified.toString());
         }
 
-        assertFalse(sl.isBinary(codeLines, "").isBinary());
+        assertFalse(sl.isBinary(codeLines, "somefilename").isBinary());
     }
 
     public void testIsMinifiedTrue() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
         assertTrue(sl.isMinified(codeLines, "something.something"));
     }
@@ -226,12 +226,12 @@ public class SearchcodeLibTest extends TestCase {
         whiteList.add("something");
         sl.WHITE_LIST = whiteList.toArray(new String[whiteList.size()]);
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 500; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
         assertFalse(sl.isMinified(codeLines, "something.something"));
     }
@@ -239,12 +239,12 @@ public class SearchcodeLibTest extends TestCase {
     public void testIsMinifiedFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 255; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
         assertFalse(sl.isMinified(codeLines, "something.something"));
     }
