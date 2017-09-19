@@ -59,7 +59,7 @@ public class StatsService {
 
     public String getLoadAverage() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return Values.EMPTYSTRING + osBean.getSystemLoadAverage();
+        return Values.DECIMAL_FORMAT.format(osBean.getSystemLoadAverage());
     }
 
     public String getArch() {

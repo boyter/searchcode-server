@@ -11,6 +11,8 @@
 package com.searchcode.app.config;
 
 
+import java.text.DecimalFormat;
+
 /**
  * Contains any static values we need locations, names etc....
  */
@@ -174,4 +176,5 @@ public class Values {
     public static final String REPO_STATUS_FINISHED = "FINISHED";
 
     public static final String CHARSET_UTF8 = "UTF8";
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 }
