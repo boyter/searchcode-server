@@ -2049,10 +2049,10 @@ if (window.localStorage) {
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
 
     tmp = JSON.parse(localStorage.getItem('toggleliteral'));
-    tmp !== null ? SearchModel.literalview(tmp) : SearchModel.literalview(true);
+    tmp !== null ? SearchModel.literalview(tmp) : SearchModel.literalview(false);
 
     tmp = JSON.parse(localStorage.getItem('togglecompact'));
-    tmp !== null ? SearchModel.compactview(tmp) : SearchModel.compactview(true);
+    tmp !== null ? SearchModel.compactview(tmp) : SearchModel.compactview(false);
 
     if (ff_timesearchenabled === true) {
         tmp = JSON.parse(localStorage.getItem('togglehistory'));
