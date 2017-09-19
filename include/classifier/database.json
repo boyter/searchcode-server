@@ -1165,5 +1165,12 @@
       "d.ts"
     ],
     "keywords": []
+  },
+  {
+    "language": "Robot Framework",
+    "extensions": [
+      "robot"
+    ],
+    "keywords": []
   }
 ]
