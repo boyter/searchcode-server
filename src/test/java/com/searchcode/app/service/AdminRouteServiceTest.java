@@ -28,7 +28,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParams("reponame")).thenReturn("hopefullyarandomnamethatdoesnotexist");
 
         String result = adminRouteService.checkIndexStatus(mockRequest, null);
-        assertThat(result).isEmpty();
+        assertThat(result).isEqualTo("Queued");
     }
 
 

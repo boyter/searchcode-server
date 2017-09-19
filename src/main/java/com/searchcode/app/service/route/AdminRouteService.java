@@ -76,20 +76,23 @@ public class AdminRouteService {
     public String checkIndexStatus(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
             String reponame = request.queryParams("reponame");
-            String reposLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
-
-            IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
 
             Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(reponame);
             String indexStatus = repoResult.map(x -> x.getData().indexStatus).orElse(Values.EMPTYSTRING);
 
-            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
+            if ("success".equals(indexStatus)) {
                 return "Indexed ✓";
             }
 
-            if ("indexing".equals(indexStatus)) {
+            if (Singleton.getDataService().getPersistentDelete().contains(reponame)) {
+                return "Pending Delete";
+            }
+
+            if (Singleton.getRunningIndexRepoJobs().keySet().contains(reponame)) {
                 return "Indexing...";
             }
+
+            return "Queued";
         }
 
         return Values.EMPTYSTRING;
