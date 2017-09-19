@@ -15,6 +15,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
@@ -35,6 +36,7 @@ public class EnqueueFileRepositoryJob implements Job {
     private final IndexService indexService;
     private final LoggerWrapper logger;
     private final Repo repo;
+    private final Helpers helpers;
     private boolean firstRun;
 
     public EnqueueFileRepositoryJob() {
@@ -42,6 +44,7 @@ public class EnqueueFileRepositoryJob implements Job {
         this.repo = Singleton.getRepo();
         this.logger = Singleton.getLogger();
         this.firstRun = true;
+        this.helpers = Singleton.getHelpers();
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -54,18 +57,12 @@ public class EnqueueFileRepositoryJob implements Job {
 
             UniqueRepoQueue repoQueue = Singleton.getUniqueFileRepoQueue();
 
-            // Get all of the repositories and enqueue them
-            List<RepoResult> repoResultList = this.repo.getAllRepo();
-
             // Filter out those queued to be deleted
-            List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
-            List<RepoResult> collect = repoResultList.stream()
-                                            .filter(x -> !persistentDelete.contains(x.getName()))
-                                            .collect(Collectors.toList());
+            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
 
-            this.logger.info("Adding file repositories to be indexed. " + collect.size());
+            this.logger.info("Adding file repositories to be indexed. " + repoResultList.size());
 
-            for (RepoResult rr: collect) {
+            for (RepoResult rr: repoResultList) {
                 if (this.firstRun) {
                     rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
                     this.repo.saveRepo(rr);
