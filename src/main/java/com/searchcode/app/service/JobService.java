@@ -20,8 +20,10 @@ import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
+import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.io.FileUtils;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -49,7 +51,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 public class JobService implements IJobService {
 
-    private IRepo repo = null;
+    private final Helpers helpers;
+    private final IRepo repo;
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 1; // TODO allow this to be configurable
@@ -64,6 +67,7 @@ public class JobService implements IJobService {
 
     public JobService() {
         this.repo = Singleton.getRepo();
+        this.helpers = Singleton.getHelpers();
         this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
         this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
     }
@@ -374,15 +378,10 @@ public class JobService implements IJobService {
             return false;
         }
 
-        // Get all of the repositories and enqueue them
-        List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-        List<RepoResult> collect = repoResultList.stream()
-                .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
-                .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
-                .collect(Collectors.toList());
+        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
 
-        Singleton.getLogger().info("Adding repositories to be indexed. " + collect.size());
-        collect.forEach(this::enqueueRepository);
+        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        repoResultList.forEach(this::enqueueRepository);
 
         return true;
     }
@@ -390,16 +389,12 @@ public class JobService implements IJobService {
     @Override
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
-        List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-        List<RepoResult> collect = repoResultList.stream()
-                .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
-                .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
-                .collect(Collectors.toList());
+        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
 
-        Singleton.getLogger().info("Adding repositories to be indexed. " + collect.size());
-        collect.forEach(this::enqueueRepository);
+        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        repoResultList.forEach(this::enqueueRepository);
 
-        return collect.size();
+        return repoResultList.size();
     }
 
     @Override

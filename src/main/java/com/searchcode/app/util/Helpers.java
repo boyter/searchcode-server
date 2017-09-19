@@ -13,6 +13,8 @@ package com.searchcode.app.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
@@ -28,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -48,6 +51,14 @@ public class Helpers {
 
     public Helpers(java.util.Properties properties) {
         this.properties = properties;
+    }
+
+
+    public List<RepoResult> filterRunningAndDeletedRepoJobs(List<RepoResult> repoResultList) {
+        return repoResultList.stream()
+                .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
+                .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
+                .collect(Collectors.toList());
     }
 
     /**
