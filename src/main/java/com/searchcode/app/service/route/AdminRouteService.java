@@ -473,7 +473,7 @@ public class AdminRouteService {
                 return Values.EMPTYSTRING + this.statsService.getSearchCount();
             case "runningjobs":
                 StringBuilder stringBuffer = new StringBuilder();
-                for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
+                for (String key: Singleton.getRunningIndexRepoJobs().keySet()) {
                     RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
                     if (indexJob != null) {
                         int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - indexJob.startTime;

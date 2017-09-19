@@ -21,6 +21,7 @@ import org.quartz.*;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -62,8 +63,9 @@ public class EnqueueRepositoryJob implements Job {
             List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
             List<RepoResult> collect = repoResultList.stream()
                                                      .filter(x -> !persistentDelete.contains(x.getName()))
+                                                     .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
                                                      .collect(Collectors.toList());
-
+            
             this.logger.info("Adding repositories to be indexed. " + collect.size());
 
             for (RepoResult rr: collect) {
