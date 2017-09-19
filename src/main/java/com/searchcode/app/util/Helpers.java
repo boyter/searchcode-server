@@ -53,7 +53,6 @@ public class Helpers {
         this.properties = properties;
     }
 
-
     public List<RepoResult> filterRunningAndDeletedRepoJobs(List<RepoResult> repoResultList) {
         return repoResultList.stream()
                 .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
