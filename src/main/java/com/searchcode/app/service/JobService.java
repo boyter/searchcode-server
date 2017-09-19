@@ -34,6 +34,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -375,8 +376,13 @@ public class JobService implements IJobService {
 
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-        repoResultList.forEach(this::enqueueRepository);
+        List<RepoResult> collect = repoResultList.stream()
+                .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
+                .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
+                .collect(Collectors.toList());
+
+        Singleton.getLogger().info("Adding repositories to be indexed. " + collect.size());
+        collect.forEach(this::enqueueRepository);
 
         return true;
     }
@@ -385,15 +391,25 @@ public class JobService implements IJobService {
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-        repoResultList.forEach(this::enqueueRepository);
+        List<RepoResult> collect = repoResultList.stream()
+                .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
+                .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
+                .collect(Collectors.toList());
 
-        return repoResultList.size();
+        Singleton.getLogger().info("Adding repositories to be indexed. " + collect.size());
+        collect.forEach(this::enqueueRepository);
+
+        return collect.size();
     }
 
     @Override
     public boolean forceEnqueue(RepoResult repoResult) {
         if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
+            return false;
+        }
+
+        if (Singleton.getDataService().getPersistentDelete().contains(repoResult.getName()) ||
+                Singleton.getRunningIndexRepoJobs().keySet().contains(repoResult.getName())) {
             return false;
         }
 

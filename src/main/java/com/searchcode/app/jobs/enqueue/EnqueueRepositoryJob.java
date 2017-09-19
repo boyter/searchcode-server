@@ -65,7 +65,7 @@ public class EnqueueRepositoryJob implements Job {
                                                      .filter(x -> !persistentDelete.contains(x.getName()))
                                                      .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
                                                      .collect(Collectors.toList());
-            
+
             this.logger.info("Adding repositories to be indexed. " + collect.size());
 
             for (RepoResult rr: collect) {

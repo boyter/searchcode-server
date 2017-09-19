@@ -22,6 +22,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 public class CodeRouteServiceTest extends TestCase {
+
     public void testRootNoQueryString() {
         CodeRouteService codeRouteService = new CodeRouteService();
 
