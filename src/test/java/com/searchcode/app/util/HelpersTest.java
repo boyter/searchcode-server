@@ -1,5 +1,6 @@
 package com.searchcode.app.util;
 
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
@@ -137,5 +138,12 @@ public class HelpersTest extends TestCase {
             add("b");
             add("b");
         }})).isFalse();
+    }
+
+    public void testFilterRunningAndDeletedRepoJobs() {
+        assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<>()).size()).isEqualTo(0);
+        assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<RepoResult>() {{
+            add(new RepoResult(0, "reallyreallyuniquename", "", "", "", "", "", "", ""));
+        }}).size()).isEqualTo(1);
     }
 }
