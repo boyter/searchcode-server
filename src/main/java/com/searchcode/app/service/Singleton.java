@@ -62,6 +62,25 @@ public final class Singleton {
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
 
+    private static boolean enqueueRepositoryJobFirstRun = true;
+    private static boolean enqueueFileRepositoryJobFirstRun = true;
+
+    public static synchronized void setEnqueueRepositoryJobFirstRun(boolean value) {
+        enqueueRepositoryJobFirstRun = value;
+    }
+
+    public static synchronized void setEnqueueFileRepositoryJob(boolean value) {
+        enqueueFileRepositoryJobFirstRun = value;
+    }
+
+    public static synchronized boolean getEnqueueRepositoryJobFirstRun() {
+        return enqueueRepositoryJobFirstRun;
+    }
+
+    public static synchronized boolean getEnqueueFileRepositoryJobFirstRun() {
+        return enqueueFileRepositoryJobFirstRun;
+    }
+
     public static Timer getNewTimer() {
         return new Timer();
     }

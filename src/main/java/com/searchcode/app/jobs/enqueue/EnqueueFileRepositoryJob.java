@@ -37,13 +37,11 @@ public class EnqueueFileRepositoryJob implements Job {
     private final LoggerWrapper logger;
     private final Repo repo;
     private final Helpers helpers;
-    private boolean firstRun;
 
     public EnqueueFileRepositoryJob() {
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
         this.logger = Singleton.getLogger();
-        this.firstRun = true;
         this.helpers = Singleton.getHelpers();
     }
 
@@ -57,15 +55,19 @@ public class EnqueueFileRepositoryJob implements Job {
 
             UniqueRepoQueue repoQueue = Singleton.getUniqueFileRepoQueue();
 
-            // Filter out those queued to be deleted
-            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
+            // Filter out those queued to be deleted and not file repositories
+            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo())
+                .stream()
+                .filter(x -> x.getScm().equals("file"))
+                .collect(Collectors.toList());
 
             this.logger.info("Adding file repositories to be indexed. " + repoResultList.size());
 
             for (RepoResult rr: repoResultList) {
-                if (this.firstRun) {
+                if (Singleton.getEnqueueFileRepositoryJobFirstRun()) {
                     rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
                     this.repo.saveRepo(rr);
+                    Singleton.getLogger().info("Resetting Job Run Time due to firstRun:" + Singleton.getEnqueueFileRepositoryJobFirstRun() + " repoName:" + rr.getName());
                 }
 
                 switch (rr.getScm().toLowerCase()) {
@@ -78,10 +80,10 @@ public class EnqueueFileRepositoryJob implements Job {
                 }
             }
 
-            this.firstRun = false;
+            Singleton.setEnqueueFileRepositoryJob(false);
         }
         catch (Exception ex) {
-            this.firstRun = false;
+            Singleton.setEnqueueFileRepositoryJob(false);
         }
     }
 }

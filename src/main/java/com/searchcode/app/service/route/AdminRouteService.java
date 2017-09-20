@@ -438,6 +438,7 @@ public class AdminRouteService {
 
         repoResult.ifPresent(x ->  {
             x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
+            Singleton.getLogger().info("Resetting Job Run Time due to reindex request repoName:" + x.getName());
             Singleton.getRepo().saveRepo(x);
             this.jobService.forceEnqueue(x);
         });
@@ -449,7 +450,7 @@ public class AdminRouteService {
             version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);
         }
         catch(IOException ex) {
-            return "Unable to determine if running the latest version. Check https://searchcode.com/product/download/ for the latest release.";
+            return "Unable to determine if running the latest version. Check https://searchcodeserver.com/pricing.html for the latest release.";
         }
 
         if (App.VERSION.equals(version)) {

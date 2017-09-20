@@ -175,15 +175,7 @@ public class Helpers {
      * Crappy implementation of the C# is nullEmptyOrWhitespace which is occasionally useful
      */
     public boolean isNullEmptyOrWhitespace(String test) {
-        if (test == null) {
-            return true;
-        }
-
-        if (test.trim().length() == 0) {
-            return true;
-        }
-
-        return false;
+        return test == null || test.trim().isEmpty();
     }
 
     /**
@@ -201,7 +193,7 @@ public class Helpers {
         if (!this.isNullEmptyOrWhitespace((String)this.properties.get(Values.DIRECTORY_BLACK_LIST))) {
             String[] toIgnoreArray = ((String) this.properties.get(Values.DIRECTORY_BLACK_LIST)).split(",");
 
-            for(String toIgnore: toIgnoreArray) {
+            for (String toIgnore: toIgnoreArray) {
                 if (fileParent.endsWith("/" + toIgnore) || fileParent.endsWith("/" + toIgnore + "/")) {
                     return true;
                 }
