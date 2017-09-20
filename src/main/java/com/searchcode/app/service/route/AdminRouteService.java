@@ -481,7 +481,7 @@ public class AdminRouteService {
                     RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
                     if (indexJob != null) {
                         int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - indexJob.startTime;
-                        stringBuffer.append(key).append(" <small>(").append(runningTime).append(" seconds)</small>").append(" ");
+                        stringBuffer.append(key).append(" <small>(").append(runningTime).append("s)</small>").append(" ");
                     }
                     else {
                         stringBuffer.append(key).append(" ");

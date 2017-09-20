@@ -23,7 +23,8 @@
 
         <style>
         .panel {
-            height:180px !important;
+            height:190px !important;
+            overflow: scroll;
         }
         </style>
 
@@ -44,20 +45,12 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-8">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Memory Usage</h3>
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Running Index Jobs</h3>
                     </div>
-                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</p></div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title"><span class="glyphicon glyphicon-font" aria-hidden="true"></span> Words in Spelling Corrector</h3>
-                    </div>
-                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</p></div>
+                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p></div>
                 </div>
             </div>
         </div>
@@ -95,9 +88,12 @@
             <div class="col-md-4">
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Running Index Jobs</h3>
+                        <h3 class="panel-title"><span class="glyphicon glyphicon-th-list" aria-hidden="true"></span> Memory Usage</h3>
                     </div>
-                    <div class="panel-body"><p ic-poll="3s" ic-src="/admin/api/getstat/?statname=runningjobs">${runningJobs}</p></div>
+                    <div class="panel-body">
+                        <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</span>
+                        <br>Spelling Words: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</span>
+                    </div>
                 </div>
             </div>
         </div>
