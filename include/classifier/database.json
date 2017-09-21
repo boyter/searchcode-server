@@ -1172,5 +1172,12 @@
       "robot"
     ],
     "keywords": []
+  },
+  {
+    "language": "Report Definition Language",
+    "extensions": [
+      "rdl"
+    ],
+    "keywords": []
   }
 ]
