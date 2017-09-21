@@ -8,6 +8,18 @@
 
     <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> /${codePath}</h4>
 
+    <center>
+        <form method="GET" action="/">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input id="searchwithin" name="q" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="true" size="50" placeholder="Search within ${repoName?html}" type="search" class="form-control" />
+                    <input type="hidden" name="repo" value="${repoName?html}" />
+                </div>
+                <input type="submit" value="search" class="btn btn-primary">
+            </div>
+        </form>
+    </center><br />
+
     <table class="table">
         <tbody>
           <tr>
@@ -99,6 +111,19 @@ $('#toggleOwasp').click(function(e) {
   e.preventDefault();
   $('#owaspResults').toggle();
 });
+
+// Get highlighted text and prefill the search boxes
+function gText(e) {
+    var t = (document.all) ? document.selection.createRange().text : document.getSelection();
+    document.getElementById('searchwithin').value = t;
+    document.getElementById('searchbox').value = t;
+}
+
+document.onmouseup = gText;
+if (!document.all) {
+    document.captureEvents(Event.MOUSEUP);
+}
+
 </script>
 
 <#if highlight>
