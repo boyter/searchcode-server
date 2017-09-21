@@ -92,7 +92,7 @@
                     </div>
                     <div class="panel-body">
                         <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=memoryusage">${memoryUsage}</span>
-                        <br>Spelling Words: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</span>
+                        <br>spelling corrector count: <span ic-poll="3s" ic-src="/admin/api/getstat/?statname=spellingcount">${spellingCount}</span>
                     </div>
                 </div>
             </div>
