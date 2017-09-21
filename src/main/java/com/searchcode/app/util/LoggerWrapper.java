@@ -128,7 +128,7 @@ public class LoggerWrapper {
         this.severeRecentCache = EvictingQueue.create(1000);
         this.searchLog = EvictingQueue.create(1000);
         this.apiLog = EvictingQueue.create(1000);
-        this.fineRecentCache = EvictingQueue.create(1000);
+        this.fineRecentCache = EvictingQueue.create(10000);
     }
 
     public synchronized void clearAllLogs() {

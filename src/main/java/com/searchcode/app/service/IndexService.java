@@ -232,10 +232,11 @@ public class IndexService implements IIndexService {
                         Document document = this.buildDocument(x);
 
                         Timer timer = Singleton.getNewTimer();
+                        this.logger.fine("indexDocument:updateDocument:start:linescount=" + x.getCodeLines() + ":filename=" + x.getRepoLocationRepoNameLocationFilename());
                         try {
                             writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
                         } catch (Exception ignored) {}
-                        this.logger.fine("indexDocument:updateDocument:" + timer.toc());
+                        this.logger.fine("indexDocument:updateDocument:end:filename=" + x.getRepoLocationRepoNameLocationFilename() + ":" + timer.toc());
                     });
         }
         finally {
@@ -272,6 +273,7 @@ public class IndexService implements IIndexService {
         // This is the main pipeline for making code searchable and probably the most important
         // part of the indexer codebase
         Timer timer = Singleton.getNewTimer();
+        this.logger.fine("buildDocument:codeCleanPipeline:start:length=" + codeIndexDocument.getContents().length());
         String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
                 this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName()) + " " +
                 codeIndexDocument.getFileLocationFilename() + " " +
@@ -280,7 +282,7 @@ public class IndexService implements IIndexService {
                 this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
-        this.logger.fine("buildDocument:codeCleanPipeline:" + timer.toc());
+        this.logger.fine("buildDocument:codeCleanPipeline:end:length=" + indexContents.length() + ":" + timer.toc());
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));

@@ -120,7 +120,7 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getWarningLogs().size()).isEqualTo(0);
         assertThat(logger.getAllLogs().size()).isEqualTo(1000);
         assertThat(logger.getSearchLogs().size()).isEqualTo(1000);
-        assertThat(logger.getFineLogs().size()).isEqualTo(1000);
+        assertThat(logger.getFineLogs().size()).isEqualTo(2100);
     }
 
     public void testLoggerWrapperGetLogReversed() {
