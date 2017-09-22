@@ -176,8 +176,8 @@ QUnit.module('SearchComponent');
 QUnit.test( 'view', function( assert ) {
   var result = SearchComponent.view();
   assert.equal(result.tag, 'div');
-  assert.equal(result.children.length, 5);
-  assert.equal(result.children[4].tag, 'div');
+  assert.equal(result.children.length, 4);
+  assert.equal(result.children[3].tag, 'div');
 });
 
 QUnit.module('SearchNoResultsComponent');
