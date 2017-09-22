@@ -91,7 +91,8 @@
     "extensions": [
       "makefile",
       "gnumakefile",
-      "make"
+      "make",
+      "mk"
     ],
     "keywords": ["swig", "top", "target", "interface", "make", "the", "makefile", "include", "srcs", "all", "example", "swigopt", "clean", "cxxsrcs", "obj", "cpp", "config", "static", "openssl", "libs", "dir", "echo", "check", "test", "and", "file", "lib", "build", "this", "for", "srcdir", "license", "src", "cflags", "install", "endif", "python", "objs", "version", "preinst", "cxx", "java", "files", "use", "curdir", "incdir", "html", "includes", "bin", "you", "object", "path", "module", "ruby", "source", "under", "not", "run", "with", "are", "prog", "bsd", "progfile", "gnu", "freebsd", "builddir", "usr", "main", "modules", "library", "exe", "php", "gpl", "common", "lgpl", "name", "else", "elf", "sources", "compile", "copyright", "extra", "006", "any", "may", "core", "perl5", "mlfile", "mkdir", "arch", "that", "terms", "your", "dist", "destdir", "man", "local", "data", "wrap", "lua", "ifeq", "list", "005", "debug", "out", "public", "ldflags", "phony", "prefix", "dll", "then", "tcl", "ocaml", "base", "csharp", "dev", "sed", "software", "code", "above", "flags", "doc", "mpl", "provisions", "chicken", "set", "distributed", "scm", "used", "cmo", "project", "opt", "root", "output", "package", "driver", "shell", "general", "domain", "lang", "tests", "platform", "routines", "inc", "either", "default", "binary", "ccache", "webcore", "only", "copy", "without", "mypython", "rules", "program", "can", "configure", "compiler", "done", "from", "txt", "gen", "system", "runme", "ldadd", "png", "gcc", "rights", "objects", "linux", "info", "ifdef", "latex", "simple", "crypto", "cpu", "kmod", "options", "link", "release", "tclsh", "call", "drv", "which", "asn1", "xml", "stamp", "myruby", "have", "cxxflags", "octave", "class", "krb5", "developer", "setup", "err", "dynamic", "subdir", "directory", "guile"]
   },
