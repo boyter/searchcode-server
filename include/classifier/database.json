@@ -1180,5 +1180,19 @@
       "rdl"
     ],
     "keywords": []
+  },
+  {
+    "language": "Key File",
+    "extensions": [
+      "key"
+    ],
+    "keywords": []
+  },
+  {
+    "language": "Certificate File",
+    "extensions": [
+      "crt"
+    ],
+    "keywords": []
   }
 ]
