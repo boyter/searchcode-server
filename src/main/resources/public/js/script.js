@@ -115,8 +115,6 @@ var SearchModel = {
     repoFacetRevision: m.prop([]),
     repoFacetDeleted: m.prop([]),
 
-    chart: m.prop(undefined),
-
     clearfilters: function() {
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
@@ -485,6 +483,13 @@ var SearchModel = {
 
         return del;
     },
+    getlitfilter: function() {
+        if (SearchModel.literalview() === true) {
+            return '&lit=true';
+        }
+
+        return '';
+    },
     setstatechange: function(pagequery, isstatechange) {
         // set the state
         if (isstatechange === undefined) {
@@ -506,6 +511,7 @@ var SearchModel = {
                         SearchModel.getrevisionfilters() + 
                         SearchModel.getdeletedfilters() +
                         SearchModel.getpathfilters() + 
+                        SearchModel.getlitfilter() +
                         pagequery);
         }
     },
@@ -622,122 +628,7 @@ var SearchModel = {
             }
 
             SearchModel.currentlyloading(false);
-        }).then( function(e) {
-            SearchModel.renderchart();
         });
-    },
-    chartlimit: m.prop(365),
-    renderchart: function() {
-        if (SearchModel.chart() !== undefined) {
-            SearchModel.chart().destroy();
-        }
-
-        if (SearchModel.repoFacetYearMonthDay().length == 0) {
-            return;
-        }
-
-        var ctx = document.getElementById('timeChart');
-
-
-        var facets = {};
-        var labels = [];
-        _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
-            var fac = HelperModel.yearMonthDayDelimit(e.yearMonthDay);
-            facets[fac] = e.count; 
-            labels.push(fac);
-        });
-
-        labels.sort();
-
-        if (labels.length != 0) {
-            var startDate = HelperModel.yearMonthDayToDate(labels[0]);
-            var endDate = HelperModel.yearMonthDayToDate(labels[labels.length - 1]);
-            //endDate = new Date();
-
-            labels = _.map(HelperModel.getDateSpan(startDate, endDate), function(e) {
-                var year = e.getFullYear();
-                var month = e.getMonth() + 1;
-                month = month < 10 ? '0' + month : month;
-                var day = e.getDate() < 10 ? '0' + e.getDate() : e.getDate();
-
-                return year + '/' + month + '/' + day;
-            });
-
-            labels = labels.splice(labels.length - SearchModel.chartlimit(), labels.length);
-        }
-
-        var data = {
-            labels: labels,
-            datasets: [{
-                label: SearchModel.query(),
-                fill: true,
-                lineTension: 0.1,
-                backgroundColor: 'rgba(75,192,192,0.4)',
-                borderColor: '#428bca', // Line colour
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: 'rgba(75,192,192,1)',
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 5,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                pointHoverBorderColor: 'rgba(220,220,220,1)',
-                pointHoverBorderWidth: 1,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: _.map(labels, function(e) { return facets[e]; } ),
-                spanGaps: true
-            }]
-        };
-
-        var myLineChart = new Chart(ctx, {
-            type: 'line',
-            data: data,
-            options: {
-                legend: {
-                    display: false
-                 },
-                 responsiveAnimationDuration: 0,
-                 scales: {
-                    xAxes: [{
-                        ticks: {
-                            //autoSkip: false,
-                            maxRotation: 30,
-                            minRotation: 30,
-                            callback: function(value, index, values) {
-                                if (values.length < 30) {
-                                    return value;
-                                }
-
-                                if (parseInt(index) % 3 === 0 || index == values.length - 1) {
-                                    return '' + value;
-                                }
-                                
-                                return '';
-                            }
-                        }
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            callback: function(value, index, values) {
-                                if (('' + value).indexOf('.') !== -1) {
-                                    return '';
-                                }
-                                return '' + parseInt(value);
-                            }
-                        }
-                    }],
-                },
-                animation: {
-                    duration: 0
-                },
-
-            }
-        });
-
-        SearchModel.chart(myLineChart);
     }
 };
 
@@ -746,7 +637,6 @@ var SearchComponent = {
     view: function(ctrl) {
         return m("div", [
                 m.component(SearchOptionsComponent),
-                m.component(SearchChartComponent),
                 m.component(SearchCountComponent, { 
                     totalhits: SearchModel.totalhits(), 
                     query: SearchModel.query(),
@@ -1818,72 +1708,6 @@ var SearchCountComponent = {
     }
 }
 
-var SearchChartComponent = {
-    controller: function() {
-        var display = true;
-        var steps = [
-            365 * 20,
-            365 * 10,
-            365 * 5,
-            365 * 2,
-            365,
-            6 * 30,
-            3 * 30,
-            1 * 30,
-            15,
-            7,
-            5,
-            4,
-            3,
-            2,
-            1
-        ];
-
-        return {
-            shoulddisplay: function() {
-                if (display === false) {
-                    return false;
-                }
-
-                if (SearchModel.searchhistory() === false) {
-                    return false;
-                }
-
-                return true;
-            },
-            zoomout: function() {
-                var index = _.findIndex(steps, function(e) { return e == SearchModel.chartlimit(); });
-                if (index == 0) {
-                    return;
-                } 
-                index -= 1;
-
-                SearchModel.chartlimit(steps[index]);
-                SearchModel.renderchart();
-            },
-            zoomin: function() {
-                var index = _.findIndex(steps, function(e) { return e == SearchModel.chartlimit(); });
-                if (index == steps.length) {
-                    return;
-                } 
-                index += 1;
-
-                SearchModel.chartlimit(steps[index]);
-                SearchModel.renderchart();
-            }
-        }
-    },
-    view: function(ctrl) {
-        if (ctrl.shoulddisplay() === false || ff_timesearchenabled === false) {
-            return m('div');
-        }
-
-        // TODO need to have logic to display the hide show if there is data to show it
-        return m('div.row.search-chart', [
-            m('canvas', {id: 'timeChart', width: '500', height: '45'})
-        ]);  
-    }
-}
 
 var SearchAlternateFilterComponent = {
     controller: function() {
@@ -2047,6 +1871,10 @@ if (typeof preload !== 'undefined') {
 if (window.localStorage) {
     var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
+
+    if (SearchModel.literalview() === true) {
+        localStorage.setItem('toggleliteral', JSON.stringify(SearchModel.literalview()));
+    }
 
     tmp = JSON.parse(localStorage.getItem('toggleliteral'));
     tmp !== null ? SearchModel.literalview(tmp) : SearchModel.literalview(false);
