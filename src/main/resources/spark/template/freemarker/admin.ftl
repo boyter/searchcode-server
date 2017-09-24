@@ -22,9 +22,9 @@
         <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Dashboard <small>(Arch:${sysArch} Version:${sysVersion} Cores:${processorCount})</small></h3>
 
         <style>
-        .panel {
-            height:190px !important;
-            overflow: scroll;
+        .panel-body {
+            height:160px !important;
+            overflow: auto;
         }
         </style>
 
