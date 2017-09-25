@@ -116,9 +116,26 @@ $('#toggleOwasp').click(function(e) {
   $('#owaspResults').toggle();
 });
 
+var filetreedata = null;
 $('#toggleFileTree').click(function(e) {
-  e.preventDefault();
-  $('#fileTreeResults').toggle();
+    e.preventDefault();
+    $('#fileTreeResults').toggle();
+
+    if(filetreedata === null) {
+      //$('#fileTreeResults').html('<center><img src="/static/bar-loading.gif" /></center>');
+      $.ajax('/api/repo/repotree/?reponame=${repoName?html}')
+       .done(function(data, textStatus, jqXHR) {
+          filetreedata = true;
+          var displayString = '';
+          $.each(data.codeResultList, function(index, value) {
+            //file/0b2c13b0212effa2c68c88c9d4c53d25dc837484/-location1-applicationbuild-intel_nt4x6/Users/boyter/Documents/Projects/ripgrep/ci/script.sh
+            var ahref = '/file/' + value.codeId + '/' + value.displayLocation;
+            displayString += '<a href="' + ahref + '">' + value.displayLocation + '</a><br>';
+          });
+
+          $('#fileTreeResults').html(displayString);
+       });
+    }
 });
 
 // Get highlighted text and prefill the search boxes
