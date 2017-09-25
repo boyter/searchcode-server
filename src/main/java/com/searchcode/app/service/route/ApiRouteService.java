@@ -12,13 +12,17 @@ package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
+import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
+
 import spark.Request;
 import spark.Response;
 
@@ -34,21 +38,23 @@ public class ApiRouteService {
     private final Repo repo;
     private final ValidatorService validatorService;
     private final IndexService indexService;
+    private final Helpers helpers;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
     public ApiRouteService() {
-        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService());
+        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService(), Singleton.getHelpers());
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IndexService indexService) {
+    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IndexService indexService, Helpers helpers) {
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
         this.dataService = dataService;
         this.validatorService = validatorService;
         this.indexService = indexService;
+        this.helpers = helpers;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -148,6 +154,15 @@ public class ApiRouteService {
         }
 
         return repoResult;
+    }
+
+    public SearchResult repoTree(Request request, Response response) {
+
+        if (request.queryParams().contains("reponame")) {
+            return this.indexService.getProjectFileTree(request.queryParams("reponame"));
+        }
+
+        return null;
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {

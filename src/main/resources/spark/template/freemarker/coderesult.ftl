@@ -87,6 +87,10 @@
             </td>
           </tr>
           </#if>
+          <tr>
+              <td><a id="toggleFileTree"><span class="glyphicon glyphicon-tree" aria-hidden="true"></span> Toggle Folder Tree</a></td>
+              <td colspan="3"><div id="fileTreeResults">FOLDER STUFF</div></td>
+          </tr>
         </tbody>
     </table>
 </div>
@@ -110,6 +114,11 @@
 $('#toggleOwasp').click(function(e) {
   e.preventDefault();
   $('#owaspResults').toggle();
+});
+
+$('#toggleFileTree').click(function(e) {
+  e.preventDefault();
+  $('#fileTreeResults').toggle();
 });
 
 // Get highlighted text and prefill the search boxes

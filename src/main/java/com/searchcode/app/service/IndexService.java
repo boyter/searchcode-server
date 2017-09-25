@@ -367,18 +367,6 @@ public class IndexService implements IIndexService {
     }
 
     @Override
-    public void reindexByRepo(RepoResult repo) {
-        // Stop adding to job processing queue
-        //this.repoAdderPause = true;
-        //this.repoJobExit = true;
-        // Clear job processing queue queue
-        // CLear index queue
-        //this.codeIndexDocumentQueue.clear();
-        // Delete repo from index
-        // Delete repo from db
-    }
-
-    @Override
     public synchronized void reindexAll() {
         if (this.reindexingAll) {
             return;
@@ -694,6 +682,49 @@ public class IndexService implements IIndexService {
         }
 
         return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, codeByLines, repoFacetOwners);
+    }
+
+    /**
+     * Collects project stats for a repo given its name
+     */
+    @Override
+    public SearchResult getProjectFileTree(String repoName) {
+
+        List<CodeResult> codeResults = new ArrayList<>();
+
+        if (this.helpers.isNullEmptyOrWhitespace(repoName)) {
+            return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null);
+        }
+
+
+        IndexReader reader = null;
+
+        try {
+            reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            IndexSearcher searcher = new IndexSearcher(reader);
+
+            Analyzer analyzer = new CodeAnalyzer();
+            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
+            Query query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
+
+            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
+            ScoreDoc[] hits = results.scoreDocs;
+
+            for (int i = 0; i < results.totalHits; i++) {
+                Document doc = searcher.doc(hits[i].doc);
+
+                CodeResult codeResult = this.createCodeResult(null, Values.EMPTYSTRING, doc, hits[i].doc);
+                codeResults.add(codeResult);
+            }
+        }
+        catch (Exception ex) {
+            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(reader);
+        }
+
+        return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null);
     }
 
     /**

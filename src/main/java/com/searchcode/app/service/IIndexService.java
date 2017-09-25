@@ -25,7 +25,6 @@ public interface IIndexService {
     void deleteByRepo(RepoResult repo) throws IOException;
     void deleteAll() throws IOException;
 
-    void reindexByRepo(RepoResult repo);
     void reindexAll();
 
     void flipIndex();
@@ -51,6 +50,7 @@ public interface IIndexService {
     Document buildDocument(CodeIndexDocument codeIndexDocument);
     int getIndexedDocumentCount();
     ProjectStats getProjectStats(String repoName);
+    SearchResult getProjectFileTree(String repoName);
     List<String> getRepoDocuments(String repoName, int page);
     CodeResult getCodeResultByCodeId(String codeId);
     SearchResult search(String queryString, int page);

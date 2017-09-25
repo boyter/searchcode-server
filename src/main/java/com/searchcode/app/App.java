@@ -211,6 +211,12 @@ public class App {
                     ApiRouteService apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.getRepo(request, response));
                 });
+
+                get("/repotree/", "application/json", (request, response) -> {
+                    addJsonHeaders(response);
+                    ApiRouteService apiRouteService = new ApiRouteService();
+                    return new JsonTransformer().render(apiRouteService.repoTree(request, response));
+                });
             });
         });
 
