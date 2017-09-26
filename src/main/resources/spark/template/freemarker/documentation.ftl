@@ -643,7 +643,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
               <dt>check_filerepo_changes</dt>
-              <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
+              <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
               <dt>only_localhost</dt>
               <dd>Boolean value true or false. Will only process connections on 127.0.0.1 (not localhost) if set to true and return 204 content not found otherwise. By default set to false.</dd>
               <dt>low_memory</dt>
@@ -654,8 +654,6 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Maximum number of documents to store in indexing queue. When on a memory constrained system it can be advisable to reduce the size. Needs to be a number or will default to 1000.</dd>
               <dt>max_document_queue_line_size</dt>
               <dd>Maximum number of lines of code to store in indexing queue. This is a soft cap which can be exceeded to allow large documents to be indexed. When on a memory constrained system it can be advisable to reduce the size. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 100000.</dd>
-              <dt>index_queue_batch_size</dt>
-              <dd>Maximum number of files the indexer will attempt to index before flushing them to disk. If the value of max_document_queue_size is raised it can be useful to raise this value to match. Needs to be a number or will default to 1000.</dd>
               <dt>max_file_line_depth</dt>
               <dd>Maximum number of lines in a file to index. If you want to index very large files set this value to a high number and lower the size of max_document_queue_size to avoid out of memory exceptions. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 10000.</dd>
               <dt>use_system_git</dt>
@@ -691,11 +689,11 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dt>directory_black_list</dt>
               <dd>A black list of directories that if match will not be added to the index. Typically used to exclude binary directories such as bin. Example, directory_black_list=bin,target</dd>
               <dt>number_git_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. If you increase this value you may need to increase the <a href="#quartz">quartz.properties value see below</a>. Defaults to 2.</dd>
               <dt>number_svn_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Servers with many CPU's should have this value changed to half the number of CPU's. If you increase this value you may need to increase the <a href="#quartz">quartz.properties value see below</a>. Defaults to 2.</dd>
               <dt>number_file_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories. Defaults to 1.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories.  Servers with many CPU's should have this value changed to half the number of CPU's. If you increase this value you may need to increase the <a href="#quartz">quartz.properties value see below</a>. Defaults to 1.</dd>
               <dt>default_and_match</dt>
               <dd>Should the matching logic default to AND matching where nothing is specified. If set to true all queries will be similar to "import AND junit". If set to false all queries will be similar to "import OR junit". Default logic can be overridden by explicitly adding search operators. Defaults to true.</dd>
               <dt>log_indexed</dt>
@@ -709,7 +707,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
             </dl>
         </p>
 
-        <p>
+        <p id="quartz">
         The quartz.properties file in the base directory should only need to be modified when changing the searchcode.properties values of number_git_processors, number_svn_processors and number_file_processors.
         By default searchcode spawns 10 background threads which are used for repository processing and internal processing logic. By itself searchcode uses 5 threads
         by itself leaving over 5 for background repository processing tasks. If you adjust the number of repository processors higher then you should increase the value for

@@ -91,6 +91,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(this.INDEXTIME)
                                     .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
@@ -123,6 +124,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(this.INDEXTIME)
                                     .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
@@ -156,6 +158,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(this.INDEXTIME)
                                     .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
@@ -189,6 +192,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(this.UPDATETIME)
                                     .repeatForever()
                     )
+                    .withPriority(2)
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -208,6 +212,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
                                     .repeatForever()
                     )
+                    .withPriority(2)
                     .build();
 
             scheduler2.scheduleJob(job2, trigger2);
@@ -235,6 +240,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(1)
                                     .repeatForever()
                     )
+                    .withPriority(2)
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -262,6 +268,7 @@ public class JobService implements IJobService {
                                     .withIntervalInSeconds(360)
                                     .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -302,6 +309,7 @@ public class JobService implements IJobService {
                                 .withIntervalInSeconds(this.INDEXTIME)
                                 .repeatForever()
                 )
+                .withPriority(15)
                 .build();
 
         scheduler.scheduleJob(job, trigger);
