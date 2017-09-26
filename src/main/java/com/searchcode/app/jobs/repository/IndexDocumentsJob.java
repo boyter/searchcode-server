@@ -45,19 +45,26 @@ public class IndexDocumentsJob implements Job {
     }
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        try {
-            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            int codeIndexQueueSize = this.indexQueue.size();
+        this.logger.info("Starting IndexDocumentsJob");
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            if (codeIndexQueueSize != 0) {
-                this.logger.info("Documents to index: " + codeIndexQueueSize);
-                this.logger.info("Lines to index: " + this.indexService.getCodeIndexLinesCount());
-                this.logger.info("Memory Usage: " + this.statsService.getMemoryUsage(", "));
-                this.indexService.indexDocument(this.indexQueue);
+        // This should run forever, and only restart if it has a hard crash
+        try {
+            while (true) {
+                int codeIndexQueueSize = this.indexQueue.size();
+
+                if (codeIndexQueueSize != 0) {
+                    this.logger.info("Documents to index: " + codeIndexQueueSize);
+                    this.logger.info("Lines to index: " + this.indexService.getCodeIndexLinesCount());
+                    this.logger.info("Memory Usage: " + this.statsService.getMemoryUsage(", "));
+                    this.indexService.indexDocument(this.indexQueue);
+                }
+
+                Thread.sleep(100);
             }
         } catch (Exception ex) {
             // Continue at all costs
-            this.logger.warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            this.logger.warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 }

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class AdminRouteService {
 
@@ -476,19 +477,11 @@ public class AdminRouteService {
             case "searchcount":
                 return Values.EMPTYSTRING + this.statsService.getSearchCount();
             case "runningjobs":
-                StringBuilder stringBuffer = new StringBuilder();
-                for (String key: Singleton.getRunningIndexRepoJobs().keySet()) {
-                    RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
-                    if (indexJob != null) {
-                        int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - indexJob.startTime;
-                        stringBuffer.append(key).append(" <small>(").append(runningTime).append("s)</small>").append(" ");
-                    }
-                    else {
-                        stringBuffer.append(key).append(" ");
-                    }
-                }
-                stringBuffer.append("&nbsp;");
-                return stringBuffer.toString();
+                String collect = Singleton.getRunningIndexRepoJobs().keySet().stream()
+                        .filter(x -> Singleton.getRunningIndexRepoJobs().get(x) != null)
+                        .map(x -> x + " <small>(" + (Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(x).startTime) + "s)</small>")
+                        .collect(Collectors.joining("<br>"));
+                return collect + "&nbsp;";
             case "spellingcount":
                 return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
             case "repocount":

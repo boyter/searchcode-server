@@ -43,15 +43,12 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
         try {
             java.nio.file.Path filePath = (java.nio.file.Path)file;
-            Singleton.getLogger().fine("visitFile:start:filepath=" + filePath.toString());
 
             if (this.indexBaseRepoJob.shouldJobPauseOrTerminate()) {
-                Singleton.getLogger().fine("visitFile:terminate:pause:end:filepath=" + filePath.toString());
                 return FileVisitResult.TERMINATE;
             }
 
             if (Singleton.getDataService().getPersistentDelete().contains(this.repoResult.getName())) {
-                Singleton.getLogger().fine("visitFile:terminate:persistend:end:filepath=" + filePath.toString());
                 return FileVisitResult.TERMINATE;
             }
 
@@ -61,7 +58,6 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String fileName = filePath.getFileName().toString();
 
             if (this.indexBaseRepoJob.ignoreFile(fileParent)) {
-                Singleton.getLogger().fine("visitFile:terminate:ignore:end:filepath=" + filePath.toString());
                 return FileVisitResult.CONTINUE;
             }
 
@@ -70,32 +66,27 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
             // If the file has not been updated since the last run then we can skip
             if (!this.indexBaseRepoJob.isUpdated(fileToString, repoResult.getData().jobRunTime)) {
-                Singleton.getLogger().fine("visitFile:terminate:notupdated:end:filepath=" + filePath.toString());
                 return FileVisitResult.CONTINUE;
             }
 
             IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
             if (codeLinesReturn.isError()) {
                 fileLocationsMap.remove(fileToString);
-                Singleton.getLogger().fine("visitFile:terminate:iserror:end:filepath=" + filePath.toString());
                 return FileVisitResult.CONTINUE;
             }
 
 
             IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) {
-                Singleton.getLogger().fine("visitFile:terminate:minified:end:filepath=" + filePath.toString());
                 return FileVisitResult.CONTINUE;
             }
 
             if (this.indexBaseRepoJob.checkIfEmpty(codeLinesReturn.getCodeLines(), fileName, reportList)) {
-                Singleton.getLogger().fine("visitFile:terminate:isempty:end:filepath=" + filePath.toString());
                 return FileVisitResult.CONTINUE;
             }
 
             if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 fileLocationsMap.remove(fileToString);
-                Singleton.getLogger().fine("visitFile:terminate:isbinary:end:filepath=" + filePath.toString());
                 return FileVisitResult.CONTINUE;
             }
 
@@ -126,7 +117,6 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
             }
 
-            Singleton.getLogger().fine("visitFile:terminate:finished:end:filepath=" + filePath.toString());
         }
         catch(Exception ex) {
             Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + file + " in repo " + this.repoResult.getName());

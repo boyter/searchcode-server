@@ -1003,13 +1003,6 @@
     "keywords": []
   },
   {
-    "language": "Precompiled Header",
-    "extensions": [
-      "pch"
-    ],
-    "keywords": []
-  },
-  {
     "language": "Opalang",
     "extensions": [
       "opa"

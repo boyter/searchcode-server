@@ -97,13 +97,12 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     public String getCodeOwner(List<String> codeLines, String fileName, String repoName, String fileRepoLocations, SearchcodeLib scl) {
         List<CodeOwner> owners;
         Timer timer = Singleton.getNewTimer();
-        Singleton.getLogger().fine("GIT Blame Info Time:start: " + fileName);
+
         if (this.USE_SYSTEM_GIT) {
             owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, fileName);
         } else {
             owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, fileName);
         }
-        Singleton.getLogger().fine("GIT Blame Info Time:end:" + fileName + ":" + timer.toc());
 
         return scl.codeOwner(owners);
     }
