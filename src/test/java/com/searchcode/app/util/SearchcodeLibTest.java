@@ -334,19 +334,25 @@ public class SearchcodeLibTest extends TestCase {
     public void testSplitKeywords() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.splitKeywords("testSplitKeywords");
-        assertThat(actual).isEqualTo(" test Split Keywords");
+        assertThat(actual).contains("test Split Keywords");
     }
 
     public void testSplitKeywords2() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.splitKeywords("map.put(\"isCommunity\", ISCOMMUNITY);");
-        assertThat(actual).isEqualTo(" is Community");
+        assertThat(actual).contains("is Community");
     }
 
     public void testSplitKeywords3() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.splitKeywords("TestSplitKeywords");
-        assertThat(actual).isEqualTo(" Test Split Keywords");
+        assertThat(actual).contains("Test Split Keywords");
+    }
+
+    public void testSplitKeywords4() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.splitKeywords("SimpleThreadPool");
+        assertThat(actual).contains("SimpleThread");
     }
 
     public void testInterestingKeywords() {

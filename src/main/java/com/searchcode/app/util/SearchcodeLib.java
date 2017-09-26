@@ -86,8 +86,13 @@ public class SearchcodeLib {
                     String[] splitStrings = splitContents.split("(?=\\p{Upper})");
 
                     if (splitStrings.length > 1) {
-                        indexContents.append(" ");
-                        indexContents.append(StringUtils.join(splitStrings, " "));
+                        indexContents.append(" ").append(StringUtils.join(splitStrings, " "));
+
+                        StringBuilder running = new StringBuilder();
+                        for (String split: splitStrings) {
+                            running.append(split);
+                            indexContents.append(" ").append(running.toString());
+                        }
                     }
                 }
             }
