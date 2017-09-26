@@ -722,7 +722,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
         <#if isCommunity??>
                     <#if isCommunity == true>
                     You are using the community edition of searchcode server. As such you will be unable to change anything here. If you would like the ability to configure the settings page
-                    you can purchase a copy at <a href="https://searchcode.com/product/download/">https://searchcode.com/product/download/</a>
+                    you can purchase a copy at <a href="hhttps://searchcodeserver.com/pricing.html">https://searchcodeserver.com/pricing.html</a>
                     </#if>
         </#if>
 
@@ -892,7 +892,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
             <#if isCommunity == true>
             <p>
                 You are using the community edition of searchcode server. Sorry but you are own your own. If you would like support (and the ability to configure the settings page)
-                you can purchase a copy at <a href="https://searchcode.com/product/download/">https://searchcode.com/product/download/</a>
+                you can purchase a copy at <a href="https://searchcodeserver.com/pricing.html">https://searchcodeserver.com/pricing.html</a>
             </p>
             <#else>
             <p>
