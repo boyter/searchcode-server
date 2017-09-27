@@ -273,10 +273,10 @@ public class IndexService implements IIndexService {
         // part of the indexer codebase
         Timer timer = Singleton.getNewTimer();
         String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
-                this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName()) + " " +
+                this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true) + " " +
                 codeIndexDocument.getFileLocationFilename() + " " +
                 codeIndexDocument.getFileLocation() +
-                this.searchcodeLib.splitKeywords(codeIndexDocument.getContents()) +
+                this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true) +
                 this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
                 this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();

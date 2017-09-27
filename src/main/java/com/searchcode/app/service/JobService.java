@@ -87,9 +87,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-git-" + uniquename)
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -120,9 +121,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-file-" + uniquename)
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -154,9 +156,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-svn-" + uniquename)
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -188,9 +191,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("enqueuejob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.UPDATETIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.UPDATETIME)
+                        .repeatForever()
                     )
                     .withPriority(2)
                     .build();
@@ -208,9 +212,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger2 = newTrigger()
                     .withIdentity("enqueuefilejob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
+                        .repeatForever()
                     )
                     .withPriority(2)
                     .build();
@@ -236,9 +241,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("deletejob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(1)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(1)
+                        .repeatForever()
                     )
                     .withPriority(2)
                     .build();
@@ -264,9 +270,10 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("spellingjob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(360)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(3600)
+                        .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -305,9 +312,10 @@ public class JobService implements IJobService {
 
         SimpleTrigger trigger = newTrigger()
                 .withIdentity("indexerjob")
-                .withSchedule(simpleSchedule()
-                                .withIntervalInSeconds(this.INDEXTIME)
-                                .repeatForever()
+                .withSchedule(
+                    simpleSchedule()
+                    .withIntervalInSeconds(this.INDEXTIME)
+                    .repeatForever()
                 )
                 .withPriority(15)
                 .build();

@@ -153,7 +153,7 @@ public class IndexServiceTest extends TestCase {
 
         // Verifies that we ran through the pipeline
         fields = indexFields.getFields(Values.CONTENTS);
-        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename  file name filelocationfilename filelocation contents contents contents contents contents contents");
+        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename  file name file filename filelocationfilename filelocation contents contents contents contents contents contents");
     }
 
     public void testSearch() throws IOException {

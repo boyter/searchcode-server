@@ -62,7 +62,7 @@ public class SearchcodeLib {
      * if its only [a-zA-Z]
      * split by uppercase
      */
-    public String splitKeywords(String contents) {
+    public String splitKeywords(String contents, boolean runningJoin) {
         if (contents == null) {
             return Values.EMPTYSTRING;
         }
@@ -86,8 +86,15 @@ public class SearchcodeLib {
                     String[] splitStrings = splitContents.split("(?=\\p{Upper})");
 
                     if (splitStrings.length > 1) {
-                        indexContents.append(" ");
-                        indexContents.append(StringUtils.join(splitStrings, " "));
+                        indexContents.append(" ").append(StringUtils.join(splitStrings, " "));
+
+                        if (runningJoin) {
+                            StringBuilder running = new StringBuilder();
+                            for (String split : splitStrings) {
+                                running.append(split);
+                                indexContents.append(" ").append(running.toString());
+                            }
+                        }
                     }
                 }
             }
@@ -476,7 +483,7 @@ public class SearchcodeLib {
             altQueries.add(altquery);
         }
 
-        altquery = this.splitKeywords(query).trim();
+        altquery = this.splitKeywords(query, false).trim();
         if (!altquery.equals("") && !altquery.equals(query) && !altQueries.contains(altquery)) {
             altQueries.add(altquery);
         }
