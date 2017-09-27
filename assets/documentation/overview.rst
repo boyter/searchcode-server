@@ -4,7 +4,7 @@ Overview
 
 What is it?
 -----------
-searchcode server is a powerful code search engine with a sleak web user interface.
+searchcode server is a powerful code search engine with a sleek web user interface.
 
 searchcode server works in tandem with your source control system, indexing thousands of repositories 
 and files allowing you and your developers to quickly find and reuse code across teams.
