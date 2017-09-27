@@ -333,26 +333,32 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testSplitKeywords() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("testSplitKeywords");
+        String actual = sl.splitKeywords("testSplitKeywords", false);
         assertThat(actual).contains("test Split Keywords");
     }
 
     public void testSplitKeywords2() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("map.put(\"isCommunity\", ISCOMMUNITY);");
+        String actual = sl.splitKeywords("map.put(\"isCommunity\", ISCOMMUNITY);", false);
         assertThat(actual).contains("is Community");
     }
 
     public void testSplitKeywords3() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("TestSplitKeywords");
+        String actual = sl.splitKeywords("TestSplitKeywords", false);
         assertThat(actual).contains("Test Split Keywords");
     }
 
     public void testSplitKeywords4() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("SimpleThreadPool");
-        assertThat(actual).contains("SimpleThread");
+        String actual = sl.splitKeywords("SimpleThreadPool", true);
+        assertThat(actual).contains(" SimpleThread ");
+    }
+
+    public void testSplitKeywords5() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.splitKeywords("SimpleThreadPool", false);
+        assertThat(actual).doesNotContain("SimpleThread");
     }
 
     public void testInterestingKeywords() {
