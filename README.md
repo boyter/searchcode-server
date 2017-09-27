@@ -207,6 +207,7 @@ XX XXXX XXXX - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
  - Add support for extensions that have a dot in them https://github.com/boyter/searchcode-server/issues/146
  - Slightly modified admin screen https://github.com/boyter/searchcode-server/issues/153
  - Add file tree display on code result pages https://github.com/boyter/searchcode-server/issues/154
+ - Fix for thread exhaustion issue https://github.com/boyter/searchcode-server/issues/85
 
 15 June 2017 - 1.3.10
  - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation
