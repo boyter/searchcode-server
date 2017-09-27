@@ -712,6 +712,10 @@ public class IndexService implements IIndexService {
 
                 CodeResult codeResult = this.createCodeResult(null, Values.EMPTYSTRING, doc, hits[i].doc);
                 codeResults.add(codeResult);
+
+                if (i == 1000) {
+                    break;
+                }
             }
         }
         catch (Exception ex) {
@@ -720,6 +724,8 @@ public class IndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(reader);
         }
+
+        codeResults.sort(Comparator.comparingInt(cr -> cr.displayLocation.length()));
 
         return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null);
     }
