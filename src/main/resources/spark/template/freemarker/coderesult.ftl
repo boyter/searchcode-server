@@ -89,7 +89,7 @@
           </#if>
           <tr>
               <td colspan="4">
-              <a id="toggleFileTree"><span class="glyphicon glyphicon-tree-conifer" aria-hidden="true"></span> Toggle Folder Tree</a>
+              <a id="toggleFileTree"><span class="glyphicon glyphicon-tree-conifer" aria-hidden="true"></span> View File Tree</a>
               <div id="fileTreeContainer" style="display:none;">
               <br><p id="fileTreeResults" style="white-space: nowrap; overflow: scroll; background-color: #f5f5f5; border-radius: 6px 6px 6px 6px; padding: 10px;"></p>
               </div>
