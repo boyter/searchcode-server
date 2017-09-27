@@ -724,7 +724,7 @@ public class IndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(reader);
         }
-        
+
         codeResults.sort(Comparator.comparing(x -> x.displayLocation));
 
         return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null);

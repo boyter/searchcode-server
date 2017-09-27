@@ -386,6 +386,16 @@ public class IndexServiceTest extends TestCase {
         assertThat(projectStats.getTotalCodeLines()).isEqualTo(100);
     }
 
+    public void testGetProjectFileTree() throws IOException {
+        this.indexService = new IndexService();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(this.codeIndexDocument);
+        this.indexService.indexDocument(queue);
+
+        SearchResult projectFileTree = this.indexService.getProjectFileTree(this.repoName);
+        assertThat(projectFileTree.getCodeResultList().size()).isEqualTo(1);
+    }
+
     public void testReindexAllSetsIndexingStatus() throws IOException {
         JobService jobServiceMock = mock(JobService.class);
         when(jobServiceMock.forceEnqueueWithCount()).thenReturn(2);
@@ -502,6 +512,7 @@ public class IndexServiceTest extends TestCase {
         methodList.add(arg -> this.indexService.setRepoAdderPause(true));
         methodList.add(arg -> this.indexService.getRepoAdderPause());
         methodList.add(arg -> this.indexService.decrementRepoJobsCount());
+        methodList.add(arg -> this.indexService.getProjectFileTree(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
 
         List<Thread> threadList = new ArrayList<>();
 
