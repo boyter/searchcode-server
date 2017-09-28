@@ -165,6 +165,7 @@ var SearchModel = {
         var yearmonthdays = '';
         var revisions = '';
         var deleted = '';
+        var literal = '';
 
         if (SearchModel.activedeletedfilters().length !== 0) {
             if (_.contains(SearchModel.activedeletedfilters(), 'TRUE')) {
@@ -281,7 +282,11 @@ var SearchModel = {
             yearmonthdays = ' limited to ' + plural  + ' "' + SearchModel.activerevisionfilters().join(', ') + '"';
         }
 
-        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + years + yearmonths + yearmonthdays + revisions;
+        if (SearchModel.literalview()) {
+            literal = ' using literal search';
+        }
+
+        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + years + yearmonths + yearmonthdays + revisions + literal;
     },
     togglefilter: function (type, name) {
         switch(type) {
