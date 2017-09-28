@@ -12,7 +12,8 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.jobs.*;
+import com.searchcode.app.jobs.DeleteRepositoryJob;
+import com.searchcode.app.jobs.PopulateSpellingCorrectorJob;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
 import com.searchcode.app.jobs.enqueue.EnqueueRepositoryJob;
 import com.searchcode.app.jobs.repository.IndexDocumentsJob;
@@ -23,7 +24,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.io.FileUtils;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -36,7 +36,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;

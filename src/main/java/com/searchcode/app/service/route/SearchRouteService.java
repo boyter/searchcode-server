@@ -15,7 +15,6 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -50,7 +49,7 @@ public class SearchRouteService {
                     page = Integer.parseInt(request.queryParams("p"));
                     page = page > 19 ? 19 : page;
                 }
-                catch(NumberFormatException ex) {
+                catch (NumberFormatException ex) {
                     page = 0;
                 }
             }
@@ -117,9 +116,6 @@ public class SearchRouteService {
                 searchResult = Singleton.getIndexService().search(cleanQueryString + reposFilter + langsFilter + ownersFilter + filelocationFilter, page);
             }
 
-            searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
-
-            // TODO this is the difference between them both
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
             searchResult.setQuery(query);
 
