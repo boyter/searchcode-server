@@ -124,9 +124,7 @@ public class SearchRouteService {
             }
 
             // Null out code as it isnt required and there is no point in bloating our ajax requests
-            for (CodeResult codeSearchResult: searchResult.getCodeResultList()) {
-                codeSearchResult.setCode(null);
-            }
+            searchResult.getCodeResultList().forEach(x -> x.setCode(null));
 
             return searchResult;
         }
