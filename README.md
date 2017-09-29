@@ -162,7 +162,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.11.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.12.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
@@ -183,7 +183,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date 29 September 2020 the software version '1.3.11' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date NOT SPECIFIED YET the software version '1.3.12' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -192,6 +192,8 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 
 Change Log
 ==========
+
+XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
 
 29 September 2017 - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
  - Add link to repository source on repository overview page https://github.com/boyter/searchcode-server/issues/126

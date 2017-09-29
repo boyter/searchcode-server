@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.11
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service;
@@ -251,7 +251,7 @@ public class CodeMatcher {
 
         List<String> terms = matchTerms.stream()
                 .filter(s -> !"AND".equals(s) && !"OR".equals(s) && !"NOT".equals(s))
-                .map(s -> s.toLowerCase())
+                .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
         List<String> tokens = Arrays.asList(line.split(" "));
