@@ -72,6 +72,7 @@ def test_integration():
     local("python ./assets/integration_test/signed_fuzz.py")
     local("python ./assets/integration_test/quote_plus.py")
 
+
 def stress_test():
     local('python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py')
 
@@ -151,8 +152,8 @@ def compile_js():
 def configure_local():
     replacements = {
         '<script src="/js/script.min.js"></script>':
-            '<script src="/js/mithril.min.js"></script><script src="/js/underscore-min.js"></script><script src="/js/chart.js"></script><script src="/js/cache.js"></script><script src="/js/script.js"></script>'
-
+            '<script src="/js/mithril.min.js"></script><script src="/js/underscore-min.js"></script><script src="/js/chart.js"></script><script src="/js/cache.js"></script><script src="/js/script.js"></script>',
+        'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;',
     }
     _python_sed(
         fileloc='./src/main/resources/spark/template/freemarker/search_ajax.ftl', replacements=replacements)
