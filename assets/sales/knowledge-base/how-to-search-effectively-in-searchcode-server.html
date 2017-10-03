@@ -1,0 +1,65 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to search effectively with searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+        <p class="em">
+        Type any term you want to search for in the search box and press the enter key. Generally best results can be
+        gained by searching for terms that you expect to be close to each other on the same line. Case is ignored for all searches with the exception of search operators.
+        </p>
+        
+        <p class="em">
+        The following search operators are supported.
+        </p>
+
+        <dl class="dl-horizontal">
+            <dt>AND</dt>
+            <dd>Match where documents contain terms on both sides of the operator. E.G. <code>test AND import</code></dd>
+            <dt>OR</dt>
+            <dd>Match where documents contain terms on either side of the operator. E.G. <code>test OR import</code></dd>
+            <dt>NOT</dt>
+            <dd>Match where documents do not contain terms on the right hand side of the operator. E.G. <code>test NOT import</code></dd>
+            <dt>( )</dt>
+            <dd>Group terms. Allows creation of exclusive matches. E.G. <code>(test OR import) AND other</code></dd>
+            <dt>*</dt>
+            <dd>Wildcard. Only applies at end of a query. E.G. <code>test*</code></dd>
+        </dl>
+
+        <p class="em">An example using all of the above would be <code>(mkdir NOT sphinx*) OR (php AND print*)</code>
+        This will search for documents containing mkdir but not starting with sphinx or documents containing php and containing terms starting with print.
+        Operators must be in upper case where show or they will be treated as part of the query itself. I.E. to match on documents containing <code>and</code> search for and lowercase.</p>
+        
+        <p class="em">
+        Other characters are treated as part of the search itself. This means that a search for something such as <code>i++;</code> is
+        not only a legal search it is likely to return results for most code bases.
+        </p>
+        
+        <p class="em">If a search does not return the results you are expecting or no results at all consider rewriting the query.
+        For example searching for <strong>Arrays.asList("a1", "a2", "b1", "c2", "c1")</strong> could be turned into a
+        looser query by searching for <strong>Arrays.asList</strong> or <strong>Arrays asList</strong>. Another example would be <strong>EMAIL_ADDRESS_REGEX</strong> for
+        <strong>email address regex</strong>.
+        </p>
+
+        <p class="em">Check out the suggested "Alternate Searches" which can appear below the number of matching results for any query. They generally will show looser match queries which can return more results and help you find what you are looking for.</p>
+        
+        <p class="em">To view the full file that is returned click on the name of the file, or click on any line to be taken to that line.
+        Syntax highlighting is enabled for all files less than 1000 lines in length.
+        </p>
+
+        <div class="center">
+        <a href="#" data-featherlight="/images/videos/searchcode_server_search.gif"><img class="img-float img-border" src="/images/videos/searchcode_server_search.gif" alt="GIF Animation showing searchcode server search capabilities" /></a>
+        </div>
+
+        </div>
+      </div>

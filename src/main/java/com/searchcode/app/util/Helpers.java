@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.util;
@@ -13,7 +13,12 @@ package com.searchcode.app.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.IOUtils;
+import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Repository;
 
@@ -25,6 +30,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -45,6 +51,13 @@ public class Helpers {
 
     public Helpers(java.util.Properties properties) {
         this.properties = properties;
+    }
+
+    public List<RepoResult> filterRunningAndDeletedRepoJobs(List<RepoResult> repoResultList) {
+        return repoResultList.stream()
+                .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
+                .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -77,8 +90,25 @@ public class Helpers {
         try {
             result = Integer.parseInt(toParse);
         }
-        catch(NumberFormatException ex){
+        catch (NumberFormatException ex){
             result = Integer.parseInt(defaultValue);
+        }
+
+        return result;
+    }
+
+    /**
+     * Similar to the C# Double.TryParse where you pass in a string and if no good it will use the
+     * default value which is also parsed... which seems odd now I think about it
+     */
+    public double tryParseDouble(String toParse, String defaultValue) {
+        double result;
+
+        try {
+            result = Double.parseDouble(toParse);
+        }
+        catch (NumberFormatException | NullPointerException ex){
+            result = Double.parseDouble(defaultValue);
         }
 
         return result;
@@ -145,15 +175,7 @@ public class Helpers {
      * Crappy implementation of the C# is nullEmptyOrWhitespace which is occasionally useful
      */
     public boolean isNullEmptyOrWhitespace(String test) {
-        if (test == null) {
-            return true;
-        }
-
-        if (test.trim().length() == 0) {
-            return true;
-        }
-
-        return false;
+        return test == null || test.trim().isEmpty();
     }
 
     /**
@@ -171,7 +193,7 @@ public class Helpers {
         if (!this.isNullEmptyOrWhitespace((String)this.properties.get(Values.DIRECTORY_BLACK_LIST))) {
             String[] toIgnoreArray = ((String) this.properties.get(Values.DIRECTORY_BLACK_LIST)).split(",");
 
-            for(String toIgnore: toIgnoreArray) {
+            for (String toIgnore: toIgnoreArray) {
                 if (fileParent.endsWith("/" + toIgnore) || fileParent.endsWith("/" + toIgnore + "/")) {
                     return true;
                 }
@@ -288,52 +310,91 @@ public class Helpers {
         return path;
     }
 
+    public String replaceForIndex(String toReplace) {
+        return this.replaceNonAlphanumeric(toReplace, "_").toLowerCase();
+    }
+
+    public String replaceNonAlphanumeric(String toReplace, String replaceWith) {
+        return toReplace.replaceAll("[^A-Za-z0-9]", replaceWith);
+    }
+
+    public boolean allUnique(List<String> strings) {
+        HashSet<String> set = new HashSet<>();
+        for (String s: strings) {
+            if (! set.add(s)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void closeQuietly(ResultSet resultSet) {
         try {
             resultSet.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
+    }
+
+    public void closeQuietly(IndexReader reader) {
+        try {
+            reader.close();
+        }
+        catch (Exception ignored) {}
+    }
+
+    public void closeQuietly(IndexWriter writer) {
+        try {
+            writer.close();
+        }
+        catch (Exception ignored) {}
+    }
+
+    public void closeQuietly(TaxonomyWriter writer) {
+        try {
+            writer.close();
+        }
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(PreparedStatement preparedStatement) {
         try {
             preparedStatement.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Connection connection) {
         try {
             connection.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Process process) {
         try {
             process.destroy();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(BufferedReader bufferedReader) {
         try {
             bufferedReader.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Repository repository) {
         try {
            repository.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Git git) {
         try {
             git.close();
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {}
     }
 }

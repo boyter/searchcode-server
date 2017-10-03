@@ -5,14 +5,15 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.jobs.*;
+import com.searchcode.app.jobs.DeleteRepositoryJob;
+import com.searchcode.app.jobs.PopulateSpellingCorrectorJob;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
 import com.searchcode.app.jobs.enqueue.EnqueueRepositoryJob;
 import com.searchcode.app.jobs.repository.IndexDocumentsJob;
@@ -49,7 +50,8 @@ import static org.quartz.TriggerBuilder.newTrigger;
  */
 public class JobService implements IJobService {
 
-    private IRepo repo = null;
+    private final Helpers helpers;
+    private final IRepo repo;
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 1; // TODO allow this to be configurable
@@ -64,15 +66,9 @@ public class JobService implements IJobService {
 
     public JobService() {
         this.repo = Singleton.getRepo();
-        try {
-            this.UPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES));
-        }
-        catch(NumberFormatException ex) {}
-
-        try {
-            this.FILEINDEXUPDATETIME = Integer.parseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES));
-        }
-        catch(NumberFormatException ex) {}
+        this.helpers = Singleton.getHelpers();
+        this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
+        this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
     }
 
     /**
@@ -90,10 +86,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-git-" + uniquename)
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
@@ -122,10 +120,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-file-" + uniquename)
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
@@ -155,10 +155,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-svn-" + uniquename)
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.INDEXTIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
@@ -177,7 +179,7 @@ public class JobService implements IJobService {
      * Starts a background job which pulls all repositories from the database and adds them to the
      * queue to be indexed
      */
-    public void startEnqueueJob() {
+    private void startEnqueueJob() {
         try {
             Scheduler scheduler = Singleton.getScheduler();
 
@@ -188,10 +190,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("enqueuejob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.UPDATETIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.UPDATETIME)
+                        .repeatForever()
                     )
+                    .withPriority(2)
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -207,10 +211,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger2 = newTrigger()
                     .withIdentity("enqueuefilejob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
+                        .repeatForever()
                     )
+                    .withPriority(2)
                     .build();
 
             scheduler2.scheduleJob(job2, trigger2);
@@ -223,7 +229,7 @@ public class JobService implements IJobService {
     /**
      * Starts a background job which deletes repositories from the database, index and checked out disk
      */
-    public void startDeleteJob() {
+    private void startDeleteJob() {
         try {
             Scheduler scheduler = Singleton.getScheduler();
 
@@ -234,10 +240,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("deletejob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(1)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(1)
+                        .repeatForever()
                     )
+                    .withPriority(2)
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -250,7 +258,7 @@ public class JobService implements IJobService {
     /**
      * Starts a background job which updates the spelling corrector
      */
-    public void startSpellingJob() {
+    private void startSpellingJob() {
         try {
             Scheduler scheduler = Singleton.getScheduler();
 
@@ -261,10 +269,12 @@ public class JobService implements IJobService {
 
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("spellingjob")
-                    .withSchedule(simpleSchedule()
-                                    .withIntervalInSeconds(360)
-                                    .repeatForever()
+                    .withSchedule(
+                        simpleSchedule()
+                        .withIntervalInSeconds(3600)
+                        .repeatForever()
                     )
+                    .withPriority(1)
                     .build();
 
             scheduler.scheduleJob(job, trigger);
@@ -282,17 +292,17 @@ public class JobService implements IJobService {
     @Override
     public void initialJobs() {
         try {
-            startRepositoryJobs();
-            startEnqueueJob();
-            startDeleteJob();
-            startSpellingJob();
-            startIndexerJob();
+            this.startDeleteJob();
+            this.startSpellingJob();
+            this.startIndexerJob();
+            this.startRepositoryJobs();
+            this.startEnqueueJob();
         } catch (SchedulerException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 
-    public void startIndexerJob() throws SchedulerException {
+    private void startIndexerJob() throws SchedulerException {
         Scheduler scheduler = Singleton.getScheduler();
         // Setup the indexer which runs forever indexing
         JobDetail job = newJob(IndexDocumentsJob.class)
@@ -301,19 +311,19 @@ public class JobService implements IJobService {
 
         SimpleTrigger trigger = newTrigger()
                 .withIdentity("indexerjob")
-                .withSchedule(simpleSchedule()
-                                .withIntervalInSeconds(this.INDEXTIME)
-                                .repeatForever()
+                .withSchedule(
+                    simpleSchedule()
+                    .withIntervalInSeconds(this.INDEXTIME)
+                    .repeatForever()
                 )
+                .withPriority(15)
                 .build();
 
         scheduler.scheduleJob(job, trigger);
         scheduler.start();
     }
 
-    public void startRepositoryJobs() {
-        List<RepoResult> repoResults = this.repo.getAllRepo();
-
+    private void startRepositoryJobs() {
         // Create a pool of crawlers which read from the queue
         for (int i = 0; i < this.NUMBERGITPROCESSORS; i++) {
             this.startIndexGitRepoJobs("" + i);
@@ -329,66 +339,44 @@ public class JobService implements IJobService {
             this.startIndexFileRepoJobs("" + i);
         }
 
-        if (repoResults.size() == 0) {
+
+        if (this.repo.getAllRepo().size() == 0) {
             Singleton.getLogger().info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
         }
     }
 
-    @Override
-    public boolean rebuildAll() {
-        // Turn off everything
-        Singleton.getLogger().info("Recrawl and rebuild of index starting");
-        Singleton.setBackgroundJobsEnabled(false);
-        try { Thread.sleep(2000); } catch (InterruptedException e) {}
-        int attempt = 0;
-        boolean successful = false;
-
-        String repoLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
-        String indexLocation = Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION);
-
-        while (attempt < 3) {
-            try {
-                attempt++;
-                FileUtils.deleteDirectory(new File(indexLocation));
-                FileUtils.deleteDirectory(new File(repoLocation));
-
-                successful = true;
-
-                Singleton.getLogger().info("Recrawl and rebuild of index successful");
-                break;
-            } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
-            }
-
-            try { Thread.sleep(2000); } catch (InterruptedException e) {}
+    private void shutdownScheduler() {
+        try {
+            Singleton.getScheduler().shutdown();
+        } catch (SchedulerException e) {
+            Singleton.getLogger().warning("ERROR - Unable to stop scheduled tasks.");
         }
+    }
 
-        if (successful == false) {
-            Singleton.getLogger().severe("ERROR - Was unable to remove files or folders in the index or repository. They have been moved to trash and must be removed manually.");
-            successful = true;
+    private boolean attemptMoveToTrash(String repoLocation, String indexLocation) {
+        boolean successful;
+        Singleton.getLogger().severe("ERROR - Was unable to remove files or folders in the index or repository. They have been moved to trash and must be removed manually.");
+        successful = true;
 
-            try {
-                if (new File(repoLocation).exists()) {
-                    this.moveDirectoryToTrash(repoLocation);
-                }
-            }
-            catch (IOException ex){
-                successful = false;
-                Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
-            }
-
-            try {
-                if (new File(repoLocation).exists()) {
-                    this.moveDirectoryToTrash(indexLocation);
-                }
-            }
-            catch (IOException ex){
-                successful = false;
-                Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
+        try {
+            if (new File(repoLocation).exists()) {
+                this.moveDirectoryToTrash(repoLocation);
             }
         }
+        catch (IOException ex){
+            successful = false;
+            Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
+        }
 
-        Singleton.setBackgroundJobsEnabled(true);
+        try {
+            if (new File(repoLocation).exists()) {
+                this.moveDirectoryToTrash(indexLocation);
+            }
+        }
+        catch (IOException ex){
+            successful = false;
+            Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
+        }
         return successful;
     }
 
@@ -401,27 +389,41 @@ public class JobService implements IJobService {
 
     @Override
     public boolean forceEnqueue() {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
-        // Get all of the repositories and enqueue them
-        List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
+        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
+
         Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-        for(RepoResult rr: repoResultList) {
-            enqueueRepository(rr);
-        }
+        repoResultList.forEach(this::enqueueRepository);
 
         return true;
     }
 
     @Override
+    public int forceEnqueueWithCount() {
+        // Get all of the repositories and enqueue them
+        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
+
+        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        repoResultList.forEach(this::enqueueRepository);
+
+        return repoResultList.size();
+    }
+
+    @Override
     public boolean forceEnqueue(RepoResult repoResult) {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
-        enqueueRepository(repoResult);
+        if (Singleton.getDataService().getPersistentDelete().contains(repoResult.getName()) ||
+                Singleton.getRunningIndexRepoJobs().keySet().contains(repoResult.getName())) {
+            return false;
+        }
+
+        this.enqueueRepository(repoResult);
 
         return true;
     }

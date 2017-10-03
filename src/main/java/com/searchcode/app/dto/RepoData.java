@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dto;
@@ -17,7 +17,7 @@ import java.time.Instant;
 public class RepoData {
     public int averageIndexTimeSeconds = 0;
     public String indexStatus = Values.EMPTYSTRING;
-    public Instant jobRunTime = Instant.now();
+    public Instant jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
 
     public RepoData() {}
 }

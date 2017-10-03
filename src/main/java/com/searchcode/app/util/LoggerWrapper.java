@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.util;
@@ -36,6 +36,8 @@ public class LoggerWrapper {
     private EvictingQueue warningRecentCache = null;
     private EvictingQueue severeRecentCache = null;
     private EvictingQueue searchLog = null;
+    private EvictingQueue apiLog = null;
+    private EvictingQueue fineRecentCache = null;
 
     public int BYTESLOGSIZE = 10 * 1024 * 1024;
     public int LOGCOUNT = 10;
@@ -125,6 +127,8 @@ public class LoggerWrapper {
         this.warningRecentCache = EvictingQueue.create(1000);
         this.severeRecentCache = EvictingQueue.create(1000);
         this.searchLog = EvictingQueue.create(1000);
+        this.apiLog = EvictingQueue.create(1000);
+        this.fineRecentCache = EvictingQueue.create(1000);
     }
 
     public synchronized void clearAllLogs() {
@@ -133,10 +137,12 @@ public class LoggerWrapper {
         this.warningRecentCache.clear();
         this.severeRecentCache.clear();
         this.searchLog.clear();
+        this.apiLog.clear();
+        this.fineRecentCache.clear();
     }
 
     public synchronized void info(String toLog) {
-        String message = "INFO: " + new Date().toString() + ": " + toLog;
+        String message = "INFO: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
         try {
             this.allCache.add(message);
             this.infoRecentCache.add(message);
@@ -148,11 +154,20 @@ public class LoggerWrapper {
                 System.out.println(message);
             }
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
+    }
+
+    public synchronized void fine(String toLog) {
+        String message = "FINE: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+        try {
+            this.fineRecentCache.add(message);
+        }
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void warning(String toLog) {
-        String message = "WARNING: " + new Date().toString() + ": " + toLog;
+
+        String message = "WARNING: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.allCache.add(message);
@@ -165,11 +180,11 @@ public class LoggerWrapper {
                 System.out.println(message);
             }
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void severe(String toLog) {
-        String message = "SEVERE: " + new Date().toString() + ": " + toLog;
+        String message = "SEVERE: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.allCache.add(message);
@@ -182,16 +197,25 @@ public class LoggerWrapper {
                 System.out.println(message);
             }
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void searchLog(String toLog) {
-        String message = "SEARCH: " + new Date().toString() + ": " + toLog;
+        String message = "SEARCH: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.searchLog.add(message);
         }
-        catch (NoSuchElementException ex) {}
+        catch (NoSuchElementException ignored) {}
+    }
+
+    public synchronized void apiLog(String toLog) {
+        String message = "API: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+
+        try {
+            this.apiLog.add(message);
+        }
+        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized List<String> getAllLogs() {
@@ -200,7 +224,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.allCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -211,7 +235,18 @@ public class LoggerWrapper {
             values = new ArrayList(this.infoRecentCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
+
+        return values;
+    }
+
+    public synchronized List<String> getFineLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.fineRecentCache);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -222,7 +257,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.warningRecentCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -233,7 +268,7 @@ public class LoggerWrapper {
             values = new ArrayList(this.severeRecentCache);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -244,7 +279,18 @@ public class LoggerWrapper {
             values = new ArrayList(this.searchLog);
             values = Lists.reverse(values);
         }
-        catch (ArrayIndexOutOfBoundsException ex) {}
+        catch (ArrayIndexOutOfBoundsException ignored) {}
+
+        return values;
+    }
+
+    public synchronized List<String> getApiLogs() {
+        List<String> values = new ArrayList<>();
+        try {
+            values = new ArrayList(this.apiLog);
+            values = Lists.reverse(values);
+        }
+        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -253,10 +299,6 @@ public class LoggerWrapper {
         int levelValue = level.intValue();
         int mainValue = this.LOGLEVELENUM.intValue();
 
-        if (levelValue >= mainValue) {
-            return true;
-        }
-
-        return false;
+        return levelValue >= mainValue;
     }
 }

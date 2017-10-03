@@ -1,0 +1,22 @@
+
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How does searchcode server estimate project costs?</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">The estimated cost for any file or project is created using the <a href="https://en.wikipedia.org/wiki/COCOMO">Basic COCOMO</a> algorithmic software cost estimation model. The cost reflected includes design, coding, testing, documentation for both developers and users, equipment, buildings. This can result in a higher estimate then would be expected. Generally consider this the cost of developing the code, and not what it is "worth". It is based on an average salary of $56,000 per year but this value can be changed by the system administrator if the values appear to be too out of expectation.</p>
+            <p class="em">The calculation itself is very simple. <code>estimatedCost = estimatedEffort * (averageWage / 12) * 1.8</code> where estimated effort is calculated by the following <code>estimatedEffort = 3.2 * Math.pow(linesOfCode / 1000, 1.05)</code>. By default the average wage is set to $56,000 (this can be overridden on the setting's page) and the linesOfCode is the number of lines of code in the file ignoring comments and blank lines.</p>
+        </div>
+      </div>

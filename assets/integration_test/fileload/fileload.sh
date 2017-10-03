@@ -11,11 +11,11 @@ do
        echo "indextest fileload" > "temp_$i.py"
     done
 
-    echo "Sleep for 60 seconds"
-    sleep 60
+    echo "Sleep for 30 seconds"
+    sleep 30
 
     rm *.py
 
-    echo "Sleep for 60 seconds"
-    sleep 60
+    echo "Sleep for 30 seconds"
+    sleep 30
 done

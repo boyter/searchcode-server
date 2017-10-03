@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.model;
@@ -25,7 +25,9 @@ public class RepoResult {
     private String branch = "";
     private RepoData data;
 
-    public RepoResult() {}
+    public RepoResult() {
+
+    }
 
     public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
         Gson gson = new Gson();
@@ -53,11 +55,7 @@ public class RepoResult {
 
         RepoResult rr = (RepoResult)o;
 
-        if (this.getName().equals(rr.getName())) {
-            return true;
-        }
-
-        return false;
+        return this.getName().equals(rr.getName());
     }
 
     @Override

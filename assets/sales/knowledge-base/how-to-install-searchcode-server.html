@@ -1,0 +1,56 @@
+
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to install searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">
+To run searchcode server locally you will need to have any Windows, Linux or OSX machine with Java 8 installed.
+Testing and packaging was done using the below version.</p>
+
+<pre><code>java version "1.8.0_65"
+Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
+Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)</code></pre>
+
+<p class="em">Uncompress the file you have downloaded to a directory where you want to run searchcode server.
+This directory should have more disk space than the size of the repositories you want to index.</p>
+
+<p class="em">Once unpacked assuming that java is in your path (check with the command java -version) you should be able to run
+searchcode with the following command for Linux/OSX/BSD</p>
+
+<pre><code>./searchcode-server.sh</code></pre>
+
+<p class="em">or for Windows</p>
+
+<pre><code>searchcode-server.bat</code></pre>
+
+<p class="em">After a few moments searchcode server should be ready to run. By default it will be running on port 8080.
+To connect to it enter the following in the browser,</p>
+
+<pre><code>http://SERVER_IP:8080</code></pre>
+
+<p class="em">Be sure to replace SERVER_IP with the ip address if your server or localhost if running locally.
+If you see a page with a search bar then everything is fine.</p>
+
+<p class="em">For further control you may want to edit the above files and include the java -Xmx argument to specify the
+amount of RAM to use or any other java option you wish to pass in.</p>
+
+<p class="em">To administer your searchcode server instance you need to click on the Admin link in the top right.
+Enter the default password Adm1n234 (change this via the properties file)
+to add git repositories. If you need help check the documentation page (link at the bottom
+of every page).</p>
+
+        </div>
+      </div>

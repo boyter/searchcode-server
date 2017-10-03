@@ -1,4 +1,5 @@
 # searchcode config
+# If setting binary paths on windows use / not \ for directory delimiter
 database=sqlite
 sqlite_file=searchcode.sqlite
 server_port=8080
@@ -9,15 +10,15 @@ trash_location=./trash/
 timeindex_location=./index/time/
 timeindex_facets_location=./index/time/facet/
 check_repo_chages=600
-check_filerepo_chages=3600
+check_filerepo_changes=600
 only_localhost=false
 low_memory=false
 log_level=SEVERE
 log_path=./logs
 log_count=10
-spelling_corrector_size=10000
+spelling_corrector_size=100000
 max_document_queue_size=1000
-max_document_queue_line_size=100000
+max_document_queue_line_size=1000000
 max_file_line_depth=10000
 use_system_git=false
 git_binary_path=/usr/bin/git
@@ -26,16 +27,21 @@ api_key_authentication=true
 svn_enabled=false
 svn_binary_path=/usr/bin/svn
 owasp_database_location=./include/owasp/database.json
+classifier_database_location=./include/classifier/database.json
+license_database_location=./include/license/database.json
 highlight_lines_limit=5000
 binary_guess=true
 binary_extension_white_list=
-binary_extension_black_list=woff,eot,cur,dm,xpm,emz,db,scc,idx,mpp,dot,pspimage,stl,dml,wmf,rvm,resources,tlb,docx,doc,xls,xlsx,ppt,pptx,msg,vsd,chm,fm,book,dgn,blines,cab,lib,obj,jar,pdb,dll,bin,out,elf,so,msi,nupkg,pyc,ttf,woff2,jpg,jpeg,png,gif,bmp,psd,tif,tiff,yuv,ico,xls,xlsx,pdb,pdf,apk,com,exe,bz2,7z,tgz,rar,gz,zip,zipx,tar,rpm,bin,dmg,iso,vcd,mp3,flac,wma,wav,mid,m4a,3gp,flv,mov,mp4,mpg,rm,wmv,avi,m4v,sqlite,class
+binary_extension_black_list=woff,eot,cur,dm,xpm,emz,db,scc,idx,mpp,dot,pspimage,stl,dml,wmf,rvm,resources,tlb,docx,doc,xls,xlsx,ppt,pptx,msg,vsd,chm,fm,book,dgn,blines,cab,lib,obj,jar,pdb,dll,bin,out,elf,so,msi,nupkg,pyc,ttf,woff2,jpg,jpeg,png,gif,bmp,psd,tif,tiff,yuv,ico,xls,xlsx,pdb,pdf,apk,com,exe,bz2,7z,tgz,rar,gz,zip,zipx,tar,rpm,bin,dmg,iso,vcd,mp3,flac,wma,wav,mid,m4a,3gp,flv,mov,mp4,mpg,rm,wmv,avi,m4v,sqlite,class,rlib,ncb,suo,opt,o,os,pch,pbm,pnm,ppm,pyd,pyo,raw,uyv,uyvy,xlsm
 directory_black_list=
-number_git_processors=2
-number_svn_processors=2
-number_file_processors=1
+number_git_processors=5
+number_svn_processors=5
+number_file_processors=5
 default_and_match=true
 log_indexed=false
+follow_links=false
+deep_guess_files=false
+host_name=localhost:8080
 # The below will probably be moved into the settings page at some point in the
 # future.
 password=Adm1n234

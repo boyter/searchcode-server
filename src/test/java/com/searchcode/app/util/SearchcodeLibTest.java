@@ -1,5 +1,6 @@
 package com.searchcode.app.util;
 
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.dto.FileClassifierResult;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class SearchcodeLibTest extends TestCase {
 
@@ -35,7 +37,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.codeCleanPipeline("'shop_order_log',");
 
-        assertTrue(actual.indexOf(" 'shop_order_log' ") != -1);
+        assertThat(actual.contains(" 'shop_order_log' ")).isTrue();
     }
 
     public void testCleanPipelineCustom() {
@@ -52,13 +54,25 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).contains(" install_something ");
     }
 
+    public void testIsBinaryBlackListWithNoDotFileName() {
+        SearchcodeLib sl = new SearchcodeLib();
+
+        ArrayList<String> codeLines = new ArrayList<>();
+        codeLines.add("a");
+
+        sl.BLACK_LIST = new String[1];
+        sl.BLACK_LIST[0] = "license";
+
+        assertThat(sl.isBinary(codeLines, "license").isBinary()).isTrue();
+    }
+
     public void testIsBinary() {
         SearchcodeLib sl = new SearchcodeLib();
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("a");
 
-        assertFalse(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isFalse();
     }
 
     public void testIsBinaryAllNonAscii() {
@@ -67,33 +81,33 @@ public class SearchcodeLibTest extends TestCase {
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你");
 
-        assertTrue(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isTrue();
     }
 
     public void testIsBinaryFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertFalse(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isFalse();
     }
 
     public void testIsBinaryTrue() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
-            minified += "你";
+            minified.append("你");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertTrue(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isTrue();
     }
 
     public void testIsBinaryWhiteListedExtension() {
@@ -103,8 +117,8 @@ public class SearchcodeLibTest extends TestCase {
 
         FileClassifier fileClassifier = new FileClassifier();
 
-        for(FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
-            for(String extension: fileClassifierResult.extensions) {
+        for (FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
+            for (String extension: fileClassifierResult.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
             }
@@ -113,10 +127,9 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testIsBinaryWhiteListedPropertyExtension() {
         SearchcodeLib sl = new SearchcodeLib();
-        sl.WHITELIST = new String[1];
-        sl.WHITELIST[0] = "java";
-        FileClassifier fileClassifier = new FileClassifier();
-        sl.fileClassifier = fileClassifier;
+        sl.WHITE_LIST = new String[1];
+        sl.WHITE_LIST[0] = "java";
+
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
@@ -124,14 +137,15 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryBlackListedPropertyExtension() {
-        SearchcodeLib sl = new SearchcodeLib();
-
-        sl.BLACKLIST = new String[1];
-        sl.BLACKLIST[0] = "png";
-
         FileClassifier fileClassifier = new FileClassifier();
         fileClassifier.setDatabase(new ArrayList<>());
-        sl.fileClassifier = fileClassifier;
+
+        Data dataMock = mock(Data.class);
+
+        SearchcodeLib sl = new SearchcodeLib(null, fileClassifier, dataMock, new Helpers());
+
+        sl.BLACK_LIST = new String[1];
+        sl.BLACK_LIST[0] = "png";
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("this file is not binary");
@@ -142,20 +156,20 @@ public class SearchcodeLibTest extends TestCase {
     public void testIsBinaryEmptyTrue() {
         SearchcodeLib sl = new SearchcodeLib();
         ArrayList<String> codeLines = new ArrayList<>();
-        assertTrue(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
     }
 
     public void testIsBinaryEdge1() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 95; i++) {
-            minified += "你";
+            minified.append("你");
         }
-        minified += "aaaaa";
+        minified.append("aaaaa");
 
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
         assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
     }
@@ -163,45 +177,45 @@ public class SearchcodeLibTest extends TestCase {
     public void testIsBinaryEdge2() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 96; i++) {
-            minified += "你";
+            minified.append("你");
         }
-        minified += "aaaa";
+        minified.append("aaaa");
 
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertTrue(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
     }
 
     public void testIsBinaryEdge3() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 200; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
 
         for (int i=0; i < 200; i++) {
-            codeLines.add(minified);
+            codeLines.add(minified.toString());
         }
 
-        assertFalse(sl.isBinary(codeLines, "").isBinary());
+        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isFalse();
     }
 
     public void testIsMinifiedTrue() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertTrue(sl.isMinified(codeLines, "something.something"));
+        assertThat(sl.isMinified(codeLines, "something.something")).isTrue();
     }
 
     public void testIsMinifiedWhiteListAlwaysWins() {
@@ -210,29 +224,29 @@ public class SearchcodeLibTest extends TestCase {
 
         ArrayList<String> whiteList = new ArrayList<>();
         whiteList.add("something");
-        sl.WHITELIST = whiteList.toArray(new String[whiteList.size()]);
+        sl.WHITE_LIST = whiteList.toArray(new String[whiteList.size()]);
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 500; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertFalse(sl.isMinified(codeLines, "something.something"));
+        assertThat(sl.isMinified(codeLines, "something.something")).isFalse();
     }
 
     public void testIsMinifiedFalse() {
         SearchcodeLib sl = new SearchcodeLib();
 
-        String minified = "";
+        StringBuilder minified = new StringBuilder();
         for (int i=0; i < 255; i++) {
-            minified += "a";
+            minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified);
+        codeLines.add(minified.toString());
 
-        assertFalse(sl.isMinified(codeLines, "something.something"));
+        assertThat(sl.isMinified(codeLines, "something.something")).isFalse();
     }
 
     public void testCodeOwnerSameTimeDifferntCount() {
@@ -243,7 +257,7 @@ public class SearchcodeLibTest extends TestCase {
         codeOwners.add(new CodeOwner("Tim", 50, 1449809107));
 
         String result = sl.codeOwner(codeOwners);
-        assertEquals("Tim", result);
+        assertThat(result).isEqualTo("Tim");
     }
 
     public void testCodeOwnerManyOwners() {
@@ -260,7 +274,7 @@ public class SearchcodeLibTest extends TestCase {
         codeOwners.add(new CodeOwner("Tim", 1, (int) currentUnix - (daySeconds * 1)));
 
         String result = sl.codeOwner(codeOwners);
-        assertEquals("Tim", result);
+        assertThat(result).isEqualTo("Tim");
     }
 
     public void testCodeOwnerManyOwnersFirstWins() {
@@ -279,7 +293,7 @@ public class SearchcodeLibTest extends TestCase {
         codeOwners.add(new CodeOwner("Zhang", 1,  (int)currentUnix - (daySeconds * 1  )));
 
         String result = sl.codeOwner(codeOwners);
-        assertEquals("Tim", result);
+        assertThat(result).isEqualTo("Tim");
     }
 
     public void testCodeOwnerManyOwnersRandom() {
@@ -298,7 +312,7 @@ public class SearchcodeLibTest extends TestCase {
         codeOwners.add(new CodeOwner("Zhang", 8,  (int)currentUnix - (daySeconds * 1   )));
 
         String result = sl.codeOwner(codeOwners);
-        assertEquals("Zhang", result);
+        assertThat(result).isEqualTo("Zhang");
     }
 
     public void testCodeOwnerManyOwnersOldFile() {
@@ -314,31 +328,43 @@ public class SearchcodeLibTest extends TestCase {
         codeOwners.add(new CodeOwner("Steve", 5,  (int)currentUnix - (daySeconds * 300  )));
 
         String result = sl.codeOwner(codeOwners);
-        assertEquals("Ben", result);
+        assertThat(result).isEqualTo("Ben");
     }
 
     public void testSplitKeywords() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("testSplitKeywords");
-        assertEquals(" test Split Keywords", actual);
+        String actual = sl.splitKeywords("testSplitKeywords", false);
+        assertThat(actual).contains("test Split Keywords");
     }
 
     public void testSplitKeywords2() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("map.put(\"isCommunity\", ISCOMMUNITY);");
-        assertEquals(" is Community", actual);
+        String actual = sl.splitKeywords("map.put(\"isCommunity\", ISCOMMUNITY);", false);
+        assertThat(actual).contains("is Community");
     }
 
     public void testSplitKeywords3() {
         SearchcodeLib sl = new SearchcodeLib();
-        String actual = sl.splitKeywords("TestSplitKeywords");
-        assertEquals(" Test Split Keywords", actual);
+        String actual = sl.splitKeywords("TestSplitKeywords", false);
+        assertThat(actual).contains("Test Split Keywords");
+    }
+
+    public void testSplitKeywords4() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.splitKeywords("SimpleThreadPool", true);
+        assertThat(actual).contains(" SimpleThread ");
+    }
+
+    public void testSplitKeywords5() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.splitKeywords("SimpleThreadPool", false);
+        assertThat(actual).doesNotContain("SimpleThread");
     }
 
     public void testInterestingKeywords() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.findInterestingKeywords("PURIFY_EXE=/depot/pure/purify.i386_linux2.7.4.14/purify");
-        assertEquals(" i386 linux2.7.4", actual);
+        assertThat(actual).isEqualTo(" i386 linux2.7.4");
     }
 
     public void testInterestingKeywordsNull() {
@@ -368,7 +394,7 @@ public class SearchcodeLibTest extends TestCase {
         lst.add("one");
         lst.add("");
 
-        assertEquals(1, scl.countFilteredLines(lst));
+        assertThat(scl.countFilteredLines(lst)).isEqualTo(1);
     }
 
     public void testCountFilteredLinesCommentLines() {
@@ -381,7 +407,7 @@ public class SearchcodeLibTest extends TestCase {
         lst.add("    # comment");
         lst.add("");
 
-        assertEquals(0, scl.countFilteredLines(lst));
+        assertThat(scl.countFilteredLines(lst)).isEqualTo(0);
     }
 
     public void testCountFilteredLinesMixCommentLines() {
@@ -396,7 +422,7 @@ public class SearchcodeLibTest extends TestCase {
         lst.add("");
         lst.add("Also not a comment but has one // comment");
 
-        assertEquals(2, scl.countFilteredLines(lst));
+        assertThat(scl.countFilteredLines(lst)).isEqualTo(2);
     }
 
     public void testCountFilteredCommentTypes() {
@@ -415,28 +441,28 @@ public class SearchcodeLibTest extends TestCase {
         lst.add("* comment");
         lst.add("* comment");
 
-        assertEquals(0, scl.countFilteredLines(lst));
+        assertThat(scl.countFilteredLines(lst)).isEqualTo(0);
     }
 
     public void testLanguageCostIgnore() {
         SearchcodeLib scl = new SearchcodeLib();
-        assertTrue(scl.languageCostIgnore("Text"));
-        assertTrue(scl.languageCostIgnore("JSON"));
-        assertTrue(scl.languageCostIgnore("Unknown"));
-        assertTrue(scl.languageCostIgnore("INI File"));
-        assertTrue(scl.languageCostIgnore("ReStructuredText"));
-        assertTrue(scl.languageCostIgnore("Configuration"));
+        assertThat(scl.languageCostIgnore("Text")).isTrue();
+        assertThat(scl.languageCostIgnore("JSON")).isTrue();
+        assertThat(scl.languageCostIgnore("Unknown")).isTrue();
+        assertThat(scl.languageCostIgnore("INI File")).isTrue();
+        assertThat(scl.languageCostIgnore("ReStructuredText")).isTrue();
+        assertThat(scl.languageCostIgnore("Configuration")).isTrue();
     }
 
     public void testFormatQueryStringAnd() {
         SearchcodeLib scl = new SearchcodeLib();
 
-        assertEquals("test   AND string", scl.formatQueryStringAndDefault("test string"));
-        assertEquals("test   AND string   AND other\\|", scl.formatQueryStringAndDefault("test string other|"));
-        assertEquals("test", scl.formatQueryStringAndDefault("test"));
-        assertEquals("test", scl.formatQueryStringAndDefault("test  "));
-        assertEquals("test", scl.formatQueryStringAndDefault("    test  "));
-        assertEquals("test", scl.formatQueryStringAndDefault("    test"));
+        assertThat(scl.formatQueryStringAndDefault("test string")).isEqualTo("test   AND string");
+        assertThat(scl.formatQueryStringAndDefault("test string other|")).isEqualTo("test   AND string   AND other\\|");
+        assertThat(scl.formatQueryStringAndDefault("test")).isEqualTo("test");
+        assertThat(scl.formatQueryStringAndDefault("test  ")).isEqualTo("test");
+        assertThat(scl.formatQueryStringAndDefault("    test  ")).isEqualTo("test");
+        assertThat(scl.formatQueryStringAndDefault("    test")).isEqualTo("test");
     }
 
     public void testFormatQueryStringOperators() {
@@ -462,17 +488,31 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testGenerateAltQueries() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
+        Data dataMock = mock(Data.class);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         assertEquals(0, scl.generateAltQueries("supercalifragilisticexpialidocious").size());
         assertEquals("something", scl.generateAltQueries("something*").get(0));
         assertEquals("a b", scl.generateAltQueries("a* b*").get(0));
+    }
 
-        Singleton.getSpellingCorrector().putWord("deh");
+    public void testGenerateAltQueriesOther() {
+        SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
+        Data dataMock = mock(Data.class);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
+
+        spellingCorrector.putWord("deh");
         assertEquals("dep", scl.generateAltQueries("dep*").get(0));
         assertEquals("deh", scl.generateAltQueries("den*").get(1));
+    }
 
-        Singleton.getSpellingCorrector().putWord("ann");
+    public void testGenerateAltQueriesAnother() {
+        SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
+        Data dataMock = mock(Data.class);
+        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
+
+        spellingCorrector.putWord("ann");
         assertEquals("stuff OR other", scl.generateAltQueries("stuff AND other").get(1));
         assertEquals("stuff other", scl.generateAltQueries("stuff NOT other").get(0));
     }
@@ -497,7 +537,7 @@ public class SearchcodeLibTest extends TestCase {
         codeFacetLanguages.add(new CodeFacetLanguage("Javascript", 8));
         codeFacetLanguages.add(new CodeFacetLanguage("C#", 7));
 
-        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 1, codeFacetLanguages, codeFacetOwners));
+        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 1, codeFacetLanguages, null, codeFacetOwners));
         assertThat(busBlurb).contains("In this repository 1 committer has contributed to 1 file.");
         assertThat(busBlurb).contains("The most important languages in this repository are Java, Javascript and C#.");
         assertThat(busBlurb).contains("The project has a low bus factor of 1 and will be in trouble if Ben is hit by a bus.");
@@ -512,7 +552,7 @@ public class SearchcodeLibTest extends TestCase {
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         codeFacetLanguages.add(new CodeFacetLanguage("Java", 10));
 
-        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 10, codeFacetLanguages, codeFacetOwners));
+        String busBlurb = scl.generateBusBlurb(new ProjectStats(10, 10, codeFacetLanguages, null, codeFacetOwners));
         assertThat(busBlurb).contains("In this repository 2 committers have contributed to 10 files.");
         assertThat(busBlurb).contains("The most important language in this repository is Java");
         assertThat(busBlurb).contains("The average person who commits this project has ownership of 50% of files.");
@@ -535,7 +575,7 @@ public class SearchcodeLibTest extends TestCase {
                 codeFacetLanguages.add(new CodeFacetLanguage("" + j, j));
             }
 
-            scl.generateBusBlurb(new ProjectStats(i, i, codeFacetLanguages, codeFacetOwners));
+            scl.generateBusBlurb(new ProjectStats(i, i, codeFacetLanguages, null, codeFacetOwners));
         }
     }
 
@@ -582,25 +622,3 @@ public class SearchcodeLibTest extends TestCase {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

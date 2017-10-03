@@ -11,7 +11,10 @@ import random
 import string
 
 '''Variety of simple tests to check that nothing is obviously broken'''
+
+
 class TestIntegration(unittest.TestCase):
+
     def getData(self, url):
         data = urllib2.urlopen(url)
         self.assertEqual(200, data.getcode())
@@ -63,14 +66,16 @@ class TestIntegration(unittest.TestCase):
         self.assertTrue('Filter Results' in data)
 
     def testCodeResults(self):
-        url = "http://%s/file/zeroclickinfo-fathead/lib/fathead/java/test_parse.py" % (host)
+        url = "http://%s/file/zeroclickinfo-fathead/lib/fathead/java/test_parse.py" % (
+            host)
         data = self.getData(url)
         #self.assertTrue('MD5 Hash' in data)
 
     def testRepositoryList(self):
         url = "http://%s/repository/list/" % (host)
         data = self.getData(url)
-        self.assertTrue('Repository Name' in data)
+        self.assertTrue(
+            '<script src="/js/intercooler-1.1.2.min.js"></script>' in data)
 
     def testNoSearch(self):
         url = "http://%s/?q=&p=0" % (host)
@@ -80,11 +85,11 @@ class TestIntegration(unittest.TestCase):
 
     def testNoSearchHtml(self):
         url = "http://%s/html/?q=&p=0" % (host)
-        data = self.getData(url)
+        self.getData(url)
 
     def testNoSearchJson(self):
         url = "http://%s/api/codesearch/?q=&p=0" % (host)
-        data = self.getData(url)
+        self.getData(url)
 
     def testSearchLoad(self):
         for x in xrange(1000):
@@ -98,6 +103,13 @@ class TestIntegration(unittest.TestCase):
             data = self.getData(url)
             self.assertTrue('Was unable to find repository' in data)
 
+    def test_rss_search(self):
+        url = "http://%s/api/codesearch/rss/?q=test&p=0" % (host)
+        data = self.getData(url)
+        self.assertTrue('title>Search for "test"</title>' in data)
+        self.assertTrue(
+            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">' in data)
+
     def testCheckResponseHeadersApi(self):
         urls = [
             'api/codesearch/?q=test',
@@ -107,13 +119,25 @@ class TestIntegration(unittest.TestCase):
             'api/repo/delete/',
             'api/repo/reindex/',
             'api/repo/index/',
+            'api/repo/repo/?reponame=searchcode',
         ]
-        
+
         for url in urls:
             url = 'http://%s/%s' % (host, url)
             data = urllib2.urlopen(url)
             header = data.info().getheader('Content-Type')
             self.assertEqual(header, 'application/json', url)
+
+    def testCheckResponse200(self):
+        urls = [
+            'api/repo/indextime/?reponame=searchcode',
+            'api/repo/filecount/?reponame=searchcode',
+            'api/repo/indextimeseconds/?reponame=searchcode',
+        ]
+
+        for url in urls:
+            url = 'http://%s/%s' % (host, url)
+            urllib2.urlopen(url)
 
     def testFuzzyBadData(self):
         self.getData("http://%s/html/?q=test&p=100" % (host))
@@ -124,20 +148,19 @@ class TestIntegration(unittest.TestCase):
 
         for x in xrange(1000):
             url = "http://%s/html/?%s=%s&%s=%s" % (
-                host, 
-                self.getRandomLetters(1), 
-                self.getRandomLetters(10), 
-                self.getRandomLetters(1), 
+                host,
+                self.getRandomLetters(1),
+                self.getRandomLetters(10),
+                self.getRandomLetters(1),
                 self.getRandomLetters(10))
             self.getData(url)
 
         for x in xrange(1000):
             self.getData("http://%s/html/?q=%s&repo=%s&lan=%s" % (
-                host, 
-                self.getRandomLetters(10), 
+                host,
+                self.getRandomLetters(10),
                 self.getRandomLetters(10),
                 self.getRandomLetters(10)))
-
 
 
 if __name__ == "__main__":

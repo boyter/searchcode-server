@@ -6,7 +6,19 @@
 <link rel="stylesheet" href="/css/highlight/default.css">
 <script src="/js/jquery-1.11.1.min.js"></script>
 
-    <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> ${codePath}</h4>
+    <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> /${codePath}</h4>
+
+    <center>
+        <form method="GET" action="/">
+            <div class="form-inline">
+                <div class="form-group">
+                    <input id="searchwithin" name="q" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="true" size="50" placeholder="Search within ${repoName?html}" type="search" class="form-control" />
+                    <input type="hidden" name="repo" value="${repoName?html}" />
+                </div>
+                <input type="submit" value="search" class="btn btn-primary">
+            </div>
+        </form>
+    </center><br />
 
     <table class="table">
         <tbody>
@@ -75,10 +87,17 @@
             </td>
           </tr>
           </#if>
+          <tr>
+              <td colspan="4">
+              <a id="toggleFileTree"><span class="glyphicon glyphicon-tree-conifer" aria-hidden="true"></span> View File Tree</a>
+              <div id="fileTreeContainer" style="display:none;">
+              <br><p id="fileTreeResults" style="white-space: nowrap; overflow: scroll; background-color: #f5f5f5; border-radius: 6px 6px 6px 6px; padding: 10px;"></p>
+              </div>
+              </td>
+          </tr>
         </tbody>
     </table>
 </div>
-
 
 <div class="coderesult-code">
     <table style="width:100%;">
@@ -99,6 +118,40 @@ $('#toggleOwasp').click(function(e) {
   e.preventDefault();
   $('#owaspResults').toggle();
 });
+
+var filetreedata = null;
+$('#toggleFileTree').click(function(e) {
+    e.preventDefault();
+    $('#fileTreeContainer').toggle();
+
+    if(filetreedata === null) {
+      $('#fileTreeResults').html('<center><img src="/img/loading.gif" /></center>');
+      $.ajax('/api/repo/repotree/?reponame=${repoName?html}')
+       .done(function(data, textStatus, jqXHR) {
+          filetreedata = true;
+          var displayString = '';
+          $.each(data.codeResultList, function(index, value) {
+            var ahref = '/file/' + value.codeId + '/${repoName?html}/' + value.displayLocation;
+            displayString += '<a href="' + ahref + '">/' + value.displayLocation + '</a><br>';
+          });
+
+          $('#fileTreeResults').html(displayString);
+       });
+    }
+});
+
+// Get highlighted text and prefill the search boxes
+function gText(e) {
+    var t = (document.all) ? document.selection.createRange().text : document.getSelection();
+    document.getElementById('searchwithin').value = t;
+    document.getElementById('searchbox').value = t;
+}
+
+document.onmouseup = gText;
+if (!document.all) {
+    document.captureEvents(Event.MOUSEUP);
+}
+
 </script>
 
 <#if highlight>

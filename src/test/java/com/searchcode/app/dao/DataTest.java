@@ -87,8 +87,18 @@ public class DataTest extends TestCase {
         assertThat(actual).isEqualTo(0);
     }
 
-    public void testCreateTable() {
+    public void testGetAll() {
+        assertThat(data.getAllData().size()).isZero();
 
+        for(int i = 0; i < 200; i++) {
+            String randomString = "" + i;
+            data.saveData(randomString, randomString);
+        }
+
+        assertThat(data.getAllData().size()).isEqualTo(200);
+    }
+
+    public void testCreateTable() {
         data.createTableIfMissing();
         data.createTableIfMissing();
         data.createTableIfMissing();

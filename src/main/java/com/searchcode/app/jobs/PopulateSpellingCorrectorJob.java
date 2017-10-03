@@ -20,10 +20,6 @@ public class PopulateSpellingCorrectorJob implements Job {
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
-            return;
-        }
-
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         Path path = Paths.get(Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION));
         Singleton.getLogger().info("Starting PopulateSpellingCorrectorJob in path " + path.toString());

@@ -5,17 +5,25 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.jobs.enqueue;
 
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Responsible for adding all of the repositories inside the database into the queues. There will be a queue
@@ -25,8 +33,21 @@ import java.util.List;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class EnqueueRepositoryJob implements Job {
+
+    private final IndexService indexService;
+    private final LoggerWrapper logger;
+    private final Repo repo;
+    private final Helpers helpers;
+
+    public EnqueueRepositoryJob() {
+        this.indexService = Singleton.getIndexService();
+        this.repo = Singleton.getRepo();
+        this.logger = Singleton.getLogger();
+        this.helpers = Singleton.getHelpers();
+    }
+
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return;
         }
 
@@ -37,24 +58,39 @@ public class EnqueueRepositoryJob implements Job {
             UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
 
             // Get all of the repositories and enqueue them
-            List<RepoResult> repoResultList = Singleton.getRepo().getAllRepo();
-            Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
-            for(RepoResult rr: repoResultList) {
+            // Filter out those queued to be deleted
+            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo())
+                .stream()
+                .filter(x -> !x.getScm().equals("file"))
+                .collect(Collectors.toList());
+
+            this.logger.info("Adding repositories to be indexed. " + repoResultList.size());
+
+            for (RepoResult rr: repoResultList) {
+                if (Singleton.getEnqueueRepositoryJobFirstRun()) {
+                    rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
+                    this.repo.saveRepo(rr);
+                    Singleton.getLogger().info("Resetting Job Run Time due to firstRun:" + Singleton.getEnqueueRepositoryJobFirstRun() + " repoName:" + rr.getName());
+                }
+
                 switch (rr.getScm().toLowerCase()) {
                     case "git":
-                        Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
+                        this.logger.info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
                         repoGitQueue.add(rr);
                         break;
                     case "svn":
-                        Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
+                        this.logger.info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
                         repoSvnQueue.add(rr);
                         break;
                     default:
-                        Singleton.getLogger().info("Unable to determine SCM type for " + rr.getName() + " " + rr.getScm());
                         break;
                 }
             }
+
+            Singleton.setEnqueueRepositoryJobFirstRun(false);
         }
-        catch (Exception ex) {}
+        catch (Exception ignored) {
+            Singleton.setEnqueueRepositoryJobFirstRun(false);
+        }
     }
 }

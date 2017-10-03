@@ -1,15 +1,13 @@
 package com.searchcode.app.util;
 
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Matchers.any;
@@ -95,5 +93,57 @@ public class HelpersTest extends TestCase {
         assertThat(this.helpers.ignoreFiles("/target")).isTrue();
 
         assertThat(this.helpers.ignoreFiles("target")).isFalse();
+    }
+
+    public void testTryParseInt() {
+        this.helpers = new Helpers();
+        assertThat(this.helpers.tryParseInt(null, "0")).isZero();
+    }
+
+    public void testTryParseDouble() {
+        this.helpers = new Helpers();
+        assertThat(this.helpers.tryParseDouble(null, "0")).isZero();
+        assertThat(this.helpers.tryParseDouble("0", "0")).isZero();
+    }
+
+    public void testReplaceForIndex() {
+        assertThat(this.helpers.replaceForIndex("Something")).isEqualTo("something");
+        assertThat(this.helpers.replaceForIndex("Something123")).isEqualTo("something123");
+        assertThat(this.helpers.replaceForIndex("Something.123")).isEqualTo("something_123");
+        assertThat(this.helpers.replaceForIndex("Something 123")).isEqualTo("something_123");
+    }
+
+    public void testReplaceNonAlphanumeric() {
+        this.helpers = new Helpers();
+        assertThat(this.helpers.replaceNonAlphanumeric("Something", "")).isEqualTo("Something");
+        assertThat(this.helpers.replaceNonAlphanumeric("Something123", "")).isEqualTo("Something123");
+        assertThat(this.helpers.replaceNonAlphanumeric("Something.123", "")).isEqualTo("Something123");
+        assertThat(this.helpers.replaceNonAlphanumeric("Something.123", "_")).isEqualTo("Something_123");
+        assertThat(this.helpers.replaceNonAlphanumeric("Something 123", "_")).isEqualTo("Something_123");
+    }
+
+    public void testAllUnique() {
+        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
+            add("a");
+            add("a");
+        }})).isFalse();
+
+        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
+            add("a");
+            add("b");
+        }})).isTrue();
+
+        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
+            add("a");
+            add("b");
+            add("b");
+        }})).isFalse();
+    }
+
+    public void testFilterRunningAndDeletedRepoJobs() {
+        assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<>()).size()).isEqualTo(0);
+        assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<RepoResult>() {{
+            add(new RepoResult(0, "reallyreallyuniquename", "", "", "", "", "", "", ""));
+        }}).size()).isEqualTo(1);
     }
 }

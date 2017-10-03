@@ -5,13 +5,14 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -23,6 +24,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides access to all methods required to get Repo details from the database.
@@ -48,7 +50,7 @@ public class Repo implements IRepo {
     public synchronized List<RepoResult> getAllRepo() {
         List<RepoResult> repoResults = new ArrayList<>();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -72,7 +74,7 @@ public class Repo implements IRepo {
                 repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -86,20 +88,15 @@ public class Repo implements IRepo {
     @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         List<RepoResult> repoResults = this.getAllRepo();
-        List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
+        List<RepoResult> matchRepoResults = new ArrayList<>();
 
         String[] split = searchTerms.toLowerCase().split(" ");
 
         for(RepoResult rr: repoResults) {
             boolean isMatch = false;
 
-            for(String term: split) {
-                if (rr.toString().toLowerCase().contains(term)) {
-                    isMatch = true;
-                }
-                else {
-                    isMatch = false;
-                }
+            for (String term: split) {
+                isMatch = rr.toString().toLowerCase().contains(term);
             }
 
             if (isMatch) {
@@ -118,7 +115,7 @@ public class Repo implements IRepo {
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
 
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -145,7 +142,7 @@ public class Repo implements IRepo {
                 repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -160,7 +157,7 @@ public class Repo implements IRepo {
     public synchronized int getRepoCount() {
         int totalCount = 0;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -174,7 +171,7 @@ public class Repo implements IRepo {
                 totalCount = resultSet.getInt("totalcount");
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -186,14 +183,14 @@ public class Repo implements IRepo {
     }
 
     @Override
-    public synchronized RepoResult getRepoByName(String repositoryName) {
+    public synchronized Optional<RepoResult> getRepoByName(String repositoryName) {
         if (repositoryName == null) {
-            return null;
+            return Optional.empty();
         }
 
-        RepoResult result = null;
+        Optional<RepoResult> result = Optional.empty();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -215,10 +212,10 @@ public class Repo implements IRepo {
                 String repoBranch = resultSet.getString("branch");
                 String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
+                result = Optional.of(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -230,16 +227,16 @@ public class Repo implements IRepo {
     }
 
     @Override
-    public synchronized RepoResult getRepoByUrl(String repositoryUrl) {
+    public synchronized Optional<RepoResult> getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
-            return null;
+            return Optional.empty();
         }
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        RepoResult result = null;
+        Optional<RepoResult> result = Optional.empty();
 
         try {
             connection = this.dbConfig.getConnection();
@@ -260,10 +257,10 @@ public class Repo implements IRepo {
                 String repoBranch = resultSet.getString("branch");
                 String repoData = resultSet.getString("data");
 
-                result = new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData);
+                result = Optional.of(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -276,7 +273,7 @@ public class Repo implements IRepo {
 
     @Override
     public synchronized void deleteRepoByName(String repositoryName) {
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -288,7 +285,7 @@ public class Repo implements IRepo {
 
             preparedStatement.execute();
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -300,17 +297,17 @@ public class Repo implements IRepo {
     // TODO add retry logic here as this can fail and as such should just trigger again
     @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
-        RepoResult existing = this.getRepoByName(repoResult.getName());
+        Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
 
         boolean isNew = false;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
 
         // Update with new details
         try {
             connection = this.dbConfig.getConnection();
-            if (existing != null) {
+            if (existing.isPresent()) {
                 preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
                 preparedStatement.setString(9, repoResult.getName());
             }
@@ -330,7 +327,7 @@ public class Repo implements IRepo {
 
             preparedStatement.execute();
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -343,21 +340,21 @@ public class Repo implements IRepo {
 
     // Schema Migrations below
     public void addSourceToTable() {
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("PRAGMA table_info(repo);");
 
             boolean shouldAlter = true;
 
-            rs = stmt.executeQuery();
-            String value = "";
-            while (rs.next()) {
-                value = rs.getString("name");
+            resultSet = preparedStatement.executeQuery();
+            String value;
+
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
 
                 if ("source".equals(value)) {
                     shouldAlter = false;
@@ -371,36 +368,37 @@ public class Repo implements IRepo {
                         "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\" FROM \"main\".\"oXHFcGcd04oXHFcGcd04_repo\"",
                         "DROP TABLE \"oXHFcGcd04oXHFcGcd04_repo\"");
 
-                for(String command: commands) {
-                    stmt = conn.prepareStatement(command);
-                    stmt.execute();
+                for (String command: commands) {
+                    preparedStatement = connection.prepareStatement(command);
+                    preparedStatement.execute();
                 }
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(rs);
-            Singleton.getHelpers().closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 
     public void addBranchToTable() {
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("PRAGMA table_info(repo);");
 
             boolean shouldAlter = true;
 
-            rs = stmt.executeQuery();
-            String value = Values.EMPTYSTRING;
-            while (rs.next()) {
-                value = rs.getString("name");
+            resultSet = preparedStatement.executeQuery();
+            String value;
+
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
 
                 if ("branch".equals(value)) {
                     shouldAlter = false;
@@ -416,24 +414,24 @@ public class Repo implements IRepo {
                         "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\", \"master\" FROM \"main\".\"y6L0VN5j9eQSg65hWtJJ_repo\"",
                         "DROP TABLE \"y6L0VN5j9eQSg65hWtJJ_repo\"");
 
-                for(String command: commands) {
-                    stmt = conn.prepareStatement(command);
-                    stmt.execute();
+                for (String command: commands) {
+                    preparedStatement = connection.prepareStatement(command);
+                    preparedStatement.execute();
                 }
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(rs);
-            Singleton.getHelpers().closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 
     public synchronized void createTableIfMissing() {
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -442,7 +440,7 @@ public class Repo implements IRepo {
             preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
             preparedStatement.execute();
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -452,20 +450,21 @@ public class Repo implements IRepo {
     }
 
     public void addDataToTable() {
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        Connection connection;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("PRAGMA table_info(repo);");
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("PRAGMA table_info(repo);");
 
             boolean shouldAlter = true;
 
-            rs = stmt.executeQuery();
+            resultSet = preparedStatement.executeQuery();
             String value;
-            while (rs.next()) {
-                value = rs.getString("name");
+
+            while (resultSet.next()) {
+                value = resultSet.getString("name");
 
                 if ("data".equals(value)) {
                     shouldAlter = false;
@@ -473,16 +472,16 @@ public class Repo implements IRepo {
             }
 
             if (shouldAlter) {
-                stmt = conn.prepareStatement("ALTER TABLE repo ADD COLUMN data text;");
-                stmt.execute();
+                preparedStatement = connection.prepareStatement("ALTER TABLE repo ADD COLUMN data text;");
+                preparedStatement.execute();
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(rs);
-            Singleton.getHelpers().closeQuietly(stmt);
+            Singleton.getHelpers().closeQuietly(resultSet);
+            Singleton.getHelpers().closeQuietly(preparedStatement);
         }
     }
 }

@@ -6,7 +6,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 '''
 
@@ -22,7 +22,7 @@ from fabric.contrib.files import sed
 from fabric.context_managers import settings, hide, cd
 from fabric.colors import yellow
 
-
+import platform
 import os
 from os import path
 import re
@@ -30,7 +30,7 @@ import hashlib
 import sys
 import datetime
 
-VERSION = "1.3.9"
+VERSION = "1.3.11"
 
 
 def setup_npm():
@@ -64,13 +64,14 @@ def js_test():
 
 def test_integration():
     print(yellow('Be sure to run: "fab compile_js configure_prod run" first'))
-    local('mvn integration-test')
     js_test()
     local("python ./assets/integration_test/test.py")
     local("python ./assets/integration_test/fuzztest.py")
     local("python ./assets/integration_test/signed_testing.py")
     local("python ./assets/integration_test/signed_testing_sha512.py")
     local("python ./assets/integration_test/signed_fuzz.py")
+    local("python ./assets/integration_test/quote_plus.py")
+
 
 def stress_test():
     local('python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/test.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/fuzztest.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py & python ./assets/integration_test/signed_testing.py')
@@ -92,11 +93,14 @@ def build_all_release():
 
 
 def build_release():
+    _check_os
     replacements = {
         'public static final boolean ISCOMMUNITY = true;': 'public static final boolean ISCOMMUNITY = false;'
     }
     _python_sed(
         fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)
+    local('rm -rf ./repo/')
+    local('rm -rf ./index/')
     compile_js()
     configure_prod()
     package()
@@ -110,6 +114,7 @@ def build_release():
 
 
 def build_community_release():
+    _check_os
     # modify community flag in application
     replacements = {
         'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;'
@@ -147,8 +152,8 @@ def compile_js():
 def configure_local():
     replacements = {
         '<script src="/js/script.min.js"></script>':
-            '<script src="/js/mithril.min.js"></script><script src="/js/underscore-min.js"></script><script src="/js/chart.js"></script><script src="/js/cache.js"></script><script src="/js/script.js"></script>'
-
+            '<script src="/js/mithril.min.js"></script><script src="/js/underscore-min.js"></script><script src="/js/chart.js"></script><script src="/js/cache.js"></script><script src="/js/script.js"></script>',
+        'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;',
     }
     _python_sed(
         fileloc='./src/main/resources/spark/template/freemarker/search_ajax.ftl', replacements=replacements)
@@ -161,6 +166,11 @@ def configure_prod():
     }
     _python_sed(
         fileloc='./src/main/resources/spark/template/freemarker/search_ajax.ftl', replacements=replacements)
+
+
+def _check_os():
+    if 'windows' in platform.system().lower():
+        fabric.operations.prompt('Warning. Creating a build through Windows is not currently supported. Please any key to contine.', key=None, default='', validate=None)
 
 
 def _build_package():

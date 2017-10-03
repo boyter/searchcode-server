@@ -1,0 +1,207 @@
+        <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">API documentation for searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+
+        <p class="em">API endpoints offered by your searchcode server instance are described in your searchcode server documentation page. Note that some require API authentication.</p>
+        <h4>API Authentication</h4>
+        <p class="em">API authentication is done through the use of shared secret key HMAC generation. If enabled you will be required to sign
+          the arguments sent to the API endpoint as detailed. Ask your administrator for a public and private key to be generated for you
+          if you require access to the API.</p>
+          
+        <p class="em">To sign a request see the below examples in Python demonstrating how to perform all repository API calls.
+          The most important thing to note is that parameter order is important. All API endpoints will list the order
+          that parameters should have passed in. The below code is has no license and is released as public domain. The second
+          example is identical to the first but performs the signing using SHA512 for greater security.</p>
+        <h4>SHA1 Example</h4>
+<textarea style="font-family: monospace,serif; width:100%; height:150px;" readonly="true">from hashlib import sha1
+from hmac import new as hmac
+import urllib2
+import json
+import urllib
+import pprint
+
+publickey = "REALPUBLICKEYHERE"
+privatekey = "REALPRIVATEKEYHERE"
+
+reponame = "myrepo"
+repourl = "myrepourl"
+repotype = "git"
+repousername = ""
+repopassword = ""
+reposource = ""
+repobranch = "master"
+
+message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s" % (
+        urllib.quote_plus(publickey),
+        urllib.quote_plus(reponame),
+        urllib.quote_plus(repourl),
+        urllib.quote_plus(repotype),
+        urllib.quote_plus(repousername),
+        urllib.quote_plus(repopassword),
+        urllib.quote_plus(reposource),
+        urllib.quote_plus(repobranch)
+    )
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/add/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/list/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message'], data['repoResultList']
+
+################################################################
+
+message = "pub=%s&reponame=%s" % (
+        urllib.quote_plus(publickey),
+        urllib.quote_plus(reponame),
+    )
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/delete/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/reindex/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']</textarea>
+
+<h4>SHA512 example</h4>
+
+<textarea style="font-family: monospace,serif; width:100%; height:150px;" readonly="true">from hashlib import sha512
+from hmac import new as hmac
+import urllib2
+import json
+import urllib
+import pprint
+
+'''Simple usage of the signed key API endpoints using SHA512 hmac'''
+publickey = "REALPUBLICKEYHERE"
+privatekey = "REALPRIVATEKEYHERE"
+
+
+reponame = "myrepo"
+repourl = "myrepourl"
+repotype = "git"
+repousername = ""
+repopassword = ""
+reposource = ""
+repobranch = "master"
+
+message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s" % (
+  urllib.quote_plus(publickey),
+  urllib.quote_plus(reponame),
+  urllib.quote_plus(repourl),
+  urllib.quote_plus(repotype),
+  urllib.quote_plus(repousername),
+  urllib.quote_plus(repopassword),
+  urllib.quote_plus(reposource),
+  urllib.quote_plus(repobranch)
+)
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/add/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/list/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message'], data['repoResultList']
+
+################################################################
+
+message = "pub=%s&reponame=%s" % (
+  urllib.quote_plus(publickey),
+  urllib.quote_plus(reponame),
+)
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/delete/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha512).hexdigest()
+
+url = "http://localhost:8080/api/repo/reindex/?sig=%s&%s&hmac=sha512" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']</textarea>
+          
+          <p class="em">To achive the same result in Java use <a href="https://commons.apache.org/proper/commons-codec/apidocs/org/apache/commons/codec/digest/HmacUtils.html">HmacUtils</a> as follows,</p>
+          
+          <textarea style="font-family: monospace,serif; width:100%; height:55px;" readonly="true">String myHmac = HmacUtils.hmacSha1Hex(MYPRIVATEKEY, PARAMSTOHMAC);
+String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
+
+
+      </div>

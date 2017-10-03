@@ -8,7 +8,7 @@
           <ul class="nav nav-pills nav-stacked span2">
             <li><a href="/admin/">Dashboard</a></li>
             <li><a href="/admin/repo/">Repository Add</a></li>
-            <li><a href="/admin/repolist/">Repository List</a></li>
+            <li><a href="/admin/repolist/">Repository List <span class="badge">${repoCount}</span></a></li>
             <li><a href="/admin/bulk/">Repository Bulk Add</a></li>
             <li><a href="/admin/api/">API Keys</a></li>
             <li class="active"><a href="/admin/settings/">Settings</a></li>
@@ -119,6 +119,17 @@
             <tr>
             <td></td>
             <td>Empty this field to reset. Used for controlling the indexer. If set to a non zero value it will attempt to keep the CPU load value below the set value. Works off the CPU load averages reported. If you find searchcode to be slow to respond then set this value to half the number of processors. Note that other processes on the machine can affect this value and if set too low will cause the index to never run.</td>
+        </tr>
+
+        <tr>
+        <td valign="top"><b>Embed</b></td>
+        <td valign="top">
+            <textarea id="embed" maxlength="16000" class="form-control" name="embed" placeholder="<div>Custom HTML</div>">${embed}</textarea>
+        </td>
+        </tr>
+        <tr>
+        <td></td>
+        <td>Empty this field to reset. Use this to embed custom HTML/CSS/JS on all pages. Max length of 16000 characters.</td>
         </tr>
 
         <tr>

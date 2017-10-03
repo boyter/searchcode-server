@@ -5,12 +5,13 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dto;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.service.Singleton;
 
 public class CodeFacetOwner {
     public String owner = Values.EMPTYSTRING;
@@ -44,5 +45,9 @@ public class CodeFacetOwner {
 
     public void setSelected(boolean selected) {
         this.selected = selected;
+    }
+
+    public String getOwnerSearchable() {
+        return Singleton.getHelpers().replaceNonAlphanumeric(this.owner.toLowerCase(), "_");
     }
 }

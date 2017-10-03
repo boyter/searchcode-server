@@ -7,7 +7,7 @@
           <ul class="nav nav-pills nav-stacked span2">
             <li><a href="/admin/">Dashboard</a></li>
             <li class="active"><a href="/admin/repo/">Repository Add</a></li>
-            <li><a href="/admin/repolist/">Repository List</a></li>
+            <li><a href="/admin/repolist/">Repository List <span class="badge">${repoCount}</span></a></li>
             <li><a href="/admin/bulk/">Repository Bulk Add</a></li>
             <li><a href="/admin/api/">API Keys</a></li>
             <li><a href="/admin/settings/">Settings</a></li>
@@ -18,15 +18,18 @@
     </div>
     <div class="col-md-10">
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Admin</h3>
-    <p>You can use this page to add repositories to index or find and remove them from the index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
-    <p>Please note that deleting a repository adds it to queue for deletion and as such may not be removed immediately.</p>
+    <p>You can use this page to add repositories to index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
 
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Add</h3>
-    <form class="form-horizontal" method="POST">
-      <div class="form-group">
+
+    <#if validatorResult??><div class="alert alert-danger" role="alert">${validatorResult.reason}</div></#if>
+
+    <form class="form-horizontal" method="POST" id="mainForm">
+      <div class="form-group" id="reponame-formgroup">
         <label for="reponame" class="col-sm-2 control-label">Repository Name</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="reponame" value="" name="reponame" placeholder="Repository Name" />
+          <input type="text" class="form-control" id="reponame" value="<#if validatorResult??>${validatorResult.repoResult.name}</#if>" name="reponame" placeholder="Repository Name" required />
+          <span id="helpBlock2" class="help-block">Must consist of only only alphanumeric characters - or _ and be a unique name</span>
         </div>
       </div>
       <div class="form-group">
@@ -39,116 +42,92 @@
           </select>
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="repourl-formgroup">
           <label for="repourl" class="col-sm-2 control-label">Repository Location</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="" id="repourl" name="repourl" placeholder="Repository URL or File Path" />
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.url}</#if>" id="repourl" name="repourl" placeholder="Repository URL or File Path" required />
           </div>
       </div>
 
       <div class="form-group">
         <label for="repousername" class="col-sm-2 control-label">Repository Username</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" value="" id="repousername" name="repousername" placeholder="Repository username if required" />
+          <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.username}</#if>" id="repousername" name="repousername" placeholder="Repository username if required" />
         </div>
       </div>
 
       <div class="form-group">
           <label for="repopassword" class="col-sm-2 control-label">Repository Password</label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" value="" id="repopassword" name="repopassword" placeholder="Repository password if required" />
+            <input type="password" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.password}</#if>" id="repopassword" name="repopassword" placeholder="Repository password if required" />
           </div>
       </div>
 
       <div class="form-group">
             <label for="reposource" class="col-sm-2 control-label">Repository Source</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" value="" id="reposource" name="reposource" placeholder="URL to repository source location or documentation" />
+              <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="reposource" name="reposource" placeholder="URL to repository source location or documentation" />
             </div>
       </div>
 
       <div class="form-group">
           <label for="repobranch" class="col-sm-2 control-label">Repository Branch</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="master" id="repobranch" name="repobranch" placeholder="For GIT repositories only what branch should be indexed" />
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.branch}<#else>master</#if>" id="repobranch" name="repobranch" placeholder="For GIT repositories only what branch should be indexed" />
           </div>
       </div>
 
       <div class="form-group">
+        <label for="repobranch" class="col-sm-2 control-label">Add Another</label>
+        <div class="col-sm-10">
+          <input type="checkbox" style="margin-top:12px;" name="return" value="return">
+        </div>
+      </div>
+
+      <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-          <input type="submit" class="btn btn-primary" name="Add Repo" value="Add Repository" />
+          <input id="addRepository" type="submit" class="btn btn-primary" name="addRepo" value="Add Repository" />
         </div>
       </div>
     </form>
 
-    <br>
-    <br>
-
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository List</h3>
-
-    <div class="center">
-
-
-        <form method="GET">
-            <#if hasPrevious == true>
-                <a href="?offset=${previousOffset}" class="btn btn-xs btn-success filter-button" />&#9664; Previous</a>
-            <#else>
-                <input type="submit" value="&#9664; Previous" disabled="true" class="btn btn-xs btn-success filter-button" />
-            </#if>
-
-            <input type="text" <#if searchQuery?? >value="${searchQuery}"<#else>value=""</#if> name="q" placeholder="Filter Repositories" />
-            <input class="btn btn-xs btn-primary" type="submit" value="Filter" />
-
-            <#if hasNext == true>
-                <a href="?offset=${nextOffset}" class="btn btn-xs btn-success filter-button" />Next &#9658;</a>
-            <#else>
-                <input type="submit" value="Next &#9658;" disabled="true" class="btn btn-xs btn-success filter-button" />
-            </#if>
-        </form>
-
-
-    </div>
-    <br><br>
-
-
-    <#list repoResults>
-        <#items as result>
-            <div>
-                <input type="text" value="${result.name?html}" name="reponame" readonly="true">
-                <input type="text" value="${result.scm?html}" name="reposcm" readonly="true">
-                <input type="text" value="${result.url?html}" name="repourl" readonly="true">
-                <!--<input type="text" value="${result.username?html}" name="repousername" readonly="true">
-                <input type="password" value="${result.password?html}" name="repopassword" readonly="true">-->
-                <input type="text" value="${result.source?html}" name="reposource" readonly="true">
-                <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
-                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
-                <span ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/checkindexstatus/?reponame=${result.name?html}"></span>
-            </div>
-        </#items>
-    </#list>
-</div>
 </div>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
-<script src="/js/intercooler-1.0.3.min.js"></script>
 <script>
-$(document).ready(function(){
-    $('button.delete').click(function(e) {
-        e.preventDefault();
-        var thus = $(this);
+function validateRepoName() {
+    var input = $('#reponame');
+	var re = /^[a-zA-Z0-9-_]*$/;
+	var is_valid = re.test(input.val());
 
-        var result = confirm("Delete this repository?");
-        if (result === true) {
-            $.ajax('/admin/delete/?repoName=' + encodeURIComponent(thus.data('id')))
-               .done(function(data, textStatus, jqXHR) {
-                    thus.parent().remove();
-               }).fail(function(xhr, ajaxOptions, thrownError) {
-                    alert('Sorry was unable to delete. Please reload the page and try again.');
-              });
+	$.ajax('/api/repo/repo/?reponame=' + input.val())
+    .done(function(data, textStatus, jqXHR) {
+        if (is_valid && input.val() && (data === 'null' || data === null)) {
+            $('#reponame-formgroup').removeClass('has-error');
         }
+        else {
+            $('#reponame-formgroup').addClass('has-error');
+        }
+    }).fail(function(xhr, ajaxOptions, thrownError) {
+        $('#reponame-formgroup').addClass('has-error');
     });
-});
-</script>
+}
 
+function validateRepoUrl() {
+    var input = $('#repourl');
+
+    if (input.val()) {
+        $('#repourl-formgroup').removeClass('has-error');
+        return true;
+    }
+    else {
+        $('#repourl-formgroup').addClass('has-error');
+        return false;
+    }
+}
+
+$('#reponame').on('input', validateRepoName);
+$('#repourl').on('input', validateRepoUrl);
+</script>
 
 </@layout.masterTemplate>

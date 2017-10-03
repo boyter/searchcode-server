@@ -63,6 +63,14 @@
       </div>
     </div>
 
+    <div>
+        <div>
+            <div class="checkbox">
+                <label><a href="/api/codesearch/rss/?q=${searchValue?html}">RSS Feed of Search</a></label>
+            </div>
+        </div>
+    </div>
+
     </form>
   </div>
 
@@ -90,7 +98,7 @@
           <#list result.matchingResults>
               <#items as line>
               <li value="${line.lineNumber?c}">
-                  <a href="/file/${result.documentId?c}/${result.codePath}#${line.lineNumber?c}">
+                  <a href="/file/${result.codeId}/${result.codePath}#${line.lineNumber?c}">
                       <pre>${line.line}</pre>
                   </a>
                   <#if line.addBreak ><hr class="codesplit"></#if>

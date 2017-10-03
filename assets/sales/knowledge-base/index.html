@@ -1,0 +1,134 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">The searchcode server knowledge base.</h1>
+        </div>
+      </div>
+
+       <div class="row dark-blue-container">
+          <div class="container center">
+            <p>
+                <form class="form-inline">
+                  <div class="form-group">
+                    <input style="width: 400px;" type="text" class="form-control" id="search-input" placeholder="Search Knowledge Base">
+                  </div>
+                  <button type="submit" class="btn btn-default">Search</button>
+                </form>
+            </p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/eventually-open.html">What is eventually open and what does it mean?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/parser-pauses-low-memory-false.html">Parser pauses when low_memory=false</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-use-searchcode-servers-api-using-python.html">How to use searchcode servers API using Python</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-sync-stash-bitbucket-server-with-searchcode-using-python.html">How to sync Stash/Bitbucket Server with searchcode using Python</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-search-source-code-using-grep.html">How to search source code using grep</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-search-source-code-using-ack.html">How to search source code using ack</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/what-languages-does-searchcode-server-recognise.html">What languages does searchcode recognise?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/what-maintenance-for-searchcode-is-reccomended.html">What maintenance for searchcode is reccomended?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-search-effectively-in-searchcode-server.html">How to search effectively in searchcode server</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/details-of-searchcode-server-api.html">Details of searchcode server API</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-generate-api-keys.html">How to generate API keys</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-does-searchcode-server-estimate-project-costs.html">How does searchcode server estimate project costs?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-can-searchcode-server-lower-development-costs.html">How can searchcode server lower development costs?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-can-searchcode-server-increase-collaboration.html">How can searchcode server increase collaboration?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-can-searchcode-server-increase-productivity.html">How can searchcode server improve productivity?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/what-version-of-java-is-required-for-searchcode-server.html">What version of Java is required for searchcode server?</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/the-repoistory-overview-page.html">The repository overview page</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-add-a-repository-to-the-index.html">How to add a repository to the index</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-administer-your-searchcode-server-install.html">How to administer your searchcode server install</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-control-searchcode-server-cpu-usage.html">How to control searchcode server's CPU usage</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-install-searchcode-server.html">How to install searchcode server</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/what-size-server-does-searchcode-server-require.html">What size server does searchcode server require</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/deploy-searchcode-behind-nginx.html">How to deploy searchcode server behind nginx</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/upstart-and-systemd-startup-scripts-for-ubuntu.html">Upstart and SystemD Startup Scripts for Ubuntu</a></p>
+            </div>
+            <div class="col-lg-6 searchable">
+              <p><a href="/knowledge-base/how-to-add-files-to-be-recognised.html">How to add or modify files to be recognised</a></p>
+            </div>
+        </div>
+      </div>
+
+      <script>
+      $('#search-input').keyup(function(e) {
+        var value = $(this).val().toLowerCase().replace(/\s+/g, ' ');
+        var terms = value.split(' ');
+        console.log(terms);
+
+        if (value.trim() === '') {
+          $('.searchable').each(function(index) {
+            $(this).show();
+          });
+          return;
+        }
+
+        $('.searchable').each(function(index) {
+          var show = false;
+          var text = $(this).text().toLowerCase();
+
+          for(var i=0; i<terms.length; i++) {
+            if (text.indexOf(terms[i]) !== -1) {
+              show = true;
+            }
+          }
+
+          if (show) {
+            $(this).show();
+          }
+          else {
+            $(this).hide();
+          }
+        });
+      });
+      </script>

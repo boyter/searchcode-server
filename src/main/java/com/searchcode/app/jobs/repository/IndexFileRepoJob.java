@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 
@@ -14,9 +14,9 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
+import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
@@ -24,7 +24,7 @@ import org.quartz.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
 
 /**
  * This job is responsible for pulling and indexing file repositories which are kept upto date by some external
@@ -34,27 +34,32 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexFileRepoJob extends IndexBaseRepoJob {
 
+    private final IndexService indexService;
     public String repoName;
+
+    public IndexFileRepoJob() {
+        this(Singleton.getIndexService());
+    }
+
+    public IndexFileRepoJob(IndexService indexService) {
+        this.indexService = indexService;
+    }
 
     /**
      * The main method used for finding jobs to index and actually doing the work
      */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (isEnabled() == false) {
+        if (!isEnabled()) {
             return;
         }
 
-        if (Singleton.getBackgroundJobsEnabled() == false) {
+        if (this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
+            Singleton.getLogger().info("Pausing parser.");
             return;
         }
 
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
-        while(Singleton.getCodeIndexer().shouldPauseAdding()) {
-            Singleton.getLogger().info("Pausing parser.");
-            return;
-        }
 
         // Pull the next repo to index from the queue
         UniqueRepoQueue repoQueue = this.getNextQueuedRepo();
@@ -65,7 +70,6 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
             Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
-            repoResult.getData().jobRunTime = Instant.now();
             Singleton.getRepo().saveRepo(repoResult);
 
             try {
@@ -74,8 +78,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 JobDataMap data = context.getJobDetail().getJobDataMap();
 
-                String repoName = repoResult.getName();
-                this.repoName = repoName;
+                this.repoName = repoResult.getName();
                 String repoRemoteLocation = repoResult.getUrl();
 
                 String repoLocations = data.get("REPOLOCATIONS").toString();
@@ -83,13 +86,17 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
                 Path docDir = Paths.get(repoRemoteLocation);
 
-                this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, true);
+                this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, true);
 
                 int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
                 repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
                 repoResult.getData().indexStatus = "success";
                 repoResult.getData().jobRunTime = Instant.now();
                 Singleton.getRepo().saveRepo(repoResult);
+
+                // Mark that this job is finished
+                // TODO ensure that this line is covered by tests
+                this.indexService.decrementRepoJobsCount();
             }
             finally {
                 // Clean up the job

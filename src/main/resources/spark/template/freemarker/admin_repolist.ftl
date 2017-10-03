@@ -7,7 +7,7 @@
           <ul class="nav nav-pills nav-stacked span2">
             <li><a href="/admin/">Dashboard</a></li>
             <li><a href="/admin/repo/">Repository Add</a></li>
-            <li class="active"><a href="/admin/repolist/">Repository List</a></li>
+            <li class="active"><a href="/admin/repolist/">Repository List <span class="badge">${repoCount}</span></a></li>
             <li><a href="/admin/bulk/">Repository Bulk Add</a></li>
             <li><a href="/admin/api/">API Keys</a></li>
             <li><a href="/admin/settings/">Settings</a></li>
@@ -20,6 +20,7 @@
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository List</h3>
     <p>You can use this page to find and remove repositories from the index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
     <p>Please note that deleting a repository adds it to queue for deletion and as such may not be removed immediately.</p>
+    <p>To view the status of the index process see the <a href="/repository/list/">repositories page</a>.</p>
 
     <div class="center">
 
@@ -53,8 +54,8 @@
                 <input type="text" value="${result.url?html}" name="repourl" readonly="true">
                 <input type="text" value="${result.source?html}" name="reposource" readonly="true">
                 <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
-                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> delete</button>
-                <span ic-trigger-on="load" ic-poll="10s" ic-src="/admin/api/checkindexstatus/?reponame=${result.name?html}"></span>
+                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
+                <button class="btn btn-sm btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reindex</button>
             </div>
         </#items>
     </#list>
@@ -62,7 +63,7 @@
 </div>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
-<script src="/js/intercooler-1.0.3.min.js"></script>
+<script src="/js/intercooler-1.1.2.min.js"></script>
 <script>
 $(document).ready(function(){
     $('button.delete').click(function(e) {
@@ -78,6 +79,18 @@ $(document).ready(function(){
                     alert('Sorry was unable to delete. Please reload the page and try again.');
               });
         }
+    });
+
+    $('button.reindex').click(function(e) {
+        e.preventDefault();
+        var thus = $(this);
+
+        $.ajax('/admin/reindex/?repoName=' + encodeURIComponent(thus.data('id')))
+           .done(function(data, textStatus, jqXHR) {
+                console.log('queued to reindex');
+           }).fail(function(xhr, ajaxOptions, thrownError) {
+                alert('Sorry was unable to delete. Please reload the page and try again.');
+           });
     });
 });
 </script>

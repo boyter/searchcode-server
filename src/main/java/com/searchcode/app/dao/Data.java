@@ -5,13 +5,14 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.DataData;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -21,6 +22,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides access to all methods required to get Data details from the database.
@@ -36,6 +39,35 @@ public class Data implements IData {
     public Data(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.createTableIfMissing();
+    }
+
+    public synchronized List<DataData> getAllData() {
+        List<DataData> values = new ArrayList<>();
+
+        Connection connection;
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.dbConfig.getConnection();
+            preparedStatement = connection.prepareStatement("select key,value from \"data\";");
+
+            resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                values.add(new DataData(resultSet.getString("key"), resultSet.getString("value")));
+            }
+        }
+        catch (SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get all data");
+        }
+        finally {
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
+        }
+
+        return values;
     }
 
     public synchronized String getDataByName(String key, String defaultValue) {
@@ -49,7 +81,7 @@ public class Data implements IData {
     public synchronized String getDataByName(String key) {
         String value = null;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -64,7 +96,7 @@ public class Data implements IData {
                 value = resultSet.getString("value");
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get " + key);
         }
         finally {
@@ -79,7 +111,7 @@ public class Data implements IData {
         String existing = this.getDataByName(key);
         boolean isNew = false;
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
 
         try {
@@ -100,7 +132,7 @@ public class Data implements IData {
 
             preparedStatement.execute();
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -111,8 +143,7 @@ public class Data implements IData {
     }
 
     public synchronized void createTableIfMissing() {
-
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -131,7 +162,7 @@ public class Data implements IData {
                 preparedStatement.execute();
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {

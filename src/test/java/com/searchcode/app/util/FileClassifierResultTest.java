@@ -31,6 +31,17 @@ public class FileClassifierResultTest extends TestCase {
         assertThat(languageGuess).isEqualTo("boyterlang");
     }
 
+    public void testIdentifyLanguageAdditionalDots() {
+        List<FileClassifierResult> database = new ArrayList<>();
+        database.add(new FileClassifierResult("Typescript", "ts", ""));
+        database.add(new FileClassifierResult("Typings Definition", "d.ts", ""));
+
+        FileClassifier fileClassifier = new FileClassifier(database);
+        String languageGuess = fileClassifier.languageGuesser("test.d.ts", new ArrayList<>());
+
+        assertThat(languageGuess).isEqualTo("Typings Definition");
+    }
+
     public void testLanguageGuesserText() {
         FileClassifier fileClassifier = new FileClassifier();
         String language = fileClassifier.languageGuesser("test.txt", new ArrayList<>());
@@ -67,10 +78,35 @@ public class FileClassifierResultTest extends TestCase {
         assertEquals("Jenkins Buildfile", language);
     }
 
-    public void testLanguageGuesseKotlin() {
+    public void testLanguageGuesserKotlin() {
         FileClassifier fileClassifier = new FileClassifier();
         String language = fileClassifier.languageGuesser("test.kt", new ArrayList<>());
         assertEquals("Kotlin", language);
+    }
+
+    public void testLanguageGuesserMultiple() {
+        // Multiple languages match c so need to add logic here to check they are correct
+        FileClassifier fileClassifier = new FileClassifier();
+        ArrayList<String> lines = new ArrayList<String>() {{
+            add("#include<stdio.h>");
+            add("int main(void) {");
+            add("printf(\"Hello World\\n\");");
+            add("return 0;");
+            add("}");
+        }};
+
+        String language = fileClassifier.languageGuesser("test.c", lines);
+        assertEquals("C", language);
+
+        lines = new ArrayList<String>() {{
+            add("#include <iostream>");
+            add("using namespace std;");
+            add("void main()");
+            add("{ cout << \"Hello World!\" << endl;   cout << \"Welcome to C++ Programming\" << endl; }");
+        }};
+
+        language = fileClassifier.languageGuesser("test.c", lines);
+        assertEquals("C++", language);
     }
 
     // TODO update this with actual conflicting type and check that it classifies correctly
@@ -82,5 +118,34 @@ public class FileClassifierResultTest extends TestCase {
 
         String language = fileClassifier.languageGuesser("test.java", codeLines);
         assertEquals("Java", language);
+    }
+
+    public void testLanguageGuesserNoMatching() {
+        FileClassifier fileClassifier = new FileClassifier();
+        fileClassifier.DEEP_GUESS = true;
+        ArrayList<String> lines = new ArrayList<String>() {{
+            add("#include<stdio.h>");
+            add("int main(void) {");
+            add("printf(\"Hello World\\n\");");
+            add("return 0;");
+            add("}");
+        }};
+
+        String language = fileClassifier.languageGuesser("noidea", lines);
+        assertEquals("C", language);
+    }
+
+    public void testDeepGuess() {
+        FileClassifier fileClassifier = new FileClassifier();
+        ArrayList<String> lines = new ArrayList<String>() {{
+            add("#include<stdio.h>");
+            add("int main(void) {");
+            add("printf(\"Hello World\\n\");");
+            add("return 0;");
+            add("}");
+        }};
+
+        String language = fileClassifier.deepGuess("noidea", lines);
+        assertEquals("C", language);
     }
 }

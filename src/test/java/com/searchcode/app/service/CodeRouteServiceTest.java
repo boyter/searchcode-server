@@ -22,6 +22,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
 public class CodeRouteServiceTest extends TestCase {
+
     public void testRootNoQueryString() {
         CodeRouteService codeRouteService = new CodeRouteService();
 
@@ -149,26 +150,27 @@ public class CodeRouteServiceTest extends TestCase {
     }
 
     public void testGetCodeWithParamsWithMatch() {
-        Request request = Mockito.mock(Request.class);
-        Response response = Mockito.mock(Response.class);
-        CodeSearcher codeSearcher = Mockito.mock(CodeSearcher.class);
+        Request request = mock(Request.class);
+        Response response = mock(Response.class);
+        IndexService indexService = mock(IndexService.class);
 
-        CodeRouteService codeRouteService = new CodeRouteService(codeSearcher);
+        CodeRouteService codeRouteService = new CodeRouteService(indexService);
 
-        CodeResult codeResult = new CodeResult(new ArrayList<String>(), new ArrayList<CodeMatchResult>());
+        CodeResult codeResult = new CodeResult(new ArrayList<>(), new ArrayList<>());
         codeResult.setCodeLines("100");
         codeResult.setLanguageName("LanguageName");
         codeResult.setMd5hash("md5hash");
         codeResult.setRepoName("myRepo");
         codeResult.setRepoLocation("repoLocation");
         codeResult.setCodeOwner("codeOwner");
+        codeResult.setDisplayLocation("myDisplayLocation");
 
         when(request.params(":codeid")).thenReturn("MATCH-MOCK");
-        when(codeSearcher.getByCodeId("MATCH-MOCK")).thenReturn(codeResult);
+        when(indexService.getCodeResultByCodeId("MATCH-MOCK")).thenReturn(codeResult);
 
         Map<String, Object> map = codeRouteService.getCode(request, response);
 
-        assertThat(map.get("codePath")).isEqualTo("/");
+        assertThat(map.get("codePath")).isEqualTo("myDisplayLocation");
         assertThat(map.get("codeLength")).isEqualTo("100");
         assertThat(map.get("languageName")).isEqualTo("LanguageName");
         assertThat(map.get("md5Hash")).isEqualTo("md5hash");

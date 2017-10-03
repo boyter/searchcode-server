@@ -19,6 +19,7 @@
             <h5>Guide</h5>
             <ol class="list-unstyled">
               <li><a href="#searching">Searching</a></li>
+              <li><a href="#literal">Literal Search</a></li>
               <li><a href="#html">HTML Only</a></li>
               <li><a href="#filters">Filters</a></li>
               <li><a href="#owners">Code Owners</li>
@@ -99,6 +100,51 @@
         Syntax highlighting is enabled for all files less than 1000 lines in length.
         </p>
 
+        <h3 id="literal">Literal Search</h3>
+        <p>
+        You can perform a literal search against the index by enabling literal search. To do so check the box "Literal Search" in the Search Options
+        panel of the search result page. This search includes all the standard searches performed by <a href="https://lucene.apache.org/core/5_2_1/queryparser/org/apache/lucene/queryparser/classic/package-summary.html">Lucene</a>.
+        </p>
+
+        <h4>Wildcard Searches</h4>
+        <p>Lucene supports single and multiple character wildcard searches within single terms (not within phrase queries).</p>
+        <p>To perform a single character wildcard search use the "?" symbol.</p>
+        <p>To perform a multiple character wildcard search use the "*" symbol.</p>
+        <p>The single character wildcard search looks for terms that match that with the single character replaced. For example, to search for "text" or "test" you can use the search: <pre class="code">te?t</pre></p>
+        <p>Multiple character wildcard searches looks for 0 or more characters. For example, to search for test, tests or tester, you can use the search: <pre class="code">test*</pre></p>
+        <p>You can also use the wildcard searches in the middle of a term. <pre class="code">te*t</pre></p>
+        <p>Note: You cannot use a * or ? symbol as the first character of a search.</p>
+
+        <h4>Regular Expression Searches</h4>
+        <p>Lucene supports regular expression searches matching a pattern between forward slashes "/". For example to find documents containing "moat" or "boat": <pre class="code">/[mb]oat/</pre></p>
+
+
+        <h4>Fuzzy Searches</h4>
+        <p>Lucene supports fuzzy searches based on Damerau-Levenshtein Distance. To do a fuzzy search use the tilde, "~", symbol at the end of a Single word Term. For example to search for a term similar in spelling to "roam" use the fuzzy search: <pre class="code">roam~</pre></p>
+        <p>This search will find terms like foam and roams.</p>
+        <p>An additional (optional) parameter can specify the maximum number of edits allowed. The value is between 0 and 2, For example: <pre class="code">roam~1</pre></p>
+        <p>The default that is used if the parameter is not given is 2 edit distances.</p>
+
+        <h4>Proximity Searches</h4>
+        <p>Lucene supports finding words are a within a specific distance away. To do a proximity search use the tilde, "~", symbol at the end of a Phrase. For example to search for a "apache" and "jakarta" within 10 words of each other in a document use the search:
+        </p><pre class="code">"jakarta apache"~10</pre>
+
+        <p>
+        The following fields are supported. All spaces and / characters are replaced with _
+         <dl class="dl-horizontal">
+            <dt>fn</dt>
+            <dd>File name. E.G. fn:search*</dd>
+            <dt>rn</dt>
+            <dd>Repository name. E.G. rn:searchcode*</dd>
+            <dt>ln</dt>
+            <dd>Language name. E.G. ln:java OR ln:bourne_again_shell</dd>
+            <dt>on</dt>
+            <dd>Owner name. E.G. on:ben</dd>
+            <dt>fl</dt>
+            <dd>File location. E.G. fl:src*</dd>
+        </dl>
+        </p>
+
         <h3 id="html">HTML Only</h3>
         <p>
         You can search using a pure HTML interface (no javascript) <a href="/html/">by clicking here</a>. Note that this page generally
@@ -122,7 +168,7 @@
         GIT owners are determined by counting the number of lines edited by each user. This is then weighted
         against the last commit time. For example, Bob added a file of 100 lines in length 1 year ago.
         Mary modified 30 lines of the file last week. In this situation Mary would be marked as the owner as she has modified
-        enough of the file and recently enough to be more famililar with it then Bob would be. If she has only modified a single
+        enough of the file and recently enough to be more familiar with it then Bob would be. If she has only modified a single
         line however Bob would still be marked as the owner.
         </p>
         <p>
@@ -596,8 +642,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Path to where the trash folders will be put. Sometimes files or folders will be created in the repository or index locations which searchcode cannot remove. If found they will be placed into this directory where it is up to a System Administrator to investigate and remove. Usually caused by the immutable bit being set.</dd>
               <dt>check_repo_chages</dt>
               <dd>Interval in seconds to check when repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
-              <dt>check_filerepo_chages</dt>
-              <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 3600.</dd>
+              <dt>check_filerepo_changes</dt>
+              <dd>Interval in seconds to check when file path repositories will be scanned for changes. Needs to be a number or will default to 600.</dd>
               <dt>only_localhost</dt>
               <dd>Boolean value true or false. Will only process connections on 127.0.0.1 (not localhost) if set to true and return 204 content not found otherwise. By default set to false.</dd>
               <dt>low_memory</dt>
@@ -608,8 +654,6 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Maximum number of documents to store in indexing queue. When on a memory constrained system it can be advisable to reduce the size. Needs to be a number or will default to 1000.</dd>
               <dt>max_document_queue_line_size</dt>
               <dd>Maximum number of lines of code to store in indexing queue. This is a soft cap which can be exceeded to allow large documents to be indexed. When on a memory constrained system it can be advisable to reduce the size. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 100000.</dd>
-              <dt>index_queue_batch_size</dt>
-              <dd>Maximum number of files the indexer will attempt to index before flushing them to disk. If the value of max_document_queue_size is raised it can be useful to raise this value to match. Needs to be a number or will default to 1000.</dd>
               <dt>max_file_line_depth</dt>
               <dd>Maximum number of lines in a file to index. If you want to index very large files set this value to a high number and lower the size of max_document_queue_size to avoid out of memory exceptions. 100000 lines equals about 200mb of in memory storage which will be used during the index pipeline. Needs to be a number or will default to 10000.</dd>
               <dt>use_system_git</dt>
@@ -645,20 +689,25 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dt>directory_black_list</dt>
               <dd>A black list of directories that if match will not be added to the index. Typically used to exclude binary directories such as bin. Example, directory_black_list=bin,target</dd>
               <dt>number_git_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing git repositories. Servers with many CPU's should have this value changed to half the number of CPU's. If you increase this value you may need to increase the <a href="#quartz">quartz.properties value see below</a>. Defaults to 2.</dd>
               <dt>number_svn_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Servers with many CPU's should have this value changed to half the number of CPU's. Defaults to 2.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing svn repositories. Servers with many CPU's should have this value changed to half the number of CPU's. If you increase this value you may need to increase the <a href="#quartz">quartz.properties value see below</a>. Defaults to 2.</dd>
               <dt>number_file_processors</dt>
-              <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories. Defaults to 1.</dd>
+              <dd>Number of background threads to spawn to deal with pulling from and indexing file repositories.  Servers with many CPU's should have this value changed to half the number of CPU's. If you increase this value you may need to increase the <a href="#quartz">quartz.properties value see below</a>. Defaults to 1.</dd>
               <dt>default_and_match</dt>
               <dd>Should the matching logic default to AND matching where nothing is specified. If set to true all queries will be similar to "import AND junit". If set to false all queries will be similar to "import OR junit". Default logic can be overridden by explicitly adding search operators. Defaults to true.</dd>
               <dt>log_indexed</dt>
               <dd>If set to true a csv containing the results of the last index run will be written to the log directory with the repository name as the filename. Can be used to determine why files are being indexed or not. Defaults to false.</dd>
+              <dt>follow_links</dt>
+              <dd>Boolean value true or false. If set to true indicates that symbolic links should be followed when indexing using file paths. Can be enabled if required to walk repositories containing symlinks. Be careful, this can produce infinite loops. Defaults to false.</dd>
+              <dt>deep_guess_files</dt>
+              <dd>Boolean value true or false. If set to true when a file is encountered that cannot be classified though naming conventions its keywords will be analysed and a best guess made. This can be CPU heavy or incorrectly classify some files. Defaults to false.</dd>
+              <dt>host_name</dt>
+              <dd>String value. Set this to the expected DNS host name for your searchcode server instance. This will allow things like RSS links to work.</dd>
             </dl>
-
         </p>
 
-        <p>
+        <p id="quartz">
         The quartz.properties file in the base directory should only need to be modified when changing the searchcode.properties values of number_git_processors, number_svn_processors and number_file_processors.
         By default searchcode spawns 10 background threads which are used for repository processing and internal processing logic. By itself searchcode uses 5 threads
         by itself leaving over 5 for background repository processing tasks. If you adjust the number of repository processors higher then you should increase the value for
@@ -673,7 +722,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
         <#if isCommunity??>
                     <#if isCommunity == true>
                     You are using the community edition of searchcode server. As such you will be unable to change anything here. If you would like the ability to configure the settings page
-                    you can purchase a copy at <a href="https://searchcode.com/product/download/">https://searchcode.com/product/download/</a>
+                    you can purchase a copy at <a href="hhttps://searchcodeserver.com/pricing.html">https://searchcodeserver.com/pricing.html</a>
                     </#if>
         </#if>
 
@@ -695,6 +744,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
             <dd>What the average length of lines in a file (ignoring empty) needs to be to mark the file as minified and being excluded from being indexed. Changing this value will affect files as they are re-indexed when the watched repositories change. Needs to be a number or will default to 255.</dd>
             <dt>Backoff Value</dt>
             <dd>Used for controlling the indexer CPU usage. If set to a non zero value it will attempt to keep the CPU load value below the set value. You can view the reported load average on the default admin page. Works off the CPU load averages reported. If you find searchcode to be slow to respond then set this value to half the number of processors. Note that other processes on the machine can affect this value and if set too low will cause the index to never run. Needs to be a number or will default to 0.</dd>
+            <dt>Embed</dt>
+            <dd>Used to embed HTML/CSS/JS on every page. This allows for custom CSS styles or tracking pixels.</dd>
           </dl>
         </p>
 
@@ -841,7 +892,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
             <#if isCommunity == true>
             <p>
                 You are using the community edition of searchcode server. Sorry but you are own your own. If you would like support (and the ability to configure the settings page)
-                you can purchase a copy at <a href="https://searchcode.com/product/download/">https://searchcode.com/product/download/</a>
+                you can purchase a copy at <a href="https://searchcodeserver.com/pricing.html">https://searchcodeserver.com/pricing.html</a>
             </p>
             <#else>
             <p>

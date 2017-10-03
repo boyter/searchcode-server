@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service.route;
@@ -38,7 +38,7 @@ public class TimeSearchRouteService {
     public SearchResult getTimeSearch(Request request, Response response) {
         Data data = Singleton.getData();
 
-        SearchcodeLib scl = Singleton.getSearchcodeLib(data);
+        SearchcodeLib scl = Singleton.getSearchcodeLib();
         TimeCodeSearcher cs = new TimeCodeSearcher();
         CodeMatcher cm = new CodeMatcher(data);
 

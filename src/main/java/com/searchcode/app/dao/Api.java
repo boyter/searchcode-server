@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dao;
@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides access to all methods required to get API details from the database.
@@ -44,7 +45,7 @@ public class Api implements IApi {
     public synchronized List<ApiResult> getAllApi() {
         List<ApiResult> apiResults = new ArrayList<>();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -63,7 +64,7 @@ public class Api implements IApi {
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -74,10 +75,10 @@ public class Api implements IApi {
         return apiResults;
     }
 
-    public synchronized ApiResult getApiByPublicKey(String publicKey) {
-        ApiResult result = null;
+    public synchronized Optional<ApiResult> getApiByPublicKey(String publicKey) {
+        Optional<ApiResult> result = Optional.empty();
 
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -96,10 +97,10 @@ public class Api implements IApi {
                 String lastUsed = resultSet.getString("lastused");
                 String data = resultSet.getString("data");
 
-                result = new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data);
+                result = Optional.of(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -129,7 +130,7 @@ public class Api implements IApi {
 
             successful = true;
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -151,7 +152,7 @@ public class Api implements IApi {
 
             preparedStatement.execute();
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
@@ -161,7 +162,7 @@ public class Api implements IApi {
 
     // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
-        Connection connection = null;
+        Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
@@ -180,7 +181,7 @@ public class Api implements IApi {
                 preparedStatement.execute();
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {

@@ -5,21 +5,16 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.util;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.dto.FileClassifierResult;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
@@ -32,25 +27,28 @@ import java.util.regex.Pattern;
 
 public class SearchcodeLib {
 
-    private int MAXSPLITLENGTH = 100000;
-    private Pattern MULTIPLEUPPERCASE = Pattern.compile("[A-Z]{2,}");
-    private int MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
-    public String[] WHITELIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
-    public String[] BLACKLIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
-    private boolean GUESSBINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
-    private boolean ANDMATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
-    public FileClassifier fileClassifier = null;
+    private final ISpellingCorrector spellingCorrector;
+    private final FileClassifier fileClassifier;
+    private final int MINIFIED_LENGTH;
+
+    private final int MAX_SPLIT_LENGTH = 100000;
+    private final Pattern MULTIPLE_UPPERCASE = Pattern.compile("[A-Z]{2,}");
+    private final boolean GUESS_BINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
+    private final boolean AND_MATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
+
+    public String[] WHITE_LIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
+    public String[] BLACK_LIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
 
     public SearchcodeLib() {
-        fileClassifier = new FileClassifier();
+        this(Singleton.getSpellingCorrector(), new FileClassifier(), Singleton.getData(), Singleton.getHelpers());
     }
 
-    public SearchcodeLib(Data data) {
-        this.MINIFIEDLENGTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
-        if (this.MINIFIEDLENGTH <= 0) {
-            this.MINIFIEDLENGTH = Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH);
-        }
-        fileClassifier = new FileClassifier();
+    public SearchcodeLib(ISpellingCorrector spellingCorrector, FileClassifier fileClassifier, Data data, Helpers helpers) {
+        this.spellingCorrector = spellingCorrector;
+        this.fileClassifier = fileClassifier;
+
+        int minifiedLength = helpers.tryParseInt(data.getDataByName(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH), Values.DEFAULTMINIFIEDLENGTH);
+        this.MINIFIED_LENGTH = minifiedLength <= 0 ? Integer.parseInt(Values.DEFAULTMINIFIEDLENGTH) : minifiedLength;
     }
 
     /**
@@ -64,7 +62,7 @@ public class SearchcodeLib {
      * if its only [a-zA-Z]
      * split by uppercase
      */
-    public String splitKeywords(String contents) {
+    public String splitKeywords(String contents, boolean runningJoin) {
         if (contents == null) {
             return Values.EMPTYSTRING;
         }
@@ -74,22 +72,29 @@ public class SearchcodeLib {
         contents = contents.replaceAll("[^a-zA-Z0-9]", " ");
 
         // Performance improvement hack
-        if (contents.length() > this.MAXSPLITLENGTH) {
+        if (contents.length() > this.MAX_SPLIT_LENGTH) {
 
             // Add AAA to ensure we dont split the last word if it was cut off
-            contents = contents.substring(0, MAXSPLITLENGTH) + "AAA";
+            contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
 
         for (String splitContents: contents.split(" ")) {
             if (splitContents.length() >= 7) {
-                Matcher m = MULTIPLEUPPERCASE.matcher(splitContents);
+                Matcher m = MULTIPLE_UPPERCASE.matcher(splitContents);
 
                 if (!m.find()) {
                     String[] splitStrings = splitContents.split("(?=\\p{Upper})");
 
                     if (splitStrings.length > 1) {
-                        indexContents.append(" ");
-                        indexContents.append(StringUtils.join(splitStrings, " "));
+                        indexContents.append(" ").append(StringUtils.join(splitStrings, " "));
+
+                        if (runningJoin) {
+                            StringBuilder running = new StringBuilder();
+                            for (String split : splitStrings) {
+                                running.append(split);
+                                indexContents.append(" ").append(running.toString());
+                            }
+                        }
                     }
                 }
             }
@@ -106,10 +111,10 @@ public class SearchcodeLib {
         StringBuilder indexContents = new StringBuilder();
 
         // Performance improvement hack
-        if (contents.length() > this.MAXSPLITLENGTH) {
+        if (contents.length() > this.MAX_SPLIT_LENGTH) {
 
             // Add AAA to ensure we dont split the last word if it was cut off
-            contents = contents.substring(0, MAXSPLITLENGTH) + "AAA";
+            contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
 
         // Finds versions with words at the front, eg linux2.7.4
@@ -145,7 +150,7 @@ public class SearchcodeLib {
 
         boolean ignore;
 
-        switch(languagename) {
+        switch (languagename) {
             case "Unknown":
             case "Text":
             case "JSON":
@@ -191,11 +196,9 @@ public class SearchcodeLib {
             return;
         }
 
-        ISpellingCorrector sc = Singleton.getSpellingCorrector();
-
         // Limit to reduce performance impacts
-        if (contents.length() > this.MAXSPLITLENGTH) {
-            contents = contents.substring(0, MAXSPLITLENGTH);
+        if (contents.length() > this.MAX_SPLIT_LENGTH) {
+            contents = contents.substring(0, MAX_SPLIT_LENGTH);
         }
 
         List<String> splitString = Arrays.asList(contents.replaceAll("[^a-zA-Z0-9]", " ").toLowerCase().split(" "));
@@ -207,7 +210,7 @@ public class SearchcodeLib {
 
         for (String s: splitString) {
             if (s.length() >= 3) {
-                sc.putWord(s);
+                this.spellingCorrector.putWord(s);
             }
         }
     }
@@ -220,14 +223,14 @@ public class SearchcodeLib {
 
         String lowerFileName = fileName.toLowerCase();
 
-        for (String extension: this.WHITELIST) {
+        for (String extension: this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return false;
             }
         }
 
         OptionalDouble average = codeLines.stream().map(x -> x.trim().replace(" ", "")).mapToInt(String::length).average();
-        if (average.isPresent() && average.getAsDouble() > this.MINIFIEDLENGTH) {
+        if (average.isPresent() && average.getAsDouble() > this.MINIFIED_LENGTH) {
             return true;
         }
 
@@ -245,15 +248,15 @@ public class SearchcodeLib {
 
         String lowerFileName = fileName.toLowerCase();
         // Check against user set whitelist
-        for (String extension: this.WHITELIST) {
+        for (String extension: this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
 
         // Check against user set blacklist
-        for (String extention: this.BLACKLIST) {
-            if (lowerFileName.endsWith("." + extention)) {
+        for (String extension: this.BLACK_LIST) {
+            if (lowerFileName.endsWith("." + extension) || lowerFileName.equals(extension)) {
                 return new BinaryFinding(true, "appears in extension blacklist");
             }
         }
@@ -268,7 +271,7 @@ public class SearchcodeLib {
         }
 
         // If we aren't meant to guess then assume it isnt binary
-        if (this.GUESSBINARY == false) {
+        if (!this.GUESS_BINARY) {
             return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 
@@ -386,7 +389,7 @@ public class SearchcodeLib {
      * Parse the query and escape it as per Lucene but without affecting search operators such as AND OR and NOT
      */
     public String formatQueryString(String query) {
-        if (this.ANDMATCH) {
+        if (this.AND_MATCH) {
             return this.formatQueryStringAndDefault(query);
         }
 
@@ -480,16 +483,15 @@ public class SearchcodeLib {
             altQueries.add(altquery);
         }
 
-        altquery = this.splitKeywords(query).trim();
+        altquery = this.splitKeywords(query, false).trim();
         if (!altquery.equals("") && !altquery.equals(query) && !altQueries.contains(altquery)) {
             altQueries.add(altquery);
         }
 
-        ISpellingCorrector sc = Singleton.getSpellingCorrector();
         StringBuilder stringBuilder = new StringBuilder();
         for(String word: query.replaceAll(" +", " ").split(" ")) {
             if (!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
-                stringBuilder.append(" ").append(sc.correct(word));
+                stringBuilder.append(" ").append(this.spellingCorrector.correct(word));
             }
         }
         altquery = stringBuilder.toString().trim();

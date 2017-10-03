@@ -5,24 +5,22 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeIndexer;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
 import java.io.File;
-import java.util.AbstractMap;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * The job which deletes repositories from the database index and disk where one exists in the deletion queue.
@@ -33,45 +31,48 @@ import java.util.AbstractMap;
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
-        if (Singleton.getBackgroundJobsEnabled() == false) {
-            return;
-        }
+        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-        UniqueRepoQueue deleteRepoQueue = Singleton.getUniqueDeleteRepoQueue();
-        RepoResult rr = null;
-
-        try {
-            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-
-            Repo repo = Singleton.getRepo();
-
-            rr = deleteRepoQueue.poll();
-            if (rr == null) {
+        // TODO make this loop able to be set in properties file
+        for (int i = 0; i < 10; i++) {
+            List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
+            if (persistentDelete.isEmpty()) {
                 return;
             }
 
-            Singleton.getUniqueGitRepoQueue().delete(rr);
-
-            if (Singleton.getRunningIndexRepoJobs().containsKey(rr.getName())) {
-                // Put back into delete queue and quit
-                deleteRepoQueue.add(rr);
+            if (Singleton.getIndexService().getReindexingAll()) {
                 return;
             }
 
-            Singleton.getLogger().info("Deleting repository. " + rr.getName());
-            Singleton.getCodeIndexer().deleteByReponame(rr.getName());
-
-            // remove the directory
-            String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
-            FileUtils.deleteDirectory(new File(repoLocations + rr.getName() + "/"));
-
-            // Remove from the database
-            repo.deleteRepoByName(rr.getName());
-        }
-        catch (Exception ex) {
-            if (rr != null) {
-                deleteRepoQueue.add(rr);
+            Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
+            if (!repoResult.isPresent()) {
+                Singleton.getDataService().removeFromPersistentDelete(persistentDelete.get(0));
+                return;
             }
+
+            repoResult.ifPresent(x -> Singleton.getUniqueGitRepoQueue().delete(x));
+
+            if (Singleton.getRunningIndexRepoJobs().containsKey(repoResult.map(RepoResult::getName).orElse(Values.EMPTYSTRING))) {
+                return;
+            }
+
+            repoResult.ifPresent(x -> {
+                try {
+                    Singleton.getLogger().info("Deleting repository. " + x.getName());
+                    Singleton.getIndexService().deleteByRepo(x);
+                    String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+
+                    // remove the directory
+                    FileUtils.deleteDirectory(new File(repoLocations + x.getName() + "/"));
+
+                    // Remove from the database
+                    Singleton.getRepo().deleteRepoByName(x.getName());
+
+                    // Remove from the persistent queue
+                    Singleton.getDataService().removeFromPersistentDelete(x.getName());
+                } catch (IOException ignored) {
+                }
+            });
         }
     }
 }

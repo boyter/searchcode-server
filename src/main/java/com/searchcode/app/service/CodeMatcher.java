@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service;
@@ -31,7 +31,9 @@ public class CodeMatcher {
     public int MATCHLINES = Integer.parseInt(Values.DEFAULTMATCHLINES);
     public int MAXLINEDEPTH = Integer.parseInt(Values.DEFAULTMAXLINEDEPTH);
 
-    public CodeMatcher()  {}
+    public CodeMatcher()  {
+        this(Singleton.getData());
+    }
 
     public CodeMatcher(Data data) {
         this.MATCHLINES = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
@@ -47,7 +49,7 @@ public class CodeMatcher {
         List<CodeResult> results = new ArrayList<>();
 
         for(CodeResult code: codeResult) {
-            List<CodeMatchResult> result = matchResults(code.getCode(), lstMatchTerms, highlightLine);
+            List<CodeMatchResult> result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
 
             if (result != null) {
                 code.setMatchingResults(result);
@@ -190,9 +192,9 @@ public class CodeMatcher {
         List<String> splitMatchTerms = new ArrayList<>();
         List<String> newTerms = new ArrayList<>();
 
-        for(String s: matchTerms.trim().split(" ")) {
+        for (String s: matchTerms.trim().split(" ")) {
             if (!s.isEmpty()) {
-                switch(s) {
+                switch (s) {
                     case "AND":
                     case "OR":
                     case "NOT":
@@ -204,28 +206,28 @@ public class CodeMatcher {
             }
         }
 
-        for(String s: splitMatchTerms) {
-            for(String t: s.split("\\.")) {
+        for (String s: splitMatchTerms) {
+            for (String t: s.split("\\.")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split("\\(")) {
+            for (String t: s.split("\\(")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split("\\-")) {
+            for (String t: s.split("\\-")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split("<")) {
+            for (String t: s.split("<")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for(String t: s.split(">")) {
+            for (String t: s.split(">")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
@@ -249,7 +251,7 @@ public class CodeMatcher {
 
         List<String> terms = matchTerms.stream()
                 .filter(s -> !"AND".equals(s) && !"OR".equals(s) && !"NOT".equals(s))
-                .map(s -> s.toLowerCase())
+                .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
         List<String> tokens = Arrays.asList(line.split(" "));

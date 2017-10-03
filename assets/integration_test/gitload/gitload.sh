@@ -15,12 +15,12 @@ do
     git add *.php
     git commit -m "adding"
 
-    echo "Sleep for 60 seconds"
-    sleep 60
+    echo "Sleep for 30 seconds"
+    sleep 30
 
     git rm *.php
     git commit -m "remove file"
 
-    echo "Sleep for 60 seconds"
-    sleep 60
+    echo "Sleep for 30 seconds"
+    sleep 30
 done

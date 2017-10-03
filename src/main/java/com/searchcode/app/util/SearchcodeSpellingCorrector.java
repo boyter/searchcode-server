@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.util;
@@ -15,6 +15,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A simple spell checker based on a few implementations such as the infamous Peter Noving spell checker and
@@ -49,6 +50,33 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
     public boolean reset() {
         this.dictionary.clear();
         return true;
+    }
+
+    @Override
+    public List<String> getSampleWords(int count) {
+        List<String> sampleWords = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : this.dictionary.entrySet()) {
+            sampleWords.add(entry.getValue() + " - " + entry.getKey());
+        }
+
+        int end = sampleWords.size() >= 10 ? 10 : sampleWords.size();
+
+        return sampleWords.subList(0, end);
+    }
+
+    public List<String> getTopWords(int count) {
+        List<String> sampleWords = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : this.dictionary.entrySet()) {
+            sampleWords.add(entry.getValue() + " - " + entry.getKey());
+        }
+
+        Collections.sort(sampleWords);
+        Collections.reverse(sampleWords);
+        int end = sampleWords.size() >= 10 ? 10 : sampleWords.size();
+
+        return sampleWords.subList(0, end);
     }
 
     @Override

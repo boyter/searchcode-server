@@ -5,48 +5,56 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.IRepo;
+import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
+import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.UniqueRepoQueue;
+
 import spark.Request;
 import spark.Response;
 
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Optional;
 
 public class ApiRouteService {
 
     private final IApiService apiService;
     private final IJobService jobService;
-    private final IRepo repo;
-    private final UniqueRepoQueue uniqueDeleteQueue;
+    private final DataService dataService;
+    private final Repo repo;
+    private final ValidatorService validatorService;
+    private final IndexService indexService;
+    private final Helpers helpers;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
     public ApiRouteService() {
-        this.apiService = Singleton.getApiService();
-        this.jobService = Singleton.getJobService();
-        this.repo = Singleton.getRepo();
-        this.uniqueDeleteQueue = Singleton.getUniqueDeleteRepoQueue();
+        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService(), Singleton.getHelpers());
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, IRepo repo, UniqueRepoQueue uniqueDeleteQueue){
+    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IndexService indexService, Helpers helpers) {
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
-        this.uniqueDeleteQueue = uniqueDeleteQueue;
+        this.dataService = dataService;
+        this.validatorService = validatorService;
+        this.indexService = indexService;
+        this.helpers = helpers;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -75,17 +83,14 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repositoryReindex API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
 
-        boolean result = this.jobService.rebuildAll();
-        if (result) {
-            this.jobService.forceEnqueue();
-            return new ApiResponse(true, "reindex forced");
-        }
-
-        return new ApiResponse(false, "was unable to force the index");
+        this.indexService.reindexAll();
+        Singleton.getLogger().apiLog("Valid signed repositoryReindex API call using publicKey=" + publicKey);
+        return new ApiResponse(true, "reindex forced");
     }
 
     public ApiResponse repositoryIndex(Request request, Response response) {
@@ -94,10 +99,10 @@ public class ApiRouteService {
         }
 
         String repoUrl = request.queryParams("repoUrl");
-        RepoResult repoByUrl = this.repo.getRepoByUrl(repoUrl);
+        Optional<RepoResult> repoByUrl = this.repo.getRepoByUrl(repoUrl);
 
-        if (repoByUrl != null) {
-            this.jobService.forceEnqueue(repoByUrl);
+        if (repoByUrl.isPresent()) {
+            this.jobService.forceEnqueue(repoByUrl.get());
             return new ApiResponse(true, "Enqueued repository " + repoUrl);
         }
 
@@ -106,25 +111,58 @@ public class ApiRouteService {
 
     public String getFileCount(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            CodeSearcher codeSearcher = new CodeSearcher();
-            ProjectStats projectStats = codeSearcher.getProjectStats(request.queryParams("reponame"));
-            return "" + projectStats.getTotalFiles();
+            ProjectStats projectStats = Singleton.getIndexService().getProjectStats(request.queryParams("reponame"));
+            return Values.EMPTYSTRING + projectStats.getTotalFiles();
         }
 
         return Values.EMPTYSTRING;
     }
 
     public String getIndexTime(Request request, Response response) {
-        if (request.queryParams().contains("reponame")) {
-            RepoResult reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
-            if (reponame == null) {
-                return Values.EMPTYSTRING;
-            }
+        String indexTime = Values.EMPTYSTRING;
 
-            return Singleton.getHelpers().timeAgo(reponame.getData().jobRunTime);
+        if (request.queryParams().contains("reponame")) {
+            Optional<RepoResult> repoResult = this.repo.getRepoByName(request.queryParams("reponame"));
+            indexTime = repoResult.map(x -> Singleton.getHelpers().timeAgo(x.getData().jobRunTime)).orElse(Values.EMPTYSTRING);
         }
 
-        return Values.EMPTYSTRING;
+        return indexTime;
+    }
+
+    public String getAverageIndexTimeSeconds(Request request, Response response) {
+        String averageIndexTimeSeconds = Values.EMPTYSTRING;
+
+        if (request.queryParams().contains("reponame")) {
+            Optional<RepoResult> repoResult = this.repo.getRepoByName(request.queryParams("reponame"));
+            averageIndexTimeSeconds = repoResult.map(x -> Values.EMPTYSTRING + (x.getData().averageIndexTimeSeconds + 1)).orElse(Values.EMPTYSTRING);
+        }
+
+        return averageIndexTimeSeconds;
+    }
+
+    public RepoResult getRepo(Request request, Response response) {
+        RepoResult repoResult = null;
+
+        if (request.queryParams().contains("reponame")) {
+            Optional<RepoResult> reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+
+            repoResult = reponame.map(x -> {
+                x.setUsername(null);
+                x.setPassword(null);
+                return x;
+            }).orElse(null);
+        }
+
+        return repoResult;
+    }
+
+    public SearchResult repoTree(Request request, Response response) {
+
+        if (request.queryParams().contains("reponame")) {
+            return this.indexService.getProjectFileTree(request.queryParams("reponame"));
+        }
+
+        return null;
     }
 
     public RepoResultApiResponse repoList(Request request, Response response) {
@@ -153,14 +191,15 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repoList API call using publicKey=" + publicKey);
                 return new RepoResultApiResponse(false, "invalid signed url", null);
             }
         }
 
         List<RepoResult> repoResultList = repo.getAllRepo();
 
+        Singleton.getLogger().apiLog("Valid signed repoList API call using publicKey=" + publicKey);
         return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
-
     }
 
     public ApiResponse repoDelete(Request request, Response response) {
@@ -195,17 +234,19 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repoDelete API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
 
-        RepoResult rr = this.repo.getRepoByName(reponames);
-        if (rr == null) {
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames);
+        if (!repoResult.isPresent()) {
             return new ApiResponse(false, "repository already deleted");
         }
 
-        this.uniqueDeleteQueue.add(rr);
+        repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
 
+        Singleton.getLogger().apiLog("Valid signed repoDelete API call using publicKey=" + publicKey);
         return new ApiResponse(true, "repository queued for deletion");
     }
 
@@ -276,14 +317,21 @@ public class ApiRouteService {
             ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
+            // https://github.com/boyter/searchcode-server/issues/134
             if (!validRequest) {
+                toValidate = toValidate.replace("+", "%20");
+                hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+                validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
+            }
+
+            if (!validRequest) {
+                Singleton.getLogger().apiLog("Invalid signed repoAdd API call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
 
 
-        // Clean
-        if (repobranch == null || repobranch.trim().equals(Values.EMPTYSTRING)) {
+        if (repobranch.trim().equals(Values.EMPTYSTRING)) {
             repobranch = "master";
         }
 
@@ -292,14 +340,23 @@ public class ApiRouteService {
             repotype = "git";
         }
 
-        RepoResult repoResult = this.repo.getRepoByName(reponames);
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames);
 
-        if (repoResult != null) {
+        if (repoResult.isPresent()) {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        this.repo.saveRepo(new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}"));
+        RepoResult newRepoResult = new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}");
 
+        ValidatorResult validate = this.validatorService.validate(newRepoResult);
+
+        if (!validate.isValid) {
+            return new ApiResponse(false, validate.reason);
+        }
+
+        this.repo.saveRepo(newRepoResult);
+
+        Singleton.getLogger().apiLog("Valid signed repoAdd API call using publicKey=" + publicKey);
         return new ApiResponse(true, "added repository successfully");
     }
 }

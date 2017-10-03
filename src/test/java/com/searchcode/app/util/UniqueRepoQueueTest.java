@@ -69,6 +69,8 @@ public class UniqueRepoQueueTest extends TestCase {
     public void testBleedingBetweenUniqueQueues() {
         UniqueRepoQueue queue1 = Singleton.getUniqueGitRepoQueue();
         UniqueRepoQueue queue2 = Singleton.getUniqueSvnRepoQueue();
+        queue1.clear();
+        queue2.clear();
 
         RepoResult rr1 = new RepoResult(1, "name", "git", "url", "username", "password", "source", "branch", "");
         RepoResult rr2 = new RepoResult(2, "name2", "svn", "url", "username", "password", "source", "branch", "");
@@ -83,7 +85,7 @@ public class UniqueRepoQueueTest extends TestCase {
     }
 
     public void testQueueClear() {
-        UniqueRepoQueue queue = Singleton.getUniqueGitRepoQueue();
+        UniqueRepoQueue queue = new UniqueRepoQueue();
 
         queue.add(new RepoResult(1, "name", "git", "url", "username", "password", "source", "branch", ""));
         queue.add(new RepoResult(2, "name2", "svn", "url", "username", "password", "source", "branch", ""));

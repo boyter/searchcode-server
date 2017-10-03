@@ -5,11 +5,12 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dto;
 
+import com.searchcode.app.config.Values;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class CodeIndexDocument {
@@ -30,10 +31,12 @@ public class CodeIndexDocument {
     private String year;
     private String message;
     private String deleted; // Used for time filter to know when this entry was removed
+    private String schash;
+    private String displayLocation; // What we actually should use for UI
 
     public CodeIndexDocument() {}
 
-    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner) {
+    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner, String displayLocation) {
         this.setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
         this.setRepoName(repoName);
         this.setFileName(fileName);
@@ -45,6 +48,8 @@ public class CodeIndexDocument {
         this.setContents(contents);
         this.setRepoRemoteLocation(repoRemoteLocation);
         this.setCodeOwner(codeOwner);
+        this.schash = Values.EMPTYSTRING;
+        this.displayLocation = displayLocation;
     }
 
     /**
@@ -188,5 +193,17 @@ public class CodeIndexDocument {
 
     public void setYear(String year) {
         this.year = year;
+    }
+
+    public String getSchash() {
+        return schash;
+    }
+
+    public void setSchash(String schash) {
+        this.schash = schash;
+    }
+
+    public String getDisplayLocation() {
+        return displayLocation;
     }
 }

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 /**
@@ -64,6 +64,7 @@ var HelperModel = {
 // Model that perfoms the search logic and does the actual search
 var SearchModel = {
     searchvalue: m.prop(''),
+    pathvalue: m.prop(''),
     searchhistory: m.prop(false),
     searchresults: m.prop([]),
 
@@ -76,6 +77,11 @@ var SearchModel = {
     yearmonthdayfilters: m.prop([]),
     revisionfilters: m.prop([]),
     deletedfilters: m.prop([]),
+
+    // Text filters for select filters
+    langfiltertext: m.prop(''),
+    ownerfiltertext: m.prop(''),
+    repofiltertext: m.prop(''),
 
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
@@ -91,6 +97,8 @@ var SearchModel = {
     currentpage: m.prop(0),
 
     filterinstantly: m.prop(true),
+    compactview: m.prop(false),
+    literalview: m.prop(false),
 
     // From the response
     totalhits: m.prop(0),
@@ -107,8 +115,6 @@ var SearchModel = {
     repoFacetRevision: m.prop([]),
     repoFacetDeleted: m.prop([]),
 
-    chart: m.prop(undefined),
-
     clearfilters: function() {
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
@@ -118,12 +124,29 @@ var SearchModel = {
         SearchModel.yearmonthdayfilters([]);
         SearchModel.revisionfilters([]);
         SearchModel.deletedfilters([]);
+        SearchModel.pathvalue('');
+
+        SearchModel.langfiltertext('');
+        SearchModel.ownerfiltertext('');
+        SearchModel.repofiltertext('');
     },
     toggleinstant: function() {
         if (window.localStorage) {
             localStorage.setItem('toggleinstant', JSON.stringify(!SearchModel.filterinstantly()));
         }
         SearchModel.filterinstantly(!SearchModel.filterinstantly());
+    },
+    togglecompact: function() {
+        if (window.localStorage) {
+            localStorage.setItem('togglecompact', JSON.stringify(!SearchModel.compactview()));
+        }
+        SearchModel.compactview(!SearchModel.compactview());
+    },
+    toggleliteral: function() {
+        if (window.localStorage) {
+            localStorage.setItem('toggleliteral', JSON.stringify(!SearchModel.literalview()));
+        }
+        SearchModel.literalview(!SearchModel.literalview());
     },
     togglehistory: function() {
         if (window.localStorage) {
@@ -136,11 +159,13 @@ var SearchModel = {
         var repos = '';
         var langs = '';
         var owns = '';
+        var path = '';
         var years = '';
         var yearmonths = '';
         var yearmonthdays = '';
         var revisions = '';
         var deleted = '';
+        var literal = '';
 
         if (SearchModel.activedeletedfilters().length !== 0) {
             if (_.contains(SearchModel.activedeletedfilters(), 'TRUE')) {
@@ -199,6 +224,10 @@ var SearchModel = {
             owns = owns + SearchModel.activeownfilters().join(', ') + '"';
         }
 
+        if (SearchModel.pathvalue() !== '') {
+            path = ' filtered to the path "/' + SearchModel.pathvalue().replace(/\_/g, '/') + '/"';
+        }
+
         if (SearchModel.activeyearfilters().length != 0) {
             var plural = 'the year';
 
@@ -253,7 +282,11 @@ var SearchModel = {
             yearmonthdays = ' limited to ' + plural  + ' "' + SearchModel.activerevisionfilters().join(', ') + '"';
         }
 
-        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + years + yearmonths + yearmonthdays + revisions;
+        if (SearchModel.literalview()) {
+            literal = ' using literal search';
+        }
+
+        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + years + yearmonths + yearmonthdays + revisions + literal;
     },
     togglefilter: function (type, name) {
         switch(type) {
@@ -401,6 +434,15 @@ var SearchModel = {
 
         return own;
     },
+    getpathfilters: function() {
+        var path = '';
+
+        if (SearchModel.pathvalue().length !== 0) {
+            path = '&path=' + encodeURIComponent(SearchModel.pathvalue());
+        }
+
+        return path;
+    },
     getyearfilters: function() {
         var year = '';
 
@@ -446,6 +488,13 @@ var SearchModel = {
 
         return del;
     },
+    getlitfilter: function() {
+        if (SearchModel.literalview() === true) {
+            return '&lit=true';
+        }
+
+        return '';
+    },
     setstatechange: function(pagequery, isstatechange) {
         // set the state
         if (isstatechange === undefined) {
@@ -454,7 +503,8 @@ var SearchModel = {
                 langfilters: SearchModel.activelangfilters(),
                 repofilters: SearchModel.activerepositoryfilters(),
                 ownfilters: SearchModel.activeownfilters(),
-                currentpage: SearchModel.currentpage()
+                currentpage: SearchModel.currentpage(),
+                pathvalue: SearchModel.pathvalue()
             }, 'search', '?q=' + 
                         encodeURIComponent(SearchModel.searchvalue()) + 
                         SearchModel.getlangfilters() + 
@@ -464,18 +514,13 @@ var SearchModel = {
                         SearchModel.getyearmonthfilters() + 
                         SearchModel.getyearmonthdayfilters() + 
                         SearchModel.getrevisionfilters() + 
-                        SearchModel.getdeletedfilters() + 
+                        SearchModel.getdeletedfilters() +
+                        SearchModel.getpathfilters() + 
+                        SearchModel.getlitfilter() +
                         pagequery);
         }
     },
-    search: function(page, isstatechange) {
-        if (SearchModel.currentlyloading()) {
-            return;
-        }
-
-        SearchModel.currentlyloading(true);
-        m.redraw();
-
+    getsearchquerystring: function() {
         // If we have filters append them on
         var lang = SearchModel.getlangfilters();
         var repo = SearchModel.getrepofilters();
@@ -485,6 +530,55 @@ var SearchModel = {
         var ymd = SearchModel.getyearmonthdayfilters();
         var rev = SearchModel.getrevisionfilters();
         var del = SearchModel.getdeletedfilters();
+
+        var pathvalue = SearchModel.pathvalue();
+        if (pathvalue !== '') {
+            pathvalue = '&fl=' + pathvalue;
+        }
+
+        var searchpage = 0;
+        var pagequery = ''
+
+        // Stringify and parse to create a copy not a reference
+        SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
+        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
+        SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
+        SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
+        SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
+        SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
+        SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
+        SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
+
+        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+        if (SearchModel.searchhistory() === true ) { 
+            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+        }
+
+        return queryurl;
+    },
+    search: function(page, isstatechange) {
+        if (SearchModel.currentlyloading()) {
+            return;
+        }
+
+        SearchModel.currentlyloading(true);
+        m.redraw();
+
+        // TODO the below should be merged with getsearchquerystring
+        // If we have filters append them on
+        var lang = SearchModel.getlangfilters();
+        var repo = SearchModel.getrepofilters();
+        var own = SearchModel.getownfilters();
+        var year = SearchModel.getyearfilters();
+        var ym = SearchModel.getyearmonthfilters();
+        var ymd = SearchModel.getyearmonthdayfilters();
+        var rev = SearchModel.getrevisionfilters();
+        var del = SearchModel.getdeletedfilters();
+
+        var pathvalue = SearchModel.pathvalue();
+        if (pathvalue !== '') {
+            pathvalue = '&fl=' + pathvalue;
+        }
 
         var searchpage = 0;
         var pagequery = ''
@@ -508,148 +602,38 @@ var SearchModel = {
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+        }
+        if (SearchModel.literalview() === true) {
+            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
 
-            SearchModel.totalhits(e.totalHits);
-            SearchModel.altquery(e.altQuery);
-            SearchModel.query(e.query);
-            SearchModel.pages(e.pages);
-            SearchModel.currentpage(e.page);
+            if (e !== null) {
+                SearchModel.totalhits(e.totalHits);
+                SearchModel.altquery(e.altQuery);
+                SearchModel.query(e.query);
+                SearchModel.pages(e.pages);
+                SearchModel.currentpage(e.page);
 
-            SearchModel.coderesults(e.codeResultList);
-            SearchModel.repofilters(e.repoFacetResults);
-            SearchModel.languagefilters(e.languageFacetResults);
-            SearchModel.ownerfilters(e.repoOwnerResults);
+                SearchModel.coderesults(e.codeResultList);
+                SearchModel.repofilters(e.repoFacetResults);
+                SearchModel.languagefilters(e.languageFacetResults);
+                SearchModel.ownerfilters(e.repoOwnerResults);
 
-            // History fields
-            SearchModel.repoFacetYear(e.repoFacetYear);
-            SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
-            SearchModel.repoFacetYearMonthDay(e.repoFacetYearMonthDay);
-            SearchModel.repoFacetRevision(e.repoFacetRevision);
-            SearchModel.repoFacetDeleted(e.repoFacetDeleted);
+                // History fields
+                SearchModel.repoFacetYear(e.repoFacetYear);
+                SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
+                SearchModel.repoFacetYearMonthDay(e.repoFacetYearMonthDay);
+                SearchModel.repoFacetRevision(e.repoFacetRevision);
+                SearchModel.repoFacetDeleted(e.repoFacetDeleted);
+            }
 
             SearchModel.currentlyloading(false);
-        }).then( function(e) {
-            SearchModel.renderchart();
         });
-    },
-    chartlimit: m.prop(365),
-    renderchart: function() {
-        if (SearchModel.chart() !== undefined) {
-            SearchModel.chart().destroy();
-        }
-
-        if (SearchModel.repoFacetYearMonthDay().length == 0) {
-            return;
-        }
-
-        var ctx = document.getElementById('timeChart');
-
-
-        var facets = {};
-        var labels = [];
-        _.each(SearchModel.repoFacetYearMonthDay(), function(e) { 
-            var fac = HelperModel.yearMonthDayDelimit(e.yearMonthDay);
-            facets[fac] = e.count; 
-            labels.push(fac);
-        });
-
-        labels.sort();
-
-        if (labels.length != 0) {
-            var startDate = HelperModel.yearMonthDayToDate(labels[0]);
-            var endDate = HelperModel.yearMonthDayToDate(labels[labels.length - 1]);
-            //endDate = new Date();
-
-            labels = _.map(HelperModel.getDateSpan(startDate, endDate), function(e) {
-                var year = e.getFullYear();
-                var month = e.getMonth() + 1;
-                month = month < 10 ? '0' + month : month;
-                var day = e.getDate() < 10 ? '0' + e.getDate() : e.getDate();
-
-                return year + '/' + month + '/' + day;
-            });
-
-            labels = labels.splice(labels.length - SearchModel.chartlimit(), labels.length);
-        }
-
-        var data = {
-            labels: labels,
-            datasets: [{
-                label: SearchModel.query(),
-                fill: true,
-                lineTension: 0.1,
-                backgroundColor: 'rgba(75,192,192,0.4)',
-                borderColor: '#428bca', // Line colour
-                borderCapStyle: 'butt',
-                borderDash: [],
-                borderDashOffset: 0.0,
-                borderJoinStyle: 'miter',
-                pointBorderColor: 'rgba(75,192,192,1)',
-                pointBackgroundColor: '#fff',
-                pointBorderWidth: 5,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-                pointHoverBorderColor: 'rgba(220,220,220,1)',
-                pointHoverBorderWidth: 1,
-                pointRadius: 1,
-                pointHitRadius: 10,
-                data: _.map(labels, function(e) { return facets[e]; } ),
-                spanGaps: true
-            }]
-        };
-
-        var myLineChart = new Chart(ctx, {
-            type: 'line',
-            data: data,
-            options: {
-                legend: {
-                    display: false
-                 },
-                 responsiveAnimationDuration: 0,
-                 scales: {
-                    xAxes: [{
-                        ticks: {
-                            //autoSkip: false,
-                            maxRotation: 30,
-                            minRotation: 30,
-                            callback: function(value, index, values) {
-                                if (values.length < 30) {
-                                    return value;
-                                }
-
-                                if (parseInt(index) % 3 === 0 || index == values.length - 1) {
-                                    return '' + value;
-                                }
-                                
-                                return '';
-                            }
-                        }
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            callback: function(value, index, values) {
-                                if (('' + value).indexOf('.') !== -1) {
-                                    return '';
-                                }
-                                return '' + parseInt(value);
-                            }
-                        }
-                    }],
-                },
-                animation: {
-                    duration: 0
-                },
-
-            }
-        });
-
-        SearchModel.chart(myLineChart);
     }
 };
 
@@ -658,7 +642,6 @@ var SearchComponent = {
     view: function(ctrl) {
         return m("div", [
                 m.component(SearchOptionsComponent),
-                m.component(SearchChartComponent),
                 m.component(SearchCountComponent, { 
                     totalhits: SearchModel.totalhits(), 
                     query: SearchModel.query(),
@@ -694,6 +677,7 @@ var SearchComponent = {
                             filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(SearchOwnersFilterComponent),
+                        m.component(SearchPathFilterComponent),
                         m.component(SearchYearFilterComponent),
                         m.component(SearchYearMonthFilterComponent),
                         m.component(SearchYearMonthDayFilterComponent),
@@ -710,7 +694,8 @@ var SearchComponent = {
                         }),
                         m.component(FilterOptionsComponent, {
                             filterinstantly: SearchModel.filterinstantly
-                        })
+                        }),
+                        m.component(RSSComponent)
                     ]),
                     m('div.col-md-9.search-results', [
                         m.component(SearchNoResultsComponent, {
@@ -856,17 +841,17 @@ var SearchButtonFilterComponent = {
             return m('div');
         }
 
-        if (args.totalhits === 0 && (args.languagefilters.length + args.repofilters.length + args.ownfilters.length === 0)) {
-            return m('div');
-        }
-
-        if (args.totalhits === 0 && (args.languagefilters.length + args.repofilters.length + args.ownfilters.length !== 0)) {
+        if (args.totalhits === 0) {
             return m('div', [
                 m('h5', 'Filter Results'),
-                m('input.btn.btn-xs.btn-success.filter-button', { 
-                    type: 'submit', 
-                    onclick: function() { args.clearfilters(); args.search(); }, 
-                    value: 'Remove' })
+                m('div.center', 
+                    m('input.btn.btn-xs.btn-success.filter-button', { 
+                        type: 'submit', 
+                        onclick: function() { args.clearfilters(); args.search(); }, 
+                        value: 'Remove' }),
+                    m('span', m.trust('&nbsp;')),
+                    m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
+                )
             ]);
         }
 
@@ -899,15 +884,32 @@ var FilterOptionsComponent = {
             },
             toggleinstant: function() {
                 SearchModel.toggleinstant();
+            },
+            togglecompact: function() {
+                SearchModel.togglecompact();
+            },
+            toggleliteral: function() {
+                SearchModel.toggleliteral();
+                SearchModel.search();
             }
         }
     },
     view: function(ctrl, args) {
         var instantparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
+        var compactparams = { type: 'checkbox', onclick: ctrl.togglecompact };
+        var literalparams = { type: 'checkbox', onclick: ctrl.toggleliteral };
         var historyparams = { type: 'checkbox', onclick: ctrl.togglehistory };
         
         if (SearchModel.filterinstantly()) {
             instantparams.checked = 'checked'
+        }
+
+        if (SearchModel.compactview()) {
+            compactparams.checked = 'checked'
+        }
+
+        if (SearchModel.literalview()) {
+            literalparams.checked = 'checked'
         }
 
         if (SearchModel.searchhistory()) {
@@ -915,12 +917,29 @@ var FilterOptionsComponent = {
         }
 
         return m('div', 
-            m('h5', 'Filter Options'),
+            m('h5', 'Search Options'),
             m('div', [
                 m('div.checkbox', 
                     m('label', [
                         m('input', instantparams),
                         m('span', 'Apply Filters Instantly')
+                    ])
+                ),
+                m('div.checkbox', 
+                    m('label', [
+                        m('input', compactparams),
+                        m('span', 'Compact View')
+                    ])
+                ),
+                m('div.checkbox', 
+                    m('label', [
+                        m('input', literalparams),
+                        m('span', [
+                            m('span', 'Literal Search '),
+                            m('small', 
+                                m('a', {href: '/documentation/#literal'}, '(help)')
+                            )
+                        ])
                     ])
                 ),
                 ff_timesearchenabled === false ? m('span') : m('div.checkbox', 
@@ -934,24 +953,37 @@ var FilterOptionsComponent = {
     }
 }
 
+var RSSComponent = {
+    view: function(ctrl, args) {
+        return m('div', 
+            m('div', [
+                m('div.checkbox', 
+                    m('label', [
+                        m('a', {'href': '/api/codesearch/rss/' + SearchModel.getsearchquerystring() }, 'RSS Feed of Search')
+                    ])
+                )
+            ])
+        );
+    }
+}
+
 var SearchRepositoriesFilterComponent = {
     controller: function() {
         
         var showall = false;
         var trimlength = 5;
-        var filtervalue = '';
 
         return {
             trimrepo: function (languagefilters) {
                 var toreturn = languagefilters;
 
-                if (filtervalue.length === 0 && !showall) {
+                if (SearchModel.repofiltertext().length === 0 && !showall) {
                     toreturn = _.first(toreturn, trimlength);
                 }
 
-                if (filtervalue.length !== 0) {
+                if (SearchModel.repofiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.repoName.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.repoName.toLowerCase().indexOf(SearchModel.repofiltertext()) !== -1; 
                     } );
                 }
 
@@ -970,13 +1002,13 @@ var SearchRepositoriesFilterComponent = {
                 SearchModel.togglefilter('repo', repo);
             },
             filtervalue: function(value) {
-                filtervalue = value;
+                SearchModel.repofiltertext(value);
             },
             hasfilter: function() {
-                return filtervalue.length !== 0;
+                return SearchModel.repofiltertext().length !== 0;
             },
             getfiltervalue: function() {
-                return filtervalue;
+                return SearchModel.repofiltertext();
             }
         }
     },
@@ -1027,19 +1059,18 @@ var SearchLanguagesFilterComponent = {
 
         var showall = false;
         var trimlength = 5;
-        var filtervalue = '';
         
         return {
             trimlanguage: function (languagefilters) {
                 var toreturn = languagefilters;
 
-                if (filtervalue.length === 0 && !showall) {
+                if (SearchModel.langfiltertext().length === 0 && !showall) {
                     toreturn = _.first(toreturn, trimlength);
                 }
 
-                if (filtervalue.length !== 0) {
+                if (SearchModel.langfiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.languageName.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.languageName.toLowerCase().indexOf(SearchModel.langfiltertext()) !== -1; 
                     });
                 }
 
@@ -1058,13 +1089,13 @@ var SearchLanguagesFilterComponent = {
                 SearchModel.togglefilter('language', language);
             },
             filtervalue: function(value) {
-                filtervalue = value;
+                SearchModel.langfiltertext(value);
             },
             hasfilter: function() {
-                return filtervalue.length !== 0;
+                return SearchModel.langfiltertext().length !== 0;
             },
             getfiltervalue: function() {
-                return filtervalue;
+                return SearchModel.langfiltertext();
             }
         }
     },
@@ -1116,19 +1147,18 @@ var SearchOwnersFilterComponent = {
 
         var showall = false;
         var trimlength = 5;
-        var filtervalue = '';
         
         return {
             trimlanguage: function (ownerfilters) {
                 var toreturn = ownerfilters;
 
-                if (filtervalue.length === 0 && !showall) {
+                if (SearchModel.ownerfiltertext().length === 0 && !showall) {
                     toreturn = _.first(toreturn, trimlength);
                 }
 
-                if (filtervalue.length !== 0) {
+                if (SearchModel.ownerfiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner.toLowerCase().indexOf(filtervalue) !== -1; 
+                        return e.owner.toLowerCase().indexOf(SearchModel.ownerfiltertext()) !== -1; 
                     });
                 }
 
@@ -1150,13 +1180,13 @@ var SearchOwnersFilterComponent = {
                 }
             },
             filtervalue: function(value) {
-                filtervalue = value;
+                SearchModel.ownerfiltertext(value);
             },
             hasfilter: function() {
-                return filtervalue.length !== 0;
+                return SearchModel.ownerfiltertext().length !== 0;
             },
             getfiltervalue: function() {
-                return filtervalue;
+                return SearchModel.ownerfiltertext();
             }
         }
     },
@@ -1196,6 +1226,26 @@ var SearchOwnersFilterComponent = {
                 });
             }),
             showmoreless
+        ]);
+    }
+}
+
+var SearchPathFilterComponent = {
+    controller: function() {
+    },
+    view: function(ctrl, args) {
+        return m('div', [
+            m('h5', 'Path Filter'),
+            m('div.center', 
+                m('input.btn.btn-xs.btn-success.filter-button', { 
+                    type: 'submit', 
+                    disabled: SearchModel.pathvalue() === '',
+                    onclick: function() { SearchModel.pathvalue(''); SearchModel.search(); }, 
+                    value: 'Clear' }
+                ),
+                m('span', m.trust('&nbsp;')),
+                m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
+            )
         ]);
     }
 }
@@ -1663,72 +1713,6 @@ var SearchCountComponent = {
     }
 }
 
-var SearchChartComponent = {
-    controller: function() {
-        var display = true;
-        var steps = [
-            365 * 20,
-            365 * 10,
-            365 * 5,
-            365 * 2,
-            365,
-            6 * 30,
-            3 * 30,
-            1 * 30,
-            15,
-            7,
-            5,
-            4,
-            3,
-            2,
-            1
-        ];
-
-        return {
-            shoulddisplay: function() {
-                if (display === false) {
-                    return false;
-                }
-
-                if (SearchModel.searchhistory() === false) {
-                    return false;
-                }
-
-                return true;
-            },
-            zoomout: function() {
-                var index = _.findIndex(steps, function(e) { return e == SearchModel.chartlimit(); });
-                if (index == 0) {
-                    return;
-                } 
-                index -= 1;
-
-                SearchModel.chartlimit(steps[index]);
-                SearchModel.renderchart();
-            },
-            zoomin: function() {
-                var index = _.findIndex(steps, function(e) { return e == SearchModel.chartlimit(); });
-                if (index == steps.length) {
-                    return;
-                } 
-                index += 1;
-
-                SearchModel.chartlimit(steps[index]);
-                SearchModel.renderchart();
-            }
-        }
-    },
-    view: function(ctrl) {
-        if (ctrl.shoulddisplay() === false || ff_timesearchenabled === false) {
-            return m('div');
-        }
-
-        // TODO need to have logic to display the hide show if there is data to show it
-        return m('div.row.search-chart', [
-            m('canvas', {id: 'timeChart', width: '500', height: '45'})
-        ]);  
-    }
-}
 
 var SearchAlternateFilterComponent = {
     controller: function() {
@@ -1776,8 +1760,38 @@ var SearchResultsComponent = {
                 return result.fileName;
             },
             getsmallvalue: function(result){
-                var fixedCodePath = '/' + result.codePath.split('/').slice(1,100000).join('/');
-                return ' | ' + fixedCodePath +' | ' + result.codeLines + ' lines | ' + result.languageName;
+                return ' | ' + result.codeLines + ' lines | ' + result.languageName;
+            },
+            getlinkvalue: function(result) {
+
+                var split = result.displayLocation.split('/');
+
+                var link = [];
+                var running = '';
+
+                for (var i = 0; i < split.length; i++) {
+                    if (running !== '') {
+                        running += '_'
+                    }
+
+                    running += split[i]; 
+                  
+                    link.push({
+                        'display': split[i],
+                        'value': running,
+                        'last': i === (split.length - 1)
+                    });
+                }
+
+                return _.map(link, function(res) {
+                    return res['last'] ? m('span', '/' + res['display']) : m('span', [
+                        m('span', '/'),
+                        m('a', { onclick: function () { 
+                            SearchModel.pathvalue(res['value']);
+                            SearchModel.search();
+                        }}, res['display'])
+                    ]);
+                });
             }
         }
     },
@@ -1791,12 +1805,16 @@ var SearchResultsComponent = {
                                     m('a', { href: ctrl.gethref(res) }, ctrl.getatag(res)),
                                     m('span', ' in '),
                                     m('a', { href: ctrl.getrepositoryhref(res) }, res.repoName),
-                                    m('small', ctrl.getsmallvalue(res))  
+                                    m('small', [
+                                        m('span', ' '),
+                                        ctrl.getlinkvalue(res),
+                                        ctrl.getsmallvalue(res)
+                                    ])
                                 ]),
                                 
                             ])
                         ),
-                        m('ol.code-result', [
+                        SearchModel.compactview() ? m('div') : m('ol.code-result', [
                             _.map(res.matchingResults, function(line) {
                                 return m('li', { value: line.lineNumber }, 
                                     m('a', { 'href':  ctrl.gethreflineno(res, line.lineNumber) },
@@ -1827,6 +1845,7 @@ window.onpopstate = function(event) {
         SearchModel.repositoryfilters(event.state.repofilters);
         SearchModel.ownfilters(event.state.ownfilters);
         SearchModel.activeownfilters(event.state.ownfilters);
+        SearchModel.pathvalue(event.state.pathvalue);
 
         SearchModel.search(event.state.currentpage, true);
         popstate = true;
@@ -1847,6 +1866,9 @@ if (typeof preload !== 'undefined') {
     SearchModel.ownfilters(preload.ownerFacets);
     SearchModel.activeownfilters(preload.ownerFacets);
 
+    SearchModel.pathvalue(preload.pathValue);
+    SearchModel.literalview(preload.isLiteral);
+
     SearchModel.search(preload.page, true);
 }
 
@@ -1854,6 +1876,17 @@ if (typeof preload !== 'undefined') {
 if (window.localStorage) {
     var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);
+
+    if (SearchModel.literalview() === true) {
+        localStorage.setItem('toggleliteral', JSON.stringify(SearchModel.literalview()));
+    }
+
+    tmp = JSON.parse(localStorage.getItem('toggleliteral'));
+    tmp !== null ? SearchModel.literalview(tmp) : SearchModel.literalview(false);
+
+    tmp = JSON.parse(localStorage.getItem('togglecompact'));
+    tmp !== null ? SearchModel.compactview(tmp) : SearchModel.compactview(false);
+
     if (ff_timesearchenabled === true) {
         tmp = JSON.parse(localStorage.getItem('togglehistory'));
         tmp !== null ? SearchModel.searchhistory(tmp) : SearchModel.searchhistory(true);
@@ -1861,5 +1894,7 @@ if (window.localStorage) {
 }
 else {
     SearchModel.filterinstantly(true);
+    SearchModel.literalview(false);
+    SearchModel.compactview(false);
     SearchModel.searchhistory(false);
 }

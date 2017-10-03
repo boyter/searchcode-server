@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service;
@@ -59,7 +59,7 @@ public class StatsService {
 
     public String getLoadAverage() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return Values.EMPTYSTRING + osBean.getSystemLoadAverage();
+        return Values.DECIMAL_FORMAT.format(osBean.getSystemLoadAverage());
     }
 
     public String getArch() {

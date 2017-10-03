@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service.route;
@@ -20,11 +20,10 @@ import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.CodeSearcher;
-import com.searchcode.app.service.JobService;
-import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.StatsService;
+import com.searchcode.app.model.ValidatorResult;
+import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
@@ -32,23 +31,38 @@ import spark.Response;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AdminRouteService {
 
-    private Repo repo;
-    private JobService jobService;
+    private final Repo repo;
+    private final Data data;
+    private final JobService jobService;
+    private final DataService dataService;
+    private final IndexService indexService;
+    private final StatsService statsService;
+    private final ValidatorService validatorService;
 
     public AdminRouteService() {
-        this.repo = Singleton.getRepo();
-        this.jobService = Singleton.getJobService();
+        this(Singleton.getRepo(),
+             Singleton.getData(),
+             Singleton.getJobService(),
+             Singleton.getDataService(),
+             Singleton.getIndexService(),
+             Singleton.getStatsService(),
+             Singleton.getValidatorService());
     }
 
-    public AdminRouteService(Repo repo, JobService jobService) {
+    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService) {
         this.repo = repo;
+        this.data = data;
         this.jobService = jobService;
+        this.dataService = dataService;
+        this.indexService = indexService;
+        this.statsService = statsService;
+        this.validatorService = validatorService;
     }
 
     public String getStat(Request request, Response response) {
@@ -63,23 +77,23 @@ public class AdminRouteService {
     public String checkIndexStatus(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
             String reponame = request.queryParams("reponame");
-            String reposLocation = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
-            IndexBaseRepoJob indexBaseRepoJob = new IndexFileRepoJob();
+            Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(reponame);
+            String indexStatus = repoResult.map(x -> x.getData().indexStatus).orElse(Values.EMPTYSTRING);
 
-            RepoResult repoResult = Singleton.getRepo().getRepoByName(reponame);
-            String indexStatus = Values.EMPTYSTRING;
-            if (repoResult != null) {
-                indexStatus = repoResult.getData().indexStatus;
-            }
-
-            if (indexBaseRepoJob.checkIndexSucess(reposLocation + "/" + reponame) || "success".equals(indexStatus)) {
+            if ("success".equals(indexStatus)) {
                 return "Indexed ✓";
             }
 
-            if("indexing".equals(indexStatus)) {
+            if (Singleton.getDataService().getPersistentDelete().contains(reponame)) {
+                return "Pending Delete";
+            }
+
+            if (Singleton.getRunningIndexRepoJobs().keySet().contains(reponame)) {
                 return "Indexing...";
             }
+
+            return "Queued";
         }
 
         return Values.EMPTYSTRING;
@@ -87,7 +101,6 @@ public class AdminRouteService {
 
     public Map<String, Object> adminPage(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
-        StatsService statsService = Singleton.getStatsService();
 
         // Put all properties here
         map.put(Values.SQLITE_FILE, Properties.getProperties().getProperty(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE));
@@ -120,6 +133,9 @@ public class AdminRouteService {
         map.put(Values.AND_MATCH, Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
         map.put(Values.LOG_INDEXED, Properties.getProperties().getProperty(Values.LOG_INDEXED, Values.DEFAULT_LOG_INDEXED));
         map.put(Values.TRASH_LOCATION, Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION));
+        map.put(Values.FOLLOW_LINKS, Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
+        map.put(Values.DEEP_GUESS_FILES, Properties.getProperties().getProperty(Values.DEEP_GUESS_FILES, Values.DEFAULT_DEEP_GUESS_FILES));
+        map.put(Values.HOST_NAME, Properties.getProperties().getProperty(Values.HOST_NAME, Values.DEFAULT_HOST_NAME));
 
 
         map.put("repoCount", this.getStat("repoCount"));
@@ -133,16 +149,19 @@ public class AdminRouteService {
         map.put("runningJobs", this.getStat("runningJobs"));
         map.put("threads", this.getStat("threads"));
         map.put("paused", this.getStat("paused"));
+        map.put("repoQueueSize", this.getStat("repoqueuesize"));
 
+        map.put("dataValues", this.data.getAllData());
 
-        map.put("sysArch", statsService.getArch());
-        map.put("sysVersion", statsService.getOsVersion());
-        map.put("processorCount", statsService.getProcessorCount());
-        map.put("deletionQueue", Singleton.getUniqueDeleteRepoQueue().size());
+        map.put("sysArch", this.statsService.getArch());
+        map.put("sysVersion", this.statsService.getOsVersion());
+        map.put("processorCount", this.statsService.getProcessorCount());
+        map.put("deletionQueue", Singleton.getDataService().getPersistentDelete().size());
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put("index_paused", Singleton.getPauseBackgroundJobs() ? "paused" : "running");
+        map.put("index_paused", this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused" : "running");
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -181,9 +200,11 @@ public class AdminRouteService {
         map.put("hasNext", (indexOffset + 100) < repoCount);
         map.put("previousOffset", "" + (indexOffset - 100));
         map.put("nextOffset", "" + (indexOffset + 100));
+        map.put("repoCount", this.getStat("repoCount"));
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -201,6 +222,8 @@ public class AdminRouteService {
         map.put("apiAuthentication", apiEnabled && apiAuth);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
@@ -218,8 +241,10 @@ public class AdminRouteService {
         map.put("minifiedLength", Values.EMPTYSTRING + (int) CommonRouteService.getMinifiedLength());
         map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
         map.put("backoffValue", CommonRouteService.getBackoffValue());
+        map.put("embed", CommonRouteService.getEmbed());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put("highlighters", highlighters);
+        map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
@@ -233,7 +258,7 @@ public class AdminRouteService {
         }
 
         String logs;
-        switch(level) {
+        switch (level) {
             case "INFO":
                 logs = this.getStat("infologs");
                 break;
@@ -246,6 +271,12 @@ public class AdminRouteService {
             case "SEARCH":
                 logs = this.getStat("searchlogs");
                 break;
+            case "API":
+                logs = this.getStat("apiLogs");
+                break;
+            case "FINE":
+                logs = this.getStat("finelogs");
+                break;
             case "SEVERE":
             default:
                 logs = this.getStat("severelogs");
@@ -257,6 +288,8 @@ public class AdminRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
@@ -266,6 +299,7 @@ public class AdminRouteService {
 
         String logo = request.queryParams("logo").trim();
         String syntaxHighlighter = request.queryParams("syntaxhighligher");
+        String embed = request.queryParams("embed").trim();
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("averagesalary"));
@@ -312,21 +346,20 @@ public class AdminRouteService {
 
         data.saveData(Values.LOGO, logo);
         data.saveData(Values.SYNTAXHIGHLIGHTER, syntaxHighlighter);
-
-        // Redo anything that requires updates at this point
-        Singleton.getSearchcodeLib(data);
+        data.saveData(Values.EMBED, embed);
     }
 
-    public void postBulk(Request request, Response response) {
+    public List<ValidatorResult> postBulk(Request request, Response response) {
         String repos = request.queryParams("repos");
         String repolines[] = repos.split("\\r?\\n");
         Repo repo = Singleton.getRepo();
+
+        List<ValidatorResult> validatorResults = new ArrayList<>();
 
         for(String line: repolines) {
             String[] repoparams = line.split(",", -1);
 
             if (repoparams.length == 7) {
-
                 String branch = repoparams[6].trim();
                 if (branch.equals(Values.EMPTYSTRING)) {
                     branch = "master";
@@ -337,17 +370,29 @@ public class AdminRouteService {
                     scm = "git";
                 }
 
-                RepoResult rr = repo.getRepoByName(repoparams[0]);
+                RepoResult repoResult = new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}");
+                ValidatorResult validate = this.validatorService.validate(repoResult);
 
-                if (rr == null) {
-                    repo.saveRepo(new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}"));
-                    this.jobService.forceEnqueue(this.repo.getRepoByUrl(repoparams[3]));
+                if (validate.isValid) {
+                    repo.saveRepo(repoResult);
+                    this.jobService.forceEnqueue(repoResult);
+                }
+                else {
+                    validate.setLine(line);
+                    validatorResults.add(validate);
                 }
             }
+            else {
+                ValidatorResult validate = new ValidatorResult(false, "Incorrect number of elements: " + line);
+                validate.setLine(line);
+                validatorResults.add(validate);
+            }
         }
+
+        return validatorResults;
     }
 
-    public void postRepo(Request request, Response response) {
+    public ValidatorResult postRepo(Request request, Response response) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -356,18 +401,48 @@ public class AdminRouteService {
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
 
-        for(int i=0;i<reponames.length; i++) {
-            if (reponames[i].trim().length() != 0) {
+        ValidatorResult validate = new ValidatorResult(true, Values.EMPTYSTRING);
 
-                String branch = repobranch[i].trim();
-                if (branch.equals(Values.EMPTYSTRING)) {
-                    branch = "master";
-                }
+        for(int i = 0; i < reponames.length; i++) {
 
-                this.repo.saveRepo(new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}"));
-                this.jobService.forceEnqueue(this.repo.getRepoByUrl(repourls[i]));
+            String branch = repobranch[i].trim();
+            if (branch.equals(Values.EMPTYSTRING)) {
+                branch = "master";
             }
+
+            RepoResult repoResult = new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}");
+            validate = this.validatorService.validate(repoResult);
+
+            if (!validate.isValid) {
+                validate.setRepoResult(repoResult);
+                return validate;
+            }
+
+            this.repo.saveRepo(repoResult);
+            Optional<RepoResult> repoByUrl = this.repo.getRepoByUrl(repourls[i]);
+            repoByUrl.ifPresent(this.jobService::forceEnqueue);
         }
+
+        return validate;
+    }
+
+    public void deleteRepo(Request request, Response response) {
+        String repoName = request.queryParams("repoName");
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
+
+        repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
+    }
+
+    public void reindexRepo(Request request, Response response) {
+        String repoName = request.queryParams("repoName");
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
+
+        repoResult.ifPresent(x ->  {
+            x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
+            Singleton.getLogger().info("Resetting Job Run Time due to reindex request repoName:" + x.getName());
+            Singleton.getRepo().saveRepo(x);
+            this.jobService.forceEnqueue(x);
+        });
     }
 
     public String checkVersion() {
@@ -376,7 +451,7 @@ public class AdminRouteService {
             version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);
         }
         catch(IOException ex) {
-            return "Unable to determine if running the latest version. Check https://searchcode.com/product/download/ for the latest release.";
+            return "Unable to determine if running the latest version. Check https://searchcodeserver.com/pricing.html for the latest release.";
         }
 
         if (App.VERSION.equals(version)) {
@@ -387,58 +462,68 @@ public class AdminRouteService {
         }
     }
 
-    private String getStat(String statname) {
+    public String getStat(String statname) {
         if (statname == null) {
             return Values.EMPTYSTRING;
         }
 
         switch (statname.toLowerCase()) {
             case "memoryusage":
-                return Singleton.getStatsService().getMemoryUsage("<br>");
+                return this.statsService.getMemoryUsage("<br>");
             case "loadaverage":
-                return Singleton.getStatsService().getLoadAverage();
+                return this.statsService.getLoadAverage();
             case "uptime":
-                return Singleton.getStatsService().getUptime();
+                return this.statsService.getUptime();
             case "searchcount":
-                return Values.EMPTYSTRING + Singleton.getStatsService().getSearchCount();
+                return Values.EMPTYSTRING + this.statsService.getSearchCount();
             case "runningjobs":
-                StringBuilder stringBuffer = new StringBuilder();
-                for ( String key : Singleton.getRunningIndexRepoJobs().keySet() ) {
-                    RunningIndexJob indexJob = Singleton.getRunningIndexRepoJobs().get(key);
-                    if (indexJob != null) {
-                        int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - indexJob.startTime;
-                        stringBuffer.append(key).append(" <small>(").append(runningTime).append(" seconds)</small>").append(" ");
-                    }
-                    else {
-                        stringBuffer.append(key).append(" ");
-                    }
-                }
-                return stringBuffer.toString();
+                String collect = Singleton.getRunningIndexRepoJobs().keySet().stream()
+                        .filter(x -> Singleton.getRunningIndexRepoJobs().get(x) != null)
+                        .map(x -> x + " <small>(" + (Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(x).startTime) + "s)</small>")
+                        .collect(Collectors.joining("<br>"));
+                return collect + "&nbsp;";
             case "spellingcount":
                 return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
             case "repocount":
                 return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
             case "numdocs":
-                CodeSearcher codeSearcher = new CodeSearcher();
-                return Values.EMPTYSTRING + codeSearcher.getTotalNumberDocumentsIndexed();
+                return Values.EMPTYSTRING + this.indexService.getIndexedDocumentCount();
             case "servertime":
                 return new Date().toString();
             case "deletionqueue":
-                return Values.EMPTYSTRING + Singleton.getUniqueDeleteRepoQueue().size();
+                return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
                 return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
             case "infologs":
                 return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
             case "warninglogs":
                 return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
+            case "finelogs":
+                return StringUtils.join(Singleton.getLogger().getFineLogs(), System.lineSeparator());
             case "severelogs":
                 return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
             case "searchlogs":
                 return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+            case "apilogs":
+                return StringUtils.join(Singleton.getLogger().getApiLogs(), System.lineSeparator());
             case "threads":
-                return "" + java.lang.Thread.activeCount();
-            case "paused":
-                return Singleton.getPauseBackgroundJobs() ? "paused": "running";
+                return Values.EMPTYSTRING + java.lang.Thread.activeCount();
+            case "repoqueuesize":
+                return Values.EMPTYSTRING + (Singleton.getUniqueGitRepoQueue().size() + Singleton.getUniqueSvnRepoQueue().size() + Singleton.getUniqueFileRepoQueue().size());
+            case "parserpaused":
+                return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused": "running";
+            case "adderpaused":
+                return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? "paused": "running";
+            case "indexreadlocation":
+                return this.indexService.getINDEX_READ_LOCATION().toString();
+            case "indexwritelocation":
+                return this.indexService.getINDEX_WRITE_LOCATION().toString();
+            case "facetwritelocation":
+                return this.indexService.getFACET_WRITE_LOCATION().toString();
+            case "codeindexlinescount":
+                return Values.EMPTYSTRING + this.indexService.getCodeIndexLinesCount();
+            case "codeindexqueuesize":
+                return Values.EMPTYSTRING + Singleton.getCodeIndexQueue().size();
         }
 
         return Values.EMPTYSTRING;

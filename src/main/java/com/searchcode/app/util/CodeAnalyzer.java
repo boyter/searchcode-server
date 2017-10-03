@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.util;
@@ -35,7 +35,7 @@ public class CodeAnalyzer extends Analyzer {
     protected TokenStreamComponents createComponents(String fieldName) {
         final Tokenizer source = new CodeTokenizer();
         //TokenStream result = new LengthFilter(source, 0, Integer.MAX_VALUE);
-        TokenStream result = new LengthFilter(source, 0, 100); // should be enough I hope
+        TokenStream result = new LengthFilter(source, 0, 500); // should be enough I hope
         return new TokenStreamComponents(source, result);
     }
 

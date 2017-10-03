@@ -7,7 +7,7 @@
           <ul class="nav nav-pills nav-stacked span2">
             <li><a href="/admin/">Dashboard</a></li>
             <li><a href="/admin/repo/">Repository Add</a></li>
-            <li><a href="/admin/repolist/">Repository List</a></li>
+            <li><a href="/admin/repolist/">Repository List <span class="badge">${repoCount}</span></a></li>
             <li class="active"><a href="/admin/bulk/">Repository Bulk Add</a></li>
             <li><a href="/admin/api/">API Keys</a></li>
             <li><a href="/admin/settings/">Settings</a></li>
@@ -19,13 +19,30 @@
     <div class="col-md-10">
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Bulk API</h3>
 
-<form method="POST">
-
     <p>You can use this page to insert repositories in bulk up-to 1,000 repositories. Please note that you cannot delete or update repositories using this page. To delete
-    use the <a href="/admin/repo/">Repository Admin</a> page.</p>
+    use the <a href="/admin/repolist/">Repository List</a> page.</p>
     <p>If you need to maintain more than 1,000 repositories is is advised to use the <a href="/documentation/#api">API</a>.</p>
 
-<textarea rows="20" style="width:100%;" name="repos"></textarea>
+
+<#if validatorResults??>
+<div class="alert alert-danger" role="alert">
+<#list validatorResults>
+    <#items as result>
+        ${result.reason?html}<br>
+    </#items>
+</#list>
+</div>
+</#if>
+
+<form method="POST">
+
+<textarea rows="20" style="width:100%;" name="repos"><#if validatorResults??>
+<#list validatorResults>
+<#items as result>
+${result.line?html}
+</#items>
+</#list>
+</#if></textarea>
     <br /><br />
     <input class="btn btn-primary" type="submit" value="Update/Add Repositories" />
     </form>

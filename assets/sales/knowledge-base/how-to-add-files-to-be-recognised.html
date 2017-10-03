@@ -1,0 +1,57 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to add files to be recognised</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">Searchcode Server includes a database which can be modified to identify file types by extension or by explicit file name. The file is <code>./include/classifier/database.json</code> and must be a valid JSON file.</p>
+            <p class="em">
+            The fields that are used are the following,
+            <dl class="dl-horizontal">
+                <dt>language</dt>
+                <dd>Friendly name for the matched type. This is what will be displayed through the search interface.</dd>
+                <dt>extensions</dt>
+                <dd>Array of extensions to use for matching. Files with no period in the name will have the whole name treated as the extension. Always use lower case.</dd>
+                <dt>keywords</dt>
+                <dd>Array of common keywords for the language. If an extension matches multiple language types a count of which keywords are most common in each file are used to determine which language it is. Always use lower case.</dd>
+            </dl>
+            </p>
+
+            <p class="em">To add an explicit file name matcher you could add following entry to the file.</p>
+<pre><code>
+{
+    "language": "Jenkins Buildfile",
+    "extensions": [
+      "jenkinsfile"
+    ],
+    "keywords": []
+}
+</code></pre>
+             <p class="em">which would mark any file named "jenkinsfile" ignoring case as being of the language/type "Jenkins File".</p>
+
+            <p class="em">To mark files by extension you could use an entry like the following.</p>
+<pre><code>
+{
+    "language": "HTML",
+    "extensions": [
+      "htm",
+      "html"
+    ],
+    "keywords": ["nbsp", "class", "span", "font", "href", "html", "name", "title", "the", "bgcolor"]
+}
+</code></pre>
+            <p class="em">Which could mark any file with the extension of html or html as being HTML.</p>
+
+        </div>
+      </div>

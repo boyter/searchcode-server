@@ -1,0 +1,30 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">Reccomended maintenance for searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+
+<p class="em">Generally searchcode server once installed looks after itself. However a few things are reccomended to ensure that you can rebuild your deployement quickly and to identify any issues that may have cropped up.</p>
+
+<p class="em"><strong>1.</strong> Have an automated method of deploying searchcode server. Deployment as such can be done in an automated method using Puppet, Fabric, Chef, Ansible or otherwise. Keep an automated backup of the <code>searchcode.sqlite</code> and <code>searchcode.properties</code> files. When rebuilding searchcode copy both into the searchcode install directory and searchcode will analyse the code and rebuild the index. This process will take longer for setups that contain many or large repositories. If faster restores are required then you can restore the <code>index</code> and <code>repo</code> directories as well.</p>
+
+<p class="em"><strong>2.</strong> Check the error logs for warning or severe errors. You can do this by logging into the searchcode interface or by grepping the searchcode server log files as configured through the <code>searchcode.properties</code> file.</p>
+
+
+<p class="em"><strong>3.</strong> Upgrades. Be sure to check for upgrades (you can do this in the admin console by clicking "(check if latest version)". Upgrades usually include a variety of bug fixes and feature enhancements. Upgrading is usually best done by a clean install and merging of the <code>searchcode.sqlite</code> and <code>searchcode.properties</code> files.</p>
+
+
+<p class="em"><strong>4.</strong> Rebuild the index. While not required it is useful to rebuild the full index in searchcode occasionally. It will improve performance and expidite the resolution of any issues which can occur through the indexing process. This can be done through the API or the Admin screens by clicking "Recrawl &amp; Rebuild Indexes".</p>
+        </div>
+      </div>

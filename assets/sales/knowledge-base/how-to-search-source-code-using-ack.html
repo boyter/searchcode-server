@@ -1,0 +1,58 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to search source code in ack or ag</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row">
+        <div class="container em">
+            <h2>ack  <small>(command line)</small></h2>
+            <a href="http://beyondgrep.com/">http://beyondgrep.com/</a>
+            <p class="em">
+            <button type="button" class="btn btn-success btn-xs">Windows</button>
+            <button type="button" class="btn btn-success btn-xs">Linux</button>
+            <button type="button" class="btn btn-success btn-xs">macOS</button>
+            <button type="button" class="btn btn-success btn-xs">BSD</button>
+            </p>
+
+<p class="em">Designed to be a better grep for source code. As such it includes defaults that make a great deal of sense in that context. Firstly you don't have to specify filenames as it assumes you want to start searching at the current directory and by default will recurse down the file tree. It also will ignore .svn and .git folders assuming (usually correctly) that you have no need to search inside them. Its output is also styled to make searching accross source code easier. Most of its arguments are similar to grep so it is instantly familiar. One really handy feature is being able to include or exclude file types using the --java --nophp syntax. It also ignores known backup files and other such redundant files.</p>
+
+<p class="em">For more performance you can also use the almost compatible version of ag "The Silver Searcher" <a href="http://geoff.greer.fm/ag/">http://geoff.greer.fm/ag/</a>  which for most comparable searches is about 2-5x faster.</p>
+
+<p class="em">There is also another implementation which is similar to ack and ag called ripgrep <a href="https://github.com/BurntSushi/ripgrep">https://github.com/BurntSushi/ripgrep</a> which depending on your searching needs can yield even more performance over ag.</p>
+
+<p class="em">As with grep because ack looks at every file and depending on your query every byte in every file it can take a very long time to search across large or multiple code bases.</p>
+
+<p class="em">Some examples of searching over a codebase using ack are included below. All searches are run from within the directory you wish to search rather than having to specify the directory. Be sure to check out the <a href="https://beyondgrep.com/documentation/">documentation for ack</a>. Note that you can generally swap ack with ag if installed for faster results.</p>
+
+<ul class="list-unstyled text-left">
+  <li><code>ack -i arraylist --java</code> Ignore case search for arraylist in java files</li>
+  <li><code>ack if -A10 -B5 --shell</code> Show 10 lines after and 5 lines before shell scripts with the text if inside</li>
+</ul>
+
+<p class="em">Some timing tests for a directory using ack and ag on a directory with ~115 Gb of files.</p>
+
+<pre><code>du -hs
+115G  .
+
+time ack list -A10 -B5 --java
+real  0m12.560s
+user  0m7.270s
+sys   0m3.132s
+
+time ag list -A10 -B5 --java
+real  0m6.204s
+user  0m0.544s
+sys   0m0.930s
+</code></pre>
+
+        </div>
+      </div>

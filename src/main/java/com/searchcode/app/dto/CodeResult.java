@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.dto;
@@ -34,6 +34,7 @@ public class CodeResult {
     public String deleted = "";
     public String message = "";
     public String codeId = "";
+    public String displayLocation = "";
 
     public CodeResult(List<String> code, List<CodeMatchResult>matchingResults) {
         this.setCode(code);
@@ -182,5 +183,13 @@ public class CodeResult {
 
     public void setFilePath(String path) {
         this.filePath = path;
+    }
+
+    public String getDisplayLocation() {
+        return displayLocation;
+    }
+
+    public void setDisplayLocation(String displayLocation) {
+        this.displayLocation = displayLocation;
     }
 }

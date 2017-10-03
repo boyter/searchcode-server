@@ -21,6 +21,7 @@ release/
 *.tar.gz
 *.log
 *.log.*
+assets/sales/output
 
 lib/
 logs/

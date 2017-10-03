@@ -1,0 +1,91 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to sync Stash/Bitbucket Server with searchcode using Python</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">The below is an example program for syncing repositories between Atlassian's Bitbucket Server (formerly known as Stash) and searchcode server.</p>
+<pre><code>import stashy
+from hashlib import sha1
+from hmac import new as hmac
+import urllib2
+import json
+import urllib
+
+def getstashrepos():
+    stash = stashy.connect("https://mystashserver/", "STASH_USERNAME", "STASH_PASSWORD")
+
+    projects = stash.projects.list()
+    repos = [stash.projects[x['key']].repos.list() for x in projects]
+
+    stashrepos = []
+
+    for repo in repos:
+        stashrepos = stashrepos + [{'name': x['project']['key'] + '-' + x['slug'],
+                                    'cloneUrl': x['cloneUrl'],
+                                    'browse': x['links']['self'][0]['href']} for x in repo]
+
+    return stashrepos
+
+def addtosearchcode(repo):
+    reponame = repo['name']
+    repourl = repo['cloneUrl']
+    repotype = "git"
+    repousername = "STASH_USERNAME"
+    repopassword = "STASH_PASSWORD"
+    reposource = repo['browse']
+    repobranch = "master"
+
+    message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s" % (
+            urllib.quote_plus(publickey),
+            urllib.quote_plus(reponame),
+            urllib.quote_plus(repourl),
+            urllib.quote_plus(repotype),
+            urllib.quote_plus(repousername),
+            urllib.quote_plus(repopassword),
+            urllib.quote_plus(reposource),
+            urllib.quote_plus(repobranch)
+        )
+
+    sig = hmac(privatekey, message, sha1).hexdigest()
+
+    url = "http://mysearchcodeserver/api/repo/add/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+    data = urllib2.urlopen(url)
+    data = data.read()
+
+    data = json.loads(data)
+    print reponame, data['sucessful'], data['message']
+
+
+publickey = "MY_SEARCHCODE_PUBLIC_KEY"
+privatekey = "MY_SEARCHCODE_PRIVATE_KEY"
+
+message = "pub=%s" % (urllib.quote_plus(publickey))
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+url = "http://mysearchcodeserver/api/repo/list/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+existingrepos = [x['name'] for x in data['repoResultList']]
+
+for repo in getstashrepos():
+    if repo['name'] not in existingrepos:
+        addtosearchcode(repo)
+</code>
+</pre>
+        </div>
+      </div>

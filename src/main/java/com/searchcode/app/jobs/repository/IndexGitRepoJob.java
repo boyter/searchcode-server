@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.jobs.repository;
@@ -16,10 +16,11 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.Timer;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.BlameCommand;
@@ -56,19 +57,25 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class IndexGitRepoJob extends IndexBaseRepoJob {
 
-    private String GITBINARYPATH;
-    private boolean USESYSTEMGIT;
+    private final String GIT_BINARY_PATH;
+    private boolean USE_SYSTEM_GIT;
 
     public IndexGitRepoJob() {
-        this.GITBINARYPATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
-        this.USESYSTEMGIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
+        this(Singleton.getIndexService());
+    }
 
-        File f = new File(this.GITBINARYPATH);
-        if (USESYSTEMGIT && !f.exists()) {
+    public IndexGitRepoJob(IndexService indexService) {
+        this.GIT_BINARY_PATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
+        this.USE_SYSTEM_GIT = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.USESYSTEMGIT, Values.DEFAULTUSESYSTEMGIT));
+
+        File f = new File(this.GIT_BINARY_PATH);
+        if (this.USE_SYSTEM_GIT && !f.exists()) {
             Singleton.getLogger().warning("\n///////////////////////////////////////////////////////////////////////////\n// Property git_binary_path in properties file appears to be incorrect.  //\n// Please check the path. Falling back to internal git implementation.   //\n///////////////////////////////////////////////////////////////////////////");
 
-            this.USESYSTEMGIT = false;
+            this.USE_SYSTEM_GIT = false;
         }
+
+        this.indexService = indexService;
     }
 
     @Override
@@ -87,12 +94,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+    public String getCodeOwner(List<String> codeLines, String fileName, String repoName, String fileRepoLocations, SearchcodeLib scl) {
         List<CodeOwner> owners;
-        if (this.USESYSTEMGIT) {
-            owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString);
+        Timer timer = Singleton.getNewTimer();
+
+        if (this.USE_SYSTEM_GIT) {
+            owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, fileName);
         } else {
-            owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, newString);
+            owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, fileName);
         }
 
         return scl.codeOwner(owners);
@@ -114,12 +123,13 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
     /**
      * Only works if we have path to GIT
+     * Should change over to git log -n 1 --pretty=format:%an -- README.md
      */
     public List<CodeOwner> getBlameInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         List<CodeOwner> codeOwners = new ArrayList<>(codeLinesSize);
 
         // -w is to ignore whitespace bug
-        ProcessBuilder processBuilder = new ProcessBuilder(this.GITBINARYPATH, "blame", "-c", "-w", fileName);
+        ProcessBuilder processBuilder = new ProcessBuilder(this.GIT_BINARY_PATH, "blame", "-c", "-w", fileName);
         // The / part is required due to centos bug for version 1.1.1
         processBuilder.directory(new File(repoLocations + "/" + repoName));
 

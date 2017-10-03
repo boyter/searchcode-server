@@ -1,6 +1,8 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.route.AdminRouteService;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
@@ -10,9 +12,7 @@ import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class AdminRouteServiceTest extends TestCase {
 
@@ -28,14 +28,14 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParams("reponame")).thenReturn("hopefullyarandomnamethatdoesnotexist");
 
         String result = adminRouteService.checkIndexStatus(mockRequest, null);
-        assertThat(result).isEmpty();
+        assertThat(result).isEqualTo("Queued");
     }
 
 
     public void testGetStatValuesExpectEmpty() {
         AdminRouteService adminRouteService = new AdminRouteService();
         Singleton.getLogger().clearAllLogs();
-        List<String> statValue = Arrays.asList(null,  "", "runningjobs","alllogs", "infologs", "warninglogs", "severelogs", "searchlogs");
+        List<String> statValue = Arrays.asList(null, "", "alllogs", "infologs", "warninglogs", "severelogs", "searchlogs");
 
         for(String stat: statValue) {
             Request mockRequest = Mockito.mock(Request.class);
@@ -51,11 +51,61 @@ public class AdminRouteServiceTest extends TestCase {
         }
     }
 
-    public void testGetStatValuesExpectValue() {
+    public void testGetStatValuesExpectNbspBecauseIntercoolerJS() {
         AdminRouteService adminRouteService = new AdminRouteService();
+        Singleton.getLogger().clearAllLogs();
+
+        Request mockRequest = mock(Request.class);
+
+        Set<String> returnSet = new HashSet<>();
+        returnSet.add("statname");
+
+        when(mockRequest.queryParams()).thenReturn(returnSet);
+        when(mockRequest.queryParams("statname")).thenReturn("runningjobs");
+
+        String result = adminRouteService.getStat(mockRequest, null);
+        assertThat(result).as("For value runningjobs").isEqualTo("&nbsp;");
+    }
+
+    public void testGetStatValuesExpectValue() {
+        StatsService statsServiceMock = mock(StatsService.class);
+        IndexService indexServiceMock = mock(IndexService.class);
+
+        when(statsServiceMock.getMemoryUsage(any())).thenReturn("Yep");
+        when(statsServiceMock.getLoadAverage()).thenReturn("Yep");
+        when(statsServiceMock.getUptime()).thenReturn("Yep");
+
+        when(indexServiceMock.getIndexedDocumentCount()).thenReturn(100);
+        when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
+
+        AdminRouteService adminRouteService = new AdminRouteService(null, null, null, null, indexServiceMock, statsServiceMock, null);
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
-        for(String stat: statValue) {
+        for (String stat: statValue) {
+            Request mockRequest = Mockito.mock(Request.class);
+
+            Set<String> returnSet = new HashSet<>();
+            returnSet.add("statname");
+
+            when(mockRequest.queryParams()).thenReturn(returnSet);
+            when(mockRequest.queryParams("statname")).thenReturn(stat);
+
+            String result = adminRouteService.getStat(mockRequest, null);
+            assertThat(result).as("For value %s", stat).isNotEmpty();
+        }
+    }
+
+    public void testGetStatLogs() {
+        AdminRouteService adminRouteService = new AdminRouteService();
+
+        Singleton.getLogger().apiLog("test");
+        Singleton.getLogger().warning("test");
+        Singleton.getLogger().searchLog("test");
+        Singleton.getLogger().severe("test");
+        Singleton.getLogger().info("test");
+
+        List<String> statValue = Arrays.asList("alllogs", "infologs", "warninglogs", "severelogs", "searchlogs", "apilogs");
+        for (String stat: statValue) {
             Request mockRequest = Mockito.mock(Request.class);
 
             Set<String> returnSet = new HashSet<>();
@@ -73,7 +123,7 @@ public class AdminRouteServiceTest extends TestCase {
         Repo mockRepo = Mockito.mock(Repo.class);
         JobService mockJobService = Mockito.mock(JobService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, null);
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn(new String[0]);
@@ -88,13 +138,16 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testPostRepoMultipleRepo() {
-        Repo mockRepo = Mockito.mock(Repo.class);
-        JobService mockJobService = Mockito.mock(JobService.class);
+        Repo mockRepo = mock(Repo.class);
+        JobService mockJobService = mock(JobService.class);
+        ValidatorService mockValidatorService = mock(ValidatorService.class);
 
         when(mockRepo.saveRepo(any())).thenReturn(true);
+        when(mockValidatorService.validate(any())).thenReturn(new ValidatorResult(true, ""));
+        when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.of(new RepoResult()));
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, mockJobService);
-        Request mockRequest = Mockito.mock(Request.class);
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, mockValidatorService);
+        Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
         when(mockRequest.queryParamsValues("reposcm")).thenReturn("git,git".split(","));
@@ -104,9 +157,25 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("reposource")).thenReturn("source,source".split(","));
         when(mockRequest.queryParamsValues("repobranch")).thenReturn("master,master".split(","));
 
-
         adminRouteService.postRepo(mockRequest, null);
         verify(mockRepo, times(2)).saveRepo(any());
         verify(mockJobService, times(2)).forceEnqueue(any());
+        verify(mockValidatorService, times(2)).validate(any());
+    }
+
+    public void testDeleteRepo() {
+        Repo mockRepo = Mockito.mock(Repo.class);
+        JobService mockJobService = Mockito.mock(JobService.class);
+        DataService mockDataService = Mockito.mock(DataService.class);
+
+        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, mockDataService, null, null, null);
+        Request mockRequest = Mockito.mock(Request.class);
+
+        when(mockRequest.queryParams("repoName")).thenReturn("myRepo");
+        when(mockRepo.getRepoByName("myRepo")).thenReturn(Optional.of(new RepoResult()));
+
+
+        adminRouteService.deleteRepo(mockRequest, null);
+        verify(mockDataService, times(1)).addToPersistentDelete("");
     }
 }

@@ -1,0 +1,62 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to administer your searchcode server install</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">Generally searchcode server will look after itself, and day to day administration will not be required. For the most part administration tasks will be adding new repositories. However all the administration pages are covered below.</p>
+
+            <h3>The Dashboard</h3>
+            <p class="em">The dashboard is the first page you will see when logging in to the admin section. It should show the general health of your install in a quick overview. Each portion and what it does is listed below.</p>
+
+            <ul class="text-left">
+                <li>System Statistics. This panel shows how the system is perfoming. Useful to identifying if your install needs more CPU.</li>
+                <li>Memory Usage. Shows the current memory usage of the system. Useful for identifying if your install needs more RAM.</li>
+                <li>Spelling Corrector. Shows the number of words stored in the system spelling corrector.</li>
+                <li>Index Status. Shows the number of searches, documents, repositories and the number of repositories to delete.</li>
+                <li>Running Index Jobs. A lite version of the repositories page and shows which projects are being indexed and for how long.</li>
+            </ul>
+
+            <p class="em">There are a number of actions that can be performed on the dashboard page which can be used to resolve common issues.</p>
+
+             <ul class="text-left">
+                <li>Force Index Queue. Add all repositories into the index processing queue.</li>
+                <li>Clear Search Count. Reset the search count to zero.</li>
+                <li>Reset Spelling. Reset the spelling corrector. If many repositories have been deleted this will push out suggestions which no longer return results.</li>
+                <li>Recrawl &amp; Rebuild Index. Delete the entire index, checked out code and queue everything to be re-indexed. Click this if you are getting inconsistent search results.</li>
+                <li>Pause/Unpause Indexer. Pauses the indexer from running. Use this to reduce load on the searchcode server or source control system.</li>
+            </ul>
+
+            <h3>Repository Add</h3>
+            <p class="em">The repository add page can be used to add repositories to index or find and remove them from the index. If you need to maintain a large amount of repositories it is advised to use the API. Please note that deleting a repository adds it to queue for deletion and as such may not be removed immediately.</p>
+
+            <h3>Repository List</h3>
+            <p class="em">The repository list page can be used to find and remove repositories from the index. If you need to maintain a large amount of repositories it is advised to use the API. Please note that deleting a repository adds it to queue for deletion and as such may not be removed immediately.</p>
+
+            <h3>Repository Bulk</h3>
+            <p class="em">The repository bulk page can be used to quickly add up to 1,000 repositories at a time into searchcode server. It cannot update ot delete.</p>
+
+            <h3>API Keys</h3>
+            <p class="em">You can use this page to create and delete API keys which can be used by consuming applications.</p>
+
+            <h3>Settings</h3>
+            <p class="em">The settings page is only available for use in the paid for versions of searchcode. You can use this page to change the branding image, configure the look and feel and control searches. The most useful value on this page is "Backoff Value" which when set will attempt to keep the CPU load value below the set value. It sorks off the CPU load averages reported. If you find searchcode to be slow to respond then set this value to half the number of processors. Note that other processes on the machine can affect this value and if set too low will cause the index to never run.</p>
+
+            <h3>Logs</h3>
+            <p class="em">The logs page will display the last 1,000 log entries for all logging levels, irrespective of the searchcode.properties file setting which controls the log level flushed to disk. Each page will auto update and is useful for identifying issues quickly where strange behaviour is reported.</p>
+
+            
+
+        </div>
+      </div>

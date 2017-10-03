@@ -31,6 +31,27 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getSevereLogs()).hasSize(1);
     }
 
+    public void testLoggerWrapperSearchAdd() {
+        LoggerWrapper logger = new LoggerWrapper();
+        assertThat(logger.getSearchLogs()).isEmpty();
+        logger.searchLog("test");
+        assertThat(logger.getSearchLogs()).hasSize(1);
+    }
+
+    public void testLoggerWrapperFineAdd() {
+        LoggerWrapper logger = new LoggerWrapper();
+        assertThat(logger.getSearchLogs()).isEmpty();
+        logger.info("test");
+        assertThat(logger.getInfoLogs()).hasSize(1);
+    }
+
+    public void testLoggerWrapperApiAdd() {
+        LoggerWrapper logger = new LoggerWrapper();
+        assertThat(logger.getApiLogs()).isEmpty();
+        logger.apiLog("test");
+        assertThat(logger.getApiLogs()).hasSize(1);
+    }
+
     public void testLoggerWrapperAll() {
         LoggerWrapper logger = new LoggerWrapper();
         assertThat(logger.getAllLogs()).isEmpty();
@@ -88,17 +109,18 @@ public class LoggerWrapperTest extends TestCase {
         LoggerWrapper logger = new LoggerWrapper();
         Random rand = new Random();
 
-        for (int i = 0; i< 2100; i++) {
+        for (int i = 0; i < 2100; i++) {
             logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            logger.fine(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
         }
-
 
         assertThat(logger.getInfoLogs().size()).isEqualTo(1000);
         assertThat(logger.getSevereLogs().size()).isEqualTo(0);
         assertThat(logger.getWarningLogs().size()).isEqualTo(0);
         assertThat(logger.getAllLogs().size()).isEqualTo(1000);
         assertThat(logger.getSearchLogs().size()).isEqualTo(1000);
+        assertThat(logger.getFineLogs().size()).isEqualTo(1000);
     }
 
     public void testLoggerWrapperGetLogReversed() {
@@ -134,20 +156,18 @@ public class LoggerWrapperTest extends TestCase {
         Random rand = new Random();
 
         for(int i = 0; i < 100; i++) {
-            new Thread() {
-                public void run() {
-                    int count = 10000;
-                    while (count > 0) {
-                        loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                        count--;
-                    }
+            new Thread(() -> {
+                int count = 1000;
+                while (count > 0) {
+                    loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                    loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                    loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+                    count--;
                 }
-            }.start();
+            }).start();
         }
 
-        int count = 10000;
+        int count = 1000;
         while (count > 0) {
             loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));

@@ -5,14 +5,10 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service.route;
-
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.searchcode.app.App;
@@ -22,9 +18,8 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
-import com.searchcode.app.service.CodeSearcher;
+import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.route.CommonRouteService;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -34,18 +29,22 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static spark.Spark.halt;
 
 public class CodeRouteService {
 
-    private CodeSearcher codeSearcher;
+    private IndexService indexService;
 
     public CodeRouteService() {
-        this.codeSearcher = new CodeSearcher();
+        this(Singleton.getIndexService());
     }
 
-    public CodeRouteService(CodeSearcher codeSearcher) {
-        this.codeSearcher = codeSearcher;
+    public CodeRouteService(IndexService indexService) {
+        this.indexService = indexService;
     }
 
     public ModelAndView root(Request request, Response response) {
@@ -100,20 +99,31 @@ public class CodeRouteService {
                 }
             }
 
+
+            String pathValue = Values.EMPTYSTRING;
+            if (request.queryParams().contains("path")) {
+                pathValue = request.queryParams("path").trim();
+            }
+
+            boolean isLiteral = false;
+            if (request.queryParams().contains("lit")) {
+                isLiteral = Boolean.parseBoolean(request.queryParams("lit").trim());
+            }
+
             map.put("searchValue", query);
-            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList)));
+            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, pathValue, isLiteral)));
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "search_ajax.ftl");
         }
 
-        CodeSearcher cs = new CodeSearcher();
-
         map.put("photoId", CommonRouteService.getPhotoId());
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numDocs", this.indexService.getIndexedDocumentCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
     }
 
@@ -121,15 +131,14 @@ public class CodeRouteService {
         Map<String, Object> map = new HashMap<>();
 
         Repo repo = Singleton.getRepo();
-        Data data = Singleton.getData();
 
-        SearchcodeLib scl = Singleton.getSearchcodeLib(data);
+        SearchcodeLib scl = Singleton.getSearchcodeLib();
         OWASPClassifier owaspClassifier = new OWASPClassifier();
 
         Cocomo2 coco = new Cocomo2();
 
         String codeId = request.params(":codeid");
-        CodeResult codeResult = this.codeSearcher.getByCodeId(codeId);
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(codeId);
 
         if (codeResult == null) {
             response.redirect("/404/");
@@ -175,25 +184,12 @@ public class CodeRouteService {
                         Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
         boolean highlight = Singleton.getHelpers().tryParseInt(codeResult.codeLines, "0") <= limit;
 
-        RepoResult repoResult = repo.getRepoByName(codeResult.repoName);
-
-        if (repoResult != null) {
-            map.put("source", repoResult.getSource());
-        }
+        Optional<RepoResult> repoResult = repo.getRepoByName(codeResult.repoName);
+        repoResult.map(x -> map.put("source", x.getSource()));
 
         map.put("fileName", codeResult.fileName);
 
-        // TODO fix this properly code path includes the repo name and should be removed
-        String codePath = codeResult.codePath;
-
-        if (codeResult.codePath.contains("/")) {
-            codePath = codeResult.codePath.substring(codeResult.codePath.indexOf('/'), codeResult.codePath.length());
-        }
-
-        if (!codePath.startsWith("/")) {
-            codePath = "/" + codePath;
-        }
-        map.put("codePath", codePath);
+        map.put("codePath", codeResult.getDisplayLocation());
         map.put("codeLength", codeResult.codeLines);
 
         map.put("linenos", lineNos.toString());
@@ -217,6 +213,7 @@ public class CodeRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -225,27 +222,28 @@ public class CodeRouteService {
         Map<String, Object> map = new HashMap<>();
 
         String repoName = request.params(":reponame");
-        RepoResult repository = Singleton.getRepo().getRepoByName(repoName);
+        Optional<RepoResult> repository = Singleton.getRepo().getRepoByName(repoName);
         SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
         Cocomo2 coco = new Cocomo2();
         Gson gson = new Gson();
 
-        if (repository == null) {
+        if (!repository.isPresent()) {
             response.redirect("/404/");
             halt();
         }
 
-        ProjectStats projectStats = this.codeSearcher.getProjectStats(repository.getName());
-
+        ProjectStats projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
+                                              .orElseGet(() -> this.indexService.getProjectStats(Values.EMPTYSTRING));
 
         map.put("busBlurb", searchcodeLib.generateBusBlurb(projectStats));
-        map.put("repoLocation", repository.getUrl());
-        map.put("repoBranch", repository.getBranch());
+        repository.ifPresent(x -> map.put("repoLocation", x.getUrl()));
+        repository.ifPresent(x -> map.put("repoBranch", x.getBranch()));
 
         map.put("totalFiles", projectStats.getTotalFiles());
         map.put("totalCodeLines", projectStats.getTotalCodeLines());
         map.put("languageFacet", projectStats.getCodeFacetLanguages());
         map.put("ownerFacet", projectStats.getRepoFacetOwner());
+        map.put("codeByLines", projectStats.getCodeByLines());
 
         double estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
         map.put("estimatedEffort", estimatedEffort);
@@ -256,10 +254,12 @@ public class CodeRouteService {
 
         map.put("ownerFacetJson", gson.toJson(projectStats.getRepoFacetOwner()));
         map.put("languageFacetJson", gson.toJson(projectStats.getCodeFacetLanguages()));
+        repository.ifPresent(x -> map.put("source", x.getSource()));
 
         map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -288,6 +288,7 @@ public class CodeRouteService {
         map.put("previousOffset", indexOffset - 1);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -296,8 +297,7 @@ public class CodeRouteService {
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
 
-        SearchcodeLib scl = Singleton.getSearchcodeLib(data);
-        CodeSearcher cs = new CodeSearcher();
+        SearchcodeLib scl = Singleton.getSearchcodeLib();
         CodeMatcher cm = new CodeMatcher(data);
         Map<String, Object> map = new HashMap<>();
 
@@ -305,7 +305,7 @@ public class CodeRouteService {
 
         if (request.queryParams().contains("q")) {
             String query = request.queryParams("q").trim();
-            String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
+            String altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
             int page = 0;
 
             if (request.queryParams().contains("p")) {
@@ -334,7 +334,7 @@ public class CodeRouteService {
 
                 if (repos.length != 0) {
                     List<String> reposList = Arrays.asList(repos).stream()
-                            .map((s) -> "reponame:" + QueryParser.escape(s))
+                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
@@ -352,7 +352,7 @@ public class CodeRouteService {
 
                 if (langs.length != 0) {
                     List<String> langsList = Arrays.asList(langs).stream()
-                            .map((s) -> "languagename:" + QueryParser.escape(s))
+                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
@@ -370,7 +370,7 @@ public class CodeRouteService {
 
                 if (owners.length != 0) {
                     List<String> ownersList = Arrays.asList(owners).stream()
-                            .map((s) -> "codeowner:" + QueryParser.escape(s))
+                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
@@ -386,22 +386,22 @@ public class CodeRouteService {
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);
 
-            SearchResult searchResult = cs.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
+            SearchResult searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
-            for(CodeFacetRepo f: searchResult.getRepoFacetResults()) {
+            for (CodeFacetRepo f: searchResult.getRepoFacetResults()) {
                 if (Arrays.asList(repos).contains(f.getRepoName())) {
                     f.setSelected(true);
                 }
             }
 
-            for(CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
+            for (CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
                 if (Arrays.asList(langs).contains(f.getLanguageName())) {
                     f.setSelected(true);
                 }
             }
 
-            for(CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
+            for (CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
                 if (Arrays.asList(owners).contains(f.getOwner())) {
                     f.setSelected(true);
                 }
@@ -413,7 +413,7 @@ public class CodeRouteService {
             map.put("langsQueryString", langsQueryString);
             map.put("ownsQueryString", ownsQueryString);
 
-            map.put("altQuery", altquery);
+            map.put("altQuery", altQuery);
 
             map.put("totalPages", searchResult.getPages().size());
 
@@ -421,13 +421,15 @@ public class CodeRouteService {
             map.put("isHtml", true);
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
+            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "searchresults.ftl");
         }
 
         map.put("photoId", CommonRouteService.getPhotoId());
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numDocs", this.indexService.getCodeIndexLinesCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
     }
 
@@ -437,7 +439,6 @@ public class CodeRouteService {
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
 
-        CodeSearcher cs = new CodeSearcher();
         CodeMatcher cm = new CodeMatcher(data);
         Map<String, Object> map = new HashMap<>();
 
@@ -460,7 +461,7 @@ public class CodeRouteService {
 
             String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
 
-            SearchResult searchResult = cs.search(query, page);
+            SearchResult searchResult = this.indexService.search(query, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), altquery, false));
 
 
@@ -477,9 +478,10 @@ public class CodeRouteService {
         }
 
         map.put("photoId", 1);
-        map.put("numDocs", cs.getTotalNumberDocumentsIndexed());
+        map.put("numDocs", this.indexService.getIndexedDocumentCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }

@@ -5,11 +5,13 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.config;
 
+
+import java.text.DecimalFormat;
 
 /**
  * Contains any static values we need locations, names etc....
@@ -35,8 +37,8 @@ public class Values {
     public static final String DEFAULTREPOSITORYLOCATION = "./repo/";
     public static final String CHECKREPOCHANGES = "check_repo_chages";
     public static final String DEFAULTCHECKREPOCHANGES = "600";
-    public static final String CHECKFILEREPOCHANGES = "check_filerepo_chages";
-    public static final String DEFAULTCHECKFILEREPOCHANGES = "3600";
+    public static final String CHECKFILEREPOCHANGES = "check_filerepo_changes";
+    public static final String DEFAULTCHECKFILEREPOCHANGES = "600";
     public static final String SPELLINGCORRECTORSIZE = "spelling_corrector_size";
     public static final String DEFAULTSPELLINGCORRECTORSIZE = "10000";
     public static final String ONLYLOCALHOST = "only_localhost";
@@ -59,14 +61,14 @@ public class Values {
     public static final String DEFAULTMAXDOCUMENTQUEUESIZE ="1000";
     public static final String MAXDOCUMENTQUEUELINESIZE = "max_document_queue_line_size";
     public static final String DEFAULTMAXDOCUMENTQUEUELINESIZE ="100000";
-    public static final String INDEX_QUEUE_BATCH_SIZE = "index_queue_batch_size";
-    public static final String DEFAULT_INDEX_QUEUE_BATCH_SIZE ="1000";
     public static final String MAXFILELINEDEPTH = "max_file_line_depth";
     public static final String DEFAULTMAXFILELINEDEPTH = "10000";
     public static final String OWASPDATABASELOCATION = "owasp_database_location";
     public static final String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
     public static final String CLASSIFIER_DATABASE_LOCATION = "classifier_database_location";
     public static final String DEFAULT_CLASSIFIER_DATABASE_LOCATION = "./include/classifier/database.json";
+    public static final String LICENSE_DATABASE_LOCATION = "license_database_location";
+    public static final String DEFAULT_LICENSE_DATABASE_LOCATION = "./include/license/license.json";
     public static final String HIGHLIGHT_LINE_LIMIT = "highlight_lines_limit";
     public static final String DEFAULT_HIGHLIGHT_LINE_LIMIT = "3000";
     public static final String BINARY_WHITE_LIST = "binary_extension_white_list";
@@ -97,10 +99,16 @@ public class Values {
     public static final String DEFAULT_LOG_PATH = "./logs/";
     public static final String ENCRYPTION_KEY = "encryption_key";
     public static final String DEFAULT_ENCRYPTION_KEY = "39dc5f2168e412be3a9faf9d08482114";
+    public static final String FOLLOW_LINKS = "follow_links";
+    public static final String DEFAULT_FOLLOW_LINKS = "false";
+    public static final String DEEP_GUESS_FILES = "deep_guess_files";
+    public static final String DEFAULT_DEEP_GUESS_FILES = "false";
+    public static final String HOST_NAME = "host_name";
+    public static final String DEFAULT_HOST_NAME = "localhost:8080";
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";
-    public static final String PATH = "path";
+    public static final String PATH = "path"; // The primary key for everything in the index
     public static final String FILELOCATION = "filelocation";
     public static final String FILELOCATIONFILENAME = "filelocationfilename";
     public static final String FILENAME = "filename";
@@ -118,6 +126,15 @@ public class Values {
     public static final String MESSAGE = "message"; // Contains git commit message
     public static final String DELETED = "deleted";
     public static final String CODEID = "codeid";
+    public static final String SCHASH = "schash"; // Not a real simhash but custom one
+    public static final String DISPLAY_LOCATION = "displaylocation";
+
+    // Lucene values for literal search
+    public static final String FILE_NAME_LITERAL = "fn";
+    public static final String REPO_NAME_LITERAL = "rn";
+    public static final String LANGUAGE_NAME_LITERAL = "ln";
+    public static final String OWNER_NAME_LITERAL = "on";
+    public static final String DISPLAY_LOCATION_LITERAL = "fl";
 
     // Random
     public static final String USERSESSIONID = "admin_user";
@@ -125,6 +142,9 @@ public class Values {
 
     // Cache lookup values
     public static final String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
+
+    // Used for things stored in data table
+    public static final String PERSISTENT_DELETE_QUEUE = "persistent-delete-queue";
 
     // Job values used in the quartz jobs
 
@@ -137,6 +157,10 @@ public class Values {
     public static final String OWASPENABLED = "owasp_enabled";
     public static final String LOGO = "logo";
     public static final String BACKOFFVALUE = "backoff_value";
+    public static final String EMBED = "embed";
+    public static final String INDEX_READ = "index_read"; // Used to know which index we are referring to
+    public static final String INDEX_WRITE = "index_write"; // Used to know which index we are referring to
+
 
     public static final String DEFAULTSYNTAXHIGHLIGHTER = "github";
     public static final String DEFAULTAVERAGESALARY = "56000";
@@ -144,10 +168,13 @@ public class Values {
     public static final String DEFAULTMAXLINEDEPTH = "10000";
     public static final String DEFAULTMINIFIEDLENGTH = "255";
     public static final String DEFAULTBACKOFFVALUE = "0";
+    public static final String INDEX_A = "A";
+    public static final String INDEX_B = "B";
 
     // Used for job status
     public static final String REPO_STATUS_INDEXING = "INDEXING";
     public static final String REPO_STATUS_FINISHED = "FINISHED";
 
     public static final String CHARSET_UTF8 = "UTF8";
+    public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
 }

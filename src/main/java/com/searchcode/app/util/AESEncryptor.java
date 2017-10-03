@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.util;
@@ -21,7 +21,7 @@ import java.util.Base64;
 public class AESEncryptor {
     private byte[] key;
 
-    private static final String ALGORITHM = "AES";
+    private final String ALGORITHM = "AES";
 
     public AESEncryptor() {
         String encryptionKey = Properties.getProperties().getProperty(Values.ENCRYPTION_KEY, Values.DEFAULT_ENCRYPTION_KEY);
@@ -49,7 +49,6 @@ public class AESEncryptor {
 
         return cipher.doFinal(plainText);
     }
-
 
     public byte[] decrypt(byte[] cipherText) throws Exception {
         SecretKeySpec secretKey = new SecretKeySpec(this.key, this.ALGORITHM);

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.jobs.repository;
@@ -13,8 +13,8 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -44,14 +44,14 @@ import java.util.*;
 @DisallowConcurrentExecution
 public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
-    private String SVNBINARYPATH;
+    private String SVN_BINARY_PATH;
     private boolean ENABLED = true;
 
     public IndexSvnRepoJob() {
         this.LOWMEMORY = true;
-        this.SVNBINARYPATH = Properties.getProperties().getProperty(Values.SVNBINARYPATH, Values.DEFAULTSVNBINARYPATH);
+        this.SVN_BINARY_PATH = Properties.getProperties().getProperty(Values.SVNBINARYPATH, Values.DEFAULTSVNBINARYPATH);
 
-        File f = new File(this.SVNBINARYPATH);
+        File f = new File(this.SVN_BINARY_PATH);
         if (!f.exists()) {
             this.ENABLED = false;
             Singleton.getLogger().severe("\n///////////////////////////////////////////////////////////////////////////\n// Property svn_binary_path in properties file appears to be incorrect.  //\n// will not be able to index any SVN repository until this is resolved.  //\n///////////////////////////////////////////////////////////////////////////");
@@ -92,36 +92,20 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         return false;
     }
 
-    public void updateIndex(String repoName, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        String repoSvnLocation = repoLocations + repoName;
+    public void updateIndex(RepoResult repoResult, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
+        String repoSvnLocation = repoLocations + repoResult.getName();
         Path docDir = Paths.get(repoSvnLocation);
 
-        // Was the previous index sucessful? if not then index by path
-        boolean indexsucess = checkIndexSucess(repoSvnLocation);
-        deleteIndexSuccess(repoSvnLocation);
+        Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
+        this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, existingRepo);
 
-        if (!repositoryChanged.isClone() && indexsucess == false) {
-            Singleton.getLogger().info("Failed to index " + repoName + " fully, performing a full index.");
-        }
-
-        if (repositoryChanged.isClone() || indexsucess == false) {
-            Singleton.getLogger().info("Doing full index of files for " + repoName);
-            this.indexDocsByPath(docDir, repoName, repoLocations, repoRemoteLocation, existingRepo);
-        }
-        else {
-            Singleton.getLogger().info("Doing delta index of files " + repoName);
-            this.indexDocsByDelta(docDir, repoName, repoLocations, repoRemoteLocation, repositoryChanged);
-        }
-
-        // Write file indicating that the index was sucessful
-        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoName);
-        createIndexSuccess(repoSvnLocation);
+        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoResult.getName());
     }
 
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
         CodeOwner owner = new CodeOwner("Unknown", codeLinesSize, (int)(System.currentTimeMillis() / 1000));
 
-        ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml", fileName);
+        ProcessBuilder processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "info", "--xml", fileName);
         processBuilder.directory(new File(repoLocations + repoName));
 
         Process process = null;
@@ -182,10 +166,10 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         ProcessBuilder processBuilder;
         if (useCredentials) {
-            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "update");
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update");
         }
         else {
-            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "update", "--username", repoUserName, "--password", repoPassword);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update", "--username", repoUserName, "--password", repoPassword);
         }
 
         processBuilder.directory(new File(repoLocations + repoName));
@@ -231,7 +215,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
 
-        ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "diff", "-r", startRevision + ":HEAD", "--summarize", "--xml");
+        ProcessBuilder processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "diff", "-r", startRevision + ":HEAD", "--summarize", "--xml");
 
         processBuilder.directory(new File(repoLocations + repoName));
         Process process = null;
@@ -296,7 +280,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     public String getCurrentRevision(String repoLocations, String repoName) {
         String currentRevision = "";
 
-        ProcessBuilder processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "info", "--xml");
+        ProcessBuilder processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "info", "--xml");
         processBuilder.directory(new File(repoLocations + repoName));
         Process process = null;
         BufferedReader bufferedReader = null;
@@ -353,10 +337,10 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
         // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
         if (useCredentials) {
-            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
         }
         else {
-            processBuilder = new ProcessBuilder(this.SVNBINARYPATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoUserName, "--password", repoPassword, repoRemoteLocation, repoName);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoUserName, "--password", repoPassword, repoRemoteLocation, repoName);
         }
 
         processBuilder.directory(new File(repoLocations));

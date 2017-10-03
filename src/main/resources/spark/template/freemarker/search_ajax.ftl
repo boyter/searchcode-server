@@ -40,13 +40,14 @@
           <#if isCommunity??>
               <#if isCommunity == true><br /><br />You are running <a href="https://searchcode.com/product/download/">searchcode server community edition</a>.</#if>
           </#if>
-          <br><br><small>&copy; searchcode 2016</small>
+          <br><br><small>&copy; searchcode 2017</small>
         </p>
       </div>
 </div>
 <script>
 var preload = ${searchResultJson};
 </script>
+${embed}
 </body>
-<script src="/js/script.min.js"></script>
+<script src="/js/mithril.min.js"></script><script src="/js/underscore-min.js"></script><script src="/js/chart.js"></script><script src="/js/cache.js"></script><script src="/js/script.js"></script>
 </html>

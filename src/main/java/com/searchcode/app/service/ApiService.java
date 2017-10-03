@@ -5,19 +5,21 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.9
+ * Version 1.3.12
  */
 
 package com.searchcode.app.service;
 
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.IApi;
+import com.searchcode.app.dao.Api;
 import com.searchcode.app.model.ApiResult;
+import com.searchcode.app.util.Helpers;
 import org.apache.commons.codec.digest.HmacUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Deals exclusively with API methods such as validation, creation of keys, deletion etc...
@@ -26,14 +28,16 @@ public class ApiService implements IApiService {
 
     public enum HmacType { SHA1, SHA512};
 
-    private IApi api = null;
-
-    public ApiService(IApi api) {
-        this.api = api;
-    }
+    private final Api api;
+    private final Helpers helpers;
 
     public ApiService() {
-        this.api = Singleton.getApi();
+        this(Singleton.getApi(), Singleton.getHelpers());
+    }
+
+    public ApiService(Api api, Helpers helpers) {
+        this.api = api;
+        this.helpers = helpers;
     }
 
 
@@ -46,22 +50,23 @@ public class ApiService implements IApiService {
      *
      */
     public boolean validateRequest(String publicKey, String hmac, String query, HmacType hmacType) {
-        ApiResult apiResult = this.api.getApiByPublicKey(publicKey);
+        Optional<ApiResult> apiResult = this.api.getApiByPublicKey(publicKey);
 
-        if (apiResult == null) {
+        if (this.helpers.isNullEmptyOrWhitespace(hmac)) {
             return false;
         }
 
         String myHmac;
 
-        switch(hmacType) {
+        switch (hmacType) {
             case SHA512:
-                myHmac = HmacUtils.hmacSha512Hex(apiResult.getPrivateKey(), query);
+                myHmac = apiResult.map(x -> HmacUtils.hmacSha512Hex(x.getPrivateKey(), query)).orElse(Values.EMPTYSTRING);
                 break;
             default:
-                myHmac = HmacUtils.hmacSha1Hex(apiResult.getPrivateKey(), query);
+                myHmac = apiResult.map(x -> HmacUtils.hmacSha1Hex(x.getPrivateKey(), query)).orElse(Values.EMPTYSTRING);
                 break;
         }
+
         return myHmac.equals(hmac);
     }
 

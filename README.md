@@ -1,20 +1,20 @@
 # searchcode server
 
-[![Video](https://searchcode.com/static/product/searchcode-server.gif)](https://searchcode.com/static/product/searchcode-server.gif)
+[![Video](https://searchcodeserver.com/images/videos/searchcode_server_search.gif)](https://searchcodeserver.com/images/videos/searchcode_server_search.gif)
 
 What is it?
 -----------
-searchcode server is a powerful code search engine with a sleak web user interface.
+searchcode server is a powerful code search engine with a sleek web user interface.
 
 searchcode server works in tandem with your source control system, indexing thousands of repositories 
 and files allowing you and your developers to quickly find and reuse code across teams.
 
-See https://searchcode.com/product/ for more details
+See https://searchcodeserver.com/ for more details or http://demo.searchcodeserver.com/ for a live demo which is indexing Rails, Django, React, Thumbor and Nodejs.
 
 Support
 -------
 If you are building from source then you get no support and must work within the restrictions specified of the
-fair source licence (see LICENSE.txt for details). To purchase support see https://searchcode.com/product/#downloadlinks
+fair source licence (see LICENSE.txt for details). To purchase support see https://searchcodeserver.com/pricing.html
 
 Submissions/Pull Requests
 -------------------------
@@ -37,9 +37,14 @@ To Build TL/DR;
 
 To Build
 --------
+
 To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
-maven setup. Idealy you want Python and Python Fabric installed as well but it is not a requirement. To run 
-the javascript unit tests through the command line you will need to install NPM and then run
+maven setup. Idealy you want to use a Unix OS with Python and Python Fabric installed.
+
+Note that Fabric tasks (fab) are not currently supported on Windows. You can attempt to use
+them but they will probably need to under Bash for Windows or something similar. 
+
+To run the javascript unit tests through the command line you will need to install NPM and then run
 
 	npm install -g node-qunit-phantomjs 
 
@@ -48,6 +53,7 @@ but you can always run them in your browser if required by opening
 	./src/test/javascript/index.html
 
 To test the application you can either run
+
 	mvn test 
 
 or
@@ -85,7 +91,7 @@ Then add the git ones as GIT repositories in the application and the file ones a
 set the properties
 
 	check_repo_chages=60
-	check_filerepo_chages=60
+	check_filerepo_changes=60
 
 but it is not required. Then run searchcode. The scripts will add/remove/update files every 60 seconds which should force searchcode
 to add/update/remove files from the index in an attempt to hit as many code paths as possible. With this done there should be no more
@@ -139,6 +145,8 @@ Enter the default password Adm1n234 (change this via the properties file)
 to add git repositories. If you need help check the documentation page (link at the bottom
 of every page).
 
+To setup using Ubuntu as an Update or SystemD job see https://searchcodeserver.com/knowledge-base/upstart-and-systemd-startup-scripts-for-ubuntu.html
+
 Upgrades
 --------
 
@@ -154,7 +162,7 @@ To upgrade your current instance of searchcode perform the following steps.
 * You can either
     * Copy the uncompressed files over your current instance overwriting if prompted.
     * Copy the directory dependancy-jars and all contents overwriting your current
-    * Copy the following files searchcode-1.3.9.jar searchcode-server.bar and searchcode-server.sh to your instance directory
+    * Copy the following files searchcode-1.3.12.jar searchcode-server.bar and searchcode-server.sh to your instance directory
 
 * Start your instance again
 * Login to the admin screen and click the "Recrawl & Rebuild Indexes" button
@@ -175,7 +183,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date DATE NOT SPECIFIED this software version '1.3.9' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date NOT SPECIFIED YET the software version '1.3.12' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -185,13 +193,47 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXXX XXXX - 1.3.9
+XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
+
+29 September 2017 - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
+ - Add link to repository source on repository overview page https://github.com/boyter/searchcode-server/issues/126
+ - Removed property index_queue_batch_size as it is no longer required
+ - Change check_filerepo_changes to default size of 600 as check is now far more efficient https://github.com/boyter/searchcode-server/issues/133
+ - Add ability to reindex without downtime https://github.com/boyter/searchcode-server/issues/129
+ - Index now runs in parallel for faster index time https://github.com/boyter/searchcode-server/issues/135
+ - Add simplistic healthcheck endpoint https://github.com/boyter/searchcode-server/issues/138
+ - Add literal lucene search option https://github.com/boyter/searchcode-server/issues/89
+ - Add repository path filters to UI https://github.com/boyter/searchcode-server/issues/136
+ - Can filter down to language or owner from project overview page https://github.com/boyter/searchcode-server/issues/127
+ - Signed API add now supports %20 or + for spaces https://github.com/boyter/searchcode-server/issues/134
+ - Add support for extensions that have a dot in them https://github.com/boyter/searchcode-server/issues/146
+ - Slightly modified admin screen https://github.com/boyter/searchcode-server/issues/153
+ - Add file tree display on code result pages https://github.com/boyter/searchcode-server/issues/154
+ - Fix for thread exhaustion issue https://github.com/boyter/searchcode-server/issues/85
+
+15 June 2017 - 1.3.10
+ - BREAKING CHANGE Changed validation of repository names such that they must be alphanumeric, _ or - with client and server side validation
+ - BREAKING CHANGE Fix spelling of check_filerepo_chages to check_filerepo_changes for properties file
+ - Set follow symlinks to be configurable through properties file https://github.com/boyter/searchcode-server/issues/99
+ - Clicking Remove will also clear the text box filters https://github.com/boyter/searchcode-server/issues/98
+ - Improved stop/reset jobs logic, deleted jobs persist on searchcode restart https://github.com/boyter/searchcode-server/issues/41
+ - Add logic to calculate project stats by lines not files and display next to existing https://github.com/boyter/searchcode-server/issues/103
+ - Deep guess logic added to guess a files type based on keyword heuristic's https://github.com/boyter/searchcode-server/issues/105
+ - Additional languages added to classifier database, F#, Mathematica, Parrot, Puppet, Rakefile, PKGBUILD, Cargo, Lock, License
+ - API auditing via logs added https://github.com/boyter/searchcode-server/issues/57
+ - Search results now have RSS feed https://github.com/boyter/searchcode-server/issues/114
+ - Can add custom HTML/CSS/JS to all pages https://github.com/boyter/searchcode-server/issues/107
+ - Add average index time seconds to repo overview page https://github.com/boyter/searchcode-server/issues/118
+ - Fix bug where unable to filter on html page https://github.com/boyter/searchcode-server/issues/120
+
+13 April 2017 - 1.3.9
  - Repository table can now be created from empty database if required https://github.com/boyter/searchcode-server/issues/83
  - Add indexer pause button back to admin pages https://github.com/boyter/searchcode-server/issues/84
  - Resolve bug where filters could match multiple https://github.com/boyter/searchcode-server/issues/86
  - Batch index size is now configurable through properties file https://github.com/boyter/searchcode-server/issues/85
  - Mitigate issue where matching some files will crash search https://github.com/boyter/searchcode-server/issues/88
  - Update highlight.js https://github.com/boyter/searchcode-server/issues/22
+ - Resolve issue where database had no keywords for language guessing https://github.com/boyter/searchcode-server/issues/87
 
 20 March 2017 - 1.3.8
  - Fix bug where if only_localhost is set to false but log_indexed is set to true the CSV will not be written

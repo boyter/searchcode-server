@@ -1,0 +1,51 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">Upstart and SystemD Startup Scripts for searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">Below are a sample upstart and systemd sample startup scripts supplied by Nathanael Anderson <a href="https://github.com/boyter/searchcode-server/issues/106">https://github.com/boyter/searchcode-server/issues/106</a>. They assume that searchcode has been installed to the /opt/searchcode directory and are using version 1.3.12.</p>
+
+
+<p class="em">Ubuntu 14.04 - Upstart searchcode.conf file</p>
+<pre><code>description "Search Code Server"
+author      "Nathanael Anderson"
+
+start on (local-filesystems and net-device-up IFACE!=lo)
+stop on shutdown
+
+chdir /opt/searchcode
+limit nofile 999999 999999
+respawn
+
+script
+    exec /usr/bin/java -jar searchcode-1.3.12.jar > /var/log/searchcode.log 2>&1
+end script
+</code></pre>
+
+<p class="em">Systemd (Ubuntu 15+) searchcode.service file</p>
+<pre><code>[Unit]
+Description=SearchCode Server
+
+[Service]
+WorkingDirectory=/opt/searchcode
+ExecStart=/usr/bin/java -jar searchcode-1.3.12.jar
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+</code></pre>
+
+        </div>
+      </div>
