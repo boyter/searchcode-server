@@ -58,6 +58,15 @@ def test():
     js_test()
 
 
+def test_docker():
+    local('''docker build -t searchcode-server-test -f ./assets/docker/Dockerfile.test .''')
+    local('''docker run --rm \
+            -v ~/.m2/:/root/.m2/ \
+            -v $(PWD):/opt/app/ \
+            -w /opt/app/ \
+            searchcode-server-test mvn test''')
+
+
 def js_test():
     local('node-qunit-phantomjs ./src/test/javascript/index.html')
 
