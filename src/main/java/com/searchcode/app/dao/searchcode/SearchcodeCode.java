@@ -30,14 +30,16 @@ import java.util.List;
  */
 public class SearchcodeCode {
 
-    private IDatabaseConfig dbConfig;
+    private final Helpers helpers;
+    private final IDatabaseConfig dbConfig;
 
     public SearchcodeCode() {
-        this.dbConfig = new MySQLDatabaseConfig();
+        this(new MySQLDatabaseConfig(), Singleton.getHelpers());
     }
 
-    public SearchcodeCode(IDatabaseConfig dbConfig) {
+    public SearchcodeCode(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
+        this.helpers = new Helpers();
     }
 
     public synchronized int getMaxId() {
@@ -56,13 +58,13 @@ public class SearchcodeCode {
                 maxId = rs.getInt(1);
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(rs);
+            this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(conn);
         }
 
         return maxId;
@@ -120,13 +122,13 @@ public class SearchcodeCode {
                 ));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(rs);
+            this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(conn);
         }
 
         return codeResultList;
@@ -168,13 +170,13 @@ public class SearchcodeCode {
                 ));
             }
         }
-        catch(SQLException ex) {
+        catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Helpers.closeQuietly(rs);
-            Helpers.closeQuietly(stmt);
-            Helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(rs);
+            this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(conn);
         }
 
         return codeResultList;
