@@ -197,7 +197,6 @@ public class SphinxIndexService implements IIndexService {
     @Override
     public SearchResult search(String queryString, int page) {
 
-
         SphinxSearchConfig sphinxSearchConfig = new SphinxSearchConfig();
 
         List<Integer> results = new ArrayList<>();
@@ -209,14 +208,31 @@ public class SphinxIndexService implements IIndexService {
         try {
             connection = sphinxSearchConfig.getConnection();
 
-            stmt = connection.prepareStatement("SELECT * FROM codesearchrt1 WHERE MATCH(?);");
+            stmt = connection.prepareStatement("SELECT * FROM codesearchrt1 WHERE MATCH(?) FACET languageid ORDER BY COUNT(*) DESC;");
             stmt.setString(1, queryString);
-            resultSet = stmt.executeQuery();
 
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                results.add(id);
+            boolean isResultSet = stmt.execute();
+
+            if (isResultSet) {
+                resultSet = stmt.getResultSet();
+
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("id");
+                    System.out.println("id: " + id);
+                }
+
+                isResultSet = stmt.getMoreResults();
             }
+
+            if (isResultSet) {
+                resultSet = stmt.getResultSet();
+
+                while (resultSet.next()) {
+                    int id = resultSet.getInt("languageid");
+                    System.out.println("languageid: " + id);
+                }
+            }
+
 
         } catch (SQLException ex) {
             //return results;
