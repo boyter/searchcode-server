@@ -8,6 +8,7 @@ import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
 import org.apache.lucene.document.Document;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -40,32 +41,37 @@ public class SphinxIndexService implements IIndexService {
 
         try {
             connection = sphinxSearchConfig.getConnection();
-        } catch (SQLException ex) {
-            return;
-        }
-        finally {
-            this.helpers.closeQuietly(connection);
+        } catch (SQLException ignored) { }
+
+
+        CodeIndexDocument codeIndexDocument = documentQueue.poll();
+        List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
+
+        while (codeIndexDocument != null) {
+            codeIndexDocumentList.add(codeIndexDocument);
+            codeIndexDocument = documentQueue.poll();
         }
 
+
         try {
-//            for (SearchcodeCodeResult codeResult: codeResultList) {
-//                try {
-//                    stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
-//
+            for (CodeIndexDocument codeResult: codeIndexDocumentList) {
+                try {
+                    stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
+
 //                    stmt.setInt(1, codeResult.getId());
 //                    stmt.setString(2, CodeIndexer.runCodeIndexPipeline(Singleton.getSearchCodeLib(), codeResult.getContent()));
-//                    stmt.setString(3, codeResult.getFilename());
+                    stmt.setString(3, codeResult.getFileName());
 //                    stmt.setInt(4, codeResult.getRepoid());
 //                    stmt.setInt(5, codeResult.getFiletypeid());
 //                    stmt.setInt(6, codeResult.getLangugeid());
 //                    stmt.setInt(7, codeResult.getSourceid());
 //                    stmt.setInt(8, 0); //CCR
 //                    stmt.setInt(9, codeResult.getLinescount());
-//                    stmt.execute();
-//                } catch (SQLException ex) {
-//                    Singleton.getLogger().warning(ex.toString());
-//                }
-//            }
+                    stmt.execute();
+                } catch (SQLException ex) {
+                    Singleton.getLogger().warning(ex.toString());
+                }
+            }
         }
         finally {
             this.helpers.closeQuietly(stmt);
@@ -84,29 +90,19 @@ public class SphinxIndexService implements IIndexService {
     }
 
     @Override
-    public void deleteAll() throws IOException {
-
-    }
+    public void deleteAll() throws IOException { throw new NotImplementedException(); }
 
     @Override
-    public void reindexAll() {
-
-    }
+    public void reindexAll() { throw new NotImplementedException(); }
 
     @Override
-    public void flipIndex() {
-
-    }
+    public void flipIndex() { throw new NotImplementedException(); }
 
     @Override
-    public void flipReadIndex() {
-
-    }
+    public void flipReadIndex()  { throw new NotImplementedException(); }
 
     @Override
-    public void flipWriteIndex() {
-
-    }
+    public void flipWriteIndex()  { throw new NotImplementedException(); }
 
     @Override
     public boolean getRepoAdderPause() {
