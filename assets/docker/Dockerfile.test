@@ -15,9 +15,13 @@ RUN apt-get update && apt-get install -y \
     npm
 
 RUN pip install fabric
-# RUN npm install -g node-qunit-phantomjs
 
 COPY ./ /opt/app/
 COPY ./searchcode.sqlite.empty /opt/app/searchcode.sqlite
 COPY ./searchcode.properties.example /opt/app/searchcode.properties
+
+RUN rm -rf /opt/app/index
+RUN rm -rf /opt/app/repo
+RUN rm -rf /opt/app/logs
+
 WORKDIR /opt/app/
