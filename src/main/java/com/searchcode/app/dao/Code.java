@@ -1,18 +1,8 @@
-/*
- * Copyright (c) 2016 Boyter Online Services
- *
- * Use of this software is governed by the Fair Source License included
- * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
- * see the README.md for when this clause will take effect
- *
- * Version 1.3.4
- */
-
-package com.searchcode.app.dao.searchcode;
+package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
-import com.searchcode.app.dto.searchcode.SearchcodeSearchResult;
+import com.searchcode.app.model.CodeResult;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -25,19 +15,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Responsible for getting data out of the MySQL searchcode database
- */
-public class SearchcodeCode {
-
+public class Code {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
 
-    public SearchcodeCode() {
+    public Code() {
         this(new MySQLDatabaseConfig(), Singleton.getHelpers());
     }
 
-    public SearchcodeCode(IDatabaseConfig dbConfig, Helpers helpers) {
+    public Code(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
         this.helpers = new Helpers();
     }
@@ -70,8 +56,8 @@ public class SearchcodeCode {
         return maxId;
     }
 
-    public synchronized List<SearchcodeSearchResult> getByIds(List<Integer> codeIds) {
-        List<SearchcodeSearchResult> codeResultList = new ArrayList<>();
+    public synchronized List<CodeResult> getByIds(List<Integer> codeIds) {
+        List<CodeResult> codeResultList = new ArrayList<>();
 
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -102,25 +88,25 @@ public class SearchcodeCode {
 
             rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                codeResultList.add(new SearchcodeSearchResult(
-                        rs.getInt("id"),
-                        rs.getString("filename"),
-                        rs.getString("location"),
-                        rs.getString("content"),
-                        rs.getString("hash"),
-                        rs.getString("reponame"),
-                        rs.getString("simhash"),
-                        rs.getInt("linescount"),
-                        rs.getString("languagetype"),
-                        rs.getString("sourcename"),
-                        rs.getString("sourceurl"),
-                        rs.getString("url"),
-                        rs.getInt("blank"),
-                        rs.getInt("comment"),
-                        rs.getString("username")
-                ));
-            }
+//            while (rs.next()) {
+//                codeResultList.add(new SearchcodeSearchResult(
+//                        rs.getInt("id"),
+//                        rs.getString("filename"),
+//                        rs.getString("location"),
+//                        rs.getString("content"),
+//                        rs.getString("hash"),
+//                        rs.getString("reponame"),
+//                        rs.getString("simhash"),
+//                        rs.getInt("linescount"),
+//                        rs.getString("languagetype"),
+//                        rs.getString("sourcename"),
+//                        rs.getString("sourceurl"),
+//                        rs.getString("url"),
+//                        rs.getInt("blank"),
+//                        rs.getInt("comment"),
+//                        rs.getString("username")
+//                ));
+//            }
         }
         catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
@@ -181,5 +167,4 @@ public class SearchcodeCode {
 
         return codeResultList;
     }
-
 }
