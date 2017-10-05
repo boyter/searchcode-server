@@ -54,9 +54,16 @@ public class SphinxIndexService implements IIndexService {
         }
 
         try {
+
             // TODO should batch these
             for (CodeIndexDocument codeResult: codeIndexDocumentList) {
                 try {
+
+                    // Check if language in database
+                    // Upsert value into database
+                    // Upsert the index
+
+
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
 
                     stmt.setInt(1, 1);
