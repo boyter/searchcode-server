@@ -53,21 +53,26 @@ public class SphinxIndexService implements IIndexService {
             codeIndexDocument = documentQueue.poll();
         }
 
-
         try {
+            // TODO should batch these
             for (CodeIndexDocument codeResult: codeIndexDocumentList) {
                 try {
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
 
-//                    stmt.setInt(1, codeResult.getId());
+                    stmt.setInt(1, 1);
 //                    stmt.setString(2, CodeIndexer.runCodeIndexPipeline(Singleton.getSearchCodeLib(), codeResult.getContent()));
+                    stmt.setString(2, codeResult.getContents());
                     stmt.setString(3, codeResult.getFileName());
 //                    stmt.setInt(4, codeResult.getRepoid());
 //                    stmt.setInt(5, codeResult.getFiletypeid());
 //                    stmt.setInt(6, codeResult.getLangugeid());
 //                    stmt.setInt(7, codeResult.getSourceid());
-//                    stmt.setInt(8, 0); //CCR
-//                    stmt.setInt(9, codeResult.getLinescount());
+                    stmt.setInt(4, 1);
+                    stmt.setInt(5, 1);
+                    stmt.setInt(6, 1);
+                    stmt.setInt(7, 1);
+                    stmt.setInt(8, 0); //CCR
+                    stmt.setInt(9, 1);
                     stmt.execute();
                 } catch (SQLException ex) {
                     Singleton.getLogger().warning(ex.toString());
@@ -197,7 +202,7 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public SearchResult search(String queryString, int page) {
-        Connection connection = null;
+        Connection connection;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
@@ -241,7 +246,6 @@ public class SphinxIndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-//            this.helpers.closeQuietly(connection);
         }
 
         //return results;
