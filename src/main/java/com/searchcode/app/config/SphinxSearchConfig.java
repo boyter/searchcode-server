@@ -10,8 +10,6 @@
 
 package com.searchcode.app.config;
 
-import com.searchcode.app.util.Properties;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -23,7 +21,7 @@ public class SphinxSearchConfig implements IDatabaseConfig {
     @Override
     public synchronized Connection getConnection() throws SQLException {
         try {
-            if (connection == null || connection.isClosed()) {
+            if (connection == null || connection.isClosed() || !connection.isValid(1)) {
                 Class.forName("com.mysql.jdbc.Driver");
                 String connectionString = "jdbc:mysql://127.0.0.1:9306?characterEncoding=utf8&maxAllowedPacket=1024000";
                 connection = DriverManager.getConnection(connectionString, "", "");

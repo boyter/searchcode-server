@@ -22,9 +22,11 @@ import java.util.Queue;
 public class SphinxIndexService implements IIndexService {
 
     private final Helpers helpers;
+    private final SphinxSearchConfig sphinxSearchConfig;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
+        this.sphinxSearchConfig = new SphinxSearchConfig();
     }
 
     @Override
@@ -35,12 +37,11 @@ public class SphinxIndexService implements IIndexService {
     @Override
     public void indexDocument(Queue<CodeIndexDocument> documentQueue) throws IOException {
         // Need to connect to each sphinx config eventually
-        SphinxSearchConfig sphinxSearchConfig = new SphinxSearchConfig();
         Connection connection = null;
         PreparedStatement stmt = null;
 
         try {
-            connection = sphinxSearchConfig.getConnection();
+            connection = this.sphinxSearchConfig.getConnection();
         } catch (SQLException ignored) { }
 
 
@@ -196,19 +197,19 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public SearchResult search(String queryString, int page) {
-
-        SphinxSearchConfig sphinxSearchConfig = new SphinxSearchConfig();
-
-        List<Integer> results = new ArrayList<>();
-
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
         try {
-            connection = sphinxSearchConfig.getConnection();
+            connection = this.sphinxSearchConfig.getConnection();
 
-            stmt = connection.prepareStatement("SELECT * FROM codesearchrt1 WHERE MATCH(?) FACET languageid ORDER BY COUNT(*) DESC;");
+            String searchQuery = "SELECT * FROM codesearchrt1 WHERE MATCH(?) " +
+                                 "FACET languageid ORDER BY COUNT(*) DESC " +
+                                 "FACET sourceid ORDER BY COUNT(*) DESC; " +
+                                 "SHOW META;";
+
+            stmt = connection.prepareStatement(searchQuery);
             stmt.setString(1, queryString);
 
             boolean isResultSet = stmt.execute();
@@ -240,7 +241,7 @@ public class SphinxIndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(connection);
+//            this.helpers.closeQuietly(connection);
         }
 
         //return results;
