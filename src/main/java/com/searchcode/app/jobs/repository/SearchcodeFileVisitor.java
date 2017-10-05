@@ -39,8 +39,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Object file, BasicFileAttributes attrs) throws IOException {
-
-
+        
         try {
             java.nio.file.Path filePath = (java.nio.file.Path)file;
 
