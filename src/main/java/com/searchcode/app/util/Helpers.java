@@ -15,6 +15,7 @@ import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
@@ -25,9 +26,12 @@ import org.eclipse.jgit.lib.Repository;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -58,6 +62,21 @@ public class Helpers {
                 .filter(x -> !Singleton.getDataService().getPersistentDelete().contains(x.getName()))
                 .filter(x -> !Singleton.getRunningIndexRepoJobs().keySet().contains(x.getName()))
                 .collect(Collectors.toList());
+    }
+
+    public void tryDelete(String folder) {
+        try {
+            FileUtils.deleteDirectory(Paths.get(folder).toFile());
+        } catch (IOException ex) {
+            Date date = new Date();
+            DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+            String newLocation = this.properties.getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION) + "/" + dateFormat.format(date);
+            try {
+                FileUtils.moveDirectory(new File(folder), new File(newLocation));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 
     /**
