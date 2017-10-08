@@ -32,7 +32,8 @@ CREATE TABLE `sourcecode` (
   `content` mediumblob NOT NULL,
   `hash` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `simhash` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
-  `linescount` int(10) UNSIGNED NOT NULL
+  `linescount` int(10) UNSIGNED NOT NULL,
+  `data` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

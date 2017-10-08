@@ -25,7 +25,7 @@ public class Code {
 
     public Code(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
-        this.helpers = new Helpers();
+        this.helpers = helpers;
     }
 
     public synchronized int getMaxId() {
