@@ -2,7 +2,9 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.SourceCodeDTO;
 import com.searchcode.app.model.CodeResult;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
@@ -12,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SourceCode {
     private final Helpers helpers;
@@ -166,15 +169,71 @@ public class SourceCode {
         return codeResultList;
     }
 
+    public Optional<SourceCodeDTO> getByCodeIndexDocument(CodeIndexDocument codeIndexDocument) {
+        Optional<SourceCodeDTO> result = Optional.empty();
+
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+
+            String query = "SELECT `id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, UNCOMPRESS(`content`) AS content, `hash`, `simhash`, `linescount`, `data` FROM `sourcecode` WHERE " +
+                    //"repoid=? AND location=? AND filename=?";
+                    "location=? AND filename=? LIMIT 1;";
+
+            stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt.setString(1, codeIndexDocument.getFileLocation());
+            stmt.setString(2, codeIndexDocument.getFileName());
+
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                result = Optional.of(new SourceCodeDTO(
+                        resultSet.getInt("id"),
+                        resultSet.getInt("repoid"),
+                        resultSet.getInt("languageid"),
+                        resultSet.getInt("sourceid"),
+                        resultSet.getInt("ownerid"),
+                        resultSet.getInt("licenseid"),
+                        resultSet.getString("location"),
+                        resultSet.getString("filename"),
+                        resultSet.getString("content"),
+                        resultSet.getString("hash"),
+                        resultSet.getString("simhash"),
+                        resultSet.getInt("linescount"),
+                        resultSet.getString("data")
+                        ));
+            }
+
+        }
+        catch (SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(conn);
+        }
+
+        return result;
+    }
+
     public int saveCode(CodeIndexDocument codeIndexDocument) {
+
+        Optional<SourceCodeDTO> existing = this.getByCodeIndexDocument(codeIndexDocument);
+
         Connection conn = null;
         PreparedStatement stmt = null;
 
         try {
             conn = this.dbConfig.getConnection();
-
             String query = "INSERT INTO `sourcecode` (`id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, `content`, `hash`, `simhash`, `linescount`, `data`) VALUES " +
-                           "(NULL, ?, (SELECT id FROM languagetype WHERE type = ?), ?, ?, ?, ?, ?, COMPRESS(?), ?, ?, ?, ?)";
+                    "(NULL, ?, (SELECT id FROM languagetype WHERE type = ?), ?, ?, ?, ?, ?, COMPRESS(?), ?, ?, ?, ?)";
+
+            if (existing.isPresent()) {
+                return existing.get().getId();
+            }
 
             stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, 31337);
@@ -182,7 +241,7 @@ public class SourceCode {
             stmt.setInt(3, 31337);
             stmt.setInt(4, 31337);
             stmt.setInt(5, 31337);
-            stmt.setString(6, codeIndexDocument.getFileLocation());
+            stmt.setString(6, codeIndexDocument.getDisplayLocation());
             stmt.setString(7, codeIndexDocument.getFileName());
             stmt.setString(8, codeIndexDocument.getContents());
             stmt.setString(9, codeIndexDocument.getHash());

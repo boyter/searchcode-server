@@ -33,7 +33,8 @@ CREATE TABLE `sourcecode` (
   `hash` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `simhash` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
   `linescount` int(10) UNSIGNED NOT NULL,
-  `data` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL
+  `data` text CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `lastupdate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --

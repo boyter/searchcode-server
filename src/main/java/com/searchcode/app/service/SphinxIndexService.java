@@ -71,7 +71,14 @@ public class SphinxIndexService implements IIndexService {
                     System.out.println("INDEX_DOCUMENT:" + id);
 
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
-                    String indexContents = this.searchcodeLib.codeCleanPipeline(codeResult.getContents()).toLowerCase();
+                    String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
+                            this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true) + " " +
+                            codeIndexDocument.getFileLocationFilename() + " " +
+                            codeIndexDocument.getFileLocation() +
+                            this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true) +
+                            this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
+                            this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
+                            this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
 
                     stmt.setInt(1, id);
                     stmt.setString(2, indexContents);
@@ -229,6 +236,8 @@ public class SphinxIndexService implements IIndexService {
                                  "FACET languageid ORDER BY COUNT(*) DESC " +
                                  "FACET sourceid ORDER BY COUNT(*) DESC; " +
                                  "SHOW META;";
+
+            // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
 
             stmt = connection.prepareStatement(searchQuery);
             stmt.setString(1, queryString);
