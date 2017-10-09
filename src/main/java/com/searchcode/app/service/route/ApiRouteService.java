@@ -37,7 +37,7 @@ public class ApiRouteService {
     private final DataService dataService;
     private final Repo repo;
     private final ValidatorService validatorService;
-    private final IndexService indexService;
+    private final IIndexService indexService;
     private final Helpers helpers;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
@@ -47,7 +47,7 @@ public class ApiRouteService {
         this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService(), Singleton.getHelpers());
     }
 
-    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IndexService indexService, Helpers helpers) {
+    public ApiRouteService(IApiService apiService, IJobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IIndexService indexService, Helpers helpers) {
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;

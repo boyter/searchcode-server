@@ -107,6 +107,8 @@ public class Values {
     public static final String DEFAULT_HOST_NAME = "localhost:8080";
     public static final String DELETE_REPO_AFTER_PROCESS = "delete_repo_after_process";
     public static final String DEFAULT_DELETE_REPO_AFTER_PROCESS = "false";
+    public static final String INDEX_SERVICE = "index_service";
+    public static final String DEFAULT_INDEX_SERVICE = "internal";
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";

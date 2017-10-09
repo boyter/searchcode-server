@@ -11,13 +11,13 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class CodeTest extends TestCase {
 
     public void testGetCodeBetween() {
-        Code code = new Code();
+        SourceCode code = new SourceCode();
         List<SearchcodeCodeResult> codeBetween = code.getCodeBetween(0, 200);
         assertThat(codeBetween).hasAtLeastOneElementOfType(SearchcodeCodeResult.class);
     }
 
     public void testGetMaxId() {
-        Code code = new Code();
+        SourceCode code = new SourceCode();
         int maxId = code.getMaxId();
         assertThat(maxId).isEqualTo(200);
     }

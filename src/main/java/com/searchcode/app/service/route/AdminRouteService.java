@@ -41,7 +41,7 @@ public class AdminRouteService {
     private final Data data;
     private final JobService jobService;
     private final DataService dataService;
-    private final IndexService indexService;
+    private final IIndexService indexService;
     private final StatsService statsService;
     private final ValidatorService validatorService;
 
@@ -55,7 +55,7 @@ public class AdminRouteService {
              Singleton.getValidatorService());
     }
 
-    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService) {
+    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IIndexService indexService, StatsService statsService, ValidatorService validatorService) {
         this.repo = repo;
         this.data = data;
         this.jobService = jobService;

@@ -18,6 +18,7 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
+import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.*;
@@ -37,13 +38,13 @@ import static spark.Spark.halt;
 
 public class CodeRouteService {
 
-    private IndexService indexService;
+    private IIndexService indexService;
 
     public CodeRouteService() {
         this(Singleton.getIndexService());
     }
 
-    public CodeRouteService(IndexService indexService) {
+    public CodeRouteService(IIndexService indexService) {
         this.indexService = indexService;
     }
 

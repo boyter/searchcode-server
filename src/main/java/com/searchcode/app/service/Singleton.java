@@ -107,7 +107,7 @@ public final class Singleton {
         return uniqueSvnRepoQueue;
     }
 
-    public static synchronized IndexService getIndexService() {
+    public static synchronized IIndexService getIndexService() {
         if (indexService == null) {
             indexService = new IndexService();
         }

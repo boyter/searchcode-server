@@ -2,6 +2,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
+import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.CodeResult;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
@@ -15,15 +16,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Code {
+public class SourceCode {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
 
-    public Code() {
+    public SourceCode() {
         this(new MySQLDatabaseConfig(), Singleton.getHelpers());
     }
 
-    public Code(IDatabaseConfig dbConfig, Helpers helpers) {
+    public SourceCode(IDatabaseConfig dbConfig, Helpers helpers) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
     }
@@ -166,5 +167,42 @@ public class Code {
         }
 
         return codeResultList;
+    }
+
+    public int saveCode(CodeIndexDocument codeIndexDocument) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        try {
+            conn = this.dbConfig.getConnection();
+
+            String query = "INSERT INTO `sourcecode` (`id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, `content`, `hash`, `simhash`, `linescount`, `data`) VALUES " +
+                           "(NULL, ?, (SELECT id FROM languagetype WHERE type = ?), ?, ?, ?, ?, ?, COMPRESS(?), ?, ?, ?, ?)";
+
+            stmt = conn.prepareStatement(query);
+            stmt.setInt(1, 31337);
+            stmt.setString(2, codeIndexDocument.getLanguageName());
+            stmt.setInt(3, 31337);
+            stmt.setInt(4, 31337);
+            stmt.setInt(5, 31337);
+            stmt.setString(6, codeIndexDocument.getFileLocation());
+            stmt.setString(7, codeIndexDocument.getFileName());
+            stmt.setString(8, codeIndexDocument.getContents());
+            stmt.setString(9, codeIndexDocument.getHash());
+            stmt.setString(10, "simhash");
+            stmt.setInt(11, codeIndexDocument.getCodeLines());
+            stmt.setString(12, "{}");
+
+            stmt.execute();
+        }
+        catch (SQLException ex) {
+            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        }
+        finally {
+            this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(conn);
+        }
+
+        return 0;
     }
 }

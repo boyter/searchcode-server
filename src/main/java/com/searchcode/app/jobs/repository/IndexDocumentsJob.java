@@ -11,6 +11,7 @@
 package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
@@ -28,7 +29,7 @@ import java.util.Queue;
 @DisallowConcurrentExecution
 public class IndexDocumentsJob implements Job {
 
-    private final IndexService indexService;
+    private final IIndexService indexService;
     private final LoggerWrapper logger;
     private final StatsService statsService;
     private final Queue<CodeIndexDocument> indexQueue;
@@ -37,7 +38,7 @@ public class IndexDocumentsJob implements Job {
         this(Singleton.getIndexService(), Singleton.getStatsService(), Singleton.getCodeIndexQueue(), Singleton.getLogger());
     }
 
-    public IndexDocumentsJob(IndexService indexService, StatsService statsService, Queue<CodeIndexDocument> indexQueue, LoggerWrapper logger) {
+    public IndexDocumentsJob(IIndexService indexService, StatsService statsService, Queue<CodeIndexDocument> indexQueue, LoggerWrapper logger) {
         this.indexService = indexService;
         this.statsService = statsService;
         this.indexQueue = indexQueue;
@@ -63,8 +64,7 @@ public class IndexDocumentsJob implements Job {
                 Thread.sleep(100);
             }
         } catch (Exception ex) {
-            // Continue at all costs
-            this.logger.warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
         }
     }
 }

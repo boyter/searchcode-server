@@ -34,14 +34,14 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class IndexFileRepoJob extends IndexBaseRepoJob {
 
-    private final IndexService indexService;
+    private final IIndexService indexService;
     public String repoName;
 
     public IndexFileRepoJob() {
         this(Singleton.getIndexService());
     }
 
-    public IndexFileRepoJob(IndexService indexService) {
+    public IndexFileRepoJob(IIndexService indexService) {
         this.indexService = indexService;
     }
 

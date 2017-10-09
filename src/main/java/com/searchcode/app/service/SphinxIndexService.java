@@ -1,6 +1,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.SphinxSearchConfig;
+import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
@@ -23,15 +24,16 @@ public class SphinxIndexService implements IIndexService {
 
     private final Helpers helpers;
     private final SphinxSearchConfig sphinxSearchConfig;
+    private final SourceCode sourceCode;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
+        this.sourceCode = new SourceCode();
     }
 
     @Override
     public void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
-
     }
 
     @Override
@@ -62,6 +64,8 @@ public class SphinxIndexService implements IIndexService {
                     // Check if language in database
                     // Upsert value into database
                     // Upsert the index
+
+                    sourceCode.saveCode(codeResult);
 
 
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");

@@ -52,7 +52,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean FOLLOWLINKS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
     public boolean DELETEREPO = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.DELETE_REPO_AFTER_PROCESS, Values.DEFAULT_DELETE_REPO_AFTER_PROCESS));
     public boolean haveRepoResult = false;
-    public IndexService indexService = Singleton.getIndexService();
+    public IIndexService indexService = Singleton.getIndexService();
 
     /**
      * This method to be implemented by the extending class
