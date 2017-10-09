@@ -36,6 +36,7 @@ public interface IIndexService {
     void toggleRepoAdderPause();
     boolean getReindexingAll();
     void resetReindexingAll();
+    String getProperty(String propertyValue);
 
     boolean shouldPause(JobType jobType);
     boolean shouldExit(JobType jobType);

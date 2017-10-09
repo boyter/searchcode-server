@@ -1,6 +1,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.SphinxSearchConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.CodeResult;
@@ -8,14 +9,12 @@ import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.SearchcodeLib;
 import org.apache.lucene.document.Document;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
@@ -25,11 +24,13 @@ public class SphinxIndexService implements IIndexService {
     private final Helpers helpers;
     private final SphinxSearchConfig sphinxSearchConfig;
     private final SourceCode sourceCode;
+    private final SearchcodeLib searchcodeLib;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
         this.sourceCode = new SourceCode();
+        this.searchcodeLib = Singleton.getSearchCodeLib();
     }
 
     @Override
@@ -44,7 +45,9 @@ public class SphinxIndexService implements IIndexService {
 
         try {
             connection = this.sphinxSearchConfig.getConnection();
-        } catch (SQLException ignored) { }
+        } catch (SQLException ignored) {
+            System.out.println(ignored);
+        }
 
 
         CodeIndexDocument codeIndexDocument = documentQueue.poll();
@@ -60,31 +63,28 @@ public class SphinxIndexService implements IIndexService {
             // TODO should batch these
             for (CodeIndexDocument codeResult: codeIndexDocumentList) {
                 try {
-
                     // Check if language in database
                     // Upsert value into database
                     // Upsert the index
 
-                    sourceCode.saveCode(codeResult);
-
+                    int id = sourceCode.saveCode(codeResult);
+                    System.out.println("INDEX_DOCUMENT:" + id);
 
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
+                    String indexContents = this.searchcodeLib.codeCleanPipeline(codeResult.getContents()).toLowerCase();
 
-                    stmt.setInt(1, 1);
-//                    stmt.setString(2, CodeIndexer.runCodeIndexPipeline(Singleton.getSearchCodeLib(), codeResult.getContent()));
-                    stmt.setString(2, codeResult.getContents());
+                    stmt.setInt(1, id);
+                    stmt.setString(2, indexContents);
                     stmt.setString(3, codeResult.getFileName());
-//                    stmt.setInt(4, codeResult.getRepoid());
-//                    stmt.setInt(5, codeResult.getFiletypeid());
-//                    stmt.setInt(6, codeResult.getLangugeid());
-//                    stmt.setInt(7, codeResult.getSourceid());
-                    stmt.setInt(4, 1);
-                    stmt.setInt(5, 1);
-                    stmt.setInt(6, 1);
-                    stmt.setInt(7, 1);
-                    stmt.setInt(8, 0); //CCR
-                    stmt.setInt(9, 1);
-                    stmt.execute();
+                    stmt.setInt(4, 99); // repoid
+                    stmt.setInt(5, 77); // languageid
+                    stmt.setInt(6, 2); // sourceid
+                    stmt.setInt(7, 1337); // ownerid
+                    stmt.setInt(8, 1); // licenseid
+                    stmt.setInt(9, codeResult.getCodeLines()); // licenseid
+
+                    ResultSet resultSet = stmt.executeQuery();
+                    System.out.println(resultSet);
                 } catch (SQLException ex) {
                     Singleton.getLogger().warning(ex.toString());
                 }
@@ -144,6 +144,11 @@ public class SphinxIndexService implements IIndexService {
     @Override
     public void resetReindexingAll() {
 
+    }
+
+    @Override
+    public String getProperty(String propertyValue) {
+        return Values.EMPTYSTRING;
     }
 
     @Override

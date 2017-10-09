@@ -271,7 +271,6 @@ public class IndexService implements IIndexService {
 
         // This is the main pipeline for making code searchable and probably the most important
         // part of the indexer codebase
-        Timer timer = Singleton.getNewTimer();
         String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
                 this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true) + " " +
                 codeIndexDocument.getFileLocationFilename() + " " +
@@ -402,16 +401,19 @@ public class IndexService implements IIndexService {
         }
     }
 
-    public Path getINDEX_READ_LOCATION() {
-        return INDEX_READ_LOCATION;
-    }
+    @Override
+    public String getProperty(String propertyValue) {
 
-    public Path getINDEX_WRITE_LOCATION() {
-        return INDEX_WRITE_LOCATION;
-    }
+        switch (propertyValue.toLowerCase()) {
+            case "index_read_location":
+                return this.INDEX_READ_LOCATION.toString();
+            case "index_write_location":
+                return this.INDEX_WRITE_LOCATION.toString();
+            case "facet_write_location":
+                return this.FACET_WRITE_LOCATION.toString();
+        }
 
-    public Path getFACET_WRITE_LOCATION() {
-        return FACET_WRITE_LOCATION;
+        return Values.EMPTYSTRING;
     }
 
     /**

@@ -12,6 +12,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.SQLiteDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
@@ -56,7 +57,7 @@ public final class Singleton {
     private static IDatabaseConfig databaseConfig = null;
     private static Helpers helpers = null;
     private static ValidatorService validatorService = null;
-    private static IndexService indexService = null;
+    private static IIndexService indexService = null;
 
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
@@ -109,7 +110,17 @@ public final class Singleton {
 
     public static synchronized IIndexService getIndexService() {
         if (indexService == null) {
-            indexService = new IndexService();
+            String index = Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE);
+
+            switch (index) {
+                case "sphinx":
+                    indexService = new SphinxIndexService();
+                    break;
+                case "internal":
+                default:
+                    indexService = new IndexService();
+                    break;
+            }
         }
 
         return indexService;

@@ -515,11 +515,11 @@ public class AdminRouteService {
             case "adderpaused":
                 return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? "paused": "running";
             case "indexreadlocation":
-                return this.indexService.getINDEX_READ_LOCATION().toString();
+                return this.indexService.getProperty("index_read_location");
             case "indexwritelocation":
-                return this.indexService.getINDEX_WRITE_LOCATION().toString();
+                return this.indexService.getProperty("index_write_location");
             case "facetwritelocation":
-                return this.indexService.getFACET_WRITE_LOCATION().toString();
+                return this.indexService.getProperty("facet_write_location  ");
             case "codeindexlinescount":
                 return Values.EMPTYSTRING + this.indexService.getCodeIndexLinesCount();
             case "codeindexqueuesize":
