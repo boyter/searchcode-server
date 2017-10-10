@@ -153,7 +153,7 @@ public class IndexServiceTest extends TestCase {
 
         // Verifies that we ran through the pipeline
         fields = indexFields.getFields(Values.CONTENTS);
-        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename  file name file filename filelocationfilename filelocation contents contents contents contents contents contents");
+        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename emanelif  file name file filename filelocationfilename filelocation   contents contents contents contents contents contents  ");
     }
 
     public void testSearch() throws IOException {
@@ -444,6 +444,58 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.getReindexingAll()).isFalse();
         assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
     }
+
+    ///////////////////////////////////////////////////
+    // Regression and search odd cases
+    ///////////////////////////////////////////////////
+
+    public void testIndexEndToEndDots() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
+                this.repoName,
+                "fileName",
+                "fileLocation",
+                "fileLocationFilename",
+                "md5hash",
+                this.languageName,
+                100,
+                "actual.contains",
+                "repoRemoteLocation",
+                this.codeOwner,
+                "mydisplaylocation"));
+        this.indexService.indexDocument(queue);
+
+        SearchResult search = this.indexService.search("actual.contains", 0);
+        assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
+    }
+
+    public void testIndexReversedFilename() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
+                this.repoName,
+                "fileName",
+                "fileLocation",
+                "fileLocationFilename",
+                "md5hash",
+                this.languageName,
+                100,
+                "actual.contains",
+                "repoRemoteLocation",
+                this.codeOwner,
+                "mydisplaylocation"));
+        this.indexService.indexDocument(queue);
+
+        SearchResult search = this.indexService.search("emaN*", 0);
+        assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
+    }
+
+    ///////////////////////////////////////////////////
+    // Concurrency checks below
+    ///////////////////////////////////////////////////
 
     public void testIndexerLock() throws InterruptedException {
         // You can only prove the presence of concurrent bugs, not their absence.

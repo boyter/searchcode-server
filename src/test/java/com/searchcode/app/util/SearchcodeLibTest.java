@@ -40,6 +40,13 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual.contains(" 'shop_order_log' ")).isTrue();
     }
 
+    public void testCleanPipelineDots() {
+        SearchcodeLib sl = new SearchcodeLib();
+        String actual = sl.codeCleanPipeline("actual.contains");
+
+        assertThat(actual).contains(" actual.contains ");
+    }
+
     public void testCleanPipelineCustom() {
         SearchcodeLib sl = new SearchcodeLib();
         String actual = sl.codeCleanPipeline("context.config.URL_REWRITE.iteritems():");
