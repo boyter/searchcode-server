@@ -21,7 +21,7 @@ public class SphinxIndexServiceTest extends TestCase {
 
         someList.parallelStream()
                 .forEach(x -> {
-                    sphinxIndexService.search("test", 0);
+                    sphinxIndexService.search("java", 0);
                 });
     }
 
@@ -38,11 +38,11 @@ public class SphinxIndexServiceTest extends TestCase {
             "owner",
             "mydisplaylocation");
 
-    public void testIndexDocumentEndToEnd() throws IOException {
-        SphinxIndexService sphinxIndexService = new SphinxIndexService();
-
-        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-        queue.add(this.codeIndexDocument);
-        sphinxIndexService.indexDocument(queue);
-    }
+//    public void testIndexDocumentEndToEnd() throws IOException {
+//        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+//
+//        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+//        queue.add(this.codeIndexDocument);
+//        sphinxIndexService.indexDocument(queue);
+//    }
 }
