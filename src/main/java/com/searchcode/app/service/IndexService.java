@@ -272,12 +272,13 @@ public class IndexService implements IIndexService {
         // This is the main pipeline for making code searchable and probably the most important
         // part of the indexer codebase
         String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
+                new StringBuilder(codeIndexDocument.getFileName()).reverse().toString() + " " +
                 this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true) + " " +
                 codeIndexDocument.getFileLocationFilename() + " " +
-                codeIndexDocument.getFileLocation() +
-                this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true) +
-                this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
-                this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
+                codeIndexDocument.getFileLocation() + " " +
+                this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true) + " " +
+                this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) + " " +
+                this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) + " " +
                 this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
