@@ -21,7 +21,7 @@ public class SphinxIndexServiceTest extends TestCase {
 
         someList.parallelStream()
                 .forEach(x -> {
-                    sphinxIndexService.search("java", 0);
+                    sphinxIndexService.search("test", 0);
                 });
     }
 

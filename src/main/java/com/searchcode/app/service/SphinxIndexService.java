@@ -3,10 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.SourceCode;
-import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.dto.CodeResult;
-import com.searchcode.app.dto.ProjectStats;
-import com.searchcode.app.dto.SearchResult;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.SearchcodeLib;
@@ -17,6 +14,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Queue;
 
 public class SphinxIndexService implements IIndexService {
@@ -67,28 +65,27 @@ public class SphinxIndexService implements IIndexService {
                     // Upsert value into database
                     // Upsert the index
 
-                    int id = sourceCode.saveCode(codeResult);
-                    System.out.println("INDEX_DOCUMENT:" + id);
+                    SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
+                    System.out.println("INDEX_DOCUMENT:" + sourceCodeDTO.getId());
 
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
-                    String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
-                            this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true) + " " +
-                            codeIndexDocument.getFileLocationFilename() + " " +
-                            codeIndexDocument.getFileLocation() +
-                            this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true) +
-                            this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) +
-                            this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) +
-                            this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
+                    String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
+                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + " " +
+                            sourceCodeDTO.getLocation() + " " +
+                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getContent(), true) + " " +
+                            this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getContent()) + " " +
+                            this.searchcodeLib.findInterestingKeywords(sourceCodeDTO.getContent()) + " " +
+                            this.searchcodeLib.findInterestingCharacters(sourceCodeDTO.getContent()).toLowerCase();
 
-                    stmt.setInt(1, id);
+                    stmt.setInt(1, sourceCodeDTO.getId());
                     stmt.setString(2, indexContents);
-                    stmt.setString(3, codeResult.getFileName());
-                    stmt.setInt(4, 99); // repoid
-                    stmt.setInt(5, 77); // languageid
-                    stmt.setInt(6, 2); // sourceid
-                    stmt.setInt(7, 1337); // ownerid
-                    stmt.setInt(8, 1); // licenseid
-                    stmt.setInt(9, codeResult.getCodeLines()); // licenseid
+                    stmt.setString(3, sourceCodeDTO.getFilename());
+                    stmt.setInt(4, sourceCodeDTO.getRepoid()); // repoid
+                    stmt.setInt(5, sourceCodeDTO.getLanguageid()); // languageid
+                    stmt.setInt(6, sourceCodeDTO.getSourceid()); // sourceid
+                    stmt.setInt(7, sourceCodeDTO.getOwnerid()); // ownerid
+                    stmt.setInt(8, sourceCodeDTO.getLicenseid()); // licenseid
+                    stmt.setInt(9, sourceCodeDTO.getLinescount()); // linescount
 
                     ResultSet resultSet = stmt.executeQuery();
                     System.out.println(resultSet);
@@ -232,9 +229,12 @@ public class SphinxIndexService implements IIndexService {
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
-            String searchQuery = "SELECT * FROM codesearchrt1 WHERE MATCH(?) " +
+            String searchQuery = "SELECT * FROM codesearchrealtime WHERE MATCH(?) " +
+                                 "FACET repoid ORDER BY COUNT(*) DESC " +
                                  "FACET languageid ORDER BY COUNT(*) DESC " +
-                                 "FACET sourceid ORDER BY COUNT(*) DESC; " +
+                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
+                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
+                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
                                  "SHOW META;";
 
             // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
@@ -259,8 +259,8 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    int id = resultSet.getInt("languageid");
-                    System.out.println("languageid: " + id);
+                    int id = resultSet.getInt("repoid");
+                    System.out.println("repoid: " + id);
                 }
             }
 
