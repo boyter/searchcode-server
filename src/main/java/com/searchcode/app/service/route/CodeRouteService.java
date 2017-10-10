@@ -386,7 +386,7 @@ public class CodeRouteService {
             // split the query escape it and and it together
             String cleanQueryString = scl.formatQueryString(query);
 
-            SearchResult searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, page);
+            SearchResult searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
 
             for (CodeFacetRepo f: searchResult.getRepoFacetResults()) {
@@ -461,7 +461,7 @@ public class CodeRouteService {
 
             String altquery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
 
-            SearchResult searchResult = this.indexService.search(query, page);
+            SearchResult searchResult = this.indexService.search(query, null, page);
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), altquery, false));
 
 

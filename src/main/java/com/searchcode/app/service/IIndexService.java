@@ -8,6 +8,7 @@ import com.searchcode.app.model.RepoResult;
 import org.apache.lucene.document.Document;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Queue;
 
@@ -53,5 +54,5 @@ public interface IIndexService {
     SearchResult getProjectFileTree(String repoName);
     List<String> getRepoDocuments(String repoName, int page);
     CodeResult getCodeResultByCodeId(String codeId);
-    SearchResult search(String queryString, int page);
+    SearchResult search(String queryString, HashMap<String, String[]> facets, int page);
 }

@@ -737,7 +737,7 @@ public class IndexService implements IIndexService {
      * TODO document the extended syntax to allow raw queries
      */
     @Override
-    public SearchResult search(String queryString, int page) {
+    public SearchResult search(String queryString, HashMap<String, String[]> facets, int page) {
         SearchResult searchResult = new SearchResult();
         this.statsService.incrementSearchCount();
         IndexReader reader = null;
