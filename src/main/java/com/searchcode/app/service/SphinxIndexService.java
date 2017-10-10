@@ -65,10 +65,13 @@ public class SphinxIndexService implements IIndexService {
                     // Upsert value into database
                     // Upsert the index
 
+                    // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
+
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
                     System.out.println("INDEX_DOCUMENT:" + sourceCodeDTO.getId());
 
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
+
                     String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
                             this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + " " +
                             sourceCodeDTO.getLocation() + " " +
