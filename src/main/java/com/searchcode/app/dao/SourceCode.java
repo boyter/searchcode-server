@@ -241,7 +241,7 @@ public class SourceCode {
             stmt.setInt(3, 31337);
             stmt.setInt(4, 31337);
             stmt.setInt(5, 31337);
-            stmt.setString(6, codeIndexDocument.getDisplayLocation());
+            stmt.setString(6, this.getLocation(codeIndexDocument));
             stmt.setString(7, codeIndexDocument.getFileName());
             stmt.setString(8, codeIndexDocument.getContents());
             stmt.setString(9, codeIndexDocument.getHash());
@@ -264,5 +264,13 @@ public class SourceCode {
         }
 
         return 0;
+    }
+
+    public String getLocation(CodeIndexDocument codeIndexDocument) {
+        if (codeIndexDocument == null || codeIndexDocument.getDisplayLocation() == null || codeIndexDocument.getFileName() == null) {
+            return Values.EMPTYSTRING;
+        }
+
+        return codeIndexDocument.getDisplayLocation().substring(0, codeIndexDocument.getDisplayLocation().length() - codeIndexDocument.getFileName().length());
     }
 }
