@@ -12,10 +12,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 
 public class SphinxIndexService implements IIndexService {
 
@@ -224,7 +221,7 @@ public class SphinxIndexService implements IIndexService {
     }
 
     @Override
-    public SearchResult search(String queryString, int page) {
+    public SearchResult search(String queryString, HashMap<String, String[]> facets, int page) {
         Connection connection;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
