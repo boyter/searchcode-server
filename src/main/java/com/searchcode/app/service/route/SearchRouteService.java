@@ -59,48 +59,22 @@ public class SearchRouteService {
             String[] repos;
             String[] langs;
             String[] owners;
-            String reposFilter = Values.EMPTYSTRING;
-            String langsFilter = Values.EMPTYSTRING;
-            String ownersFilter = Values.EMPTYSTRING;
+
             String filelocationFilter = Values.EMPTYSTRING;
 
             if (request.queryParams().contains("repo")) {
                 repos = request.queryParamsValues("repo");
-
-                if (repos.length != 0) {
-                    facets.put("repo", repos);
-                    List<String> reposList = Arrays.asList(repos).stream()
-                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
-                            .collect(Collectors.toList());
-
-                    reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
-                }
+                facets.put("repo", repos);
             }
 
             if (request.queryParams().contains("lan")) {
                 langs = request.queryParamsValues("lan");
-
-                if (langs.length != 0) {
-                    facets.put("lan", langs);
-                    List<String> langsList = Arrays.asList(langs).stream()
-                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
-                            .collect(Collectors.toList());
-
-                    langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
-                }
+                facets.put("lan", langs);
             }
 
             if (request.queryParams().contains("own")) {
                 owners = request.queryParamsValues("own");
-
-                if (owners.length != 0) {
-                    facets.put("own", owners);
-                    List<String> ownersList = Arrays.asList(owners).stream()
-                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
-                            .collect(Collectors.toList());
-
-                    ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
-                }
+                facets.put("own", owners);
             }
 
             // TODO determine if possible to move this into search
@@ -116,10 +90,10 @@ public class SearchRouteService {
             }
 
             if (isLiteral) {
-                searchResult = Singleton.getIndexService().search(query + reposFilter + langsFilter + ownersFilter + filelocationFilter, facets, page);
+                searchResult = Singleton.getIndexService().search(query + filelocationFilter, facets, page);
             }
             else {
-                searchResult = Singleton.getIndexService().search(cleanQueryString + reposFilter + langsFilter + ownersFilter + filelocationFilter, facets, page);
+                searchResult = Singleton.getIndexService().search(cleanQueryString + filelocationFilter, facets, page);
             }
 
             searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));

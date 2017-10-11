@@ -19,8 +19,8 @@ import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.Timer;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.facet.*;
 import org.apache.lucene.facet.sortedset.DefaultSortedSetDocValuesReaderState;
@@ -44,8 +44,6 @@ import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
@@ -742,6 +740,8 @@ public class IndexService implements IIndexService {
         this.statsService.incrementSearchCount();
         IndexReader reader = null;
 
+        queryString += this.buildFacets(facets);
+
         try {
             reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
@@ -768,24 +768,48 @@ public class IndexService implements IIndexService {
         return searchResult;
     }
 
-    /**
-     * Checks to see how much CPU we are using and if its higher then the limit set
-     * inside the settings page mute the index for a while
-     */
-    private boolean shouldBackOff() {
-        Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
-        Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
-
-        if (loadValue <= 0) {
-            return false;
+    public String buildFacets(HashMap<String, String[]> facets) {
+        if (facets == null) {
+            return Values.EMPTYSTRING;
         }
 
-        if (loadAverage >= loadValue) {
-            this.logger.info("Load Average higher than set value. Pausing indexing.");
-            return true;
+        StringBuilder filters = new StringBuilder(Values.EMPTYSTRING);
+
+        for (String key: facets.keySet()) {
+            switch (key) {
+                case "repo":
+                    List<String> reposList = Arrays.stream(facets.get(key))
+                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .collect(Collectors.toList());
+
+                    if (!reposList.isEmpty()) {
+                        filters.append(" && (").append(StringUtils.join(reposList, " || ")).append(")");
+                    }
+                    break;
+                case "lan":
+                    List<String> langsList = Arrays.stream(facets.get(key))
+                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .collect(Collectors.toList());
+
+                    if (!langsList.isEmpty()) {
+                        filters.append(" && (").append(StringUtils.join(langsList, " || ")).append(")");
+                    }
+                    break;
+                case "own":
+                    List<String> ownersList = Arrays.stream(facets.get(key))
+                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .collect(Collectors.toList());
+
+                    if (!ownersList.isEmpty()) {
+                        filters.append(" && (").append(StringUtils.join(ownersList, " || ")).append(")");
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
 
-        return false;
+        return filters.toString();
     }
 
     @Override
@@ -809,6 +833,26 @@ public class IndexService implements IIndexService {
         } else {
             this.data.saveData(Values.INDEX_WRITE, Values.INDEX_B);
         }
+    }
+
+    /**
+     * Checks to see how much CPU we are using and if its higher then the limit set
+     * inside the settings page mute the index for a while
+     */
+    private boolean shouldBackOff() {
+        Double loadValue = this.helpers.tryParseDouble(this.data.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE), Values.DEFAULTBACKOFFVALUE);
+        Double loadAverage = this.helpers.tryParseDouble(this.statsService.getLoadAverage(), "0");
+
+        if (loadValue <= 0) {
+            return false;
+        }
+
+        if (loadAverage >= loadValue) {
+            this.logger.info("Load Average higher than set value. Pausing indexing.");
+            return true;
+        }
+
+        return false;
     }
 
     /**

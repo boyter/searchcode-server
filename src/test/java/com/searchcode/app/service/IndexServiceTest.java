@@ -445,6 +445,43 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
     }
 
+    public void testBuildFacets() {
+        this.indexService = new IndexService();
+        assertThat(this.indexService.buildFacets(null)).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("nomatch", new String[0]);
+        }})).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[0]);
+        }})).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("repo", new String[0]);
+        }})).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("own", new String[0]);
+        }})).isEmpty();
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[]{"java"});
+        }})).isEqualTo(" && (ln:java)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[]{"java", "python"});
+        }})).isEqualTo(" && (ln:java || ln:python)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[]{"java", "python", "c++"});
+        }})).isEqualTo(" && (ln:java || ln:python || ln:c__)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("repo", new String[]{"java", "python", "c++"});
+        }})).isEqualTo(" && (rn:java || rn:python || rn:c__)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("own", new String[]{"java", "python", "c++"});
+        }})).isEqualTo(" && (on:java || on:python || on:c__)");
+    }
+
     ///////////////////////////////////////////////////
     // Regression and search odd cases
     ///////////////////////////////////////////////////
