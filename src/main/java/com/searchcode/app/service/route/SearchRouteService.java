@@ -36,79 +36,62 @@ public class SearchRouteService {
     }
 
     private SearchResult getSearchResult(Request request, boolean isLiteral) {
+        if (!request.queryParams().contains("q") || request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
+            return null;
+        }
+
+        String query = request.queryParams("q").trim();
         CodeMatcher cm = new CodeMatcher();
         SearchcodeLib scl = Singleton.getSearchcodeLib();
 
-        if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
-            String query = request.queryParams("q").trim();
+        int page = 0;
 
-            int page = 0;
-
-            if (request.queryParams().contains("p")) {
-                try {
-                    page = Integer.parseInt(request.queryParams("p"));
-                    page = page > 19 ? 19 : page;
-                }
-                catch (NumberFormatException ex) {
-                    page = 0;
-                }
+        if (request.queryParams().contains("p")) {
+            try {
+                page = Integer.parseInt(request.queryParams("p"));
+                page = page > 19 ? 19 : page;
             }
-
-            HashMap<String, String[]> facets = new HashMap<>();
-
-            String[] repos;
-            String[] langs;
-            String[] owners;
-
-            String filelocationFilter = Values.EMPTYSTRING;
-
-            if (request.queryParams().contains("repo")) {
-                repos = request.queryParamsValues("repo");
-                facets.put("repo", repos);
+            catch (NumberFormatException ex) {
+                page = 0;
             }
-
-            if (request.queryParams().contains("lan")) {
-                langs = request.queryParamsValues("lan");
-                facets.put("lan", langs);
-            }
-
-            if (request.queryParams().contains("own")) {
-                owners = request.queryParamsValues("own");
-                facets.put("own", owners);
-            }
-
-            // TODO determine if possible to move this into search
-            if (request.queryParams().contains("fl")) {
-                filelocationFilter = " && (fl:" + Singleton.getHelpers().replaceNonAlphanumeric(request.queryParams("fl"), "_") + "*)";
-            }
-
-            String cleanQueryString = scl.formatQueryString(query);
-            SearchResult searchResult;
-
-            if (query.trim().startsWith("/") && query.trim().endsWith("/")) {
-                isLiteral = true;
-            }
-
-            if (isLiteral) {
-                searchResult = Singleton.getIndexService().search(query + filelocationFilter, facets, page);
-            }
-            else {
-                searchResult = Singleton.getIndexService().search(cleanQueryString + filelocationFilter, facets, page);
-            }
-
-            searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
-            searchResult.setQuery(query);
-
-            for (String altQuery: scl.generateAltQueries(query)) {
-                searchResult.addAltQuery(altQuery);
-            }
-
-            // Null out code as it isnt required and there is no point in bloating our ajax requests
-            searchResult.getCodeResultList().forEach(x -> x.setCode(null));
-
-            return searchResult;
         }
 
-        return null;
+        HashMap<String, String[]> facets = new HashMap<>();
+
+        if (request.queryParams().contains("repo")) { facets.put("repo", request.queryParamsValues("repo")); }
+        if (request.queryParams().contains("lan")) { facets.put("lan", request.queryParamsValues("lan")); }
+        if (request.queryParams().contains("own")) { facets.put("own", request.queryParamsValues("own")); }
+
+        String filelocationFilter = Values.EMPTYSTRING;
+        // TODO determine if possible to move this into search
+        if (request.queryParams().contains("fl")) {
+            filelocationFilter = " && (fl:" + Singleton.getHelpers().replaceNonAlphanumeric(request.queryParams("fl"), "_") + "*)";
+        }
+
+        String cleanQueryString = scl.formatQueryString(query);
+
+
+        if (query.trim().startsWith("/") && query.trim().endsWith("/")) { isLiteral = true; }
+
+        SearchResult searchResult;
+
+        if (isLiteral) {
+            searchResult = Singleton.getIndexService().search(query + filelocationFilter, facets, page);
+        }
+        else {
+            searchResult = Singleton.getIndexService().search(cleanQueryString + filelocationFilter, facets, page);
+        }
+
+        searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
+        searchResult.setQuery(query);
+
+        for (String altQuery: scl.generateAltQueries(query)) {
+            searchResult.addAltQuery(altQuery);
+        }
+
+        // Null out code as it isnt required and there is no point in bloating our ajax requests
+        searchResult.getCodeResultList().forEach(x -> x.setCode(null));
+
+        return searchResult;
     }
 }
