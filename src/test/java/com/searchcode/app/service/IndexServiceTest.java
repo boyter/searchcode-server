@@ -163,7 +163,7 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search(this.contents, 0);
+        SearchResult contents = this.indexService.search(this.contents, null, 0);
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
@@ -181,7 +181,7 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search(this.contents + " AND rn:" + this.repoName + " AND fn:fileName*", 0);
+        SearchResult contents = this.indexService.search(this.contents + " AND rn:" + this.repoName + " AND fn:fileName*", null, 0);
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
@@ -202,7 +202,7 @@ public class IndexServiceTest extends TestCase {
         this.indexService.indexDocument(queue);
 
         Helpers helpers = new Helpers();
-        SearchResult contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), 0);
+        SearchResult contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), null, 0);
 
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
@@ -237,7 +237,7 @@ public class IndexServiceTest extends TestCase {
         this.indexService.indexDocument(queue);
 
         // Check on first index
-        SearchResult contents = this.indexService.search(this.contents, 0);
+        SearchResult contents = this.indexService.search(this.contents, null, 0);
         assertThat(contents.getTotalHits()).isNotZero();
         String read = data.getDataByName(Values.INDEX_READ, Values.INDEX_A);
         String write = data.getDataByName(Values.INDEX_WRITE, Values.INDEX_A);
@@ -248,17 +248,17 @@ public class IndexServiceTest extends TestCase {
         assertThat(data.getDataByName(Values.INDEX_WRITE)).isNotEqualTo(write);
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
-        contents = this.indexService.search(this.contents, 0);
+        contents = this.indexService.search(this.contents, null, 0);
         assertThat(contents.getTotalHits()).isNotZero();
         this.indexService.deleteByCodeId(this.codeId);
-        contents = this.indexService.search(this.contents, 0);
+        contents = this.indexService.search(this.contents, null, 0);
         assertThat(contents.getTotalHits()).isZero();
 
         // Flip and check on first index
         this.indexService.flipIndex();
         assertThat(data.getDataByName(Values.INDEX_READ)).isEqualTo(read);
         assertThat(data.getDataByName(Values.INDEX_WRITE)).isEqualTo(write);
-        contents = this.indexService.search(this.contents, 0);
+        contents = this.indexService.search(this.contents, null, 0);
         assertThat(contents.getTotalHits()).isNotZero();
 
         this.indexService.deleteByCodeId(this.codeId);
@@ -445,6 +445,43 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.shouldExit(IIndexService.JobType.REPO_PARSER)).isFalse();
     }
 
+    public void testBuildFacets() {
+        this.indexService = new IndexService();
+        assertThat(this.indexService.buildFacets(null)).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("nomatch", new String[0]);
+        }})).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[0]);
+        }})).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("repo", new String[0]);
+        }})).isEmpty();
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("own", new String[0]);
+        }})).isEmpty();
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[]{"java"});
+        }})).isEqualTo(" && (ln:java)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[]{"java", "python"});
+        }})).isEqualTo(" && (ln:java || ln:python)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("lan", new String[]{"java", "python", "c++"});
+        }})).isEqualTo(" && (ln:java || ln:python || ln:c__)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("repo", new String[]{"java", "python", "c++"});
+        }})).isEqualTo(" && (rn:java || rn:python || rn:c__)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("own", new String[]{"java", "python", "c++"});
+        }})).isEqualTo(" && (on:java || on:python || on:c__)");
+    }
+
     ///////////////////////////////////////////////////
     // Regression and search odd cases
     ///////////////////////////////////////////////////
@@ -467,7 +504,7 @@ public class IndexServiceTest extends TestCase {
                 "mydisplaylocation"));
         this.indexService.indexDocument(queue);
 
-        SearchResult search = this.indexService.search("actual.contains", 0);
+        SearchResult search = this.indexService.search("actual.contains", null, 0);
         assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
     }
 
@@ -489,7 +526,7 @@ public class IndexServiceTest extends TestCase {
                 "mydisplaylocation"));
         this.indexService.indexDocument(queue);
 
-        SearchResult search = this.indexService.search("emaN*", 0);
+        SearchResult search = this.indexService.search("emaN*", null, 0);
         assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
     }
 
@@ -555,7 +592,7 @@ public class IndexServiceTest extends TestCase {
         } catch (IOException e) { assertThat(true).isFalse(); }});
         methodList.add(arg -> { try { this.indexService.indexDocument(this.codeIndexDocument); } catch (IOException e) { assertThat(true).isFalse(); }});
         methodList.add(arg -> this.indexService.reindexAll());
-        methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), rand.nextInt(40)));
+        methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), null, rand.nextInt(40)));
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER));
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER));
         methodList.add(arg -> this.indexService.shouldExit(IIndexService.JobType.REPO_ADDER));

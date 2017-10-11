@@ -31,7 +31,7 @@ public class EndToEndITCase extends TestCase{
         // Index created files
 
         indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
-        SearchResult searchResult = indexService.search("endtoendtestfile", 0);
+        SearchResult searchResult = indexService.search("endtoendtestfile", null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
         CodeResult codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile1.php")).findFirst().get();
@@ -44,7 +44,7 @@ public class EndToEndITCase extends TestCase{
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
         indexService.deleteByCodeId(codeId);
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile2.py")).findFirst().get();
@@ -56,7 +56,7 @@ public class EndToEndITCase extends TestCase{
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
         indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
-        searchResult = indexService.search("endtoendtestfile", 0);
+        searchResult = indexService.search("endtoendtestfile", null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile1.php")).findFirst().get();
@@ -66,7 +66,7 @@ public class EndToEndITCase extends TestCase{
 
         // Delete everything
         indexService.deleteByRepo(new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "" ,"", "{}"));
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
@@ -81,7 +81,7 @@ public class EndToEndITCase extends TestCase{
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
         indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
 
-        SearchResult searchResult = indexService.search("endtoendtestfile", 0);
+        SearchResult searchResult = indexService.search("endtoendtestfile", null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
         CodeResult codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile1.php")).findFirst().get();
@@ -94,14 +94,14 @@ public class EndToEndITCase extends TestCase{
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
         indexService.deleteByCodeId(codeId);
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
         indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
-        searchResult = indexService.search("endtoendtestfile", 0);
+        searchResult = indexService.search("endtoendtestfile", null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile1.php")).findFirst().get();
@@ -110,7 +110,7 @@ public class EndToEndITCase extends TestCase{
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
         indexService.deleteByRepo(new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "" ,"", "{}"));
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
@@ -121,7 +121,7 @@ public class EndToEndITCase extends TestCase{
         IndexSvnRepoJob indexSvnRepoJob = new IndexSvnRepoJob();
         indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
 
-        SearchResult searchResult = indexService.search("endtoendtestfile", 0);
+        SearchResult searchResult = indexService.search("endtoendtestfile", null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
         CodeResult codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile1.php")).findFirst().get();
@@ -134,14 +134,14 @@ public class EndToEndITCase extends TestCase{
         // Delete a single file
         String codeId = searchResult.getCodeResultList().get(0).getCodeId();
         indexService.deleteByCodeId(codeId);
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
         indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
-        searchResult = indexService.search("endtoendtestfile", 0);
+        searchResult = indexService.search("endtoendtestfile", null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
         codeResult1 = searchResult.getCodeResultList().stream().filter(x -> x.getFileName().equals("EndToEndTestFile1.php")).findFirst().get();
@@ -150,7 +150,7 @@ public class EndToEndITCase extends TestCase{
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
         indexService.deleteByRepo(new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "" ,"", "{}"));
-        searchResult = indexService.search("endtoendtestfile".toLowerCase(), 0);
+        searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
 
