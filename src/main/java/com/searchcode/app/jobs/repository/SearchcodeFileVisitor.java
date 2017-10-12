@@ -105,12 +105,13 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 }
             }
 
+            CodeIndexDocument codeIndexDocument = new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), System.getProperty("line.separator")), repoRemoteLocation, codeOwner, displayLocation);
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), System.getProperty("line.separator")), repoRemoteLocation, codeOwner, displayLocation));
+                Singleton.getIndexService().indexDocument(codeIndexDocument);
 
             } else {
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
-                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), System.getProperty("line.separator")), repoRemoteLocation, codeOwner, displayLocation));
+                Singleton.getCodeIndexQueue().add(codeIndexDocument);
             }
 
             if (this.indexBaseRepoJob.LOGINDEXED) {
