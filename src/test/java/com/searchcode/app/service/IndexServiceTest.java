@@ -181,7 +181,7 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        SearchResult contents = this.indexService.search(this.contents + " AND rn:" + this.repoName + " AND fn:fileName*", null, 0, false);
+        SearchResult contents = this.indexService.search(this.contents + " AND rn:" + this.repoName + " AND fn:fileName*", null, 0, true);
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
@@ -202,7 +202,7 @@ public class IndexServiceTest extends TestCase {
         this.indexService.indexDocument(queue);
 
         Helpers helpers = new Helpers();
-        SearchResult contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), null, 0, false);
+        SearchResult contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), null, 0, true);
 
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
