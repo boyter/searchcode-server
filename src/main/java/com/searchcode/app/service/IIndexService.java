@@ -55,5 +55,5 @@ public interface IIndexService {
     SearchResult getProjectFileTree(String repoName);
     List<String> getRepoDocuments(String repoName, int page);
     CodeResult getCodeResultByCodeId(String codeId);
-    SearchResult search(String queryString, HashMap<String, String[]> facets, int page);
+    SearchResult search(String queryString, HashMap<String, String[]> facets, int page, boolean literal);
 }
