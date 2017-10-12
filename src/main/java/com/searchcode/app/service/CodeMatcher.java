@@ -44,11 +44,11 @@ public class CodeMatcher {
      * Entry point for matching lines
      */
     public List<CodeResult> formatResults(List<CodeResult> codeResult, String matchTerms, boolean highlightLine) {
-        List<String> lstMatchTerms = splitTerms(matchTerms);
+        List<String> lstMatchTerms = this.splitTerms(matchTerms);
 
         List<CodeResult> results = new ArrayList<>();
 
-        for(CodeResult code: codeResult) {
+        for (CodeResult code: codeResult) {
             List<CodeMatchResult> result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
 
             if (result != null) {

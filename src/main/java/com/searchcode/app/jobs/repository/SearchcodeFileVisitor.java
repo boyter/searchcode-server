@@ -6,6 +6,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.Environment;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -105,7 +106,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation));
+                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), System.getProperty("line.separator")), repoRemoteLocation, codeOwner, displayLocation));
 
             } else {
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());

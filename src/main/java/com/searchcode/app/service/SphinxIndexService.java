@@ -222,14 +222,16 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public SearchResult search(String queryString, HashMap<String, String[]> facets, int page) {
-        Connection connection;
+        Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
+
+        List<CodeResult> codeResultList = new ArrayList<>();
 
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
-            String searchQuery = "SELECT * FROM codesearchrealtime WHERE MATCH(?) " +
+            String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
                                  "FACET repoid ORDER BY COUNT(*) DESC " +
                                  "FACET languageid ORDER BY COUNT(*) DESC " +
                                  "FACET sourceid ORDER BY COUNT(*) DESC " +
@@ -250,6 +252,9 @@ public class SphinxIndexService implements IIndexService {
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     System.out.println("id: " + id);
+                    Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(id);
+
+                    sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
                 }
 
                 isResultSet = stmt.getMoreResults();
@@ -271,10 +276,29 @@ public class SphinxIndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(connection);
         }
 
-        //return results;
+        //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
+        return new SearchResult(100, 0, queryString, codeResultList, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    }
 
-        return null;
+    public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
+        CodeResult codeResult = new CodeResult(Arrays.asList(sourceCodeDTO.getContent().split(Values.ALL_NEWLINE)), null);
+        codeResult.setFilePath(sourceCodeDTO.getLocation());
+
+        codeResult.setCodePath(sourceCodeDTO.getLocation());
+        codeResult.setFileName(sourceCodeDTO.getFilename());
+        codeResult.setLanguageName(sourceCodeDTO.getLanguageid() + "");
+        codeResult.setMd5hash(sourceCodeDTO.getHash());
+        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + "");
+        codeResult.setDocumentId(sourceCodeDTO.getId());
+        codeResult.setRepoName(sourceCodeDTO.getRepoid() + "");
+        codeResult.setRepoLocation(sourceCodeDTO.getLocation() + "");
+        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + "");
+        codeResult.setCodeId(sourceCodeDTO.getId() + "");
+        codeResult.setDisplayLocation(sourceCodeDTO.getLocation());
+
+        return codeResult;
     }
 }
