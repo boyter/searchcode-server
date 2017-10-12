@@ -68,19 +68,9 @@ public class SearchRouteService {
             filelocationFilter = " && (fl:" + Singleton.getHelpers().replaceNonAlphanumeric(request.queryParams("fl"), "_") + "*)";
         }
 
-        String cleanQueryString = scl.formatQueryString(query);
-
-
         if (query.trim().startsWith("/") && query.trim().endsWith("/")) { isLiteral = true; }
 
-        SearchResult searchResult;
-
-        if (isLiteral) {
-            searchResult = Singleton.getIndexService().search(query + filelocationFilter, facets, page);
-        }
-        else {
-            searchResult = Singleton.getIndexService().search(cleanQueryString + filelocationFilter, facets, page);
-        }
+        SearchResult searchResult = Singleton.getIndexService().search(query + filelocationFilter, facets, page, isLiteral);
 
         searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
         searchResult.setQuery(query);
