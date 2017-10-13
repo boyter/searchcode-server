@@ -221,22 +221,23 @@ public class SphinxIndexService implements IIndexService {
     }
 
     @Override
-    public SearchResult search(String queryString, HashMap<String, String[]> facets, int page) {
+    public SearchResult search(String queryString, HashMap<String, String[]> facets, int page, boolean isLiteral) {
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
         List<CodeResult> codeResultList = new ArrayList<>();
+        int total = 0;
 
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
-            String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
-                                 "FACET repoid ORDER BY COUNT(*) DESC " +
-                                 "FACET languageid ORDER BY COUNT(*) DESC " +
-                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
-                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
-                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
+            String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?);  " +
+//                                 "FACET repoid ORDER BY COUNT(*) DESC " +
+//                                 "FACET languageid ORDER BY COUNT(*) DESC " +
+//                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
+//                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
+//                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
                                  "SHOW META;";
 
             // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
@@ -264,8 +265,12 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    int id = resultSet.getInt("repoid");
-                    System.out.println("repoid: " + id);
+                    String tmp1 = resultSet.getString("Variable_name");
+                    String tmp2 = resultSet.getString("Value");
+
+                    if ("total".equals(tmp1)) {
+                        total = this.helpers.tryParseInt(tmp2, "0");
+                    }
                 }
             }
 
@@ -280,7 +285,7 @@ public class SphinxIndexService implements IIndexService {
         }
 
         //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
-        return new SearchResult(100, 0, queryString, codeResultList, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {

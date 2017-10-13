@@ -184,7 +184,7 @@ public class SourceCode {
                     "location=? AND filename=? LIMIT 1;";
 
             stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, codeIndexDocument.getFileLocation());
+            stmt.setString(1, this.getLocation(codeIndexDocument));
             stmt.setString(2, codeIndexDocument.getFileName());
 
             resultSet = stmt.executeQuery();
