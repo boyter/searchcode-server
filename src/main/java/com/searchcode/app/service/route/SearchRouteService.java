@@ -61,16 +61,11 @@ public class SearchRouteService {
         if (request.queryParams().contains("repo")) { facets.put("repo", request.queryParamsValues("repo")); }
         if (request.queryParams().contains("lan")) { facets.put("lan", request.queryParamsValues("lan")); }
         if (request.queryParams().contains("own")) { facets.put("own", request.queryParamsValues("own")); }
-
-        String filelocationFilter = Values.EMPTYSTRING;
-        // TODO determine if possible to move this into search
-        if (request.queryParams().contains("fl")) {
-            filelocationFilter = " && (fl:" + Singleton.getHelpers().replaceNonAlphanumeric(request.queryParams("fl"), "_") + "*)";
-        }
+        if (request.queryParams().contains("fl")) { facets.put("fl", new String[] { request.queryParams("fl") }); }
 
         if (query.trim().startsWith("/") && query.trim().endsWith("/")) { isLiteral = true; }
 
-        SearchResult searchResult = Singleton.getIndexService().search(query + filelocationFilter, facets, page, isLiteral);
+        SearchResult searchResult = Singleton.getIndexService().search(query, facets, page, isLiteral);
 
         searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
         searchResult.setQuery(query);

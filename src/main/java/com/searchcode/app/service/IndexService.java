@@ -808,6 +808,9 @@ public class IndexService implements IIndexService {
                         filters.append(" && (").append(StringUtils.join(ownersList, " || ")).append(")");
                     }
                     break;
+                case "fl":
+                    filters.append(" && (fl:").append(this.helpers.replaceForIndex(facets.get(key)[0])).append("*)");
+                    break;
                 default:
                     break;
             }

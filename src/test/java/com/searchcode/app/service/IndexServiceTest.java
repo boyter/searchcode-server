@@ -480,6 +480,10 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
             put("own", new String[]{"java", "python", "c++"});
         }})).isEqualTo(" && (on:java || on:python || on:c__)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("fl", new String[]{"temp/something", "another", "thing"});
+        }})).isEqualTo(" && (fl:temp_something*)");
     }
 
     ///////////////////////////////////////////////////
