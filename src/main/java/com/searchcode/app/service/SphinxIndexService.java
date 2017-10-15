@@ -67,7 +67,7 @@ public class SphinxIndexService implements IIndexService {
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
                     System.out.println("INDEX_DOCUMENT:" + sourceCodeDTO.getId());
 
-                    stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?)");
+                    stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?,?)");
 
                     String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
                             this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + " " +
@@ -80,12 +80,13 @@ public class SphinxIndexService implements IIndexService {
                     stmt.setInt(1, sourceCodeDTO.getId());
                     stmt.setString(2, indexContents);
                     stmt.setString(3, sourceCodeDTO.getFilename());
-                    stmt.setInt(4, sourceCodeDTO.getRepoid()); // repoid
-                    stmt.setInt(5, sourceCodeDTO.getLanguageid()); // languageid
-                    stmt.setInt(6, sourceCodeDTO.getSourceid()); // sourceid
-                    stmt.setInt(7, sourceCodeDTO.getOwnerid()); // ownerid
-                    stmt.setInt(8, sourceCodeDTO.getLicenseid()); // licenseid
-                    stmt.setInt(9, sourceCodeDTO.getLinescount()); // linescount
+                    stmt.setString(4, this.helpers.replaceForIndex(sourceCodeDTO.getLocation()));
+                    stmt.setInt(5, sourceCodeDTO.getRepoid()); // repoid
+                    stmt.setInt(6, sourceCodeDTO.getLanguageid()); // languageid
+                    stmt.setInt(7, sourceCodeDTO.getSourceid()); // sourceid
+                    stmt.setInt(8, sourceCodeDTO.getOwnerid()); // ownerid
+                    stmt.setInt(9, sourceCodeDTO.getLicenseid()); // licenseid
+                    stmt.setInt(10, sourceCodeDTO.getLinescount()); // linescount
 
                     ResultSet resultSet = stmt.executeQuery();
                     System.out.println(resultSet);
@@ -227,14 +228,15 @@ public class SphinxIndexService implements IIndexService {
         ResultSet resultSet = null;
 
         List<CodeResult> codeResultList = new ArrayList<>();
+        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         int total = 0;
 
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
-            String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?);  " +
+            String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
 //                                 "FACET repoid ORDER BY COUNT(*) DESC " +
-//                                 "FACET languageid ORDER BY COUNT(*) DESC " +
+                                 "FACET languageid ORDER BY COUNT(*) DESC; " +
 //                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
 //                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
 //                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
@@ -261,6 +263,19 @@ public class SphinxIndexService implements IIndexService {
                 isResultSet = stmt.getMoreResults();
             }
 
+            // Language Facets
+            if (isResultSet) {
+                resultSet = stmt.getResultSet();
+
+                while (resultSet.next()) {
+                    String tmp1 = resultSet.getString("languageid");
+                    String tmp2 = resultSet.getString("count(*)");
+
+                    codeFacetLanguages.add(new CodeFacetLanguage(tmp1, this.helpers.tryParseInt(tmp2, "0")));
+                }
+            }
+
+            // META
             if (isResultSet) {
                 resultSet = stmt.getResultSet();
 
@@ -285,7 +300,7 @@ public class SphinxIndexService implements IIndexService {
         }
 
         //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
-        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), codeFacetLanguages, new ArrayList<>(), new ArrayList<>());
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
