@@ -213,7 +213,7 @@ public class SourceCode {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+//            this.helpers.closeQuietly(conn);
         }
 
         return result;
@@ -262,7 +262,7 @@ public class SourceCode {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+//            this.helpers.closeQuietly(conn);
         }
 
         return result;
@@ -309,7 +309,7 @@ public class SourceCode {
         }
         finally {
             this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+//            this.helpers.closeQuietly(conn);
         }
 
         return null;
