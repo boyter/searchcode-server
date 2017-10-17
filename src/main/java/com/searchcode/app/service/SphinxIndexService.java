@@ -229,13 +229,14 @@ public class SphinxIndexService implements IIndexService {
 
         List<CodeResult> codeResultList = new ArrayList<>();
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
+        List<CodeFacetRepo> codeFacetRepository = new ArrayList<>();
         int total = 0;
 
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
             String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
-//                                 "FACET repoid ORDER BY COUNT(*) DESC " +
+                                 "FACET repoid ORDER BY COUNT(*) DESC " +
                                  "FACET languageid ORDER BY COUNT(*) DESC; " +
 //                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
 //                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
@@ -258,6 +259,20 @@ public class SphinxIndexService implements IIndexService {
                     Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(id);
 
                     sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
+                }
+
+                isResultSet = stmt.getMoreResults();
+            }
+
+            // Repository Facets
+            if (isResultSet) {
+                resultSet = stmt.getResultSet();
+
+                while (resultSet.next()) {
+                    String tmp1 = resultSet.getString("repoid");
+                    String tmp2 = resultSet.getString("count(*)");
+
+                    codeFacetRepository.add(new CodeFacetRepo(tmp1, this.helpers.tryParseInt(tmp2, "0")));
                 }
 
                 isResultSet = stmt.getMoreResults();
@@ -301,7 +316,7 @@ public class SphinxIndexService implements IIndexService {
         }
 
         //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
-        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), codeFacetLanguages, new ArrayList<>(), new ArrayList<>());
+        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), codeFacetLanguages, codeFacetRepository, new ArrayList<>());
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
