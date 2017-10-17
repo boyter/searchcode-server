@@ -273,6 +273,8 @@ public class SphinxIndexService implements IIndexService {
 
                     codeFacetLanguages.add(new CodeFacetLanguage(tmp1, this.helpers.tryParseInt(tmp2, "0")));
                 }
+
+                isResultSet = stmt.getMoreResults();
             }
 
             // META
@@ -296,7 +298,6 @@ public class SphinxIndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-//            this.helpers.closeQuietly(connection);
         }
 
         //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
