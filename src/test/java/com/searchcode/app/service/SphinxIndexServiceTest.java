@@ -20,9 +20,7 @@ public class SphinxIndexServiceTest extends TestCase {
         }
 
         someList.parallelStream()
-                .forEach(x -> {
-                    sphinxIndexService.search("test", null, 0, false);
-                });
+                .forEach(x -> sphinxIndexService.search("test", null, 0, false));
     }
 
     private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename",

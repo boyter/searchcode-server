@@ -97,7 +97,7 @@ public class SphinxIndexService implements IIndexService {
         }
         finally {
             this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(connection);
+//            this.helpers.closeQuietly(connection);
         }
     }
 
@@ -296,7 +296,7 @@ public class SphinxIndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(connection);
+//            this.helpers.closeQuietly(connection);
         }
 
         //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
