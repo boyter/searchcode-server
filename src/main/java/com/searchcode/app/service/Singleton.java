@@ -57,7 +57,9 @@ public final class Singleton {
     private static IDatabaseConfig databaseConfig = null;
     private static Helpers helpers = null;
     private static ValidatorService validatorService = null;
+
     private static IIndexService indexService = null;
+    private static CodeMatcher codematcher = null;
 
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
@@ -84,6 +86,13 @@ public final class Singleton {
 
     public static Timer getNewTimer() {
         return new Timer();
+    }
+
+    public static synchronized CodeMatcher getCodeMatcher() {
+        if (codematcher == null) {
+            codematcher = new CodeMatcher();
+        }
+        return codematcher;
     }
 
     public static synchronized UniqueRepoQueue getUniqueGitRepoQueue() {

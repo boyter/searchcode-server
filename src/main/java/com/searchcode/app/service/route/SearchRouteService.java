@@ -41,8 +41,6 @@ public class SearchRouteService {
         }
 
         String query = request.queryParams("q").trim();
-        CodeMatcher cm = new CodeMatcher();
-        SearchcodeLib scl = Singleton.getSearchcodeLib();
 
         int page = 0;
 
@@ -67,10 +65,10 @@ public class SearchRouteService {
 
         SearchResult searchResult = Singleton.getIndexService().search(query, facets, page, isLiteral);
 
-        searchResult.setCodeResultList(cm.formatResults(searchResult.getCodeResultList(), query, true));
+        searchResult.setCodeResultList(Singleton.getCodeMatcher().formatResults(searchResult.getCodeResultList(), query, true));
         searchResult.setQuery(query);
 
-        for (String altQuery: scl.generateAltQueries(query)) {
+        for (String altQuery: Singleton.getSearchcodeLib().generateAltQueries(query)) {
             searchResult.addAltQuery(altQuery);
         }
 

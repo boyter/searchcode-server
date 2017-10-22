@@ -78,8 +78,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return repoResults;
@@ -146,8 +146,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(rs);
-            Singleton.getHelpers().closeQuietly(stmt);
+            this.helpers.closeQuietly(rs);
+            this.helpers.closeQuietly(stmt);
         }
 
         return repoResults;
@@ -175,8 +175,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return totalCount;
@@ -219,8 +219,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return result;
@@ -264,8 +264,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return result;
@@ -289,8 +289,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 
@@ -331,7 +331,7 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(preparedStatement);
         }
 
         return isNew;
@@ -378,8 +378,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 
@@ -424,8 +424,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 
@@ -444,8 +444,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 
@@ -480,8 +480,8 @@ public class Repo implements IRepo {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
-            Singleton.getHelpers().closeQuietly(resultSet);
-            Singleton.getHelpers().closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(resultSet);
+            this.helpers.closeQuietly(preparedStatement);
         }
     }
 }
