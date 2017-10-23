@@ -2,6 +2,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
@@ -13,6 +14,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SphinxIndexService implements IIndexService {
 
@@ -20,11 +22,13 @@ public class SphinxIndexService implements IIndexService {
     private final SphinxSearchConfig sphinxSearchConfig;
     private final SourceCode sourceCode;
     private final SearchcodeLib searchcodeLib;
+    private final LanguageType languageType;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
-        this.sourceCode = new SourceCode();
+        this.sourceCode = Singleton.getSourceCode();
+        this.languageType = Singleton.getLanguageType();
         this.searchcodeLib = Singleton.getSearchCodeLib();
     }
 
@@ -313,6 +317,15 @@ public class SphinxIndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
+        }
+
+
+        List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList()));
+
+        for (CodeFacetLanguage codeFacetLanguage: codeFacetLanguages) {
+            languageNamesByIds.stream().filter(y -> ("" + y.getId()).equals(codeFacetLanguage.languageName)).findFirst().ifPresent(x -> {
+                codeFacetLanguage.languageName = x.getType();
+            });
         }
 
         //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults

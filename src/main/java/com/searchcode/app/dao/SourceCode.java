@@ -222,7 +222,7 @@ public class SourceCode {
     public Optional<SourceCodeDTO> getById(int id) {
         Optional<SourceCodeDTO> result = Optional.empty();
 
-        Connection conn = null;
+        Connection conn;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
