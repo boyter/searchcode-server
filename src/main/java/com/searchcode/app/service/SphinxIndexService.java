@@ -320,16 +320,26 @@ public class SphinxIndexService implements IIndexService {
         }
 
 
+        codeFacetLanguages = this.transformLanguageType(codeFacetLanguages);
+
+        //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
+        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), codeFacetLanguages, codeFacetRepository, new ArrayList<>());
+    }
+
+    public List<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
+
+        List<CodeFacetLanguage> properCodeFacetLanguages = new ArrayList<>();
+
         List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList()));
 
         for (CodeFacetLanguage codeFacetLanguage: codeFacetLanguages) {
             languageNamesByIds.stream().filter(y -> ("" + y.getId()).equals(codeFacetLanguage.languageName)).findFirst().ifPresent(x -> {
                 codeFacetLanguage.languageName = x.getType();
+                properCodeFacetLanguages.add(new CodeFacetLanguage(x.getType(), codeFacetLanguage.count));
             });
         }
 
-        //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
-        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), codeFacetLanguages, codeFacetRepository, new ArrayList<>());
+        return properCodeFacetLanguages;
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
