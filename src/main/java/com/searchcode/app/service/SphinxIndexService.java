@@ -24,12 +24,18 @@ public class SphinxIndexService implements IIndexService {
     private final SearchcodeLib searchcodeLib;
     private final LanguageType languageType;
 
+    private final int PAGE_LIMIT;
+    private final int NO_PAGES_LIMIT;
+
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
         this.sourceCode = Singleton.getSourceCode();
         this.languageType = Singleton.getLanguageType();
         this.searchcodeLib = Singleton.getSearchCodeLib();
+
+        this.PAGE_LIMIT = 20;
+        this.NO_PAGES_LIMIT = 20;
     }
 
     @Override
@@ -234,12 +240,16 @@ public class SphinxIndexService implements IIndexService {
         List<CodeResult> codeResultList = new ArrayList<>();
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         List<CodeFacetRepo> codeFacetRepository = new ArrayList<>();
-        int total = 0;
+        int numTotalHits = 0;
+
+        int start = this.PAGE_LIMIT * page;
+
 
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
             String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
+                                 "LIMIT ?, 20 " +
                                  "FACET repoid ORDER BY COUNT(*) DESC " +
                                  "FACET languageid ORDER BY COUNT(*) DESC; " +
 //                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
@@ -251,6 +261,7 @@ public class SphinxIndexService implements IIndexService {
 
             stmt = connection.prepareStatement(searchQuery);
             stmt.setString(1, queryString);
+            stmt.setInt(2, start);
 
             boolean isResultSet = stmt.execute();
 
@@ -305,11 +316,10 @@ public class SphinxIndexService implements IIndexService {
                     String tmp2 = resultSet.getString("Value");
 
                     if ("total".equals(tmp1)) {
-                        total = this.helpers.tryParseInt(tmp2, "0");
+                        numTotalHits = this.helpers.tryParseInt(tmp2, "0");
                     }
                 }
             }
-
 
         } catch (SQLException ex) {
             //return results;
@@ -320,10 +330,12 @@ public class SphinxIndexService implements IIndexService {
         }
 
 
+        int noPages = numTotalHits / this.PAGE_LIMIT;
+        List<Integer> pages = this.calculatePages(numTotalHits, noPages);
+
         codeFacetLanguages = this.transformLanguageType(codeFacetLanguages);
 
-        //int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults
-        return new SearchResult(total, 0, queryString, codeResultList, new ArrayList<>(), codeFacetLanguages, codeFacetRepository, new ArrayList<>());
+        return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>());
     }
 
     public List<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
@@ -361,5 +373,25 @@ public class SphinxIndexService implements IIndexService {
         codeResult.setDisplayLocation(sourceCodeDTO.getLocation());
 
         return codeResult;
+    }
+
+    /**
+     * Calculate the number of pages which can be searched through
+     * TODO taken from indexservice should be centralised
+     */
+    private List<Integer> calculatePages(int numTotalHits, int noPages) {
+        List<Integer> pages = new ArrayList<>();
+        if (numTotalHits != 0) {
+
+            // Account for off by 1 errors
+            if (numTotalHits % 10 == 0) {
+                noPages -= 1;
+            }
+
+            for (int i = 0; i <= noPages; i++) {
+                pages.add(i);
+            }
+        }
+        return pages;
     }
 }
