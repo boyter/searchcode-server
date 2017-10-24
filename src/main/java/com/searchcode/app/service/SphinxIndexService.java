@@ -327,16 +327,18 @@ public class SphinxIndexService implements IIndexService {
     }
 
     public List<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
-
         List<CodeFacetLanguage> properCodeFacetLanguages = new ArrayList<>();
 
         List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList()));
 
         for (CodeFacetLanguage codeFacetLanguage: codeFacetLanguages) {
-            languageNamesByIds.stream().filter(y -> ("" + y.getId()).equals(codeFacetLanguage.languageName)).findFirst().ifPresent(x -> {
-                codeFacetLanguage.languageName = x.getType();
-                properCodeFacetLanguages.add(new CodeFacetLanguage(x.getType(), codeFacetLanguage.count));
-            });
+            languageNamesByIds.stream()
+                    .filter(languageType -> (Integer.toString(languageType.getId())).equals(codeFacetLanguage.languageName))
+                    .findFirst()
+                    .ifPresent(x -> {
+                        codeFacetLanguage.languageName = x.getType();
+                        properCodeFacetLanguages.add(new CodeFacetLanguage(x.getType(), codeFacetLanguage.count));
+                    });
         }
 
         return properCodeFacetLanguages;
