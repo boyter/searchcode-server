@@ -248,10 +248,18 @@ public class SphinxIndexService implements IIndexService {
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
-            String searchQuery = "SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
-                                 "LIMIT ?, 20 " +
-                                 "FACET repoid ORDER BY COUNT(*) DESC " +
-                                 "FACET languageid ORDER BY COUNT(*) DESC; " +
+            List<Integer> languageFacets = this.getLanguageFacets(facets);
+
+            String languageFacetsString = Values.EMPTYSTRING;
+            if (!languageFacets.isEmpty()) {
+                languageFacetsString = "AND languageid IN (" + String.join(",", languageFacets.stream().map(x -> Integer.toString(x)).collect(Collectors.toList())) + ")";
+            }
+
+            String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?)" +
+                                 languageFacetsString +
+                                 " LIMIT ?, 20" +
+                                 " FACET repoid ORDER BY COUNT(*) DESC" +
+                                 " FACET languageid ORDER BY COUNT(*) DESC;" +
 //                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
 //                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
 //                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
@@ -373,6 +381,33 @@ public class SphinxIndexService implements IIndexService {
         codeResult.setDisplayLocation(sourceCodeDTO.getLocation());
 
         return codeResult;
+    }
+
+    public List<Integer> getLanguageFacets(HashMap<String, String[]> facets) {
+        if (facets == null) {
+            return new ArrayList<>();
+        }
+
+        List<Integer> languageFacets = new ArrayList<>();
+
+        for (String key: facets.keySet()) {
+            switch (key) {
+                case "lan":
+                    // TODO replace this with single get query for all because it would be much faster
+                    // TODO or cache the results in the language type? Probably not a bad idea...
+                    String[] strings = facets.get(key);
+                    languageFacets = Arrays.stream(facets.get(key))
+                            .map((s) -> this.languageType.getByType(s).orElse(null))
+                            .filter(Objects::nonNull)
+                            .map(LanguageTypeDTO::getId)
+                            .collect(Collectors.toList());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return languageFacets;
     }
 
     /**
