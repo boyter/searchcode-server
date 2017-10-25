@@ -363,14 +363,14 @@ public class SphinxIndexService implements IIndexService {
 
         codeResult.setCodePath(sourceCodeDTO.getLocation());
         codeResult.setFileName(sourceCodeDTO.getFilename());
-        codeResult.setLanguageName(sourceCodeDTO.getLanguageid() + "");
+        codeResult.setLanguageName(sourceCodeDTO.getLanguageid() + Values.EMPTYSTRING);
         codeResult.setMd5hash(sourceCodeDTO.getHash());
-        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + "");
+        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + Values.EMPTYSTRING);
         codeResult.setDocumentId(sourceCodeDTO.getId());
-        codeResult.setRepoName(sourceCodeDTO.getRepoid() + "");
-        codeResult.setRepoLocation(sourceCodeDTO.getLocation() + "");
-        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + "");
-        codeResult.setCodeId(sourceCodeDTO.getId() + "");
+        codeResult.setRepoName(sourceCodeDTO.getRepoid() + Values.EMPTYSTRING);
+        codeResult.setRepoLocation(sourceCodeDTO.getLocation() + Values.EMPTYSTRING);
+        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + Values.EMPTYSTRING);
+        codeResult.setCodeId(sourceCodeDTO.getId() + Values.EMPTYSTRING);
         codeResult.setDisplayLocation(sourceCodeDTO.getLocation());
 
         return codeResult;
