@@ -383,15 +383,17 @@ public class SphinxIndexService implements IIndexService {
 
         // TODO replace this with single get query for all because it would be much faster
         // TODO or cache the results in the language type? Probably not a bad idea...
-        List<Integer> languageFacets = Arrays.stream(facets.getOrDefault("lan", new String[0]))
+        List<String> languageFacets = Arrays.stream(facets.getOrDefault("lan", new String[0]))
                 .map((s) -> this.languageType.getByType(s).orElse(null))
                 .filter(Objects::nonNull)
                 .map(LanguageTypeDTO::getId)
+                .map(x -> Integer.toString(x))
                 .collect(Collectors.toList());
 
         String languageFacetsString = Values.EMPTYSTRING;
+
         if (!languageFacets.isEmpty()) {
-            languageFacetsString = "AND languageid IN (" + String.join(",", languageFacets.stream().map(x -> Integer.toString(x)).collect(Collectors.toList())) + ")";
+            languageFacetsString = "AND languageid IN (" + String.join(",", languageFacets) + ")";
         }
 
         return languageFacetsString;
