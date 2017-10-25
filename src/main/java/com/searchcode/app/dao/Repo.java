@@ -16,6 +16,7 @@ import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,15 +36,17 @@ public class Repo implements IRepo {
 
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
+    private final LoggerWrapper logger;
 
     public Repo() {
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
 
-    public Repo(IDatabaseConfig dbConfig, Helpers helpers) {
+    public Repo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.logger = loggerWrapper;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class Repo implements IRepo {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(resultSet);
