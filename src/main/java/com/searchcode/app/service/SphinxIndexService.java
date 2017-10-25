@@ -248,15 +248,8 @@ public class SphinxIndexService implements IIndexService {
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
-            List<Integer> languageFacets = this.getLanguageFacets(facets);
-
-            String languageFacetsString = Values.EMPTYSTRING;
-            if (!languageFacets.isEmpty()) {
-                languageFacetsString = "AND languageid IN (" + String.join(",", languageFacets.stream().map(x -> Integer.toString(x)).collect(Collectors.toList())) + ")";
-            }
-
             String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?)" +
-                                 languageFacetsString +
+                                 this.getLanguageFacets(facets) +
                                  " LIMIT ?, 20" +
                                  " FACET repoid ORDER BY COUNT(*) DESC" +
                                  " FACET languageid ORDER BY COUNT(*) DESC;" +
@@ -383,31 +376,25 @@ public class SphinxIndexService implements IIndexService {
         return codeResult;
     }
 
-    public List<Integer> getLanguageFacets(HashMap<String, String[]> facets) {
+    public String getLanguageFacets(HashMap<String, String[]> facets) {
         if (facets == null) {
-            return new ArrayList<>();
+            return Values.EMPTYSTRING;
         }
 
-        List<Integer> languageFacets = new ArrayList<>();
+        // TODO replace this with single get query for all because it would be much faster
+        // TODO or cache the results in the language type? Probably not a bad idea...
+        List<Integer> languageFacets = Arrays.stream(facets.getOrDefault("lan", new String[0]))
+                .map((s) -> this.languageType.getByType(s).orElse(null))
+                .filter(Objects::nonNull)
+                .map(LanguageTypeDTO::getId)
+                .collect(Collectors.toList());
 
-        for (String key: facets.keySet()) {
-            switch (key) {
-                case "lan":
-                    // TODO replace this with single get query for all because it would be much faster
-                    // TODO or cache the results in the language type? Probably not a bad idea...
-                    String[] strings = facets.get(key);
-                    languageFacets = Arrays.stream(facets.get(key))
-                            .map((s) -> this.languageType.getByType(s).orElse(null))
-                            .filter(Objects::nonNull)
-                            .map(LanguageTypeDTO::getId)
-                            .collect(Collectors.toList());
-                    break;
-                default:
-                    break;
-            }
+        String languageFacetsString = Values.EMPTYSTRING;
+        if (!languageFacets.isEmpty()) {
+            languageFacetsString = "AND languageid IN (" + String.join(",", languageFacets.stream().map(x -> Integer.toString(x)).collect(Collectors.toList())) + ")";
         }
 
-        return languageFacets;
+        return languageFacetsString;
     }
 
     /**
