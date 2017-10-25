@@ -2,6 +2,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.AESEncryptor;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
@@ -16,7 +17,7 @@ public class RepoTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        this.repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers());
+        this.repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
         this.repo.createTableIfMissing();
         this.repo.addBranchToTable();
         this.repo.addSourceToTable();

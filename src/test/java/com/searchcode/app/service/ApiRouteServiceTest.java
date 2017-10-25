@@ -215,7 +215,7 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoListApiEnabledNoAuth() {
         Request mockRequest = mock(Request.class);
-        Repo repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers());
+        Repo repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
         repo.createTableIfMissing();
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repo, null, null, null, null);
