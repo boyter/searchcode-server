@@ -57,3 +57,62 @@ ALTER TABLE `sourcecode`
 --
 ALTER TABLE `sourcecode`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+
+
+
+
+
+
+
+-- phpMyAdmin SQL Dump
+-- version 4.6.4
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Oct 26, 2017 at 11:36 PM
+-- Server version: 5.6.33
+-- PHP Version: 7.0.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
+
+--
+-- Database: `searchcode`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `repository`
+--
+
+CREATE TABLE `repository` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `scm` varchar(20) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `sourceurl` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+  `sourceid` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `repository`
+--
+ALTER TABLE `repository`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `url` (`url`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `repository`
+--
+ALTER TABLE `repository`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
