@@ -264,7 +264,7 @@ public class Repo implements IRepo {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(resultSet);
