@@ -238,8 +238,7 @@ public class SphinxIndexService implements IIndexService {
         int numTotalHits = 0;
 
         int start = this.PAGE_LIMIT * page;
-
-
+        
         try {
             connection = this.sphinxSearchConfig.getConnection();
 
@@ -254,7 +253,6 @@ public class SphinxIndexService implements IIndexService {
                                  "SHOW META;";
 
             // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
-
             stmt = connection.prepareStatement(searchQuery);
             stmt.setString(1, queryString);
             stmt.setInt(2, start);
@@ -265,8 +263,7 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    int id = resultSet.getInt("id");
-                    Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(id);
+                    Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(resultSet.getInt("id"));
                     sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
                 }
 
@@ -278,10 +275,7 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    String tmp1 = resultSet.getString("repoid");
-                    String tmp2 = resultSet.getString("count(*)");
-
-                    codeFacetRepository.add(new CodeFacetRepo(tmp1, this.helpers.tryParseInt(tmp2, "0")));
+                    codeFacetRepository.add(new CodeFacetRepo(resultSet.getString("repoid"), this.helpers.tryParseInt(resultSet.getString("count(*)"), "0")));
                 }
 
                 isResultSet = stmt.getMoreResults();
@@ -292,10 +286,7 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    String tmp1 = resultSet.getString("languageid");
-                    String tmp2 = resultSet.getString("count(*)");
-
-                    codeFacetLanguages.add(new CodeFacetLanguage(tmp1, this.helpers.tryParseInt(tmp2, "0")));
+                    codeFacetLanguages.add(new CodeFacetLanguage(resultSet.getString("languageid"), this.helpers.tryParseInt(resultSet.getString("count(*)"), "0")));
                 }
 
                 isResultSet = stmt.getMoreResults();
@@ -306,11 +297,8 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    String tmp1 = resultSet.getString("Variable_name");
-                    String tmp2 = resultSet.getString("Value");
-
-                    if ("total".equals(tmp1)) {
-                        numTotalHits = this.helpers.tryParseInt(tmp2, "0");
+                    if ("total".equals(resultSet.getString("Variable_name"))) {
+                        numTotalHits = this.helpers.tryParseInt(resultSet.getString("Value"), "0");
                     }
                 }
             }
@@ -322,7 +310,6 @@ public class SphinxIndexService implements IIndexService {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
         }
-
 
         int noPages = numTotalHits / this.PAGE_LIMIT;
         List<Integer> pages = this.calculatePages(numTotalHits, noPages);
