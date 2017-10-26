@@ -73,9 +73,7 @@ public class SphinxIndexService implements IIndexService {
                     // Upsert the index
 
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
-
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
-                    System.out.println("INDEX_DOCUMENT:" + sourceCodeDTO.getId());
 
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?,?)");
 
@@ -91,15 +89,14 @@ public class SphinxIndexService implements IIndexService {
                     stmt.setString(2, indexContents);
                     stmt.setString(3, sourceCodeDTO.getFilename());
                     stmt.setString(4, this.helpers.replaceForIndex(sourceCodeDTO.getLocation()));
-                    stmt.setInt(5, sourceCodeDTO.getRepoid()); // repoid
-                    stmt.setInt(6, sourceCodeDTO.getLanguageid()); // languageid
-                    stmt.setInt(7, sourceCodeDTO.getSourceid()); // sourceid
-                    stmt.setInt(8, sourceCodeDTO.getOwnerid()); // ownerid
-                    stmt.setInt(9, sourceCodeDTO.getLicenseid()); // licenseid
-                    stmt.setInt(10, sourceCodeDTO.getLinescount()); // linescount
+                    stmt.setInt(5, sourceCodeDTO.getRepoid());
+                    stmt.setInt(6, sourceCodeDTO.getLanguageid());
+                    stmt.setInt(7, sourceCodeDTO.getSourceid());
+                    stmt.setInt(8, sourceCodeDTO.getOwnerid());
+                    stmt.setInt(9, sourceCodeDTO.getLicenseid());
+                    stmt.setInt(10, sourceCodeDTO.getLinescount());
 
-                    ResultSet resultSet = stmt.executeQuery();
-                    System.out.println(resultSet);
+                    stmt.execute();
                 } catch (SQLException ex) {
                     Singleton.getLogger().warning(ex.toString());
                 }
@@ -143,12 +140,10 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public void setRepoAdderPause(boolean repoAdderPause) {
-
     }
 
     @Override
     public void toggleRepoAdderPause() {
-
     }
 
     @Override
@@ -271,9 +266,7 @@ public class SphinxIndexService implements IIndexService {
 
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
-                    System.out.println("id: " + id);
                     Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(id);
-
                     sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
                 }
 
