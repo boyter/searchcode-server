@@ -1,5 +1,6 @@
 package com.searchcode.app.service;
 
+import com.google.common.util.concurrent.ExecutionError;
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.LanguageType;
@@ -49,7 +50,8 @@ public class SphinxIndexService implements IIndexService {
         PreparedStatement stmt = null;
 
         try {
-            connection = this.sphinxSearchConfig.getConnection();
+            Optional<Connection> connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
+            connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
         } catch (SQLException ignored) {
             System.out.println(ignored);
         }
@@ -240,7 +242,9 @@ public class SphinxIndexService implements IIndexService {
         int start = this.PAGE_LIMIT * page;
         
         try {
-            connection = this.sphinxSearchConfig.getConnection();
+            Optional<Connection> connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
+            // TODO handle this better
+            connection = connectionOptional.get();
 
             String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?)" +
                                  this.getLanguageFacets(facets) +

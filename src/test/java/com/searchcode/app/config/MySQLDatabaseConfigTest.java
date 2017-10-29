@@ -4,6 +4,9 @@ import junit.framework.TestCase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
+
+import static org.assertj.core.api.Java6Assertions.assertThat;
 
 public class MySQLDatabaseConfigTest extends TestCase {
     public void testConnection() throws SQLException {
@@ -11,9 +14,9 @@ public class MySQLDatabaseConfigTest extends TestCase {
         mySQLDatabaseConfig.getConnection();
     }
 
-    public void testConnectionSphinx() throws SQLException {
+    public void testConnectionSphinx() throws Exception {
         SphinxSearchConfig ssc = new SphinxSearchConfig();
-        Connection connection = ssc.getConnection();
-        connection.close();
+        Optional<Connection> connection = ssc.getConnection("localhost");
+        assertThat(connection.get()).isNotNull();
     }
 }

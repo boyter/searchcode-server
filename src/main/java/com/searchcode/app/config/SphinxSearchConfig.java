@@ -18,30 +18,41 @@ import com.searchcode.app.util.Properties;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
-public class SphinxSearchConfig implements IDatabaseConfig {
+public class SphinxSearchConfig {
 
     private final Helpers helpers;
-    private Connection connection = null;
+    private final HashMap<String, Connection> connectionList = new HashMap<>();
 
     public SphinxSearchConfig() {
         this.helpers = Singleton.getHelpers();
     }
 
-    @Override
-    public synchronized Connection getConnection() throws SQLException {
+    public synchronized Optional<Connection> getConnection(String server) throws SQLException {
+        Connection connection = null;
+
         try {
+            connection = connectionList.getOrDefault(server, null);
+
             if (connection == null || connection.isClosed() || !connection.isValid(1)) {
                 this.helpers.closeQuietly(connection);
                 Class.forName("com.mysql.jdbc.Driver");
-                String connectionString = (String) Properties.getProperties().getOrDefault("sphinx_connection_string", "jdbc:mysql://localhost:9306?characterEncoding=utf8&maxAllowedPacket=1024000");
+                String connectionString = (String) Properties.getProperties().getOrDefault("sphinx_connection_string", "jdbc:mysql://%s:9306?characterEncoding=utf8&maxAllowedPacket=1024000");
+
+                connectionString = String.format(connectionString, server);
                 connection = DriverManager.getConnection(connectionString, Values.EMPTYSTRING, Values.EMPTYSTRING);
+
+                connectionList.put(server, connection);
             }
         }
         catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
 
-        return connection;
+        return Optional.ofNullable(connection);
     }
 }
