@@ -77,6 +77,7 @@ public class SphinxIndexService implements IIndexService {
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
 
+
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?,?)");
 
                     String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
@@ -381,6 +382,22 @@ public class SphinxIndexService implements IIndexService {
         }
 
         return languageFacetsString;
+    }
+
+    public int getShardCount(String sphinxShards) {
+        int count = 0;
+        String[] serverShards = sphinxShards.split(";");
+
+        for (String shard: serverShards) {
+            String[] servers = shard.split(":");
+
+            if (servers.length == 2) {
+                String[] shards = servers[1].split(",");
+                count += shards.length;
+            }
+        }
+
+        return count;
     }
 
     /**
