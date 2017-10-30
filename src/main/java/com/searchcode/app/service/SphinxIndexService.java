@@ -77,7 +77,6 @@ public class SphinxIndexService implements IIndexService {
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
 
-
                     stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?,?)");
 
                     String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
