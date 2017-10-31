@@ -29,6 +29,7 @@ public class SphinxIndexService implements IIndexService {
     private final int PAGE_LIMIT;
     private final int NO_PAGES_LIMIT;
     private final String SPHINX_SERVERS_SHARDS;
+    private final int SHARD_COUNT;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
@@ -40,6 +41,7 @@ public class SphinxIndexService implements IIndexService {
         this.PAGE_LIMIT = 20;
         this.NO_PAGES_LIMIT = 20;
         this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
+        this.SHARD_COUNT = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
     }
 
     @Override
@@ -80,11 +82,8 @@ public class SphinxIndexService implements IIndexService {
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
 
-                    // TODO consider using consistant hashing IE like memcached so we can drop in more indexes at will
-                    int shardCount = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
-
-                    int shard = (sourceCodeDTO.getId() % shardCount) + 1;
-                    System.out.println("Shard:" + shard);
+                    // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
+                    int shard = (sourceCodeDTO.getId() % this.SHARD_COUNT) + 1;
 
                     stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
