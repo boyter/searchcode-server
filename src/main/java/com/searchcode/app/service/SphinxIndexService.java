@@ -8,6 +8,7 @@ import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchcodeLib;
 import org.apache.lucene.document.Document;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -27,6 +28,7 @@ public class SphinxIndexService implements IIndexService {
 
     private final int PAGE_LIMIT;
     private final int NO_PAGES_LIMIT;
+    private final String SPHINX_SERVERS_SHARDS;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
@@ -37,6 +39,7 @@ public class SphinxIndexService implements IIndexService {
 
         this.PAGE_LIMIT = 20;
         this.NO_PAGES_LIMIT = 20;
+        this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
     }
 
     @Override
@@ -77,7 +80,13 @@ public class SphinxIndexService implements IIndexService {
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
                     SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
 
-                    stmt = connection.prepareStatement("REPLACE INTO codesearchrt1 VALUES(?,?,?,?,?,?,?,?,?,?)");
+                    // TODO consider using consistant hashing IE like memcached so we can drop in more indexes at will
+                    int shardCount = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
+
+                    int shard = (sourceCodeDTO.getId() % shardCount) + 1;
+                    System.out.println("Shard:" + shard);
+
+                    stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
                     String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
                             this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + " " +
