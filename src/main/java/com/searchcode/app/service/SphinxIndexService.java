@@ -1,6 +1,5 @@
 package com.searchcode.app.service;
 
-import com.google.common.util.concurrent.ExecutionError;
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.LanguageType;
@@ -14,7 +13,10 @@ import org.apache.lucene.document.Document;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
