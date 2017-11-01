@@ -134,7 +134,7 @@ public class CodeRouteService {
         Repo repo = Singleton.getRepo();
 
         SearchcodeLib scl = Singleton.getSearchcodeLib();
-        OWASPClassifier owaspClassifier = new OWASPClassifier();
+        OWASPClassifier owaspClassifier = Singleton.getOwaspClassifier();
 
         Cocomo2 coco = new Cocomo2();
 

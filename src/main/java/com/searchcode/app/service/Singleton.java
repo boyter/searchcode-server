@@ -61,12 +61,16 @@ public final class Singleton {
     private static IIndexService indexService = null;
     private static CodeMatcher codematcher = null;
 
+    private static OWASPClassifier owaspClassifier = null;
+    private static RepositorySource repositorySource = null;
+
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueSvnRepoQueue = null; // Used to queue the next repository to be indexed
 
     private static boolean enqueueRepositoryJobFirstRun = true;
     private static boolean enqueueFileRepositoryJobFirstRun = true;
+
 
     public static synchronized void setEnqueueRepositoryJobFirstRun(boolean value) {
         enqueueRepositoryJobFirstRun = value;
@@ -162,6 +166,22 @@ public final class Singleton {
         }
 
         return spellingCorrectorInstance;
+    }
+
+    public static synchronized RepositorySource getRepositorySource() {
+        if (repositorySource == null) {
+            repositorySource = new RepositorySource();
+        }
+
+        return repositorySource;
+    }
+
+    public static synchronized OWASPClassifier getOwaspClassifier() {
+        if (owaspClassifier == null) {
+            owaspClassifier = new OWASPClassifier();
+        }
+
+        return owaspClassifier;
     }
 
     public static synchronized Queue<CodeIndexDocument> getCodeIndexQueue() {
