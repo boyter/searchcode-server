@@ -19,5 +19,9 @@ public class RepoData {
     public String indexStatus = Values.EMPTYSTRING;
     public Instant jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
 
+    public String source = Values.EMPTYSTRING;
+    public String user = Values.EMPTYSTRING;
+    public String project = Values.EMPTYSTRING;
+
     public RepoData() {}
 }

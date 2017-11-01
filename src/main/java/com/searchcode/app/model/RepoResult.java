@@ -26,7 +26,6 @@ public class RepoResult {
     private RepoData data;
 
     public RepoResult() {
-
     }
 
     public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {

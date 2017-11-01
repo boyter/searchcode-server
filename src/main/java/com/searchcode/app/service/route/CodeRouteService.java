@@ -148,15 +148,14 @@ public class CodeRouteService {
         List<String> codeLines = codeResult.code;
         StringBuilder code = new StringBuilder();
         StringBuilder lineNos = new StringBuilder();
-        String padStr = "";
+        StringBuilder padStr = new StringBuilder();
         for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
-            padStr += " ";
+            padStr.append(" ");
         }
         for (int i=1, d=10, len=codeLines.size(); i<=len; i++) {
-            if (i/d > 0)
-            {
+            if (i/d > 0) {
                 d *= 10;
-                padStr = padStr.substring(0, padStr.length()-1);  // Del last char
+                padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
             }
             code.append("<span id=\"")
                     .append(i)
