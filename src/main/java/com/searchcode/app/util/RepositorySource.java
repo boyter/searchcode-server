@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Optional;
 
 public class RepositorySource {
@@ -33,6 +34,24 @@ public class RepositorySource {
         }
 
         return Optional.empty();
+    }
+
+    public String getLink(String name, HashMap<String, String> replacements) {
+        String link = Values.EMPTYSTRING;
+
+        Optional<Source> sourceByName = this.getSourceByName(name);
+
+        if (!sourceByName.isPresent()) {
+            return link;
+        }
+
+        link = sourceByName.map(Source::getLink).orElse(Values.EMPTYSTRING);
+
+        for (String key: replacements.keySet()) {
+            link = link.replace(key, replacements.get(key));
+        }
+
+        return link;
     }
 
     /**
