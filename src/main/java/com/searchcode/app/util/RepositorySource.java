@@ -48,7 +48,7 @@ public class RepositorySource {
         link = sourceByName.map(Source::getLink).orElse(Values.EMPTYSTRING);
 
         for (String key: replacements.keySet()) {
-            link = link.replace(key, replacements.get(key));
+            link = link.replace(String.format("{%s}", key), replacements.get(key));
         }
 
         return link;
