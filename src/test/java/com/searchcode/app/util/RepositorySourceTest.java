@@ -16,7 +16,7 @@ public class RepositorySourceTest extends TestCase {
 
     public void testGetSourceByName() {
         RepositorySource repositorySource = new RepositorySource();
-        Source source = repositorySource.getSourceByName("GitHub").get();
-        assertThat(source.getName()).isEqualTo("GitHub");
+        assertThat(repositorySource.getSourceByName("GitHub").get().getName()).isEqualTo("GitHub");
+        assertThat(repositorySource.getSourceByName("HOPEFULLYNEVEREXISTS").isPresent()).isFalse();
     }
 }
