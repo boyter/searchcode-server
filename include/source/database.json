@@ -8,5 +8,10 @@
     "name": "Bitbucket",
     "url": "https://bitbucket.org/",
     "link": "https://bitbucket.org/{user}/{project}/src/{hash}/{filepath}"
+  },
+  {
+    "name": "GitLab",
+    "url": "https://bitbucket.org/",
+    "link": "https://bitbucket.org/{user}/{project}/blob/{hash}/{filepath}"
   }
 ]
