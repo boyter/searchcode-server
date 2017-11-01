@@ -26,7 +26,6 @@ public class RepositorySource {
     }
 
     public Optional<Source> getSourceByName(String name) {
-
         for (Source source: this.database) {
             if (source.getName().equals(name)) {
                 return Optional.of(source);
