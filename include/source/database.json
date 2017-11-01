@@ -1,0 +1,12 @@
+[
+  {
+    "name": "GitHub",
+    "url": "https://github.com/",
+    "link": "https://github.com/{user}/{project}/blob/{branch}/{filepath}"
+  },
+  {
+    "name": "Bitbucket",
+    "url": "https://bitbucket.org/",
+    "link": "https://bitbucket.org/{user}/{project}/src/{hash}/{filepath}"
+  }
+]
