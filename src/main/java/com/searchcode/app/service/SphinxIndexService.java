@@ -86,15 +86,14 @@ public class SphinxIndexService implements IIndexService {
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
                     int shard = (sourceCodeDTO.getId() % this.SHARD_COUNT) + 1;
-
                     stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
-                    String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + " " +
-                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + " " +
-                            sourceCodeDTO.getLocation() + " " +
-                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getContent(), true) + " " +
-                            this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getContent()) + " " +
-                            this.searchcodeLib.findInterestingKeywords(sourceCodeDTO.getContent()) + " " +
+                    String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + Values.SINGLE_SPACE +
+                            sourceCodeDTO.getLocation() + Values.SINGLE_SPACE +
+                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getContent(), true) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getContent()) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.findInterestingKeywords(sourceCodeDTO.getContent()) + Values.SINGLE_SPACE +
                             this.searchcodeLib.findInterestingCharacters(sourceCodeDTO.getContent()).toLowerCase();
 
                     stmt.setInt(1, sourceCodeDTO.getId());

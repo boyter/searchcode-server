@@ -147,6 +147,7 @@ public class Values {
     // Random
     public static final String USERSESSIONID = "admin_user";
     public static final String EMPTYSTRING = "";
+    public static final String SINGLE_SPACE = " ";
 
     // Cache lookup values
     public static final String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
