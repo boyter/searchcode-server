@@ -134,6 +134,7 @@ public class CodeRouteService {
 
         SearchcodeLib scl = Singleton.getSearchcodeLib();
         OWASPClassifier owaspClassifier = Singleton.getOwaspClassifier();
+        RepositorySource repositorySource = Singleton.getRepositorySource();
 
         Cocomo2 coco = new Cocomo2();
 
@@ -185,6 +186,12 @@ public class CodeRouteService {
 
         Optional<RepoResult> repoResult = repo.getRepoByName(codeResult.repoName);
         repoResult.map(x -> map.put("source", x.getSource()));
+        repoResult.map(x -> map.put("fileLink", repositorySource.getLink(x.getData().source, new HashMap<String, String>() {{
+            put("user", x.getData().user);
+            put("project", x.getData().project);
+            put("branch", x.getBranch());
+            put("filepath", codeResult.getDisplayLocation());
+        }})));
 
         map.put("fileName", codeResult.fileName);
 
