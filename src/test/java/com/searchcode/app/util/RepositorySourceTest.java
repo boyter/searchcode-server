@@ -33,4 +33,16 @@ public class RepositorySourceTest extends TestCase {
 
         assertThat(link).isEqualTo("https://github.com/boyter/searchcode-server/blob/master/fabfile.py");
     }
+
+    public void testGetLinkMissingRepository() {
+        RepositorySource repositorySource = new RepositorySource();
+        String link = repositorySource.getLink("DoesNotExist", new HashMap<String, String>() {{
+            put("user", "boyter");
+            put("project", "searchcode-server");
+            put("branch", "master");
+            put("filepath", "fabfile.py");
+        }});
+
+        assertThat(link).isEqualTo("");
+    }
 }
