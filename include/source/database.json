@@ -7,7 +7,7 @@
   {
     "name": "Bitbucket",
     "url": "https://bitbucket.org/",
-    "link": "https://bitbucket.org/{user}/{project}/src/{hash}/{filepath}"
+    "link": "https://bitbucket.org/{user}/{project}/src/{branch}/{filepath}"
   },
   {
     "name": "GitLab",
