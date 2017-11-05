@@ -12,6 +12,6 @@
   {
     "name": "GitLab",
     "url": "https://bitbucket.org/",
-    "link": "https://bitbucket.org/{user}/{project}/blob/{filepath}"
+    "link": "https://bitbucket.org/{user}/{project}/blob/{branch}/{filepath}"
   }
 ]
