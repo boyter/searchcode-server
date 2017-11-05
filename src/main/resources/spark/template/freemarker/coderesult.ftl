@@ -23,6 +23,12 @@
     <table class="table">
         <tbody>
           <tr>
+            <#if fileLink?? && fileLink != "">
+            <tr>
+              <td><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Deep Link</td>
+              <td colspan="3"><a href="${fileLink}">${fileLink}</a></td>
+            </tr>
+            </#if>
             <td><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Repository</td>
             <td>
             <#if source?? && codeOwner != "File System">
