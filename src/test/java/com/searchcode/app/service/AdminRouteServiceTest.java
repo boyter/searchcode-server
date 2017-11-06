@@ -155,7 +155,10 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("repousername")).thenReturn("username,username".split(","));
         when(mockRequest.queryParamsValues("repopassword")).thenReturn("password,password".split(","));
         when(mockRequest.queryParamsValues("reposource")).thenReturn("source,source".split(","));
-        when(mockRequest.queryParamsValues("repobranch")).thenReturn("master,master".split(","));
+        when(mockRequest.queryParamsValues("repobranch")).thenReturn("source,source".split(","));
+        when(mockRequest.queryParamsValues("source")).thenReturn("source,source".split(","));
+        when(mockRequest.queryParamsValues("sourceuser")).thenReturn("master,master".split(","));
+        when(mockRequest.queryParamsValues("sourceproject")).thenReturn("master,master".split(","));
 
         adminRouteService.postRepo(mockRequest, null);
         verify(mockRepo, times(2)).saveRepo(any());
