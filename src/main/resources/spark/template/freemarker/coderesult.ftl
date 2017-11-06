@@ -8,6 +8,10 @@
 
     <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> /${codePath}</h4>
 
+    <#if fileLink?? && fileLink != "">
+    <h6><a href="${fileLink}">${fileLink}</a></h6>
+    </#if>
+
     <center>
         <form method="GET" action="/">
             <div class="form-inline">
@@ -23,12 +27,6 @@
     <table class="table">
         <tbody>
           <tr>
-            <#if fileLink?? && fileLink != "">
-            <tr>
-              <td><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Deep Link</td>
-              <td colspan="3"><a href="${fileLink}">${fileLink}</a></td>
-            </tr>
-            </#if>
             <td><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> Repository</td>
             <td>
             <#if source?? && codeOwner != "File System">
