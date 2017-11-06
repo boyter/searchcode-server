@@ -305,7 +305,7 @@ public class TimeCodeSearcher {
         List<CodeFacetRevision> repoFacetRevision = this.getRevisionFacetResults(searcher, reader, query);
         List<CodeFacetDeleted> repoFacetDeleted = this.getDeletedFacetResults(searcher, reader, query);
 
-        SearchResult searchResult = new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
+        SearchResult searchResult = new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner, null);
 
         searchResult.setRepoFacetYearMonthDay(repoFacetYearMonthDay);
         searchResult.setRepoFacetYearMonth(repoFacetYearMonth);

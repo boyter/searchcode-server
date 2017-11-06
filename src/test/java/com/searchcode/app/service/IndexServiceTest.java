@@ -47,7 +47,8 @@ public class IndexServiceTest extends TestCase {
             this.contents,
             "repoRemoteLocation",
             this.codeOwner,
-            "mydisplaylocation");
+            "mydisplaylocation",
+            "source");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -137,10 +138,11 @@ public class IndexServiceTest extends TestCase {
                 "contents",
                 "repoRemoteLocation",
                 "code Owner",
-                "displayLocation"
+                "displayLocation",
+                "code Source"
         ));
 
-        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(23);
+        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(25);
 
         IndexableField[] fields = indexFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
@@ -150,6 +152,9 @@ public class IndexServiceTest extends TestCase {
 
         fields = indexFields.getFields(Values.CODEOWNER);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("code_Owner");
+
+        fields = indexFields.getFields(Values.SOURCE);
+        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("code Source");
 
         // Verifies that we ran through the pipeline
         fields = indexFields.getFields(Values.CONTENTS);
@@ -505,7 +510,8 @@ public class IndexServiceTest extends TestCase {
                 "actual.contains",
                 "repoRemoteLocation",
                 this.codeOwner,
-                "mydisplaylocation"));
+                "mydisplaylocation",
+                "source"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("actual.contains", null, 0, false);
@@ -527,7 +533,8 @@ public class IndexServiceTest extends TestCase {
                 "actual.contains",
                 "repoRemoteLocation",
                 this.codeOwner,
-                "mydisplaylocation"));
+                "mydisplaylocation",
+                "source"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("emaN*", null, 0, false);

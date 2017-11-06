@@ -116,13 +116,10 @@ public class Values {
     public static final String FILELOCATION = "filelocation";
     public static final String FILELOCATIONFILENAME = "filelocationfilename";
     public static final String FILENAME = "filename";
-    public static final String LANGUAGENAME = "languagename";
     public static final String MD5HASH = "md5hash";
     public static final String CODELINES = "codelines";
     public static final String REPOLOCATION = "repolocation";
-    public static final String REPONAME = "reponame";
     public static final String MODIFIED = "modified";
-    public static final String CODEOWNER = "codeowner";
     public static final String REVISION = "revision";
     public static final String DATEYEARMONTHDAY = "datedaymonthyear"; // EG 20160523 reversed as test
     public static final String DATEYEARMONTH = "datemonthyear"; // EG 201605
@@ -132,6 +129,11 @@ public class Values {
     public static final String CODEID = "codeid";
     public static final String SCHASH = "schash"; // Not a real simhash but custom one
     public static final String DISPLAY_LOCATION = "displaylocation";
+    // Facets
+    public static final String LANGUAGENAME = "languagename";
+    public static final String REPONAME = "reponame";
+    public static final String CODEOWNER = "codeowner";
+    public static final String SOURCE = "source";
 
     // Lucene values for literal search
     public static final String FILE_NAME_LITERAL = "fn";

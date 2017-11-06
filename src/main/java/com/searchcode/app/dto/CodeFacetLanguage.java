@@ -48,6 +48,6 @@ public class CodeFacetLanguage {
     }
 
     public String getLanguageNameSearchable() {
-        return Singleton.getHelpers().replaceNonAlphanumeric(this.languageName.toLowerCase(), "_");
+        return Singleton.getHelpers().replaceForIndex(this.languageName.toLowerCase());
     }
 }

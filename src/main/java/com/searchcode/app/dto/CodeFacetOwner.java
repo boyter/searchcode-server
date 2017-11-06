@@ -48,6 +48,6 @@ public class CodeFacetOwner {
     }
 
     public String getOwnerSearchable() {
-        return Singleton.getHelpers().replaceNonAlphanumeric(this.owner.toLowerCase(), "_");
+        return Singleton.getHelpers().replaceForIndex(this.owner.toLowerCase());
     }
 }

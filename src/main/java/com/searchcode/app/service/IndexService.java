@@ -226,10 +226,9 @@ public class IndexService implements IIndexService {
                         facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
                         facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                         facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
+                        facetsConfig.setIndexFieldName(Values.SOURCE, Values.SOURCE);
 
                         Document document = this.buildDocument(x);
-
-                        Timer timer = Singleton.getNewTimer();
 
                         try {
                             writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
@@ -264,6 +263,10 @@ public class IndexService implements IIndexService {
         if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getCodeOwner())) {
             document.add(new SortedSetDocValuesFacetField(Values.CODEOWNER, codeIndexDocument.getCodeOwner()));
         }
+        if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getSource())) {
+            document.add(new SortedSetDocValuesFacetField(Values.SOURCE, codeIndexDocument.getSource()));
+        }
+
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
 
@@ -297,6 +300,7 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
         document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
+        document.add(new TextField(Values.SOURCE,                   codeIndexDocument.getSource(), Field.Store.YES));
 
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
@@ -688,7 +692,7 @@ public class IndexService implements IIndexService {
         List<CodeResult> codeResults = new ArrayList<>();
 
         if (this.helpers.isNullEmptyOrWhitespace(repoName)) {
-            return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null);
+            return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null, null);
         }
 
 
@@ -725,7 +729,7 @@ public class IndexService implements IIndexService {
 
         codeResults.sort(Comparator.comparing(x -> x.displayLocation));
 
-        return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null);
+        return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null, null);
     }
 
     /**
@@ -909,8 +913,9 @@ public class IndexService implements IIndexService {
         List<CodeFacetLanguage> codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
         List<CodeFacetRepo> repoFacetLanguages = this.getRepoFacetResults(searcher, reader, query);
         List<CodeFacetOwner> repoFacetOwner= this.getOwnerFacetResults(searcher, reader, query);
+        List<CodeFacetSource> repoFacetSource= this.getSourceFacetResults(searcher, reader, query);
 
-        return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner);
+        return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner, repoFacetSource);
     }
 
     private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId) {
@@ -928,6 +933,7 @@ public class IndexService implements IIndexService {
         codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
         codeResult.setCodeId(doc.get(Values.CODEID));
         codeResult.setDisplayLocation(doc.get(Values.DISPLAY_LOCATION));
+        codeResult.setSource(doc.get(Values.SOURCE));
 
         return codeResult;
     }
@@ -1036,6 +1042,35 @@ public class IndexService implements IIndexService {
         } catch (Exception ignore) {}
 
         return codeFacetRepo;
+    }
+
+    /**
+     * Returns the matching source facets for a given query
+     */
+    private List<CodeFacetSource> getSourceFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetSource> codeFacetSource = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.SOURCE);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(this.CHILD_FACET_LIMIT, Values.SOURCE);
+
+            if (result != null) {
+                int stepThrough = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
+
+                for (int i = 0; i < stepThrough; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        codeFacetSource.add(new CodeFacetSource(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        } catch (Exception ignore) {}
+
+        return codeFacetSource;
     }
 
     /**
