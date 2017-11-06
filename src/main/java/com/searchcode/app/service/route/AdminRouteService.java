@@ -426,6 +426,10 @@ public class AdminRouteService {
             RepoResult repoResult = new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}");
             validate = this.validatorService.validate(repoResult);
 
+            repoResult.getData().source = source[i];
+            repoResult.getData().user = sourceuser[i];
+            repoResult.getData().project = sourceproject[i];
+
             if (!validate.isValid) {
                 validate.setRepoResult(repoResult);
                 return validate;

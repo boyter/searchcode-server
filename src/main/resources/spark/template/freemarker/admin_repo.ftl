@@ -82,7 +82,7 @@
       <div class="form-group">
           <label for="source" class="col-sm-2 control-label">Source</label>
           <div class="col-sm-10">
-            <select id="source" name="reposcm" class="form-control">
+            <select id="source" name="source" class="form-control">
               <#list repositorySource>
                 <option value=""></option>
                 <#items as result>
