@@ -77,6 +77,36 @@
           </div>
       </div>
 
+      <hr />
+
+      <div class="form-group">
+          <label for="source" class="col-sm-2 control-label">Source</label>
+          <div class="col-sm-10">
+            <select id="source" name="reposcm" class="form-control">
+              <option value=""></option>
+              <option value="git">GitHub</option>
+              <option value="svn">Bitbucket</option>
+              <option value="file">GitLab</option>
+            </select>
+          </div>
+      </div>
+
+      <div class="form-group">
+          <label for="sourceuser" class="col-sm-2 control-label">Source User</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceuser" name="sourceuser" placeholder="" />
+          </div>
+      </div>
+
+      <div class="form-group">
+          <label for="sourceproject" class="col-sm-2 control-label">Source Project</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceproject" name="sourceproject" placeholder="" />
+          </div>
+      </div>
+
+      <hr />
+
       <div class="form-group">
         <label for="repobranch" class="col-sm-2 control-label">Add Another</label>
         <div class="col-sm-10">
