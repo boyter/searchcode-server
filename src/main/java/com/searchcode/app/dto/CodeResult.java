@@ -35,6 +35,7 @@ public class CodeResult {
     public String message = "";
     public String codeId = "";
     public String displayLocation = "";
+    public String source = "";
 
     public CodeResult(List<String> code, List<CodeMatchResult>matchingResults) {
         this.setCode(code);
@@ -191,5 +192,13 @@ public class CodeResult {
 
     public void setDisplayLocation(String displayLocation) {
         this.displayLocation = displayLocation;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

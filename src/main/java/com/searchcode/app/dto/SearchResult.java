@@ -25,15 +25,17 @@ public class SearchResult {
     private List<CodeFacetLanguage> languageFacetResults = new ArrayList<>();
     private List<CodeFacetRepo> repoFacetResults = new ArrayList<>();
     private List<CodeFacetOwner> repoOwnerResults = new ArrayList<>();
+    private List<CodeFacetSource> codeFacetSources = new ArrayList<>();
     private List<CodeFacetYearMonthDay> repoFacetYearMonthDay = new ArrayList<>();
     private List<CodeFacetYearMonth> repoFacetYearMonth = new ArrayList<>();
     private List<CodeFacetYear> repoFacetYear = new ArrayList<>();
     private List<CodeFacetRevision> repoFacetRevision = new ArrayList<>();
     private List<CodeFacetDeleted> repoFacetDeleted = new ArrayList<>();
 
+
     public SearchResult() {}
 
-    public SearchResult(int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults) {
+    public SearchResult(int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults, List<CodeFacetSource> codeFacetSources) {
         this.setTotalHits(totalHits);
         this.setPage(page);
         this.setQuery(query);
@@ -42,6 +44,7 @@ public class SearchResult {
         this.setLanguageFacetResults(languageFacetResults);
         this.setRepoFacetResults(repoFacetResults);
         this.setOwnerFacetResults(repoOwnerResults);
+        this.setCodeFacetSources(codeFacetSources);
     }
 
     public int getTotalHits() {
@@ -158,5 +161,13 @@ public class SearchResult {
 
     public void setRepoFacetDeleted(List<CodeFacetDeleted> repoFacetDeleted) {
         this.repoFacetDeleted = repoFacetDeleted;
+    }
+
+    public List<CodeFacetSource> getCodeFacetSources() {
+        return codeFacetSources;
+    }
+
+    public void setCodeFacetSources(List<CodeFacetSource> codeFacetSources) {
+        this.codeFacetSources = codeFacetSources;
     }
 }
