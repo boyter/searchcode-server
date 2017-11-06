@@ -83,10 +83,12 @@
           <label for="source" class="col-sm-2 control-label">Source</label>
           <div class="col-sm-10">
             <select id="source" name="reposcm" class="form-control">
-              <option value=""></option>
-              <option value="git">GitHub</option>
-              <option value="svn">Bitbucket</option>
-              <option value="file">GitLab</option>
+              <#list repositorySource>
+                <option value=""></option>
+                <#items as result>
+                  <option value="${result}">${result}</option>
+                </#items>
+              </#list>
             </select>
           </div>
       </div>
