@@ -17,6 +17,7 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.RunningIndexJob;
+import com.searchcode.app.dto.Source;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
@@ -24,6 +25,7 @@ import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.Properties;
 
+import com.searchcode.app.util.RepositorySource;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
@@ -205,6 +207,9 @@ public class AdminRouteService {
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+
+        RepositorySource repositorySource = Singleton.getRepositorySource();
+        map.put("repositorySource", repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
 
         return map;
     }
@@ -400,6 +405,12 @@ public class AdminRouteService {
         String[] repopassword = request.queryParamsValues("repopassword");
         String[] reposource = request.queryParamsValues("reposource");
         String[] repobranch = request.queryParamsValues("repobranch");
+
+        // Additional
+        String[] source = request.queryParamsValues("source");
+        String[] sourceuser = request.queryParamsValues("sourceuser");
+        String[] sourceproject = request.queryParamsValues("sourceproject");
+
 
         ValidatorResult validate = new ValidatorResult(true, Values.EMPTYSTRING);
 
