@@ -46,6 +46,7 @@ public class AdminRouteService {
     private final IndexService indexService;
     private final StatsService statsService;
     private final ValidatorService validatorService;
+    private final RepositorySource repositorySource;
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
@@ -54,10 +55,11 @@ public class AdminRouteService {
              Singleton.getDataService(),
              Singleton.getIndexService(),
              Singleton.getStatsService(),
-             Singleton.getValidatorService());
+             Singleton.getValidatorService(),
+             Singleton.getRepositorySource());
     }
 
-    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService) {
+    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource) {
         this.repo = repo;
         this.data = data;
         this.jobService = jobService;
@@ -65,6 +67,7 @@ public class AdminRouteService {
         this.indexService = indexService;
         this.statsService = statsService;
         this.validatorService = validatorService;
+        this.repositorySource = repositorySource;
     }
 
     public String getStat(Request request, Response response) {
@@ -208,8 +211,7 @@ public class AdminRouteService {
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
-        RepositorySource repositorySource = Singleton.getRepositorySource();
-        map.put("repositorySource", repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
+        map.put("repositorySource", this.repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
 
         return map;
     }
