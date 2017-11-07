@@ -485,6 +485,10 @@ public class IndexServiceTest extends TestCase {
         assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
             put("fl", new String[]{"temp/something", "another", "thing"});
         }})).isEqualTo(" && (fl:temp_something*)");
+
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+            put("src", new String[]{"something"});
+        }})).isEqualTo(" && (source:something)");
     }
 
     ///////////////////////////////////////////////////
