@@ -17,7 +17,6 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.Timer;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.analysis.Analyzer;
@@ -814,6 +813,15 @@ public class IndexService implements IIndexService {
                     break;
                 case "fl":
                     filters.append(" && (fl:").append(this.helpers.replaceForIndex(facets.get(key)[0])).append("*)");
+                    break;
+                case "src":
+                    List<String> srcList = Arrays.stream(facets.get(key))
+                            .map((s) -> Values.SOURCE + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .collect(Collectors.toList());
+
+                    if (!srcList.isEmpty()) {
+                        filters.append(" && (").append(StringUtils.join(srcList, " || ")).append(")");
+                    }
                     break;
                 default:
                     break;
