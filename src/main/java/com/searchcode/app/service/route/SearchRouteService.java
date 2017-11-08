@@ -60,6 +60,7 @@ public class SearchRouteService {
         if (request.queryParams().contains("lan")) { facets.put("lan", request.queryParamsValues("lan")); }
         if (request.queryParams().contains("own")) { facets.put("own", request.queryParamsValues("own")); }
         if (request.queryParams().contains("fl")) { facets.put("fl", new String[] { request.queryParams("fl") }); }
+        if (request.queryParams().contains("src")) { facets.put("src", request.queryParamsValues("src")); }
 
         if (query.trim().startsWith("/") && query.trim().endsWith("/")) { isLiteral = true; }
 

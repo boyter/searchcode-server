@@ -154,7 +154,7 @@ public class IndexServiceTest extends TestCase {
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("code_Owner");
 
         fields = indexFields.getFields(Values.SOURCE);
-        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("code Source");
+        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("code_source");
 
         // Verifies that we ran through the pipeline
         fields = indexFields.getFields(Values.CONTENTS);

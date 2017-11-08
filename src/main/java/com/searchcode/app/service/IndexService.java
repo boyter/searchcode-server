@@ -299,7 +299,7 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
         document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
-        document.add(new TextField(Values.SOURCE,                   codeIndexDocument.getSource(), Field.Store.YES));
+        document.add(new TextField(Values.SOURCE,                   this.helpers.replaceForIndex(codeIndexDocument.getSource()), Field.Store.YES));
 
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
