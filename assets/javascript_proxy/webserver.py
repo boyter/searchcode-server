@@ -59,8 +59,8 @@ class MyHandler(BaseHTTPRequestHandler):
 
 def main():
   try:
-    server = HTTPServer(('', 8888), MyHandler)
-    print 'started httpserver on 8888...'
+    server = HTTPServer(('', 8090), MyHandler)
+    print 'started httpserver on 8090...'
     server.serve_forever()
   except KeyboardInterrupt:
     print '^C received, shutting down server'

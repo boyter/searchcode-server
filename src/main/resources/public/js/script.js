@@ -72,6 +72,8 @@ var SearchModel = {
     langfilters: m.prop([]),
     repositoryfilters: m.prop([]),
     ownfilters: m.prop([]),
+    srcfilters: m.prop([]),
+
     yearfilters: m.prop([]),
     yearmonthfilters: m.prop([]),
     yearmonthdayfilters: m.prop([]),
@@ -82,10 +84,13 @@ var SearchModel = {
     langfiltertext: m.prop(''),
     ownerfiltertext: m.prop(''),
     repofiltertext: m.prop(''),
+    sourcefiltertext: m.prop(''),
 
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
+    activesrcfilters: m.prop([]),
+
     activeyearfilters: m.prop([]),
     activeyearmonthfilters: m.prop([]),
     activeyearmonthdayfilters: m.prop([]),
@@ -108,6 +113,7 @@ var SearchModel = {
     repofilters: m.prop([]),
     languagefilters: m.prop([]),
     ownerfilters: m.prop([]),
+    sourcefilters: m.prop([]),
 
     repoFacetYear: m.prop([]),
     repoFacetYearMonth: m.prop([]),
@@ -116,19 +122,24 @@ var SearchModel = {
     repoFacetDeleted: m.prop([]),
 
     clearfilters: function() {
+        // Filters for regular search
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
         SearchModel.ownfilters([]);
+        SearchModel.srcfilters([]);
+        SearchModel.pathvalue('');
+
+        // Filters for historical search
         SearchModel.yearfilters([]);
         SearchModel.yearmonthfilters([]);
         SearchModel.yearmonthdayfilters([]);
         SearchModel.revisionfilters([]);
         SearchModel.deletedfilters([]);
-        SearchModel.pathvalue('');
 
         SearchModel.langfiltertext('');
         SearchModel.ownerfiltertext('');
         SearchModel.repofiltertext('');
+        SearchModel.sourcefiltertext('');
     },
     toggleinstant: function() {
         if (window.localStorage) {
@@ -314,6 +325,14 @@ var SearchModel = {
                     SearchModel.ownfilters(_.without(SearchModel.ownfilters(), name));
                 }
                 break;
+            case 'source':
+                if (_.indexOf(SearchModel.srcfilters(), name) === -1) {
+                    SearchModel.srcfilters().push(name);
+                }
+                else {
+                    SearchModel.srcfilters(_.without(SearchModel.srcfilters(), name));
+                }
+                break;
             case 'year':
                 if (_.indexOf(SearchModel.yearfilters(), name) === -1) {
                     SearchModel.yearfilters().push(name);
@@ -370,6 +389,11 @@ var SearchModel = {
                 break;
             case 'owner':
                 if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
+                    return false;
+                }
+                break;
+            case 'source':
+                if (_.indexOf(SearchModel.srcfilters(), name) === -1) {
                     return false;
                 }
                 break;
@@ -623,6 +647,7 @@ var SearchModel = {
                 SearchModel.repofilters(e.repoFacetResults);
                 SearchModel.languagefilters(e.languageFacetResults);
                 SearchModel.ownerfilters(e.repoOwnerResults);
+                SearchModel.sourcefilters(e.codeFacetSources);
 
                 // History fields
                 SearchModel.repoFacetYear(e.repoFacetYear);
@@ -665,6 +690,11 @@ var SearchComponent = {
                         m.component(SearchAlternateFilterComponent, {
                             query: SearchModel.query(),
                             altquery: SearchModel.altquery()
+                        }),
+                        m.component(SearchSourcesFilterComponent, {
+                            sourcefilters: SearchModel.sourcefilters(),
+                            search: SearchModel.search,
+                            filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(SearchRepositoriesFilterComponent, {
                             repofilters: SearchModel.repofilters(),
@@ -964,6 +994,93 @@ var RSSComponent = {
                 )
             ])
         );
+    }
+}
+
+var SearchSourcesFilterComponent = {
+    controller: function() {
+        
+        var showall = false;
+        var trimlength = 5;
+
+        return {
+            trimrepo: function (languagefilters) {
+                var toreturn = languagefilters;
+
+                if (SearchModel.sourcefiltertext().length === 0 && !showall) {
+                    toreturn = _.first(toreturn, trimlength);
+                }
+
+                if (SearchModel.sourcefiltertext().length !== 0) {
+                    toreturn = _.filter(toreturn, function (e) { 
+                        return e.source.toLowerCase().indexOf(SearchModel.sourcefiltertext()) !== -1; 
+                    } );
+                }
+
+                return toreturn;
+            },
+            toggleshowall: function() {
+                showall = !showall;
+            },
+            showall: function () {
+                return showall;
+            },
+            trimlength: function () {
+                return trimlength;
+            },
+            clickenvent: function(source) {
+                SearchModel.togglefilter('source', source);
+            },
+            filtervalue: function(value) {
+                SearchModel.sourcefiltertext(value);
+            },
+            hasfilter: function() {
+                return SearchModel.sourcefiltertext().length !== 0;
+            },
+            getfiltervalue: function() {
+                return SearchModel.sourcefiltertext();
+            }
+        }
+    },
+    view: function(ctrl, args) {
+        var showmoreless = m('div');
+
+        if (args.sourcefilters === undefined || args.sourcefilters.length == 0) {
+            return showmoreless;
+        }
+
+        if (!ctrl.hasfilter() && ctrl.trimlength() < args.sourcefilters.length) {
+            var morecount = args.sourcefilters.length - ctrl.trimlength();
+
+            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more sources ', m('span.glyphicon.glyphicon-chevron-down'))
+
+            if (ctrl.showall()) {
+                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less sources ', m('span.glyphicon.glyphicon-chevron-up'))
+            }
+        }
+
+        return m('div', [
+            m('h5', 'Sources'),
+            m('input.repo-filter', {
+                onkeyup: m.withAttr('value', ctrl.filtervalue),
+                placeholder: 'Filter Sources',
+                value: ctrl.getfiltervalue()
+            }),
+            _.map(ctrl.trimrepo(args.sourcefilters), function(res, ind) {
+                return m.component(FilterCheckboxComponent, {
+                    onclick: function() { 
+                        ctrl.clickenvent(res.source);
+                        if (SearchModel.filterinstantly()) {
+                            args.search();
+                        }
+                    },
+                    value: res.source,
+                    count: res.count,
+                    checked: SearchModel.filterexists('source', res.source)
+                });
+            }),
+            showmoreless
+        ]);
     }
 }
 
