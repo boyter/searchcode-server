@@ -170,6 +170,7 @@ var SearchModel = {
         var repos = '';
         var langs = '';
         var owns = '';
+        var srcs = '';
         var path = '';
         var years = '';
         var yearmonths = '';
@@ -216,6 +217,21 @@ var SearchModel = {
                 langs = ' and ' + plural + ' "';
             }
             langs = langs + SearchModel.activelangfilters().join(', ') + '"';
+        }
+
+        if (SearchModel.activesrcfilters().length !== 0) {
+            var plural = 'source';
+            if (SearchModel.activesrcfilters().length >= 2) {
+                plural = 'sources';
+            }
+
+            if (repos === '') {
+                srcs = ' filtered by ' + plural + ' "';
+            }
+            else {
+                srcs = ' and ' + plural + ' "';
+            }
+            srcs = srcs + SearchModel.activesrcfilters().join(', ') + '"';
         }
 
         if (SearchModel.activeownfilters().length != 0) {
@@ -297,7 +313,7 @@ var SearchModel = {
             literal = ' using literal search';
         }
 
-        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + years + yearmonths + yearmonthdays + revisions + literal;
+        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + srcs + years + yearmonths + yearmonthdays + revisions + literal;
     },
     togglefilter: function (type, name) {
         switch(type) {
