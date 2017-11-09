@@ -536,6 +536,7 @@ var SearchModel = {
                 langfilters: SearchModel.activelangfilters(),
                 repofilters: SearchModel.activerepositoryfilters(),
                 ownfilters: SearchModel.activeownfilters(),
+                srcfilters: SearchModel.activesrcfilters(),
                 currentpage: SearchModel.currentpage(),
                 pathvalue: SearchModel.pathvalue()
             }, 'search', '?q=' + 
@@ -543,6 +544,7 @@ var SearchModel = {
                         SearchModel.getlangfilters() + 
                         SearchModel.getrepofilters() + 
                         SearchModel.getownfilters() + 
+                        SearchModel.getsrcfilters() + 
                         SearchModel.getyearfilters() + 
                         SearchModel.getyearmonthfilters() + 
                         SearchModel.getyearmonthdayfilters() + 
@@ -2000,6 +2002,9 @@ if (typeof preload !== 'undefined') {
     SearchModel.ownfilters(preload.ownerFacets);
     SearchModel.activeownfilters(preload.ownerFacets);
 
+    SearchModel.srcfilters(preload.srcFacets);
+    SearchModel.activesrcfilters(preload.srcFacets);
+
     SearchModel.pathvalue(preload.pathValue);
     SearchModel.literalview(preload.isLiteral);
 
@@ -2007,6 +2012,8 @@ if (typeof preload !== 'undefined') {
 }
 
 
+// For things such as if literal search, compact view or instant search set the values
+// based on what is in the users localstorage
 if (window.localStorage) {
     var tmp = JSON.parse(localStorage.getItem('toggleinstant'));
     tmp !== null ? SearchModel.filterinstantly(tmp) : SearchModel.filterinstantly(true);

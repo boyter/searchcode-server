@@ -19,14 +19,16 @@ public class CodePreload {
     private final List<String> languageFacets;
     private final List<String> repositoryFacets;
     private final List<String> ownerFacets;
+    private final List<String> srcFacets;
     private final String pathValue;
 
-    public CodePreload(String query, int page, List<String> languageFacets, List<String> repositoryFacets, List<String> ownerFacets, String pathValue, boolean isLiteral) {
+    public CodePreload(String query, int page, List<String> languageFacets, List<String> repositoryFacets, List<String> ownerFacets, List<String> srcFacets, String pathValue, boolean isLiteral) {
         this.query = query;
         this.page = page;
         this.languageFacets = languageFacets;
         this.repositoryFacets = repositoryFacets;
         this.ownerFacets = ownerFacets;
+        this.srcFacets = srcFacets;
         this.pathValue = pathValue;
         this.isLiteral = isLiteral;
     }
