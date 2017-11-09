@@ -458,6 +458,15 @@ var SearchModel = {
 
         return own;
     },
+    getsrcfilters: function() {
+        var src = '';
+
+        if (SearchModel.srcfilters().length != 0) {
+            src = '&src=' + _.map(SearchModel.srcfilters(), function(e) { return encodeURIComponent(e); } ).join('&src=');
+        }
+
+        return src;
+    },
     getpathfilters: function() {
         var path = '';
 
@@ -549,6 +558,8 @@ var SearchModel = {
         var lang = SearchModel.getlangfilters();
         var repo = SearchModel.getrepofilters();
         var own = SearchModel.getownfilters();
+        var src = SearchModel.getsrcfilters();
+
         var year = SearchModel.getyearfilters();
         var ym = SearchModel.getyearmonthfilters();
         var ymd = SearchModel.getyearmonthdayfilters();
@@ -567,15 +578,17 @@ var SearchModel = {
         SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
         SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
+        SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.srcfilters())));
+
         SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
         SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
         SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
         SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
         SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
 
-        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
 
         return queryurl;
@@ -593,6 +606,8 @@ var SearchModel = {
         var lang = SearchModel.getlangfilters();
         var repo = SearchModel.getrepofilters();
         var own = SearchModel.getownfilters();
+        var src = SearchModel.getsrcfilters();
+
         var year = SearchModel.getyearfilters();
         var ym = SearchModel.getyearmonthfilters();
         var ymd = SearchModel.getyearmonthdayfilters();
@@ -618,6 +633,8 @@ var SearchModel = {
         SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
         SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
+        SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.srcfilters())));
+
         SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
         SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
         SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
@@ -626,12 +643,12 @@ var SearchModel = {
 
         SearchModel.setstatechange(pagequery, isstatechange);
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
         if (SearchModel.literalview() === true) {
-            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
         }
 
         m.request( { method: 'GET', url: queryurl } ).then( function(e) {
