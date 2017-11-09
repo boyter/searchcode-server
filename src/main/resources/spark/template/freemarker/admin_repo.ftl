@@ -79,6 +79,8 @@
 
       <hr />
 
+      <p>The below are only required if you want deeplinks to the original repository to be enabled.</p>
+
       <div class="form-group">
           <label for="source" class="col-sm-2 control-label">Source</label>
           <div class="col-sm-10">
@@ -92,18 +94,16 @@
             </select>
           </div>
       </div>
-
       <div class="form-group">
           <label for="sourceuser" class="col-sm-2 control-label">Source User</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceuser" name="sourceuser" placeholder="" />
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceuser" name="sourceuser" placeholder="The user account that is used for the link." />
           </div>
       </div>
-
       <div class="form-group">
           <label for="sourceproject" class="col-sm-2 control-label">Source Project</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceproject" name="sourceproject" placeholder="" />
+            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceproject" name="sourceproject" placeholder="The project name that is used for the link." />
           </div>
       </div>
 
@@ -128,11 +128,11 @@
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script>
 function validateRepoName() {
-    var input = $('#reponame');
-	var re = /^[a-zA-Z0-9-_]*$/;
-	var is_valid = re.test(input.val());
+  var input = $('#reponame');
+  var re = /^[a-zA-Z0-9-_]*$/;
+  var is_valid = re.test(input.val());
 
-	$.ajax('/api/repo/repo/?reponame=' + input.val())
+  $.ajax('/api/repo/repo/?reponame=' + input.val())
     .done(function(data, textStatus, jqXHR) {
         if (is_valid && input.val() && (data === 'null' || data === null)) {
             $('#reponame-formgroup').removeClass('has-error');
