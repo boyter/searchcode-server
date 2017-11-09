@@ -72,6 +72,7 @@ public class CodeRouteService {
             List<String> reposList = new ArrayList<>();
             List<String> langsList = new ArrayList<>();
             List<String> ownsList = new ArrayList<>();
+            List<String> srcsList = new ArrayList<>();
 
             if (request.queryParams().contains("repo")) {
                 String[] repos;
@@ -100,6 +101,15 @@ public class CodeRouteService {
                 }
             }
 
+            if (request.queryParams().contains("src")) {
+                String[] srcs;
+                srcs = request.queryParamsValues("src");
+
+                if (srcs.length != 0) {
+                    srcsList = Arrays.asList(srcs);
+                }
+            }
+
 
             String pathValue = Values.EMPTYSTRING;
             if (request.queryParams().contains("path")) {
@@ -112,7 +122,7 @@ public class CodeRouteService {
             }
 
             map.put("searchValue", query);
-            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, pathValue, isLiteral)));
+            map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, srcsList, pathValue, isLiteral)));
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.ISCOMMUNITY);
