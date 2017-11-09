@@ -195,6 +195,8 @@ Change Log
 
 XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Reversed filename in search https://github.com/boyter/searchcode-server/issues/160
+ - Add click through to original repository https://github.com/boyter/searchcode-server/issues/162
+ - Add filter by source https://github.com/boyter/searchcode-server/issues/162
 
 
 29 September 2017 - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
