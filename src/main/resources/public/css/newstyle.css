@@ -38,7 +38,7 @@ input.repo-filter {
     font-size: 1.3em;
     background: rgba(0,0,0,0.8);
     border-radius: 5px;
-    padding: 5px;
+    padding: 20px;
 }
 
 .form-signin {

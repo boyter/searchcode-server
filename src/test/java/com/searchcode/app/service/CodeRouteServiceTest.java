@@ -40,7 +40,7 @@ public class CodeRouteServiceTest extends TestCase {
 
         assertThat(model.get("photoId")).isInstanceOf(Integer.class);
         assertThat((int)model.get("photoId")).isGreaterThanOrEqualTo(0);
-        assertThat((int)model.get("photoId")).isLessThanOrEqualTo(4);
+        assertThat((int)model.get("photoId")).isLessThanOrEqualTo(42);
         assertThat(model.get("numDocs")).isInstanceOf(Integer.class);
         assertThat((int)model.get("numDocs")).isGreaterThanOrEqualTo(0);
         assertThat(model.get("logoImage")).isNotNull();
@@ -83,7 +83,7 @@ public class CodeRouteServiceTest extends TestCase {
 
         assertThat(model.get("photoId")).isInstanceOf(Integer.class);
         assertThat((int)model.get("photoId")).isGreaterThanOrEqualTo(0);
-        assertThat((int)model.get("photoId")).isLessThanOrEqualTo(4);
+        assertThat((int)model.get("photoId")).isLessThanOrEqualTo(42);
         assertThat(model.get("numDocs")).isInstanceOf(Integer.class);
         assertThat((int)model.get("numDocs")).isGreaterThanOrEqualTo(0);
         assertThat(model.get("logoImage")).isNotNull();
