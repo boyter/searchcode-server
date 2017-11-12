@@ -77,11 +77,6 @@ public class App {
             return new FreeMarkerEngine().render(codeRouteService.html(request, response));
         });
 
-        get("/literal/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
-            return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.literalSearch(request, response), "index.ftl"));
-        });
-
         get("/file/:codeid/:reponame/*", (request, response) -> {
             response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();

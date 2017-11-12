@@ -152,7 +152,7 @@ public class CommonRouteService {
     }
     
     public static int getPhotoId() {
-        Random random = new Random();
+        Random random = new Random(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
         return random.nextInt((42 - 1) + 1);
     }
 }
