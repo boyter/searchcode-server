@@ -12,7 +12,6 @@ package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.dto.api.ApiResponse;
@@ -22,7 +21,6 @@ import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
-
 import spark.Request;
 import spark.Response;
 
