@@ -313,7 +313,7 @@ var SearchModel = {
                         pagequery);
         }
     },
-    get_search_query_string: function(page=0) {
+    get_search_query_string: function(page) {
         // If we have filters append them on
         var lang = SearchModel.get_lang_url_filters();
         var repo = SearchModel.get_repo_url_filters();
