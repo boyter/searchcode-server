@@ -24,4 +24,16 @@ public class RepoData {
     public String project = Values.EMPTYSTRING;
 
     public RepoData() {}
+
+    public String getSource() {
+        return source;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getProject() {
+        return project;
+    }
 }

@@ -47,20 +47,53 @@
 
 
     <#list repoResults>
-        <#items as result>
-            <div>
-                <input type="text" value="${result.name?html}" name="reponame" readonly="true">
-                <input type="text" value="${result.scm?html}" name="reposcm" readonly="true">
-                <input type="text" value="${result.url?html}" name="repourl" readonly="true">
-                <input type="text" value="${result.source?html}" name="reposource" readonly="true">
-                <input type="text" value="${result.branch?html}" name="repobranch" readonly="true">
-                <button class="btn btn-sm btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
-                <button class="btn btn-sm btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reindex</button>
-            </div>
-        </#items>
+    <table class="table table-condensed table-striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>SCM</th>
+                <th>URL</th>
+                <th>Source URL</th>
+                <th>Branch</th>
+                <th>Source</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <#items as result>
+            <tr>
+                <td>${result.name?html}</td>
+                <td>${result.scm?html}</td>
+                <td><div class="truncate">${result.url?html}</div></td>
+                <td><div class="truncate">${result.source?html}</div></td>
+                <td>${result.branch?html}</td>
+                <td>${result.data.source?html}</td>
+                <td>
+                    <button class="btn btn-xs btn-danger delete" data-id="${result.name?html}" name="delete" type="submit"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Delete</button>
+                </td>
+                <td>
+                    <button class="btn btn-xs btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reindex</button>
+                </td>
+                <td>
+                    <button class="btn btn-xs btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</button>
+                </td>
+            </tr>
+            </#items>
+        </tbody>
+    </table>
     </#list>
 </div>
 </div>
+<style>
+.truncate {
+  width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>
 
 <script src="/js/jquery-1.11.1.min.js"></script>
 <script src="/js/intercooler-1.1.2.min.js"></script>
@@ -74,7 +107,7 @@ $(document).ready(function(){
         if (result === true) {
             $.ajax('/admin/delete/?repoName=' + encodeURIComponent(thus.data('id')))
                .done(function(data, textStatus, jqXHR) {
-                    thus.parent().remove();
+                    thus.parent().parent().remove();
                }).fail(function(xhr, ajaxOptions, thrownError) {
                     alert('Sorry was unable to delete. Please reload the page and try again.');
               });
@@ -89,7 +122,7 @@ $(document).ready(function(){
            .done(function(data, textStatus, jqXHR) {
                 console.log('queued to reindex');
            }).fail(function(xhr, ajaxOptions, thrownError) {
-                alert('Sorry was unable to delete. Please reload the page and try again.');
+                alert('Sorry was unable to reindex. Please reload the page and try again.');
            });
     });
 });
