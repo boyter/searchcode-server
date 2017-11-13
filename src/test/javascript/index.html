@@ -15,8 +15,9 @@
   <script src="../../main/resources/public/js/mithril.min.js"></script>
   <script src="../../main/resources/public/js/script.js"></script>
 <script>
+  /////////////////////////////////////////////////////////////////////
 QUnit.module('HelperModel');
-QUnit.test( 'humanise', function( assert ) {
+QUnit.test('humanise', function( assert ) {
   assert.equal(HelperModel.humanise(1), '1 Day ');
   assert.equal(HelperModel.humanise(2), '2 Days ');
   assert.equal(HelperModel.humanise(3), '3 Days ');
@@ -30,25 +31,26 @@ QUnit.test( 'humanise', function( assert ) {
   assert.equal(HelperModel.humanise(400), '1 Year 1 Month 5 Days ');
 });
 
-QUnit.test( 'getDateSpan', function( assert ) {
+QUnit.test('getDateSpan', function( assert ) {
   assert.equal(HelperModel.getDateSpan(new Date(), new Date()).length, 1);
   assert.equal(HelperModel.getDateSpan(new Date(2000,01,01), new Date(2000,01,10)).length, 10);
 });
 
-QUnit.test( 'yearMonthDayToDate', function( assert ) {
+QUnit.test('yearMonthDayToDate', function( assert ) {
   assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getFullYear(), 2000);
   assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getMonth(), 11);
   assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getDate(), 12);
 });
 
-QUnit.test( 'yearMonthDayToDate', function( assert ) {
+QUnit.test('yearMonthDayToDate', function( assert ) {
   assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getFullYear(), 2000);
   assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getMonth(), 11);
   assert.equal(HelperModel.yearMonthDayToDate('2000-12-12').getDate(), 12);
 });
 
+/////////////////////////////////////////////////////////////////////
 QUnit.module('SearchModel');
-QUnit.test( 'clearfilters', function( assert ) {
+QUnit.test('clearfilters', function( assert ) {
   SearchModel.langfilters('notwhatweexpect');
   assert.equal(SearchModel.langfilters(), 'notwhatweexpect');
   SearchModel.repositoryfilters('notwhatweexpect');
@@ -79,21 +81,21 @@ QUnit.test( 'clearfilters', function( assert ) {
   assert.equal(SearchModel.deletedfilters().length, 0);
 });
 
-QUnit.test( 'toggleinstant', function( assert ) {
+QUnit.test('toggleinstant', function( assert ) {
   var current = SearchModel.filterinstantly();
   SearchModel.toggleinstant();
   assert.notEqual(current, SearchModel.filterinstantly());
   assert.notEqual(current, JSON.parse(localStorage.getItem('toggleinstant')));
 });
 
-QUnit.test( 'togglehistory', function( assert ) {
+QUnit.test('togglehistory', function( assert ) {
   var current = SearchModel.searchhistory();
   SearchModel.togglehistory();
   assert.notEqual(current, SearchModel.searchhistory());
   assert.notEqual(current, JSON.parse(localStorage.getItem('togglehistory')));
 });
 
-QUnit.test( 'getstringtitle', function( assert ) {
+QUnit.test('getstringtitle', function( assert ) {
   // TODO add more tests here for the history filter logic
   SearchModel.query('my search string');
   assert.equal(SearchModel.getstringtitle(), '"my search string"');
@@ -114,7 +116,7 @@ QUnit.test( 'getstringtitle', function( assert ) {
   assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owners "person1, person2"');
 });
 
-QUnit.test( 'togglefilter', function( assert ) {
+QUnit.test('togglefilter', function( assert ) {
   SearchModel.togglefilter('language', 'test');
   assert.equal(SearchModel.langfilters()[0], 'test');
   SearchModel.togglefilter('language', 'test');
@@ -131,7 +133,7 @@ QUnit.test( 'togglefilter', function( assert ) {
   assert.equal(SearchModel.ownfilters().length, 0);
 });
 
-QUnit.test( 'filterexists', function( assert ) {
+QUnit.test('filterexists', function( assert ) {
   SearchModel.langfilters(['test']);
   assert.ok(SearchModel.filterexists('language', 'test'));
   assert.notOk(SearchModel.filterexists('language', 'test2'));
@@ -145,7 +147,7 @@ QUnit.test( 'filterexists', function( assert ) {
   assert.notOk(SearchModel.filterexists('owner', 'test2'));
 });
 
-QUnit.test( 'getlangfilters', function( assert ) {
+QUnit.test('getlangfilters', function( assert ) {
   SearchModel.langfilters([]);
   assert.equal(SearchModel.getlangfilters(), '');
   SearchModel.langfilters(['test']);
@@ -154,7 +156,7 @@ QUnit.test( 'getlangfilters', function( assert ) {
   assert.equal(SearchModel.getlangfilters(), '&lan=test1&lan=test2');
 });
 
-QUnit.test( 'getrepofilters', function( assert ) {
+QUnit.test('getrepofilters', function( assert ) {
   SearchModel.repositoryfilters([]);
   assert.equal(SearchModel.getrepofilters(), '');
   SearchModel.repositoryfilters(['test']);
@@ -163,7 +165,7 @@ QUnit.test( 'getrepofilters', function( assert ) {
   assert.equal(SearchModel.getrepofilters(), '&repo=test1&repo=test2');
 });
 
-QUnit.test( 'getownfilters', function( assert ) {
+QUnit.test('getownfilters', function( assert ) {
   SearchModel.ownfilters([]);
   assert.equal(SearchModel.getownfilters(), '');
   SearchModel.ownfilters(['test']);
@@ -172,8 +174,62 @@ QUnit.test( 'getownfilters', function( assert ) {
   assert.equal(SearchModel.getownfilters(), '&own=test1&own=test2');
 });
 
+QUnit.test('getsrcfilters', function( assert ) {
+  SearchModel.srcfilters([]);
+  assert.equal(SearchModel.getsrcfilters(), '');
+  SearchModel.srcfilters(['test']);
+  assert.equal(SearchModel.getsrcfilters(), '&src=test');
+  SearchModel.srcfilters(['test1', 'test2']);
+  assert.equal(SearchModel.getsrcfilters(), '&src=test1&src=test2');
+});
+
+QUnit.test('getpathfilters', function( assert ) {
+  SearchModel.pathvalue('');
+  assert.equal(SearchModel.getlitfilter(), '');
+  SearchModel.pathvalue('terrywashere');
+  assert.equal(SearchModel.getpathfilters(), '&path=terrywashere');
+});
+
+QUnit.test('getlitfilter', function( assert ) {
+  SearchModel.literalview(false);
+  assert.equal(SearchModel.getlitfilter(), '');
+  SearchModel.literalview(true);
+  assert.equal(SearchModel.getlitfilter(), '&lit=true');
+});
+
+QUnit.test('setstatechange', function( assert ) {
+  var length = history.length;
+  SearchModel.setstatechange(0, true);
+  assert.equal(length, history.length);
+  SearchModel.setstatechange(0, undefined);
+  assert.notEqual(length, history.length);
+});
+
+QUnit.test('getsearchquerystring', function( assert ) {
+  SearchModel.langfilters([]);
+  SearchModel.repositoryfilters([]);
+  SearchModel.srcfilters([]);
+  SearchModel.ownfilters([]);
+  SearchModel.pathvalue('');
+  SearchModel.searchvalue('terrywashere');
+  
+  var res = SearchModel.getsearchquerystring();
+  assert.equal('?q=terrywashere&p=0', res);
+
+  SearchModel.langfilters(['one', 'two']);
+  SearchModel.repositoryfilters(['three', 'four']);
+  SearchModel.srcfilters(['five', 'six']);
+  SearchModel.ownfilters(['seven', 'eigtht']);
+  SearchModel.pathvalue('thisismypath');
+  SearchModel.searchvalue('terrywashere');
+  
+  var res = SearchModel.getsearchquerystring();
+  assert.equal('?q=terrywashere&lan=one&lan=two&repo=three&repo=four&own=seven&own=eigtht&src=five&src=six&fl=thisismypath&p=0', res);
+});
+
+/////////////////////////////////////////////////////////////////////
 QUnit.module('SearchComponent');
-QUnit.test( 'view', function( assert ) {
+QUnit.test('view', function( assert ) {
   var result = SearchComponent.view();
   assert.equal(result.tag, 'div');
   assert.equal(result.children.length, 4);
@@ -181,7 +237,7 @@ QUnit.test( 'view', function( assert ) {
 });
 
 QUnit.module('SearchNoResultsComponent');
-QUnit.test( 'view', function( assert ) {
+QUnit.test('view', function( assert ) {
   var result = SearchNoResultsComponent.view(null, {totalhits: 10});
   assert.equal(result.tag, 'div');
   assert.equal(result.children.length, 0);
@@ -207,7 +263,7 @@ QUnit.test( 'view', function( assert ) {
   assert.deepEqual(result.children[1].children[1].children[1].children[0].children[0], 'two');
 });
 
-QUnit.test( 'controller', function( assert ) {
+QUnit.test('controller', function( assert ) {
   var result = SearchNoResultsComponent.controller();
   var called = false;
   SearchModel.search = function() { called = true; };
@@ -217,8 +273,9 @@ QUnit.test( 'controller', function( assert ) {
   assert.ok(called);
 });
 
+/////////////////////////////////////////////////////////////////////
 QUnit.module('SearchLoadingComponent');
-QUnit.test( 'view', function( assert ) {
+QUnit.test('view', function( assert ) {
   SearchModel.currentlyloading(false);
   var result = SearchLoadingComponent.view();
   
@@ -274,8 +331,6 @@ QUnit.test( 'view', function( assert ) {
     "tag": "div"
   });
 });
-
-
 
 </script>
 </body>
