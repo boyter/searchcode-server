@@ -82,12 +82,6 @@ var SearchModel = {
     activeownfilters: m.prop([]),
     activesrcfilters: m.prop([]),
 
-    activeyearfilters: m.prop([]),
-    activeyearmonthfilters: m.prop([]),
-    activeyearmonthdayfilters: m.prop([]),
-    activerevisionfilters: m.prop([]),
-    activedeletedfilters: m.prop([]),
-
     pages: m.prop([]),
     currentlyloading: m.prop(false),
     currentpage: m.prop(0),
@@ -105,12 +99,6 @@ var SearchModel = {
     languagefilters: m.prop([]),
     ownerfilters: m.prop([]),
     sourcefilters: m.prop([]),
-
-    repoFacetYear: m.prop([]),
-    repoFacetYearMonth: m.prop([]),
-    repoFacetYearMonthDay: m.prop([]),
-    repoFacetRevision: m.prop([]),
-    repoFacetDeleted: m.prop([]),
 
     clearfilters: function() {
         // Reset all of the applied filters
@@ -385,51 +373,6 @@ var SearchModel = {
 
         return path;
     },
-    getyearfilters: function() {
-        var year = '';
-
-        if (SearchModel.yearfilters().length != 0) {
-            year = '&year=' + _.map(SearchModel.yearfilters(), function(e) { return encodeURIComponent(e); } ).join('&year=');
-        }
-
-        return year;
-    },
-    getyearmonthfilters: function() {
-        var ym = '';
-
-        if (SearchModel.yearmonthfilters().length != 0) {
-            ym = '&ym=' + _.map(SearchModel.yearmonthfilters(), function(e) { return encodeURIComponent(e); } ).join('&ym=');
-        }
-
-        return ym;
-    },
-    getyearmonthdayfilters: function() {
-        var ymd = '';
-
-        if (SearchModel.yearmonthdayfilters().length != 0) {
-            ymd = '&ymd=' + _.map(SearchModel.yearmonthdayfilters(), function(e) { return encodeURIComponent(e); } ).join('&ymd=');
-        }
-
-        return ymd;
-    },
-    getrevisionfilters: function() {
-        var rev = '';
-
-        if (SearchModel.revisionfilters().length != 0) {
-            rev = '&rev=' + _.map(SearchModel.revisionfilters(), function(e) { return encodeURIComponent(e); } ).join('&rev=');
-        }
-
-        return rev;
-    },
-    getdeletedfilters: function() {
-        var del = '';
-
-        if (SearchModel.deletedfilters().length != 0) {
-            del = '&del=' + _.map(SearchModel.deletedfilters(), function(e) { return encodeURIComponent(e); } ).join('&del=');
-        }
-
-        return del;
-    },
     getlitfilter: function() {
         if (SearchModel.literalview() === true) {
             return '&lit=true';
@@ -454,11 +397,6 @@ var SearchModel = {
                         SearchModel.getrepofilters() + 
                         SearchModel.getownfilters() + 
                         SearchModel.getsrcfilters() + 
-                        SearchModel.getyearfilters() + 
-                        SearchModel.getyearmonthfilters() + 
-                        SearchModel.getyearmonthdayfilters() + 
-                        SearchModel.getrevisionfilters() + 
-                        SearchModel.getdeletedfilters() +
                         SearchModel.getpathfilters() + 
                         SearchModel.getlitfilter() +
                         pagequery);
@@ -470,12 +408,6 @@ var SearchModel = {
         var repo = SearchModel.getrepofilters();
         var own = SearchModel.getownfilters();
         var src = SearchModel.getsrcfilters();
-
-        var year = SearchModel.getyearfilters();
-        var ym = SearchModel.getyearmonthfilters();
-        var ymd = SearchModel.getyearmonthdayfilters();
-        var rev = SearchModel.getrevisionfilters();
-        var del = SearchModel.getdeletedfilters();
 
         var pathvalue = SearchModel.pathvalue();
         if (pathvalue !== '') {
@@ -491,16 +423,7 @@ var SearchModel = {
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
         SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.srcfilters())));
 
-        SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
-        SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
-        SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
-        SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
-        SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
-
-        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
-        if (SearchModel.searchhistory() === true ) { 
-            queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
-        }
+        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
 
         return queryurl;
     },
