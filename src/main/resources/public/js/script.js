@@ -136,28 +136,7 @@ var SearchModel = {
         var owns = '';
         var srcs = '';
         var path = '';
-        var years = '';
-        var yearmonths = '';
-        var yearmonthdays = '';
-        var revisions = '';
-        var deleted = '';
         var literal = '';
-
-        if (SearchModel.activedeletedfilters().length !== 0) {
-            if (_.contains(SearchModel.activedeletedfilters(), 'TRUE')) {
-                deleted = ' in deleted files ';
-            }
-
-            if (_.contains(SearchModel.activedeletedfilters(), 'FALSE')) {
-                if (deleted.length === 0) {
-                    deleted = ' in modified/added files ';
-                }
-                else {
-                    deleted += ' and modified/added files ';
-                }
-            }
-        }
-
 
         if (SearchModel.activerepositoryfilters().length !== 0) {
             var plural = 'repository';
@@ -219,65 +198,11 @@ var SearchModel = {
             path = ' filtered to the path "/' + SearchModel.pathvalue().replace(/\_/g, '/') + '/"';
         }
 
-        if (SearchModel.activeyearfilters().length != 0) {
-            var plural = 'the year';
-
-            if (SearchModel.activeyearfilters().length >= 2) {
-                plural = 'the years';
-            }
-
-            years = ' in ' + plural + ' "' + SearchModel.activeyearfilters().join(', ') + '"';
-        }
-
-        if (SearchModel.activeyearmonthfilters().length != 0) {
-            var plural = 'the year/month';
-
-            if (SearchModel.activeyearmonthfilters().length >= 2) {
-                plural = 'the year/months';
-            }
-
-            if (years === '') {
-                yearmonths = ' filtered by ' + plural + ' "';
-            }
-            else {
-                yearmonths = ' and ' + plural + ' "';
-            }
-
-            yearmonths = yearmonths + _.map(SearchModel.activeyearmonthfilters(), function(e) { return e.substring(0, 4) + '/' + e.substring(4, 8); } ).join(', ') + '"';
-        }
-
-        if (SearchModel.activeyearmonthdayfilters().length != 0) {
-            var plural = 'the year/month/day';
-
-            if (SearchModel.activeyearmonthdayfilters().length >= 2) {
-                plural = 'the year/month/days';
-            }
-
-            if (years === '' && yearmonths === '') {
-                yearmonthdays = ' filtered by ' + plural + ' "';
-            }
-            else {
-                yearmonthdays = ' and ' + plural + ' "';
-            }
-
-            yearmonthdays = yearmonthdays + _.map(SearchModel.activeyearmonthdayfilters(), function(e) { return e.substring(0, 4) + '/' + e.substring(4, 6) + '/' + e.substring(6, 8); } ).join(', ') + '"';
-        }
-
-        if (SearchModel.activerevisionfilters().length != 0) {
-            var plural = 'revision';
-
-            if (SearchModel.activerevisionfilters().length >= 2) {
-                plural = 'revisions';
-            }
-
-            yearmonthdays = ' limited to ' + plural  + ' "' + SearchModel.activerevisionfilters().join(', ') + '"';
-        }
-
         if (SearchModel.literalview()) {
             literal = ' using literal search';
         }
 
-        return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + srcs + years + yearmonths + yearmonthdays + revisions + literal;
+        return '"' + SearchModel.query() + '"' + repos + langs + owns + path + srcs + literal;
     },
     togglefilter: function (type, name) {
         // Toggles if a filter should be enabled or not
@@ -314,7 +239,7 @@ var SearchModel = {
         return true;
     },
 
-    getfilters: function(seperator, source) {
+    geturlfilters: function(seperator, source) {
         var tmp = '';
         var sep = '&' + seperator + '=';
 
@@ -324,45 +249,31 @@ var SearchModel = {
 
         return tmp;
     },
-    getlangfilters: function() {
+    getfacetfilter: function(type) {
         var filters = SearchModel.facetfilters();
 
         var filter = [];
-        if ('language' in filters) {
-            filter = filters['language'];
+        if (type in filters) {
+            filter = filters[type];
         }
 
-        return SearchModel.getfilters('lan', filter);
+        return filter;
+    },
+    getlangfilters: function() {
+        var filter = SearchModel.getfacetfilter('language');
+        return SearchModel.geturlfilters('lan', filter);
     },
     getrepofilters: function() {
-        var filters = SearchModel.facetfilters();
-
-        var filter = [];
-        if ('repository' in filters) {
-            filter = filters['repository'];
-        }
-
-        return SearchModel.getfilters('repo', filter);
+        var filter = SearchModel.getfacetfilter('repository');
+        return SearchModel.geturlfilters('repo', filter);
     },
     getownfilters: function() {
-        var filters = SearchModel.facetfilters();
-
-        var filter = [];
-        if ('owner' in filters) {
-            filter = filters['owner'];
-        }
-
-        return SearchModel.getfilters('own', filter);
+        var filter = SearchModel.getfacetfilter('owner');
+        return SearchModel.geturlfilters('own', filter);
     },
     getsrcfilters: function() {
-        var filters = SearchModel.facetfilters();
-
-        var filter = [];
-        if ('source' in filters) {
-            filter = filters['source'];
-        }
-
-        return SearchModel.getfilters('src', filter);
+        var filter = SearchModel.getfacetfilter('source');
+        return SearchModel.geturlfilters('src', filter);
     },
     getpathfilters: function() {
         var path = '';
