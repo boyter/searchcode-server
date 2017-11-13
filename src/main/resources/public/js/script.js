@@ -259,32 +259,32 @@ var SearchModel = {
 
         return filter;
     },
-    getlangfilters: function() {
+    get_lang_url_filters: function() {
         var filter = SearchModel.getfacetfilter('language');
         return SearchModel.geturlfilters('lan', filter);
     },
-    getrepofilters: function() {
+    get_repo_url_filters: function() {
         var filter = SearchModel.getfacetfilter('repository');
         return SearchModel.geturlfilters('repo', filter);
     },
-    getownfilters: function() {
+    get_own_url_filters: function() {
         var filter = SearchModel.getfacetfilter('owner');
         return SearchModel.geturlfilters('own', filter);
     },
-    getsrcfilters: function() {
+    get_src_url_filters: function() {
         var filter = SearchModel.getfacetfilter('source');
         return SearchModel.geturlfilters('src', filter);
     },
-    getpathfilters: function() {
+    get_path_url_filters: function() {
         var path = '';
 
         if (SearchModel.pathvalue().length !== 0) {
-            path = '&path=' + encodeURIComponent(SearchModel.pathvalue());
+            path = '&fl=' + SearchModel.pathvalue();
         }
 
         return path;
     },
-    getlitfilter: function() {
+    get_lit_url_filter: function() {
         if (SearchModel.literalview() === true) {
             return '&lit=true';
         }
@@ -313,60 +313,21 @@ var SearchModel = {
                         pagequery);
         }
     },
-    getsearchquerystring: function() {
+    getsearchquerystring: function(page=0) {
         // If we have filters append them on
-        var lang = SearchModel.getlangfilters();
-        var repo = SearchModel.getrepofilters();
-        var own = SearchModel.getownfilters();
-        var src = SearchModel.getsrcfilters();
-
-        var pathvalue = SearchModel.pathvalue();
-        if (pathvalue !== '') {
-            pathvalue = '&fl=' + pathvalue;
-        }
+        var lang = SearchModel.get_lang_url_filters();
+        var repo = SearchModel.get_repo_url_filters();
+        var own = SearchModel.get_own_url_filters();
+        var src = SearchModel.get_src_url_filters();
+        var pathvalue = SearchModel.get_path_url_filters();
 
         var searchpage = 0;
         var pagequery = ''
 
-        // Stringify and parse to create a copy not a reference
-        SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
-        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
-        SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
-        SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.srcfilters())));
-
-        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
-
-        return queryurl;
-    },
-    search: function(page, isstatechange) {
-        if (SearchModel.currentlyloading()) {
-            return;
-        }
-
-        SearchModel.currentlyloading(true);
-        m.redraw();
-
-        // TODO the below should be merged with getsearchquerystring
-        // If we have filters append them on
-        var lang = SearchModel.getlangfilters();
-        var repo = SearchModel.getrepofilters();
-        var own = SearchModel.getownfilters();
-        var src = SearchModel.getsrcfilters();
-
-        var year = SearchModel.getyearfilters();
-        var ym = SearchModel.getyearmonthfilters();
-        var ymd = SearchModel.getyearmonthdayfilters();
-        var rev = SearchModel.getrevisionfilters();
-        var del = SearchModel.getdeletedfilters();
-
-        var pathvalue = SearchModel.pathvalue();
-        if (pathvalue !== '') {
-            pathvalue = '&fl=' + pathvalue;
-        }
-
         var searchpage = 0;
         var pagequery = ''
-        if(page !== undefined) {
+
+        if (page !== undefined) {
             searchpage = page
             SearchModel.currentpage(page);
             if (searchpage !== 0) {
@@ -380,24 +341,24 @@ var SearchModel = {
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
         SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.srcfilters())));
 
-        SearchModel.activeyearfilters(JSON.parse(JSON.stringify(SearchModel.yearfilters())));
-        SearchModel.activeyearmonthfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthfilters())));
-        SearchModel.activeyearmonthdayfilters(JSON.parse(JSON.stringify(SearchModel.yearmonthdayfilters())));
-        SearchModel.activerevisionfilters(JSON.parse(JSON.stringify(SearchModel.revisionfilters())));
-        SearchModel.activedeletedfilters(JSON.parse(JSON.stringify(SearchModel.deletedfilters())));
-
-        SearchModel.setstatechange(pagequery, isstatechange);
-
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
-        if (SearchModel.searchhistory() === true ) { 
-            queryurl = '/api/timecodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
-        }
+        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
         if (SearchModel.literalview() === true) {
-            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + year + ym + ymd + rev + del + pathvalue + '&p=' + searchpage;
+            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
         }
 
-        m.request( { method: 'GET', url: queryurl } ).then( function(e) {
+        return queryurl;
+    },
+    search: function(page, isstatechange) {
+        if (SearchModel.currentlyloading()) {
+            return;
+        }
 
+        SearchModel.currentlyloading(true);
+        m.redraw();
+
+        var queryurl = SearchModel.getsearchquerystring(page);
+
+        m.request({ method: 'GET', url: queryurl} ).then(function(e) {
             if (e !== null) {
                 SearchModel.totalhits(e.totalHits);
                 SearchModel.altquery(e.altQuery);
@@ -410,13 +371,6 @@ var SearchModel = {
                 SearchModel.languagefilters(e.languageFacetResults);
                 SearchModel.ownerfilters(e.repoOwnerResults);
                 SearchModel.sourcefilters(e.codeFacetSources);
-
-                // History fields
-                SearchModel.repoFacetYear(e.repoFacetYear);
-                SearchModel.repoFacetYearMonth(e.repoFacetYearMonth);
-                SearchModel.repoFacetYearMonthDay(e.repoFacetYearMonthDay);
-                SearchModel.repoFacetRevision(e.repoFacetRevision);
-                SearchModel.repoFacetDeleted(e.repoFacetDeleted);
             }
 
             SearchModel.currentlyloading(false);
@@ -470,11 +424,6 @@ var SearchComponent = {
                         }),
                         m.component(SearchOwnersFilterComponent),
                         m.component(SearchPathFilterComponent),
-                        m.component(SearchYearFilterComponent),
-                        m.component(SearchYearMonthFilterComponent),
-                        m.component(SearchYearMonthDayFilterComponent),
-                        m.component(SearchRevisionComponent),
-                        m.component(SearchDeletedComponent),
                         m.component(SearchButtonFilterComponent, {
                             totalhits: SearchModel.totalhits(),
                             clearfilters: SearchModel.clearfilters,
@@ -1125,394 +1074,6 @@ var SearchPathFilterComponent = {
                 m('span', m.trust('&nbsp;')),
                 m('span.filter-button', {'style': {'height': '1px', 'float': 'right'}}, '')
             )
-        ]);
-    }
-}
-
-var SearchYearFilterComponent = {
-    controller: function() {
-
-        var showall = false;
-        var trimlength = 5;
-        var filtervalue = '';
-        
-        return {
-            trimlanguage: function (ownerfilters) {
-                var toreturn = ownerfilters;
-
-                if (filtervalue.length === 0 && !showall) {
-                    toreturn = _.first(toreturn, trimlength);
-                }
-
-                if (filtervalue.length !== 0) {
-                    toreturn = _.filter(toreturn, function (e) { 
-                        return e.year.toLowerCase().indexOf(filtervalue) !== -1; 
-                    });
-                }
-
-                return toreturn;
-            },
-            toggleshowall: function() {
-                showall = !showall;
-            },
-            showall: function () {
-                return showall;
-            },
-            trimlength: function () {
-                return trimlength;
-            },
-            clickenvent: function(owner) {
-                SearchModel.togglefilter('year', owner);
-            },
-            filtervalue: function(value) {
-                filtervalue = value;
-            },
-            hasfilter: function() {
-                return filtervalue.length !== 0;
-            },
-            getfiltervalue: function() {
-                return filtervalue;
-            }
-        }
-    },
-    view: function(ctrl) {
-
-        var showmoreless = m('div');
-
-        if (SearchModel.repoFacetYear() === undefined || SearchModel.repoFacetYear().length == 0) {
-            return showmoreless;
-        }
-
-        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYear.length) {
-            var morecount = SearchModel.yearfilters().length - ctrl.trimlength();
-
-            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
-
-            if (ctrl.showall()) {
-                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
-            }
-        }
-
-        return m('div', [
-            m('h5', 'Year'),
-            m('input.repo-filter', {
-                onkeyup: m.withAttr('value', ctrl.filtervalue),
-                placeholder: 'Filter Dates',
-                value: ctrl.getfiltervalue()
-            }),
-            _.map(ctrl.trimlanguage(SearchModel.repoFacetYear()), function(res, ind) {
-                return m.component(FilterCheckboxComponent, {
-                    onclick: function() { 
-                        ctrl.clickenvent(res.year); 
-                        if (SearchModel.filterinstantly()) {
-                            SearchModel.search();
-                        }
-                    },
-                    value: res.year,
-                    count: res.count,
-                    checked: SearchModel.filterexists('year', res.year)
-                });
-            }),
-            showmoreless
-        ]);
-    }
-}
-
-var SearchYearMonthFilterComponent = {
-    controller: function() {
-
-        var showall = false;
-        var trimlength = 5;
-        var filtervalue = '';
-        
-        return {
-            trimlanguage: function (ownerfilters) {
-                var toreturn = ownerfilters;
-
-                if (filtervalue.length === 0 && !showall) {
-                    toreturn = _.first(toreturn, trimlength);
-                }
-
-                if (filtervalue.length !== 0) {
-                    toreturn = _.filter(toreturn, function (e) { 
-                        return e.yearMonth.toLowerCase().indexOf(filtervalue) !== -1; 
-                    });
-                }
-
-                return toreturn;
-            },
-            toggleshowall: function() {
-                showall = !showall;
-            },
-            showall: function () {
-                return showall;
-            },
-            trimlength: function () {
-                return trimlength;
-            },
-            clickenvent: function(owner) {
-                SearchModel.togglefilter('yearmonth', owner);
-            },
-            filtervalue: function(value) {
-                filtervalue = value;
-            },
-            hasfilter: function() {
-                return filtervalue.length !== 0;
-            },
-            getfiltervalue: function() {
-                return filtervalue;
-            }
-        }
-    },
-    view: function(ctrl) {
-
-        var showmoreless = m('div');
-
-        if (SearchModel.repoFacetYearMonth() === undefined || SearchModel.repoFacetYearMonth().length == 0) {
-            return showmoreless;
-        }
-
-        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYearMonth().length) {
-            var morecount = SearchModel.repoFacetYearMonth().length - ctrl.trimlength();
-
-            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
-
-            if (ctrl.showall()) {
-                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
-            }
-        }
-
-        return m('div', [
-            m('h5', 'Year/Month'),
-            m('input.repo-filter', {
-                onkeyup: m.withAttr('value', ctrl.filtervalue),
-                placeholder: 'Filter Dates',
-                value: ctrl.getfiltervalue()
-            }),
-            _.map(ctrl.trimlanguage(SearchModel.repoFacetYearMonth()), function(res, ind) {
-                return m.component(FilterCheckboxComponent, {
-                    onclick: function() { 
-                        ctrl.clickenvent(res.yearMonth); 
-                        if (SearchModel.filterinstantly()) {
-                            SearchModel.search();
-                        }
-                    },
-                    value: res.yearMonth,
-                    count: res.count,
-                    checked: SearchModel.filterexists('yearmonth', res.yearMonth)
-                });
-            }),
-            showmoreless
-        ]);
-    }
-}
-
-var SearchYearMonthDayFilterComponent = {
-    controller: function() {
-
-        var showall = false;
-        var trimlength = 5;
-        var filtervalue = '';
-        
-        return {
-            trimlanguage: function (ownerfilters) {
-                var toreturn = ownerfilters;
-
-                if (filtervalue.length === 0 && !showall) {
-                    toreturn = _.first(toreturn, trimlength);
-                }
-
-                if (filtervalue.length !== 0) {
-                    toreturn = _.filter(toreturn, function (e) { 
-                        return e.yearMonthDay.toLowerCase().indexOf(filtervalue) !== -1; 
-                    });
-                }
-
-                return toreturn;
-            },
-            toggleshowall: function() {
-                showall = !showall;
-            },
-            showall: function () {
-                return showall;
-            },
-            trimlength: function () {
-                return trimlength;
-            },
-            clickenvent: function(owner) {
-                SearchModel.togglefilter('yearmonthday', owner);
-            },
-            filtervalue: function(value) {
-                filtervalue = value;
-            },
-            hasfilter: function() {
-                return filtervalue.length !== 0;
-            },
-            getfiltervalue: function() {
-                return filtervalue;
-            }
-        }
-    },
-    view: function(ctrl, args) {
-
-        var showmoreless = m('div');
-
-        if (SearchModel.repoFacetYearMonthDay() === undefined || SearchModel.repoFacetYearMonthDay().length == 0) {
-            return showmoreless;
-        }
-
-        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetYearMonthDay().length) {
-            var morecount = SearchModel.repoFacetYearMonthDay().length - ctrl.trimlength();
-
-            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more dates ', m('span.glyphicon.glyphicon-chevron-down'))
-
-            if (ctrl.showall()) {
-                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less dates ', m('span.glyphicon.glyphicon-chevron-up'))
-            }
-        }
-
-        return m('div', [
-            m('h5', 'Year/Month/Day'),
-            m('input.repo-filter', {
-                onkeyup: m.withAttr('value', ctrl.filtervalue),
-                placeholder: 'Filter Dates',
-                value: ctrl.getfiltervalue()
-            }),
-            _.map(ctrl.trimlanguage(SearchModel.repoFacetYearMonthDay()), function(res, ind) {
-                return m.component(FilterCheckboxComponent, {
-                    onclick: function() { 
-                        ctrl.clickenvent(res.yearMonthDay); 
-                        if (SearchModel.filterinstantly()) {
-                            SearchModel.search();
-                        }
-                    },
-                    value: res.yearMonthDay,
-                    count: res.count,
-                    checked: SearchModel.filterexists('yearmonthday', res.yearMonthDay)
-                });
-            }),
-            showmoreless
-        ]);
-    }
-}
-
-var SearchRevisionComponent = {
-    controller: function() {
-
-        var showall = false;
-        var trimlength = 5;
-        var filtervalue = '';
-        
-        return {
-            trimlanguage: function (ownerfilters) {
-                var toreturn = ownerfilters;
-
-                if (filtervalue.length === 0 && !showall) {
-                    toreturn = _.first(toreturn, trimlength);
-                }
-
-                if (filtervalue.length !== 0) {
-                    toreturn = _.filter(toreturn, function (e) { 
-                        return e.revision.toLowerCase().indexOf(filtervalue) !== -1; 
-                    });
-                }
-
-                return toreturn;
-            },
-            toggleshowall: function() {
-                showall = !showall;
-            },
-            showall: function () {
-                return showall;
-            },
-            trimlength: function () {
-                return trimlength;
-            },
-            clickenvent: function(owner) {
-                SearchModel.togglefilter('revision', owner);
-            },
-            filtervalue: function(value) {
-                filtervalue = value;
-            },
-            hasfilter: function() {
-                return filtervalue.length !== 0;
-            },
-            getfiltervalue: function() {
-                return filtervalue;
-            }
-        }
-    },
-    view: function(ctrl, args) {
-
-        var showmoreless = m('div');
-
-        if (SearchModel.repoFacetRevision() === undefined || SearchModel.repoFacetRevision().length == 0) {
-            return showmoreless;
-        }
-
-        if (!ctrl.hasfilter() && ctrl.trimlength() < SearchModel.repoFacetRevision().length) {
-            var morecount = SearchModel.repoFacetRevision().length - ctrl.trimlength();
-
-            showmoreless =  m('a.green', { onclick: ctrl.toggleshowall }, morecount + ' more revisions ', m('span.glyphicon.glyphicon-chevron-down'))
-
-            if (ctrl.showall()) {
-                showmoreless = m('a.green', { onclick: ctrl.toggleshowall }, 'less revisions ', m('span.glyphicon.glyphicon-chevron-up'))
-            }
-        }
-
-        return m('div', [
-            m('h5', 'Revision'),
-            m('input.repo-filter', {
-                onkeyup: m.withAttr('value', ctrl.filtervalue),
-                placeholder: 'Filter Revisions',
-                value: ctrl.getfiltervalue()
-            }),
-            _.map(ctrl.trimlanguage(SearchModel.repoFacetRevision()), function(res, ind) {
-                return m.component(FilterCheckboxComponent, {
-                    onclick: function() { 
-                        ctrl.clickenvent(res.revision); 
-                        if (SearchModel.filterinstantly()) {
-                            SearchModel.search();
-                        }
-                    },
-                    value: res.revision.substring(0, 12),
-                    count: res.count,
-                    checked: SearchModel.filterexists('revision', res.revision)
-                });
-            }),
-            showmoreless
-        ]);
-    }
-}
-
-var SearchDeletedComponent = {
-    controller: function() {
-        return {
-            clickenvent: function(owner) {
-                SearchModel.togglefilter('deleted', owner);
-            }
-        }
-    },
-    view: function(ctrl, args) {
-        if (SearchModel.repoFacetDeleted() === undefined || SearchModel.repoFacetDeleted().length == 0) {
-            return m('div');
-        }
-
-        return m('div', [
-            m('h5', 'Added/Removed'),
-            _.map(SearchModel.repoFacetDeleted(), function(res, ind) {
-                return m.component(FilterCheckboxComponent, {
-                    onclick: function() { 
-                        ctrl.clickenvent(res.deleted); 
-                        if (SearchModel.filterinstantly()) {
-                            SearchModel.search();
-                        }
-                    },
-                    value: res.deleted === 'FALSE' ? 'Added/Modified' : 'Deleted',
-                    count: res.count,
-                    checked: SearchModel.filterexists('deleted', res.deleted)
-                });
-            })
         ]);
     }
 }
