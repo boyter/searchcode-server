@@ -432,9 +432,10 @@ var SearchComponent = {
                             totalhits: SearchModel.totalhits(),
                             clearfilters: SearchModel.clearfilters,
                             search: SearchModel.search,
-                            languagefilters: SearchModel.langfilters(),
-                            repofilters: SearchModel.repositoryfilters(),
-                            ownfilters: SearchModel.ownfilters(),
+                            languagefilters: SearchModel.getfacetfilter('language'),
+                            repofilters: SearchModel.getfacetfilter('repository'),
+                            ownfilters: SearchModel.getfacetfilter('owner'),
+                            sourcefilters: SearchModel.getfacetfilter('source'),
                             filterinstantly: SearchModel.filterinstantly
                         }),
                         m.component(FilterOptionsComponent, {
@@ -1302,16 +1303,24 @@ if (typeof preload !== 'undefined') {
     SearchModel.currentpage(preload.page);
 
     SearchModel.activelangfilters(preload.languageFacets);
-    SearchModel.langfilters(preload.languageFacets);
+    _.each(preload.languageFacets, function(e) { 
+        SearchModel.togglefilter('language', e);
+    });
 
     SearchModel.activerepositoryfilters(preload.repositoryFacets);
-    SearchModel.repositoryfilters(preload.repositoryFacets);
+    _.each(preload.repositoryFacets, function(e) { 
+        SearchModel.togglefilter('repository', e);
+    });
 
-    SearchModel.ownfilters(preload.ownerFacets);
     SearchModel.activeownfilters(preload.ownerFacets);
+    _.each(preload.ownerFacets, function(e) { 
+        SearchModel.togglefilter('owner', e);
+    });
 
-    SearchModel.srcfilters(preload.srcFacets);
     SearchModel.activesrcfilters(preload.srcFacets);
+    _.each(preload.srcFacets, function(e) { 
+        SearchModel.togglefilter('source', e);
+    });
 
     SearchModel.pathvalue(preload.pathValue);
     SearchModel.literalview(preload.isLiteral);
