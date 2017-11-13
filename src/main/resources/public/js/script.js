@@ -69,6 +69,8 @@ var SearchModel = {
     searchresults: m.prop([]),
 
     // Used for knowing which filters have been currently selected
+    facetfilters: m.prop({}), // Holds them all
+
     langfilters: m.prop([]),
     repositoryfilters: m.prop([]),
     ownfilters: m.prop([]),
@@ -122,6 +124,10 @@ var SearchModel = {
     repoFacetDeleted: m.prop([]),
 
     clearfilters: function() {
+        // Reset all of the applied filters
+        SearchModel.facetfilters({});
+        SearchModel.pathvalue('');
+
         // Filters for regular search
         SearchModel.langfilters([]);
         SearchModel.repositoryfilters([]);
@@ -316,133 +322,35 @@ var SearchModel = {
         return '"' + SearchModel.query() + '"' + deleted + repos + langs + owns + path + srcs + years + yearmonths + yearmonthdays + revisions + literal;
     },
     togglefilter: function (type, name) {
-        switch(type) {
-            case 'language':
-                if (_.indexOf(SearchModel.langfilters(), name) === -1) {
-                    SearchModel.langfilters().push(name);
-                }
-                else {
-                    SearchModel.langfilters(_.without(SearchModel.langfilters(), name));
-                }
-                break;
-            case 'repo':
-                if (_.indexOf(SearchModel.repositoryfilters(), name) === -1) {
-                    SearchModel.repositoryfilters().push(name);
-                }
-                else {
-                    SearchModel.repositoryfilters(_.without(SearchModel.repositoryfilters(), name));
-                }
-                break;
-            case 'owner':
-                if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
-                    SearchModel.ownfilters().push(name);
-                }
-                else {
-                    SearchModel.ownfilters(_.without(SearchModel.ownfilters(), name));
-                }
-                break;
-            case 'source':
-                if (_.indexOf(SearchModel.srcfilters(), name) === -1) {
-                    SearchModel.srcfilters().push(name);
-                }
-                else {
-                    SearchModel.srcfilters(_.without(SearchModel.srcfilters(), name));
-                }
-                break;
-            case 'year':
-                if (_.indexOf(SearchModel.yearfilters(), name) === -1) {
-                    SearchModel.yearfilters().push(name);
-                }
-                else {
-                    SearchModel.yearfilters(_.without(SearchModel.yearfilters(), name));
-                }
-                break;
-            case 'yearmonth':
-                if (_.indexOf(SearchModel.yearmonthfilters(), name) === -1) {
-                    SearchModel.yearmonthfilters().push(name);
-                }
-                else {
-                    SearchModel.yearmonthfilters(_.without(SearchModel.yearmonthfilters(), name));
-                }
-                break;
-            case 'yearmonthday':
-                if (_.indexOf(SearchModel.yearmonthdayfilters(), name) === -1) {
-                    SearchModel.yearmonthdayfilters().push(name);
-                }
-                else {
-                    SearchModel.yearmonthdayfilters(_.without(SearchModel.yearmonthdayfilters(), name));
-                }
-                break;
-            case 'deleted':
-                if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
-                    SearchModel.deletedfilters().push(name);
-                }
-                else {
-                    SearchModel.deletedfilters(_.without(SearchModel.deletedfilters(), name));
-                }
-                break;
-            case 'revision':
-                if (_.indexOf(SearchModel.revisionfilters(), name) === -1) {
-                    SearchModel.revisionfilters().push(name);
-                }
-                else {
-                    SearchModel.revisionfilters(_.without(SearchModel.revisionfilters(), name));
-                }
-                break;
+        // Toggles if a filter should be enabled or not
+        var filters = SearchModel.facetfilters();
+
+        var filter = [];
+        if (type in filters) {
+            filter = filters[type];
         }
+
+        if (_.indexOf(filter, name) === -1) {
+            filter.push(name);
+        }
+        else {
+            filter = _.without(SearchModel.langfilters(), name);
+        }
+
+        filters[type] = filter;
+        SearchModel.facetfilters(filters);
     },
     filterexists: function (type, name) {
-        switch(type) {
-            case 'language':
-                if (_.indexOf(SearchModel.langfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'repo':
-                if (_.indexOf(SearchModel.repositoryfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'owner':
-                if (_.indexOf(SearchModel.ownfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'source':
-                if (_.indexOf(SearchModel.srcfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'year':
-                if (_.indexOf(SearchModel.yearfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'yearmonth':
-                if (_.indexOf(SearchModel.yearmonthfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'yearmonthday':
-                if (_.indexOf(SearchModel.yearmonthdayfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'deleted':
-                if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'revision':
-                if (_.indexOf(SearchModel.revisionfilters(), name) === -1) {
-                    return false;
-                }
-                break;
-            case 'deleted':
-                if (_.indexOf(SearchModel.deletedfilters(), name) === -1) {
-                    return false;
-                }
-                break;
+        // Checks if a filter exists IE is enabled
+        var filters = SearchModel.facetfilters();
+
+        var filter = [];
+        if (type in filters) {
+            filter = filters[type];
+        }
+
+        if (_.indexOf(filter, name) === -1) {
+            return false;
         }
 
         return true;
