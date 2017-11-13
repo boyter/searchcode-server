@@ -209,20 +209,15 @@ QUnit.test('getlitfilter', function( assert ) {
 // });
 
 QUnit.test('getsearchquerystring', function( assert ) {
-  SearchModel.langfilters([]);
-  SearchModel.repositoryfilters([]);
-  SearchModel.srcfilters([]);
-  SearchModel.ownfilters([]);
+  SearchModel.facetfilters({});
+
   SearchModel.pathvalue('');
   SearchModel.searchvalue('terrywashere');
   
   var res = SearchModel.getsearchquerystring();
   assert.equal('?q=terrywashere&p=0', res);
 
-  SearchModel.langfilters(['one', 'two']);
-  SearchModel.repositoryfilters(['three', 'four']);
-  SearchModel.srcfilters(['five', 'six']);
-  SearchModel.ownfilters(['seven', 'eigtht']);
+
   SearchModel.pathvalue('thisismypath');
   SearchModel.searchvalue('terrywashere');
   
