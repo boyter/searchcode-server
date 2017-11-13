@@ -152,50 +152,50 @@ QUnit.test('filterexists', function( assert ) {
   assert.notOk(SearchModel.filterexists('owner', 'test2'));
 });
 
-QUnit.test('getlangfilters', function( assert ) {
+QUnit.test('get_lang_url_filters', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.togglefilter('language', 'test1');
-  assert.equal(SearchModel.getlangfilters(), '&lan=test1');
+  assert.equal(SearchModel.get_lang_url_filters(), '&lan=test1');
   SearchModel.togglefilter('language', 'test2');
-  assert.equal(SearchModel.getlangfilters(), '&lan=test1&lan=test2');
+  assert.equal(SearchModel.get_lang_url_filters(), '&lan=test1&lan=test2');
 });
 
-QUnit.test('getrepofilters', function( assert ) {
+QUnit.test('get_repo_url_filters', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.togglefilter('repository', 'test1');
-  assert.equal(SearchModel.getrepofilters(), '&repo=test1');
+  assert.equal(SearchModel.get_repo_url_filters(), '&repo=test1');
   SearchModel.togglefilter('repository', 'test2');
-  assert.equal(SearchModel.getrepofilters(), '&repo=test1&repo=test2');
+  assert.equal(SearchModel.get_repo_url_filters(), '&repo=test1&repo=test2');
 });
 
-QUnit.test('getownfilters', function( assert ) {
+QUnit.test('get_own_url_filters', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.togglefilter('owner', 'test1');
-  assert.equal(SearchModel.getownfilters(), '&own=test1');
+  assert.equal(SearchModel.get_own_url_filters(), '&own=test1');
   SearchModel.togglefilter('owner', 'test2');
-  assert.equal(SearchModel.getownfilters(), '&own=test1&own=test2');
+  assert.equal(SearchModel.get_own_url_filters(), '&own=test1&own=test2');
 });
 
-QUnit.test('getsrcfilters', function( assert ) {
+QUnit.test('get_src_url_filters', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.togglefilter('source', 'test1');
-  assert.equal(SearchModel.getsrcfilters(), '&src=test1');
+  assert.equal(SearchModel.get_src_url_filters(), '&src=test1');
   SearchModel.togglefilter('source', 'test2');
-  assert.equal(SearchModel.getsrcfilters(), '&src=test1&src=test2');
+  assert.equal(SearchModel.get_src_url_filters(), '&src=test1&src=test2');
 });
 
-QUnit.test('getpathfilters', function( assert ) {
+QUnit.test('get_path_url_filters', function( assert ) {
   SearchModel.pathvalue('');
-  assert.equal(SearchModel.getlitfilter(), '');
+  assert.equal(SearchModel.get_path_url_filters(), '');
   SearchModel.pathvalue('terrywashere');
-  assert.equal(SearchModel.getpathfilters(), '&path=terrywashere');
+  assert.equal(SearchModel.get_path_url_filters(), '&fl=terrywashere');
 });
 
-QUnit.test('getlitfilter', function( assert ) {
+QUnit.test('get_lit_url_filter', function( assert ) {
   SearchModel.literalview(false);
-  assert.equal(SearchModel.getlitfilter(), '');
+  assert.equal(SearchModel.get_lit_url_filter(), '');
   SearchModel.literalview(true);
-  assert.equal(SearchModel.getlitfilter(), '&lit=true');
+  assert.equal(SearchModel.get_lit_url_filter(), '&lit=true');
 });
 
 // QUnit.test('setstatechange', function( assert ) {
