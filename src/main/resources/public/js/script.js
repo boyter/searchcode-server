@@ -347,13 +347,34 @@ var SearchModel = {
         return SearchModel.getfilters('lan', filter);
     },
     getrepofilters: function() {
-        return SearchModel.getfilters('repo', SearchModel.repositoryfilters());
+        var filters = SearchModel.facetfilters();
+
+        var filter = [];
+        if ('repository' in filters) {
+            filter = filters['repository'];
+        }
+
+        return SearchModel.getfilters('repo', filter);
     },
     getownfilters: function() {
-        return SearchModel.getfilters('own', SearchModel.ownfilters());
+        var filters = SearchModel.facetfilters();
+
+        var filter = [];
+        if ('owner' in filters) {
+            filter = filters['owner'];
+        }
+
+        return SearchModel.getfilters('own', filter);
     },
     getsrcfilters: function() {
-        return SearchModel.getfilters('src', SearchModel.srcfilters());
+        var filters = SearchModel.facetfilters();
+
+        var filter = [];
+        if ('source' in filters) {
+            filter = filters['source'];
+        }
+
+        return SearchModel.getfilters('src', filter);
     },
     getpathfilters: function() {
         var path = '';
