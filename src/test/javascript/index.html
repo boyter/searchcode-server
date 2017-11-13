@@ -161,29 +161,26 @@ QUnit.test('getlangfilters', function( assert ) {
 });
 
 QUnit.test('getrepofilters', function( assert ) {
-  SearchModel.repositoryfilters([]);
-  assert.equal(SearchModel.getrepofilters(), '');
-  SearchModel.repositoryfilters(['test']);
-  assert.equal(SearchModel.getrepofilters(), '&repo=test');
-  SearchModel.repositoryfilters(['test1', 'test2']);
+  SearchModel.facetfilters({});
+  SearchModel.togglefilter('repository', 'test1');
+  assert.equal(SearchModel.getrepofilters(), '&repo=test1');
+  SearchModel.togglefilter('repository', 'test2');
   assert.equal(SearchModel.getrepofilters(), '&repo=test1&repo=test2');
 });
 
 QUnit.test('getownfilters', function( assert ) {
-  SearchModel.ownfilters([]);
-  assert.equal(SearchModel.getownfilters(), '');
-  SearchModel.ownfilters(['test']);
-  assert.equal(SearchModel.getownfilters(), '&own=test');
-  SearchModel.ownfilters(['test1', 'test2']);
+  SearchModel.facetfilters({});
+  SearchModel.togglefilter('owner', 'test1');
+  assert.equal(SearchModel.getownfilters(), '&own=test1');
+  SearchModel.togglefilter('owner', 'test2');
   assert.equal(SearchModel.getownfilters(), '&own=test1&own=test2');
 });
 
 QUnit.test('getsrcfilters', function( assert ) {
-  SearchModel.srcfilters([]);
-  assert.equal(SearchModel.getsrcfilters(), '');
-  SearchModel.srcfilters(['test']);
-  assert.equal(SearchModel.getsrcfilters(), '&src=test');
-  SearchModel.srcfilters(['test1', 'test2']);
+  SearchModel.facetfilters({});
+  SearchModel.togglefilter('source', 'test1');
+  assert.equal(SearchModel.getsrcfilters(), '&src=test1');
+  SearchModel.togglefilter('source', 'test2');
   assert.equal(SearchModel.getsrcfilters(), '&src=test1&src=test2');
 });
 
