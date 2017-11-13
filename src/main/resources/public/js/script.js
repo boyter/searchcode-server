@@ -306,12 +306,12 @@ var SearchModel = {
                 pathvalue: SearchModel.pathvalue()
             }, 'search', '?q=' + 
                         encodeURIComponent(SearchModel.searchvalue()) + 
-                        SearchModel.getlangfilters() + 
-                        SearchModel.getrepofilters() + 
-                        SearchModel.getownfilters() + 
-                        SearchModel.getsrcfilters() + 
-                        SearchModel.getpathfilters() + 
-                        SearchModel.getlitfilter() +
+                        SearchModel.get_lang_url_filters() + 
+                        SearchModel.get_repo_url_filters() + 
+                        SearchModel.get_own_url_filters() + 
+                        SearchModel.get_src_url_filters() + 
+                        SearchModel.get_path_url_filters() + 
+                        SearchModel.get_lit_url_filter() +
                         pagequery);
         }
     },
@@ -363,6 +363,8 @@ var SearchModel = {
             queryurl = '/api/codesearch/' + queryurl;
         }
 
+        var pagequery = '&p=' + page;
+        SearchModel.setstatechange(pagequery, isstatechange);
 
         m.request({ method: 'GET', url: queryurl} ).then(function(e) {
             if (e !== null) {
