@@ -198,11 +198,13 @@ QUnit.test('getlitfilter', function( assert ) {
 });
 
 QUnit.test('setstatechange', function( assert ) {
-  var length = history.length;
+  SearchModel.searchvalue('terrywashere')
   SearchModel.setstatechange(0, true);
-  assert.equal(length, history.length);
+  assert.equal('terrywashere', history.state.searchvalue);  
+  
   SearchModel.setstatechange(0, undefined);
   assert.notEqual(length, history.length);
+  assert.equal('terrywashere', history.state.searchvalue);
 });
 
 QUnit.test('getsearchquerystring', function( assert ) {
