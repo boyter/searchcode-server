@@ -11,7 +11,7 @@
 /**
  * The implementation of the front end for searchcode server using Mithril.js
  */
- var ff_timesearchenabled = false;
+var ff_timesearchenabled = false;
 
 Date.prototype.addDays = function (days) {
     var dat = new Date(this.valueOf())
@@ -447,41 +447,28 @@ var SearchModel = {
 
         return true;
     },
-    getlangfilters: function() {
-        var lang = '';
 
-        if (SearchModel.langfilters().length != 0) {
-            lang = '&lan=' + _.map(SearchModel.langfilters(), function(e) { return encodeURIComponent(e); } ).join('&lan=');
+    getfilters: function(seperator, source) {
+        var tmp = '';
+        var sep = '&' + seperator + '=';
+
+        if (source.length != 0) {
+            tmp = sep + _.map(source, function(e) { return encodeURIComponent(e); } ).join(sep);
         }
 
-        return lang;
+        return tmp;
+    },
+    getlangfilters: function() {
+        return SearchModel.getfilters('lan', SearchModel.langfilters());
     },
     getrepofilters: function() {
-        var repo = '';
-
-        if (SearchModel.repositoryfilters().length != 0) {
-            repo = '&repo=' + _.map(SearchModel.repositoryfilters(), function(e) { return encodeURIComponent(e); } ).join('&repo=');
-        }
-
-        return repo;
+        return SearchModel.getfilters('repo', SearchModel.repositoryfilters());
     },
     getownfilters: function() {
-        var own = '';
-
-        if (SearchModel.ownfilters().length != 0) {
-            own = '&own=' + _.map(SearchModel.ownfilters(), function(e) { return encodeURIComponent(e); } ).join('&own=');
-        }
-
-        return own;
+        return SearchModel.getfilters('own', SearchModel.ownfilters());
     },
     getsrcfilters: function() {
-        var src = '';
-
-        if (SearchModel.srcfilters().length != 0) {
-            src = '&src=' + _.map(SearchModel.srcfilters(), function(e) { return encodeURIComponent(e); } ).join('&src=');
-        }
-
-        return src;
+        return SearchModel.getfilters('src', SearchModel.srcfilters());
     },
     getpathfilters: function() {
         var path = '';
