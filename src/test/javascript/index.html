@@ -208,21 +208,28 @@ QUnit.test('get_lit_url_filter', function( assert ) {
 //   assert.equal('terrywashere', history.state.searchvalue);
 // });
 
-QUnit.test('getsearchquerystring', function( assert ) {
+QUnit.test('get_search_query_string', function( assert ) {
   SearchModel.facetfilters({});
 
   SearchModel.pathvalue('');
   SearchModel.searchvalue('terrywashere');
   
-  var res = SearchModel.getsearchquerystring();
-  assert.equal('?q=terrywashere&p=0', res);
-
+  var res = SearchModel.get_search_query_string();
+  assert.equal(res, '?q=terrywashere&p=0');
 
   SearchModel.pathvalue('thisismypath');
   SearchModel.searchvalue('terrywashere');
+  SearchModel.togglefilter('language', 'one');
+  SearchModel.togglefilter('language', 'two');
+  SearchModel.togglefilter('repository', 'three');
+  SearchModel.togglefilter('repository', 'four');
+  SearchModel.togglefilter('owner', 'seven');
+  SearchModel.togglefilter('owner', 'eight');
+  SearchModel.togglefilter('source', 'five');
+  SearchModel.togglefilter('source', 'six');
   
-  var res = SearchModel.getsearchquerystring();
-  assert.equal('?q=terrywashere&lan=one&lan=two&repo=three&repo=four&own=seven&own=eigtht&src=five&src=six&fl=thisismypath&p=0', res);
+  var res = SearchModel.get_search_query_string();
+  assert.equal(res, '?q=terrywashere&lan=one&lan=two&repo=three&repo=four&own=seven&own=eight&src=five&src=six&fl=thisismypath&p=0');
 });
 
 /////////////////////////////////////////////////////////////////////

@@ -313,7 +313,7 @@ var SearchModel = {
                         pagequery);
         }
     },
-    getsearchquerystring: function(page=0) {
+    get_search_query_string: function(page=0) {
         // If we have filters append them on
         var lang = SearchModel.get_lang_url_filters();
         var repo = SearchModel.get_repo_url_filters();
@@ -336,16 +336,12 @@ var SearchModel = {
         }
 
         // Stringify and parse to create a copy not a reference
-        SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.langfilters())));
-        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.repositoryfilters())));
-        SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.ownfilters())));
-        SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.srcfilters())));
+        SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('language'))));
+        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('repository'))));
+        SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('owner'))));
+        SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('source'))));
 
-        var queryurl = '/api/codesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
-        if (SearchModel.literalview() === true) {
-            queryurl = '/api/literalcodesearch/?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
-        }
-
+        var queryurl = '?q=' + encodeURIComponent(SearchModel.searchvalue()) + lang + repo + own + src + pathvalue + '&p=' + searchpage;
         return queryurl;
     },
     search: function(page, isstatechange) {
@@ -356,7 +352,15 @@ var SearchModel = {
         SearchModel.currentlyloading(true);
         m.redraw();
 
-        var queryurl = SearchModel.getsearchquerystring(page);
+        var queryurl = SearchModel.get_search_query_string(page);
+
+        if (SearchModel.literalview() === true) {
+            queryurl = '/api/literalcodesearch/' + queryurl;
+        }
+        else {
+            queryurl = '/api/codesearch/' + queryurl;
+        }
+
 
         m.request({ method: 'GET', url: queryurl} ).then(function(e) {
             if (e !== null) {
@@ -700,7 +704,7 @@ var RSSComponent = {
             m('div', [
                 m('div.checkbox', 
                     m('label', [
-                        m('a', {'href': '/api/codesearch/rss/' + SearchModel.getsearchquerystring() }, 'RSS Feed of Search')
+                        m('a', {'href': '/api/codesearch/rss/' + SearchModel.get_search_query_string() }, 'RSS Feed of Search')
                     ])
                 )
             ])
