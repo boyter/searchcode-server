@@ -121,9 +121,7 @@ QUnit.test('togglefilter', function( assert ) {
   assert.ok(SearchModel.filterexists('owner', 'test'));
   SearchModel.togglefilter('owner', 'test');
   assert.notOk(SearchModel.filterexists('owner', 'test'));
-});
 
-QUnit.test('togglefilternew', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.togglefilter('language', 'test');
   assert.ok(SearchModel.facetfilters()['language']);
@@ -155,11 +153,10 @@ QUnit.test('filterexists', function( assert ) {
 });
 
 QUnit.test('getlangfilters', function( assert ) {
-  SearchModel.langfilters([]);
-  assert.equal(SearchModel.getlangfilters(), '');
-  SearchModel.langfilters(['test']);
-  assert.equal(SearchModel.getlangfilters(), '&lan=test');
-  SearchModel.langfilters(['test1', 'test2']);
+  SearchModel.facetfilters({});
+  SearchModel.togglefilter('language', 'test1');
+  assert.equal(SearchModel.getlangfilters(), '&lan=test1');
+  SearchModel.togglefilter('language', 'test2');
   assert.equal(SearchModel.getlangfilters(), '&lan=test1&lan=test2');
 });
 

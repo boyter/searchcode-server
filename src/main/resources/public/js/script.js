@@ -69,18 +69,7 @@ var SearchModel = {
     searchresults: m.prop([]),
 
     // Used for knowing which filters have been currently selected
-    facetfilters: m.prop({}), // Holds them all
-
-    langfilters: m.prop([]),
-    repositoryfilters: m.prop([]),
-    ownfilters: m.prop([]),
-    srcfilters: m.prop([]),
-
-    yearfilters: m.prop([]),
-    yearmonthfilters: m.prop([]),
-    yearmonthdayfilters: m.prop([]),
-    revisionfilters: m.prop([]),
-    deletedfilters: m.prop([]),
+    facetfilters: m.prop({}),
 
     // Text filters for select filters
     langfiltertext: m.prop(''),
@@ -127,25 +116,6 @@ var SearchModel = {
         // Reset all of the applied filters
         SearchModel.facetfilters({});
         SearchModel.pathvalue('');
-
-        // Filters for regular search
-        SearchModel.langfilters([]);
-        SearchModel.repositoryfilters([]);
-        SearchModel.ownfilters([]);
-        SearchModel.srcfilters([]);
-        SearchModel.pathvalue('');
-
-        // Filters for historical search
-        SearchModel.yearfilters([]);
-        SearchModel.yearmonthfilters([]);
-        SearchModel.yearmonthdayfilters([]);
-        SearchModel.revisionfilters([]);
-        SearchModel.deletedfilters([]);
-
-        SearchModel.langfiltertext('');
-        SearchModel.ownerfiltertext('');
-        SearchModel.repofiltertext('');
-        SearchModel.sourcefiltertext('');
     },
     toggleinstant: function() {
         if (window.localStorage) {
@@ -334,7 +304,7 @@ var SearchModel = {
             filter.push(name);
         }
         else {
-            filter = _.without(SearchModel.langfilters(), name);
+            filter = _.without(filter, name);
         }
 
         filters[type] = filter;
@@ -367,7 +337,14 @@ var SearchModel = {
         return tmp;
     },
     getlangfilters: function() {
-        return SearchModel.getfilters('lan', SearchModel.langfilters());
+        var filters = SearchModel.facetfilters();
+
+        var filter = [];
+        if ('language' in filters) {
+            filter = filters['language'];
+        }
+
+        return SearchModel.getfilters('lan', filter);
     },
     getrepofilters: function() {
         return SearchModel.getfilters('repo', SearchModel.repositoryfilters());
