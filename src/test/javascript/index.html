@@ -162,9 +162,9 @@ QUnit.test('get_lang_url_filters', function( assert ) {
 
 QUnit.test('get_repo_url_filters', function( assert ) {
   SearchModel.facetfilters({});
-  SearchModel.togglefilter('repository', 'test1');
+  SearchModel.togglefilter('repo', 'test1');
   assert.equal(SearchModel.get_repo_url_filters(), '&repo=test1');
-  SearchModel.togglefilter('repository', 'test2');
+  SearchModel.togglefilter('repo', 'test2');
   assert.equal(SearchModel.get_repo_url_filters(), '&repo=test1&repo=test2');
 });
 
@@ -221,8 +221,8 @@ QUnit.test('get_search_query_string', function( assert ) {
   SearchModel.searchvalue('terrywashere');
   SearchModel.togglefilter('language', 'one');
   SearchModel.togglefilter('language', 'two');
-  SearchModel.togglefilter('repository', 'three');
-  SearchModel.togglefilter('repository', 'four');
+  SearchModel.togglefilter('repo', 'three');
+  SearchModel.togglefilter('repo', 'four');
   SearchModel.togglefilter('owner', 'seven');
   SearchModel.togglefilter('owner', 'eight');
   SearchModel.togglefilter('source', 'five');
