@@ -68,7 +68,7 @@ var SearchModel = {
     searchhistory: m.prop(false),
     searchresults: m.prop([]),
 
-    // Used for knowing which filters have been currently selected
+    // Used for knowing which filters have been currently selected by the user
     facetfilters: m.prop({}),
 
     // Text filters for select filters
@@ -77,23 +77,25 @@ var SearchModel = {
     repofiltertext: m.prop(''),
     sourcefiltertext: m.prop(''),
 
+    // Copy of which filters have been selected TODO make this similar to facet filters
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
     activesrcfilters: m.prop([]),
 
-    pages: m.prop([]),
     currentlyloading: m.prop(false),
     currentpage: m.prop(0),
 
+    // User search options
     filterinstantly: m.prop(true),
     compactview: m.prop(false),
     literalview: m.prop(false),
 
-    // From the response
+    // Holds the values from the response
     totalhits: m.prop(0),
     altquery: m.prop([]),
     query: m.prop(''),
+    pages: m.prop([]),
     coderesults: m.prop([]),
     repofilters: m.prop([]),
     languagefilters: m.prop([]),
@@ -264,7 +266,7 @@ var SearchModel = {
         return SearchModel.geturlfilters('lan', filter);
     },
     get_repo_url_filters: function() {
-        var filter = SearchModel.getfacetfilter('repository');
+        var filter = SearchModel.getfacetfilter('repo');
         return SearchModel.geturlfilters('repo', filter);
     },
     get_own_url_filters: function() {
@@ -337,7 +339,7 @@ var SearchModel = {
 
         // Stringify and parse to create a copy not a reference
         SearchModel.activelangfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('language'))));
-        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('repository'))));
+        SearchModel.activerepositoryfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('repo'))));
         SearchModel.activeownfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('owner'))));
         SearchModel.activesrcfilters(JSON.parse(JSON.stringify(SearchModel.getfacetfilter('source'))));
 
