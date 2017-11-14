@@ -18,22 +18,23 @@
   /////////////////////////////////////////////////////////////////////
 QUnit.module('HelperModel');
 QUnit.test('humanise', function( assert ) {
-  assert.equal(HelperModel.humanise(1), '1 Day ');
-  assert.equal(HelperModel.humanise(2), '2 Days ');
-  assert.equal(HelperModel.humanise(3), '3 Days ');
-  assert.equal(HelperModel.humanise(7), '7 Days ');
-  assert.equal(HelperModel.humanise(30), '1 Month ');
-  assert.equal(HelperModel.humanise(60), '2 Months ');
-  assert.equal(HelperModel.humanise(365), '1 Year ');
-  assert.equal(HelperModel.humanise(365 * 2), '2 Years ');
+  assert.equal(HelperModel.humanise(1), '1 Day');
+  assert.equal(HelperModel.humanise(2), '2 Days');
+  assert.equal(HelperModel.humanise(3), '3 Days');
+  assert.equal(HelperModel.humanise(7), '7 Days');
+  assert.equal(HelperModel.humanise(30), '1 Month');
+  assert.equal(HelperModel.humanise(60), '2 Months');
+  assert.equal(HelperModel.humanise(365), '1 Year');
+  assert.equal(HelperModel.humanise(365 * 2), '2 Years');
 
-  assert.equal(HelperModel.humanise(56), '1 Month 26 Days ');
-  assert.equal(HelperModel.humanise(400), '1 Year 1 Month 5 Days ');
+  assert.equal(HelperModel.humanise(56), '1 Month 26 Days');
+  assert.equal(HelperModel.humanise(400), '1 Year 1 Month 5 Days');
+  assert.equal(HelperModel.humanise(800), '2 Years 2 Months 10 Days');
 });
 
 QUnit.test('getDateSpan', function( assert ) {
   assert.equal(HelperModel.getDateSpan(new Date(), new Date()).length, 1);
-  assert.equal(HelperModel.getDateSpan(new Date(2000,01,01), new Date(2000,01,10)).length, 10);
+  assert.equal(HelperModel.getDateSpan(new Date(2000, 01, 01), new Date(2000, 01, 10)).length, 10);
 });
 
 QUnit.test('yearMonthDayToDate', function( assert ) {
@@ -78,7 +79,6 @@ QUnit.test('toggle_instant', function( assert ) {
 });
 
 QUnit.test('get_string_title', function( assert ) {
-  // TODO add more tests here for the history filter logic
   SearchModel.query('my search string');
   assert.equal(SearchModel.get_string_title(), '"my search string"');
   
@@ -342,7 +342,6 @@ QUnit.test('controller', function( assert ) {
   input = { 'repoName': 'my-repository-name' }
   result = controller.getrepositoryhref(input);
   assert.equal(result, '/repository/overview/my-repository-name/');
-
 
   input = { 'codeId': '999', 'codePath': 'zepath'}
   result = controller.gethreflineno(input, 1337);
