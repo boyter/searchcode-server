@@ -55,7 +55,8 @@ var HelperModel = {
                 diff -= amount * values[i][1];
             }
         }
-        return str;
+
+        return str.trim();
     }
 }
 
