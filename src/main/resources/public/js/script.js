@@ -363,7 +363,10 @@ var SearchModel = {
             queryurl = '/api/codesearch/' + queryurl;
         }
 
-        var pagequery = '&p=' + page;
+        var pagequery = '';
+        if (page !== undefined) {
+            pagequery = '&p=' + page;
+        }
         SearchModel.setstatechange(pagequery, isstatechange);
 
         m.request({ method: 'GET', url: queryurl} ).then(function(e) {
@@ -1150,7 +1153,6 @@ var SearchCountComponent = {
             return m('div');
         }
 
-
         var stringTitle = SearchModel.getstringtitle();
 
         document.title = 'Search for ' + stringTitle;
@@ -1212,7 +1214,6 @@ var SearchResultsComponent = {
                 return ' | ' + result.codeLines + ' lines | ' + result.languageName;
             },
             getlinkvalue: function(result) {
-
                 var split = result.displayLocation.split('/');
 
                 var link = [];
