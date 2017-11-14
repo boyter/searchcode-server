@@ -78,6 +78,7 @@ var SearchModel = {
     sourcefiltertext: m.prop(''),
 
     // Copy of which filters have been selected TODO make this similar to facet filters
+    activefacetfilters: m.prop({}),
     activelangfilters: m.prop([]),
     activerepositoryfilters: m.prop([]),
     activeownfilters: m.prop([]),
@@ -132,7 +133,7 @@ var SearchModel = {
 
         SearchModel.searchhistory(!SearchModel.searchhistory());
     },
-    getstringtitle: function() {
+    get_string_title: function() {
         var repos = '';
         var langs = '';
         var owns = '';
@@ -1149,12 +1150,11 @@ var SearchCountComponent = {
         return {}
     },
     view: function(ctrl, args) {
-        if(args.totalhits === undefined) {
+        if (args.totalhits === undefined) {
             return m('div');
         }
 
-        var stringTitle = SearchModel.getstringtitle();
-
+        var stringTitle = SearchModel.get_string_title();
         document.title = 'Search for ' + stringTitle;
 
         return m('div.row.search-count', [
@@ -1176,7 +1176,7 @@ var SearchAlternateFilterComponent = {
         }
     },
     view: function(ctrl, args) {
-        if(args.altquery === undefined || args.altquery.length === 0) {
+        if (args.altquery === undefined || args.altquery.length === 0) {
             return m('div');
         }
 

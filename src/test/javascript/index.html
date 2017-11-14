@@ -84,25 +84,25 @@ QUnit.test('togglehistory', function( assert ) {
   assert.notEqual(current, JSON.parse(localStorage.getItem('togglehistory')));
 });
 
-QUnit.test('getstringtitle', function( assert ) {
+QUnit.test('get_string_title', function( assert ) {
   // TODO add more tests here for the history filter logic
   SearchModel.query('my search string');
-  assert.equal(SearchModel.getstringtitle(), '"my search string"');
+  assert.equal(SearchModel.get_string_title(), '"my search string"');
   
   SearchModel.activerepositoryfilters(['one']);
-  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repository "one"');
+  assert.equal(SearchModel.get_string_title(), '"my search string" filtered by repository "one"');
   SearchModel.activerepositoryfilters(['one', 'two']);
-  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two"');
+  assert.equal(SearchModel.get_string_title(), '"my search string" filtered by repositories "one, two"');
 
   SearchModel.activelangfilters(['java']);
-  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and language "java"');
+  assert.equal(SearchModel.get_string_title(), '"my search string" filtered by repositories "one, two" and language "java"');
   SearchModel.activelangfilters(['java', 'python']);
-  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python"');
+  assert.equal(SearchModel.get_string_title(), '"my search string" filtered by repositories "one, two" and languages "java, python"');
 
   SearchModel.activeownfilters(['person1']);
-  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owner "person1"');
+  assert.equal(SearchModel.get_string_title(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owner "person1"');
   SearchModel.activeownfilters(['person1', 'person2']);
-  assert.equal(SearchModel.getstringtitle(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owners "person1, person2"');
+  assert.equal(SearchModel.get_string_title(), '"my search string" filtered by repositories "one, two" and languages "java, python" and owners "person1, person2"');
 });
 
 QUnit.test('toggle_filter', function( assert ) {
