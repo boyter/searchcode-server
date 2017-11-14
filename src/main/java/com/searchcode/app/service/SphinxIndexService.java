@@ -329,7 +329,7 @@ public class SphinxIndexService implements IIndexService {
 
         codeFacetLanguages = this.transformLanguageType(codeFacetLanguages);
 
-        return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>());
+        return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), new ArrayList<>());
     }
 
     public List<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {

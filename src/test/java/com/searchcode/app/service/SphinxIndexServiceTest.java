@@ -36,7 +36,8 @@ public class SphinxIndexServiceTest extends TestCase {
             "this is some content to search on test",
             "repoRemoteLocation",
             "owner",
-            "mydisplaylocation");
+            "mydisplaylocation",
+            "source");
 
 
     public void testGetShardCountExpectingZero() {
