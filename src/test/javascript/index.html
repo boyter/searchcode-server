@@ -77,13 +77,6 @@ QUnit.test('toggleinstant', function( assert ) {
   assert.notEqual(current, JSON.parse(localStorage.getItem('toggleinstant')));
 });
 
-QUnit.test('togglehistory', function( assert ) {
-  var current = SearchModel.searchhistory();
-  SearchModel.togglehistory();
-  assert.notEqual(current, SearchModel.searchhistory());
-  assert.notEqual(current, JSON.parse(localStorage.getItem('togglehistory')));
-});
-
 QUnit.test('get_string_title', function( assert ) {
   // TODO add more tests here for the history filter logic
   SearchModel.query('my search string');
@@ -344,13 +337,24 @@ QUnit.test('controller', function( assert ) {
   
   var input = { 'codeId': '999', 'codePath': 'zepath' }
   var result = controller.gethref(input);
-
   assert.equal(result, '/file/999/zepath');
 
   input = { 'repoName': 'my-repository-name' }
   result = controller.getrepositoryhref(input);
-
   assert.equal(result, '/repository/overview/my-repository-name/');
+
+
+  input = { 'codeId': '999', 'codePath': 'zepath'}
+  result = controller.gethreflineno(input, 1337);
+  assert.equal(result, '/file/999/zepath#1337');
+
+  input = { 'codeLines': '99', 'languageName': 'Kotlin' }
+  result = controller.getsmallvalue(input);
+  assert.equal(result, ' | 99 lines | Kotlin');
+
+  input = { 'fileName': 'bingo.java' }
+  result = controller.getatag(input);
+  assert.equal(result, 'bingo.java');
 });
 
 </script>
