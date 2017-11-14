@@ -11,7 +11,6 @@
 /**
  * The implementation of the front end for searchcode server using Mithril.js
  */
-var ff_timesearchenabled = false;
 
 Date.prototype.addDays = function (days) {
     var dat = new Date(this.valueOf())
@@ -65,7 +64,6 @@ var HelperModel = {
 var SearchModel = {
     searchvalue: m.prop(''),
     pathvalue: m.prop(''),
-    searchhistory: m.prop(false),
     searchresults: m.prop([]),
 
     // Used for knowing which filters have been currently selected by the user
@@ -125,13 +123,6 @@ var SearchModel = {
             localStorage.setItem('toggleliteral', JSON.stringify(!SearchModel.literalview()));
         }
         SearchModel.literalview(!SearchModel.literalview());
-    },
-    togglehistory: function() {
-        if (window.localStorage) {
-            localStorage.setItem('togglehistory', JSON.stringify(!SearchModel.searchhistory()));
-        }
-
-        SearchModel.searchhistory(!SearchModel.searchhistory());
     },
     get_string_title: function() {
         var repos = '';
@@ -632,10 +623,6 @@ var SearchButtonFilterComponent = {
 var FilterOptionsComponent = {
     controller: function() {
         return {
-            togglehistory: function() {
-                SearchModel.togglehistory();
-                SearchModel.search();
-            },
             toggleinstant: function() {
                 SearchModel.toggleinstant();
             },
@@ -652,7 +639,6 @@ var FilterOptionsComponent = {
         var instantparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
         var compactparams = { type: 'checkbox', onclick: ctrl.togglecompact };
         var literalparams = { type: 'checkbox', onclick: ctrl.toggleliteral };
-        var historyparams = { type: 'checkbox', onclick: ctrl.togglehistory };
         
         if (SearchModel.filterinstantly()) {
             instantparams.checked = 'checked'
@@ -666,9 +652,6 @@ var FilterOptionsComponent = {
             literalparams.checked = 'checked'
         }
 
-        if (SearchModel.searchhistory()) {
-            historyparams.checked = 'checked'
-        }
 
         return m('div', 
             m('h5', 'Search Options'),
@@ -694,12 +677,6 @@ var FilterOptionsComponent = {
                                 m('a', {href: '/documentation/#literal'}, '(help)')
                             )
                         ])
-                    ])
-                ),
-                ff_timesearchenabled === false ? m('span') : m('div.checkbox', 
-                    m('label', [
-                        m('input', historyparams),
-                        m('span', 'Search Across History')
                     ])
                 )
             ])
@@ -1032,7 +1009,6 @@ var SearchOwnersFilterComponent = {
         }
     },
     view: function(ctrl) {
-
         var showmoreless = m('div');
 
         if (SearchModel.ownerfilters() === undefined || SearchModel.ownerfilters().length == 0) {
@@ -1072,8 +1048,6 @@ var SearchOwnersFilterComponent = {
 }
 
 var SearchPathFilterComponent = {
-    controller: function() {
-    },
     view: function(ctrl, args) {
         return m('div', [
             m('h5', 'Path Filter'),
@@ -1120,8 +1094,6 @@ var SearchOptionsComponent = {
         }
     },
     view: function(ctrl, args) {
-
-
         return m('div', { class: 'search-options'}, 
             m('form', { onsubmit: function(event) { ctrl.dosearch(); return false; } },
                 m('div.form-inline', [
@@ -1349,15 +1321,9 @@ if (window.localStorage) {
 
     tmp = JSON.parse(localStorage.getItem('togglecompact'));
     tmp !== null ? SearchModel.compactview(tmp) : SearchModel.compactview(false);
-
-    if (ff_timesearchenabled === true) {
-        tmp = JSON.parse(localStorage.getItem('togglehistory'));
-        tmp !== null ? SearchModel.searchhistory(tmp) : SearchModel.searchhistory(true);
-    }
 }
 else {
     SearchModel.filterinstantly(true);
     SearchModel.literalview(false);
     SearchModel.compactview(false);
-    SearchModel.searchhistory(false);
 }
