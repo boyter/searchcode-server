@@ -337,6 +337,22 @@ QUnit.test('view', function( assert ) {
   });
 });
 
+/////////////////////////////////////////////////////////////////////
+QUnit.module('SearchResultsComponent');
+QUnit.test('controller', function( assert ) {
+  var controller = SearchResultsComponent.controller();
+  
+  var input = { 'codeId': '999', 'codePath': 'zepath' }
+  var result = controller.gethref(input);
+
+  assert.equal(result, '/file/999/zepath');
+
+  input = { 'repoName': 'my-repository-name' }
+  result = controller.getrepositoryhref(input);
+
+  assert.equal(result, '/repository/overview/my-repository-name/');
+});
+
 </script>
 </body>
 </html>
