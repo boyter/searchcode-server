@@ -106,7 +106,7 @@ var SearchModel = {
         SearchModel.facetfilters({});
         SearchModel.pathvalue('');
     },
-    toggleinstant: function() {
+    toggle_instant: function() {
         if (window.localStorage) {
             localStorage.setItem('toggleinstant', JSON.stringify(!SearchModel.filterinstantly()));
         }
@@ -217,7 +217,7 @@ var SearchModel = {
         filters[type] = filter;
         SearchModel.facetfilters(filters);
     },
-    filterexists: function (type, name) {
+    filter_exists: function (type, name) {
         // Checks if a filter exists IE is enabled
         var filters = SearchModel.facetfilters();
 
@@ -623,22 +623,22 @@ var SearchButtonFilterComponent = {
 var FilterOptionsComponent = {
     controller: function() {
         return {
-            toggleinstant: function() {
-                SearchModel.toggleinstant();
+            toggle_instant: function() {
+                SearchModel.toggle_instant();
             },
-            togglecompact: function() {
+            toggle_compact: function() {
                 SearchModel.togglecompact();
             },
-            toggleliteral: function() {
+            toggle_literal: function() {
                 SearchModel.toggleliteral();
                 SearchModel.search();
             }
         }
     },
     view: function(ctrl, args) {
-        var instantparams = { type: 'checkbox', onclick: ctrl.toggleinstant };
-        var compactparams = { type: 'checkbox', onclick: ctrl.togglecompact };
-        var literalparams = { type: 'checkbox', onclick: ctrl.toggleliteral };
+        var instantparams = { type: 'checkbox', onclick: ctrl.toggle_instant };
+        var compactparams = { type: 'checkbox', onclick: ctrl.toggle_compact };
+        var literalparams = { type: 'checkbox', onclick: ctrl.toggle_literal };
         
         if (SearchModel.filterinstantly()) {
             instantparams.checked = 'checked'
@@ -777,7 +777,7 @@ var SearchSourcesFilterComponent = {
                     },
                     value: res.source,
                     count: res.count,
-                    checked: SearchModel.filterexists('source', res.source)
+                    checked: SearchModel.filter_exists('source', res.source)
                 });
             }),
             showmoreless
@@ -864,7 +864,7 @@ var SearchRepositoriesFilterComponent = {
                     },
                     value: res.repoName,
                     count: res.count,
-                    checked: SearchModel.filterexists('repo', res.repoName)
+                    checked: SearchModel.filter_exists('repo', res.repoName)
                 });
             }),
             showmoreless
@@ -952,7 +952,7 @@ var SearchLanguagesFilterComponent = {
                     },
                     value: res.languageName,
                     count: res.count,
-                    checked: SearchModel.filterexists('language', res.languageName)
+                    checked: SearchModel.filter_exists('language', res.languageName)
                 });
             }),
             showmoreless
@@ -1039,7 +1039,7 @@ var SearchOwnersFilterComponent = {
                     },
                     value: res.owner,
                     count: res.count,
-                    checked: SearchModel.filterexists('owner', res.owner)
+                    checked: SearchModel.filter_exists('owner', res.owner)
                 });
             }),
             showmoreless

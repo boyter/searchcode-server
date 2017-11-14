@@ -70,9 +70,9 @@ QUnit.test('togglecompact', function( assert ) {
   assert.notEqual(current, JSON.parse(localStorage.getItem('togglecompact')));
 });
 
-QUnit.test('toggleinstant', function( assert ) {
+QUnit.test('toggle_instant', function( assert ) {
   var current = SearchModel.filterinstantly();
-  SearchModel.toggleinstant();
+  SearchModel.toggle_instant();
   assert.notEqual(current, SearchModel.filterinstantly());
   assert.notEqual(current, JSON.parse(localStorage.getItem('toggleinstant')));
 });
@@ -101,19 +101,19 @@ QUnit.test('get_string_title', function( assert ) {
 QUnit.test('toggle_filter', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.toggle_filter('language', 'test');
-  assert.ok(SearchModel.filterexists('language', 'test'));
+  assert.ok(SearchModel.filter_exists('language', 'test'));
   SearchModel.toggle_filter('language', 'test');
-  assert.notOk(SearchModel.filterexists('language', 'test'));
+  assert.notOk(SearchModel.filter_exists('language', 'test'));
 
   SearchModel.toggle_filter('repo', 'test');
-  assert.ok(SearchModel.filterexists('repo', 'test'));
+  assert.ok(SearchModel.filter_exists('repo', 'test'));
   SearchModel.toggle_filter('repo', 'test');
-  assert.notOk(SearchModel.filterexists('repo', 'test'));
+  assert.notOk(SearchModel.filter_exists('repo', 'test'));
 
   SearchModel.toggle_filter('owner', 'test');
-  assert.ok(SearchModel.filterexists('owner', 'test'));
+  assert.ok(SearchModel.filter_exists('owner', 'test'));
   SearchModel.toggle_filter('owner', 'test');
-  assert.notOk(SearchModel.filterexists('owner', 'test'));
+  assert.notOk(SearchModel.filter_exists('owner', 'test'));
 
   SearchModel.facetfilters({});
   SearchModel.toggle_filter('language', 'test');
@@ -130,19 +130,19 @@ QUnit.test('toggle_filter', function( assert ) {
   assert.equal('test', SearchModel.facetfilters()['something'][0]);
 });
 
-QUnit.test('filterexists', function( assert ) {
+QUnit.test('filter_exists', function( assert ) {
   SearchModel.facetfilters({});
   SearchModel.toggle_filter('language', 'test');
-  assert.ok(SearchModel.filterexists('language', 'test'));
-  assert.notOk(SearchModel.filterexists('language', 'test2'));
+  assert.ok(SearchModel.filter_exists('language', 'test'));
+  assert.notOk(SearchModel.filter_exists('language', 'test2'));
 
   SearchModel.toggle_filter('repo', 'test');
-  assert.ok(SearchModel.filterexists('repo', 'test'));
-  assert.notOk(SearchModel.filterexists('repo', 'test2'));
+  assert.ok(SearchModel.filter_exists('repo', 'test'));
+  assert.notOk(SearchModel.filter_exists('repo', 'test2'));
 
   SearchModel.toggle_filter('owner', 'test');
-  assert.ok(SearchModel.filterexists('owner', 'test'));
-  assert.notOk(SearchModel.filterexists('owner', 'test2'));
+  assert.ok(SearchModel.filter_exists('owner', 'test'));
+  assert.notOk(SearchModel.filter_exists('owner', 'test2'));
 });
 
 QUnit.test('get_lang_url_filters', function( assert ) {
