@@ -206,7 +206,7 @@ var SearchModel = {
 
         return '"' + SearchModel.query() + '"' + repos + langs + owns + path + srcs + literal;
     },
-    togglefilter: function (type, name) {
+    toggle_filter: function (type, name) {
         // Toggles if a filter should be enabled or not
         var filters = SearchModel.facetfilters();
 
@@ -752,7 +752,7 @@ var SearchSourcesFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(source) {
-                SearchModel.togglefilter('source', source);
+                SearchModel.toggle_filter('source', source);
             },
             filtervalue: function(value) {
                 SearchModel.sourcefiltertext(value);
@@ -839,7 +839,7 @@ var SearchRepositoriesFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(repo) {
-                SearchModel.togglefilter('repo', repo);
+                SearchModel.toggle_filter('repo', repo);
             },
             filtervalue: function(value) {
                 SearchModel.repofiltertext(value);
@@ -926,7 +926,7 @@ var SearchLanguagesFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(language) {
-                SearchModel.togglefilter('language', language);
+                SearchModel.toggle_filter('language', language);
             },
             filtervalue: function(value) {
                 SearchModel.langfiltertext(value);
@@ -1014,7 +1014,7 @@ var SearchOwnersFilterComponent = {
                 return trimlength;
             },
             clickenvent: function(owner) {
-                SearchModel.togglefilter('owner', owner);
+                SearchModel.toggle_filter('owner', owner);
                 if (SearchModel.filterinstantly()) {
                     SearchModel.search();
                 }
@@ -1309,22 +1309,22 @@ if (typeof preload !== 'undefined') {
 
     SearchModel.activelangfilters(preload.languageFacets);
     _.each(preload.languageFacets, function(e) { 
-        SearchModel.togglefilter('language', e);
+        SearchModel.toggle_filter('language', e);
     });
 
     SearchModel.activerepositoryfilters(preload.repositoryFacets);
     _.each(preload.repositoryFacets, function(e) { 
-        SearchModel.togglefilter('repository', e);
+        SearchModel.toggle_filter('repository', e);
     });
 
     SearchModel.activeownfilters(preload.ownerFacets);
     _.each(preload.ownerFacets, function(e) { 
-        SearchModel.togglefilter('owner', e);
+        SearchModel.toggle_filter('owner', e);
     });
 
     SearchModel.activesrcfilters(preload.srcFacets);
     _.each(preload.srcFacets, function(e) { 
-        SearchModel.togglefilter('source', e);
+        SearchModel.toggle_filter('source', e);
     });
 
     SearchModel.pathvalue(preload.pathValue);
