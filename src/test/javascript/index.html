@@ -246,7 +246,6 @@ QUnit.test('view', function( assert ) {
   assert.equal(result.children[0].children[1].tag, 'i')
   assert.ok(result.children[0].children[1].children[0].indexOf('my query') !== -1);
 
-
   result = SearchNoResultsComponent.view(null, {totalhits: 0, altquery: ['one', 'two'], query: 'my query'});
   
   assert.deepEqual(result.children[1].children[0], {
