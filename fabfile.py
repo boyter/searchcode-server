@@ -78,6 +78,7 @@ def test_integration():
     local("python ./assets/integration_test/fuzztest.py")
     local("python ./assets/integration_test/signed_testing.py")
     local("python ./assets/integration_test/signed_testing_sha512.py")
+    local("python ./assets/integration_test/signed_testing_optional.py")
     local("python ./assets/integration_test/signed_fuzz.py")
     local("python ./assets/integration_test/quote_plus.py")
 

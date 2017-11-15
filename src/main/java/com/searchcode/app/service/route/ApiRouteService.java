@@ -253,73 +253,89 @@ public class ApiRouteService {
             return new ApiResponse(false, "API not enabled");
         }
 
-        String publicKey = request.queryParams("pub");
-        String signedKey = request.queryParams("sig");
-        String reponames = request.queryParams("reponame");
-        String repourls = request.queryParams("repourl");
-        String repotype = request.queryParams("repotype");
-        String repousername = request.queryParams("repousername");
-        String repopassword = request.queryParams("repopassword");
-        String reposource = request.queryParams("reposource");
-        String repobranch = request.queryParams("repobranch");
-        String hmacTypeString = request.queryParams("hmac");
-        hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
+        Optional<String> publicKey = Optional.ofNullable(request.queryParams("pub"));
+        Optional<String> signedKey =  Optional.ofNullable(request.queryParams("sig"));
+        Optional<String> reponames =  Optional.ofNullable(request.queryParams("reponame"));
+        Optional<String> repourls =  Optional.ofNullable(request.queryParams("repourl"));
+        Optional<String> repotype =  Optional.ofNullable(request.queryParams("repotype"));
+        Optional<String> repousername =  Optional.ofNullable(request.queryParams("repousername"));
+        Optional<String> repopassword =  Optional.ofNullable(request.queryParams("repopassword"));
+        Optional<String> reposource =  Optional.ofNullable(request.queryParams("reposource"));
+        Optional<String> repobranch =  Optional.ofNullable(request.queryParams("repobranch"));
+        Optional<String> hmacTypeString =  Optional.ofNullable(request.queryParams("hmac"));
 
-        if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
+        // Optional
+        Optional<String> source =  Optional.ofNullable(request.queryParams("source"));
+        Optional<String> sourceuser =  Optional.ofNullable(request.queryParams("sourceuser"));
+        Optional<String> sourceproject =  Optional.ofNullable(request.queryParams("sourceproject"));
+
+
+        if (this.helpers.isNullEmptyOrWhitespace(reponames.orElse(Values.EMPTYSTRING))) {
             return new ApiResponse(false, "reponame is a required parameter");
         }
 
-        if (repourls == null || repourls.trim().equals(Values.EMPTYSTRING)) {
+        if (this.helpers.isNullEmptyOrWhitespace(repourls.orElse(Values.EMPTYSTRING))) {
             return new ApiResponse(false, "repourl is a required parameter");
         }
 
-        if (repotype == null) {
+        if (!repotype.isPresent()) {
             return new ApiResponse(false, "repotype is a required parameter");
         }
 
-        if (repousername == null) {
+        if (!repousername.isPresent()) {
             return new ApiResponse(false, "repousername is a required parameter");
         }
 
-        if (repopassword == null) {
+        if (!repopassword.isPresent()) {
             return new ApiResponse(false, "repopassword is a required parameter");
         }
 
-        if (reposource == null) {
+        if (!reposource.isPresent()) {
             return new ApiResponse(false, "reposource is a required parameter");
         }
 
-        if (repobranch == null) {
+        if (!repobranch.isPresent()) {
             return new ApiResponse(false, "repobranch is a required parameter");
         }
 
-        if (apiAuth) {
-            if (publicKey == null || publicKey.trim().equals(Values.EMPTYSTRING)) {
+        if (this.apiAuth) {
+            if (!publicKey.isPresent() || this.helpers.isNullEmptyOrWhitespace(publicKey.get())) {
                 return new ApiResponse(false, "pub is a required parameter");
             }
 
-            if (signedKey == null || signedKey.trim().equals(Values.EMPTYSTRING)) {
+            if (!signedKey.isPresent() || this.helpers.isNullEmptyOrWhitespace(signedKey.get())) {
                 return new ApiResponse(false, "sig is a required parameter");
             }
 
-            String toValidate = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s",
-                    URLEncoder.encode(publicKey),
-                    URLEncoder.encode(reponames),
-                    URLEncoder.encode(repourls),
-                    URLEncoder.encode(repotype),
-                    URLEncoder.encode(repousername),
-                    URLEncoder.encode(repopassword),
-                    URLEncoder.encode(reposource),
-                    URLEncoder.encode(repobranch));
+            String toValidate1 = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s",
+                    URLEncoder.encode(publicKey.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(reponames.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repourls.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repotype.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repousername.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repopassword.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(reposource.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repobranch.orElse(Values.EMPTYSTRING)));
 
-            ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
-            boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
+            String toValidate2 = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s&source=%s&sourceuser=%s&sourceproject=%s",
+                    URLEncoder.encode(publicKey.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(reponames.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repourls.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repotype.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repousername.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repopassword.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(reposource.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(repobranch.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(source.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(sourceuser.orElse(Values.EMPTYSTRING)),
+                    URLEncoder.encode(sourceproject.orElse(Values.EMPTYSTRING)));
 
-            // https://github.com/boyter/searchcode-server/issues/134
+            ApiService.HmacType hmacType = hmacTypeString.orElse(Values.EMPTYSTRING).toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
+
+            boolean validRequest = this.validateRequest(publicKey.orElse(Values.EMPTYSTRING), signedKey.orElse(Values.EMPTYSTRING), toValidate1, hmacType);
+
             if (!validRequest) {
-                toValidate = toValidate.replace("+", "%20");
-                hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
-                validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
+                validRequest = this.validateRequest(publicKey.orElse(Values.EMPTYSTRING), signedKey.orElse(Values.EMPTYSTRING), toValidate2, hmacType);
             }
 
             if (!validRequest) {
@@ -329,22 +345,28 @@ public class ApiRouteService {
         }
 
 
-        if (repobranch.trim().equals(Values.EMPTYSTRING)) {
-            repobranch = "master";
+        if (repobranch.orElse(Values.EMPTYSTRING).trim().equals(Values.EMPTYSTRING)) {
+            repobranch = Optional.of("master");
         }
 
-        repotype = repotype.trim().toLowerCase();
-        if (!"git".equals(repotype) && !"svn".equals(repotype) && !"file".equals(repotype)) {
-            repotype = "git";
+        String repoType = repotype.orElse(Values.EMPTYSTRING).trim().toLowerCase();
+        if (!"git".equals(repoType) && !"svn".equals(repoType) && !"file".equals(repoType)) {
+            repotype = Optional.of("git");
         }
 
-        Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames);
+        Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames.orElse(Values.EMPTYSTRING));
 
         if (repoResult.isPresent()) {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        RepoResult newRepoResult = new RepoResult(-1, reponames, repotype, repourls, repousername, repopassword, reposource, repobranch, "{}");
+        RepoResult newRepoResult = new RepoResult(-1, reponames.orElse(Values.EMPTYSTRING), repotype.orElse(Values.EMPTYSTRING), repourls.orElse(Values.EMPTYSTRING), repousername.orElse(Values.EMPTYSTRING), repopassword.orElse(Values.EMPTYSTRING), reposource.orElse(Values.EMPTYSTRING), repobranch.orElse(Values.EMPTYSTRING), "{}");
+
+        // Set optional fields
+        newRepoResult.getData().source = source.orElse(Values.EMPTYSTRING);
+        newRepoResult.getData().project = sourceproject.orElse(Values.EMPTYSTRING);
+        newRepoResult.getData().user = sourceuser.orElse(Values.EMPTYSTRING);
+
 
         ValidatorResult validate = this.validatorService.validate(newRepoResult);
 
@@ -356,5 +378,20 @@ public class ApiRouteService {
 
         Singleton.getLogger().apiLog("Valid signed repoAdd API call using publicKey=" + publicKey);
         return new ApiResponse(true, "added repository successfully");
+    }
+
+    private boolean validateRequest(String publicKey, String signedKey, String toValidate, ApiService.HmacType hmacType) {
+        boolean validRequest = false;
+
+        validRequest = this.apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
+
+        // Check both types of encoding of spaces even though one is wrong
+        // https://github.com/boyter/searchcode-server/issues/134
+        if (!validRequest) {
+            toValidate = toValidate.replace("+", "%20");
+            validRequest = this.apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
+        }
+
+        return validRequest;
     }
 }
