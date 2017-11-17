@@ -253,6 +253,43 @@ print data['sucessful'], data['message']
 
 ################################################################
 
+reponame = "myrepo"
+repourl = "myrepourl"
+repotype = "git"
+repousername = ""
+repopassword = ""
+reposource = ""
+repobranch = "master"
+source = "source"
+sourceuser = "sourceuser"
+sourceproject = "sourceproject"
+
+message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s&source=%s&sourceuser=%s&sourceproject=%s" % (
+        urllib.quote_plus(publickey),
+        urllib.quote_plus(reponame),
+        urllib.quote_plus(repourl),
+        urllib.quote_plus(repotype),
+        urllib.quote_plus(repousername),
+        urllib.quote_plus(repopassword),
+        urllib.quote_plus(reposource),
+        urllib.quote_plus(repobranch),
+        urllib.quote_plus(source),
+        urllib.quote_plus(sourceuser),
+        urllib.quote_plus(sourceproject),
+    )
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/add/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
 message = "pub=%s" % (urllib.quote_plus(publickey))
 
 sig = hmac(privatekey, message, sha1).hexdigest()
