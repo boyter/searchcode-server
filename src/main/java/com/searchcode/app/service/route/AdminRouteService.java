@@ -59,7 +59,6 @@ public class AdminRouteService {
              Singleton.getRepositorySource());
     }
 
-
     public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IIndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource) {
         this.repo = repo;
         this.data = data;

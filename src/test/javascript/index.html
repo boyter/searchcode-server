@@ -15,7 +15,7 @@
   <script src="../../main/resources/public/js/mithril.min.js"></script>
   <script src="../../main/resources/public/js/script.js"></script>
 <script>
-  /////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
 QUnit.module('HelperModel');
 QUnit.test('humanise', function( assert ) {
   assert.equal(HelperModel.humanise(1), '1 Day');
@@ -225,6 +225,133 @@ QUnit.test('get_search_query_string', function( assert ) {
   assert.equal(res, '?q=terrywashere&lan=one&lan=two&repo=three&repo=four&own=seven&own=eight&src=five&src=six&fl=thisismypath&p=0');
 });
 
+QUnit.test('toggle_filter', function( assert ) {
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('language', 'test');
+  assert.ok(SearchModel.filter_exists('language', 'test'));
+  SearchModel.toggle_filter('language', 'test');
+  assert.notOk(SearchModel.filter_exists('language', 'test'));
+
+  SearchModel.toggle_filter('repo', 'test');
+  assert.ok(SearchModel.filter_exists('repo', 'test'));
+  SearchModel.toggle_filter('repo', 'test');
+  assert.notOk(SearchModel.filter_exists('repo', 'test'));
+
+  SearchModel.toggle_filter('owner', 'test');
+  assert.ok(SearchModel.filter_exists('owner', 'test'));
+  SearchModel.toggle_filter('owner', 'test');
+  assert.notOk(SearchModel.filter_exists('owner', 'test'));
+
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('language', 'test');
+  assert.ok(SearchModel.facetfilters()['language']);
+  assert.equal('test', SearchModel.facetfilters()['language'][0]);
+
+  SearchModel.toggle_filter('language', 'test');
+  SearchModel.toggle_filter('language', 'test2');
+  assert.ok(SearchModel.facetfilters()['language']);
+  assert.equal('test2', SearchModel.facetfilters()['language'][0]);
+
+  SearchModel.toggle_filter('something', 'test');
+  assert.ok(SearchModel.facetfilters()['something']);
+  assert.equal('test', SearchModel.facetfilters()['something'][0]);
+});
+
+QUnit.test('filter_exists', function( assert ) {
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('language', 'test');
+  assert.ok(SearchModel.filter_exists('language', 'test'));
+  assert.notOk(SearchModel.filter_exists('language', 'test2'));
+
+  SearchModel.toggle_filter('repo', 'test');
+  assert.ok(SearchModel.filter_exists('repo', 'test'));
+  assert.notOk(SearchModel.filter_exists('repo', 'test2'));
+
+  SearchModel.toggle_filter('owner', 'test');
+  assert.ok(SearchModel.filter_exists('owner', 'test'));
+  assert.notOk(SearchModel.filter_exists('owner', 'test2'));
+});
+
+QUnit.test('get_lang_url_filters', function( assert ) {
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('language', 'test1');
+  assert.equal(SearchModel.get_lang_url_filters(), '&lan=test1');
+  SearchModel.toggle_filter('language', 'test2');
+  assert.equal(SearchModel.get_lang_url_filters(), '&lan=test1&lan=test2');
+});
+
+QUnit.test('get_repo_url_filters', function( assert ) {
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('repo', 'test1');
+  assert.equal(SearchModel.get_repo_url_filters(), '&repo=test1');
+  SearchModel.toggle_filter('repo', 'test2');
+  assert.equal(SearchModel.get_repo_url_filters(), '&repo=test1&repo=test2');
+});
+
+QUnit.test('get_own_url_filters', function( assert ) {
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('owner', 'test1');
+  assert.equal(SearchModel.get_own_url_filters(), '&own=test1');
+  SearchModel.toggle_filter('owner', 'test2');
+  assert.equal(SearchModel.get_own_url_filters(), '&own=test1&own=test2');
+});
+
+QUnit.test('get_src_url_filters', function( assert ) {
+  SearchModel.facetfilters({});
+  SearchModel.toggle_filter('source', 'test1');
+  assert.equal(SearchModel.get_src_url_filters(), '&src=test1');
+  SearchModel.toggle_filter('source', 'test2');
+  assert.equal(SearchModel.get_src_url_filters(), '&src=test1&src=test2');
+});
+
+QUnit.test('get_path_url_filters', function( assert ) {
+  SearchModel.pathvalue('');
+  assert.equal(SearchModel.get_path_url_filters(), '');
+  SearchModel.pathvalue('terrywashere');
+  assert.equal(SearchModel.get_path_url_filters(), '&fl=terrywashere');
+});
+
+QUnit.test('get_lit_url_filter', function( assert ) {
+  SearchModel.literalview(false);
+  assert.equal(SearchModel.get_lit_url_filter(), '');
+  SearchModel.literalview(true);
+  assert.equal(SearchModel.get_lit_url_filter(), '&lit=true');
+});
+
+// QUnit.test('setstatechange', function( assert ) {
+//   SearchModel.searchvalue('terrywashere')
+//   SearchModel.setstatechange(0, true);
+//   assert.equal('terrywashere', history.state.searchvalue);  
+  
+//   SearchModel.setstatechange(0, undefined);
+//   assert.notEqual(length, history.length);
+//   assert.equal('terrywashere', history.state.searchvalue);
+// });
+
+QUnit.test('get_search_query_string', function( assert ) {
+  SearchModel.facetfilters({});
+
+  SearchModel.pathvalue('');
+  SearchModel.searchvalue('terrywashere');
+  
+  var res = SearchModel.get_search_query_string();
+  assert.equal(res, '?q=terrywashere&p=0');
+
+  SearchModel.pathvalue('thisismypath');
+  SearchModel.searchvalue('terrywashere');
+  SearchModel.toggle_filter('language', 'one');
+  SearchModel.toggle_filter('language', 'two');
+  SearchModel.toggle_filter('repo', 'three');
+  SearchModel.toggle_filter('repo', 'four');
+  SearchModel.toggle_filter('owner', 'seven');
+  SearchModel.toggle_filter('owner', 'eight');
+  SearchModel.toggle_filter('source', 'five');
+  SearchModel.toggle_filter('source', 'six');
+  
+  var res = SearchModel.get_search_query_string();
+  assert.equal(res, '?q=terrywashere&lan=one&lan=two&repo=three&repo=four&own=seven&own=eight&src=five&src=six&fl=thisismypath&p=0');
+});
+
 /////////////////////////////////////////////////////////////////////
 QUnit.module('SearchComponent');
 QUnit.test('view', function( assert ) {
@@ -245,7 +372,6 @@ QUnit.test('view', function( assert ) {
   assert.ok(result.children[0].children[0].indexOf('No results found for ') !== -1);
   assert.equal(result.children[0].children[1].tag, 'i')
   assert.ok(result.children[0].children[1].children[0].indexOf('my query') !== -1);
-
 
   result = SearchNoResultsComponent.view(null, {totalhits: 0, altquery: ['one', 'two'], query: 'my query'});
   

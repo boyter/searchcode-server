@@ -253,6 +253,43 @@ print data['sucessful'], data['message']
 
 ################################################################
 
+reponame = "myrepo"
+repourl = "myrepourl"
+repotype = "git"
+repousername = ""
+repopassword = ""
+reposource = ""
+repobranch = "master"
+source = "source"
+sourceuser = "sourceuser"
+sourceproject = "sourceproject"
+
+message = "pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s&source=%s&sourceuser=%s&sourceproject=%s" % (
+        urllib.quote_plus(publickey),
+        urllib.quote_plus(reponame),
+        urllib.quote_plus(repourl),
+        urllib.quote_plus(repotype),
+        urllib.quote_plus(repousername),
+        urllib.quote_plus(repopassword),
+        urllib.quote_plus(reposource),
+        urllib.quote_plus(repobranch),
+        urllib.quote_plus(source),
+        urllib.quote_plus(sourceuser),
+        urllib.quote_plus(sourceproject),
+    )
+
+sig = hmac(privatekey, message, sha1).hexdigest()
+
+url = "http://localhost:8080/api/repo/add/?sig=%s&%s" % (urllib.quote_plus(sig), message)
+
+data = urllib2.urlopen(url)
+data = data.read()
+
+data = json.loads(data)
+print data['sucessful'], data['message']
+
+################################################################
+
 message = "pub=%s" % (urllib.quote_plus(publickey))
 
 sig = hmac(privatekey, message, sha1).hexdigest()
@@ -470,7 +507,6 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
             <ul>
               <li>sig: signed value (optional if unsecured)</li>
               <li>pub: the public key supplied by your administrator (optional if unsecured)</li>
-
               <li>reponame: unique name to identify the repository if matches existing it will delete the existing and recreate</li>
               <li>repourl: the url to the repository endpoint</li>
               <li>repotype: the type of repository this is, NB only git is currently supported</li>
@@ -478,16 +514,21 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <li>repopassword: password used to pull from the repository</li>
               <li>reposource: a http link pointing where the repository can be browsed or a helpful link</li>
               <li>repobranch: what branch should be indexed</li>
+              <li>source: (Optional) which source to use for deeplinks, needs to match a value in source_database_location to build the link</li>
+              <li>sourceuser: (Optional) populates the user value of the source_database_location values</li>
+              <li>sourceproject: (Optional) populates the project value of the source_database_location values</li>
             </ul>
 
         
           <h5>Signing</h5>
           To sign requests to this endpoint you need to HMAC as follows<br>
           <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY&reponame=REPONAME&repourl=REPOURL&repotype=REPOTYPE&repousername=REPOUSERNAME&repopassword=REPOPASSWORD&reposource=REPOSOURCE&repobranch=REPOBRANCH")</pre>
+          <pre>hmac_sha1("MYPRIVATEKEY", "pub=MYPUBLICKEY&reponame=REPONAME&repourl=REPOURL&repotype=REPOTYPE&repousername=REPOUSERNAME&repopassword=REPOPASSWORD&reposource=REPOSOURCE&repobranch=REPOBRANCH&source=SOURCE&sourceuser=SOURCEUSER&sourceproject=SOURCEPROJECT")</pre>
 
           <h5>Examples</h5>
           <pre>http://localhost/api/repo/add/?reponame=testing&repourl=git://github.com/test/test.git&repotype=git&repousername=MYUSER&repopassword=MYPASSWORD&reposource=http://githib.com/test/test/&repobranch=master</pre>
           <pre>http://localhost/api/repo/add/?sig=SIGNEDKEY&pub=PUBLICKEY&reponame=testing&repourl=git://github.com/test/test.git&repotype=git&repousername=MYUSER&repopassword=MYPASSWORD&reposource=http://githib.com/test/test/&repobranch=master</pre>
+          <pre>http://localhost/api/repo/add/?sig=SIGNEDKEY&pub=PUBLICKEY&reponame=testing&repourl=git://github.com/someone/test/test.git&repotype=git&repousername=MYUSER&repopassword=MYPASSWORD&reposource=http://githib.com/test/test/&repobranch=master&source=GitHub&sourceuser=someone&sourceproject=test</pre>
         
           <h5>Return Field Definitions</h5>
 
@@ -678,6 +719,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>The location of the JSON owasp database. By default set to ./include/owasp/database.json</dd>
               <dt>classifier_database_location</dt>
               <dd>The location of the JSON file classifier database. By default set to ./include/classifier/database.json</dd>
+              <dt>source_database_location</dt>
+              <dd>The location of the JSON file source database. By default set to ./include/source/database.json</dd>
               <dt>highlight_lines_limit</dt>
               <dd>The maximum number of lines that will be highlighted by the JavaScript highlighter. Defaults to 3000.</dd>
               <dt>binary_guess</dt>
