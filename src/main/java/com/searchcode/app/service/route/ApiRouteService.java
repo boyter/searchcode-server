@@ -367,7 +367,6 @@ public class ApiRouteService {
         newRepoResult.getData().project = sourceproject.orElse(Values.EMPTYSTRING);
         newRepoResult.getData().user = sourceuser.orElse(Values.EMPTYSTRING);
 
-
         ValidatorResult validate = this.validatorService.validate(newRepoResult);
 
         if (!validate.isValid) {
@@ -381,7 +380,7 @@ public class ApiRouteService {
     }
 
     private boolean validateRequest(String publicKey, String signedKey, String toValidate, ApiService.HmacType hmacType) {
-        boolean validRequest = false;
+        boolean validRequest;
 
         validRequest = this.apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
