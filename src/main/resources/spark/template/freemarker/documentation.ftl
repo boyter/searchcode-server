@@ -153,8 +153,11 @@
 
         <h3 id="filters">Filters</h3>
         <p>
-        Any search can be filtered down to a specific repository, identified language or code owner using the refinement options.
-        Select one or multiple repositories, languages or owners and click the "Filter Selected or "refine search" button to do this.
+        Any search can be filtered down to a specific repository, source, identified language or code owner using the refinement options.
+        Select one or multiple repositories, sources, languages or owners and click the "Filter Selected or "refine search" button to do this.
+        </p>
+        <p>
+        Note that in the case that a filter has only a single option for source it will not display any option to filter. This is to avoid cluttering the display were you have only a single source to search from.
         </p>
         <p>
         Filters on the normal interface persist between searches. This allows you to select a specific repository or language and continue searching. To clear applied filters uncheck the filters indivudually and click on "Filter Selected". You can also click "Clear Filters" button to clear all active filters. The HTML only page filters are cleared between every new search.
