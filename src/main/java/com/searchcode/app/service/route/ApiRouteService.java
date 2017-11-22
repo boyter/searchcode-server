@@ -60,9 +60,9 @@ public class ApiRouteService {
             return new ApiResponse(false, "API not enabled");
         }
 
-        String publicKey = request.queryParams("pub");
-        String signedKey = request.queryParams("sig");
-        String hmacTypeString = request.queryParams("hmac");
+        String publicKey = request.queryParams(Values.PUB);
+        String signedKey = request.queryParams(Values.SIG);
+        String hmacTypeString = request.queryParams(Values.HMAC);
 
         hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
@@ -168,9 +168,9 @@ public class ApiRouteService {
             return new RepoResultApiResponse(false, "API not enabled", null);
         }
 
-        String publicKey = request.queryParams("pub");
-        String signedKey = request.queryParams("sig");
-        String hmacTypeString = request.queryParams("hmac");
+        String publicKey = request.queryParams(Values.PUB);
+        String signedKey = request.queryParams(Values.SIG);
+        String hmacTypeString = request.queryParams(Values.HMAC);
         hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (apiAuth) {
@@ -205,10 +205,10 @@ public class ApiRouteService {
             return new ApiResponse(false, "API not enabled");
         }
 
-        String publicKey = request.queryParams("pub");
-        String signedKey = request.queryParams("sig");
-        String reponames = request.queryParams("reponame");
-        String hmacTypeString = request.queryParams("hmac");
+        String publicKey = request.queryParams(Values.PUB);
+        String signedKey = request.queryParams(Values.SIG);
+        String reponames = request.queryParams(Values.REPONAME);
+        String hmacTypeString = request.queryParams(Values.HMAC);
         hmacTypeString = hmacTypeString == null ? Values.EMPTYSTRING : hmacTypeString;
 
         if (reponames == null || reponames.trim().equals(Values.EMPTYSTRING)) {
@@ -253,16 +253,16 @@ public class ApiRouteService {
             return new ApiResponse(false, "API not enabled");
         }
 
-        Optional<String> publicKey = Optional.ofNullable(request.queryParams("pub"));
-        Optional<String> signedKey =  Optional.ofNullable(request.queryParams("sig"));
-        Optional<String> reponames =  Optional.ofNullable(request.queryParams("reponame"));
+        Optional<String> publicKey = Optional.ofNullable(request.queryParams(Values.PUB));
+        Optional<String> signedKey =  Optional.ofNullable(request.queryParams(Values.SIG));
+        Optional<String> reponames =  Optional.ofNullable(request.queryParams(Values.REPONAME));
         Optional<String> repourls =  Optional.ofNullable(request.queryParams("repourl"));
         Optional<String> repotype =  Optional.ofNullable(request.queryParams("repotype"));
         Optional<String> repousername =  Optional.ofNullable(request.queryParams("repousername"));
         Optional<String> repopassword =  Optional.ofNullable(request.queryParams("repopassword"));
         Optional<String> reposource =  Optional.ofNullable(request.queryParams("reposource"));
         Optional<String> repobranch =  Optional.ofNullable(request.queryParams("repobranch"));
-        Optional<String> hmacTypeString =  Optional.ofNullable(request.queryParams("hmac"));
+        Optional<String> hmacTypeString =  Optional.ofNullable(request.queryParams(Values.HMAC));
 
         // Optional
         Optional<String> source =  Optional.ofNullable(request.queryParams("source"));
@@ -350,8 +350,8 @@ public class ApiRouteService {
         }
 
         String repoType = repotype.orElse(Values.EMPTYSTRING).trim().toLowerCase();
-        if (!"git".equals(repoType) && !"svn".equals(repoType) && !"file".equals(repoType)) {
-            repotype = Optional.of("git");
+        if (!Values.GIT.equals(repoType) && !Values.SVN.equals(repoType) && !Values.FILE.equals(repoType)) {
+            repotype = Optional.of(Values.GIT);
         }
 
         Optional<RepoResult> repoResult = this.repo.getRepoByName(reponames.orElse(Values.EMPTYSTRING));
