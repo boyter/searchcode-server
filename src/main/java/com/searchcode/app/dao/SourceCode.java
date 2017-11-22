@@ -179,9 +179,11 @@ public class SourceCode {
         try {
             conn = this.dbConfig.getConnection();
 
-            String query = "SELECT `id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, UNCOMPRESS(`content`) AS content, `hash`, `simhash`, `linescount`, `data` FROM `sourcecode` WHERE " +
+            String query = "SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type as languagename" +
+                    " FROM sourcecode" +
+                    " INNER JOIN languagetype ON languagetype.id = sourcecode.languageid" +
                     //"repoid=? AND location=? AND filename=?";
-                    "location=? AND filename=? LIMIT 1;";
+                    " WHERE location=? AND filename=? LIMIT 1;";
 
             stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, this.getLocation(codeIndexDocument));
@@ -193,6 +195,7 @@ public class SourceCode {
                         resultSet.getInt("id"),
                         resultSet.getInt("repoid"),
                         resultSet.getInt("languageid"),
+                        resultSet.getString("languagename"),
                         resultSet.getInt("sourceid"),
                         resultSet.getInt("ownerid"),
                         resultSet.getInt("licenseid"),
@@ -213,7 +216,7 @@ public class SourceCode {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-//            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(conn);
         }
 
         return result;
@@ -222,18 +225,19 @@ public class SourceCode {
     public Optional<SourceCodeDTO> getById(int id) {
         Optional<SourceCodeDTO> result = Optional.empty();
 
-        Connection conn;
+        Connection conn = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
         try {
             conn = this.dbConfig.getConnection();
 
-            String query = "SELECT `id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, UNCOMPRESS(`content`) AS content, `hash`, `simhash`, `linescount`, `data` FROM `sourcecode` WHERE " +
-                    //"repoid=? AND location=? AND filename=?";
-                    "id=? LIMIT 1;";
+            String query = "SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type as languagename" +
+                    " FROM sourcecode" +
+                    " INNER JOIN languagetype ON languagetype.id = sourcecode.languageid" +
+                    " WHERE sourcecode.id=? LIMIT 1;";
 
-            stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            stmt = conn.prepareStatement(query);
             stmt.setInt(1, id);
 
             resultSet = stmt.executeQuery();
@@ -242,6 +246,7 @@ public class SourceCode {
                         resultSet.getInt("id"),
                         resultSet.getInt("repoid"),
                         resultSet.getInt("languageid"),
+                        resultSet.getString("languagename"),
                         resultSet.getInt("sourceid"),
                         resultSet.getInt("ownerid"),
                         resultSet.getInt("licenseid"),
@@ -262,7 +267,7 @@ public class SourceCode {
         finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
-//            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(conn);
         }
 
         return result;

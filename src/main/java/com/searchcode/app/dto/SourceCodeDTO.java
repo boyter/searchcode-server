@@ -6,6 +6,7 @@ public class SourceCodeDTO {
     private int id;
     private int repoid;
     private int languageid;
+    private String languagename;
     private int sourceid;
     private int ownerid;
     private int licenseid;
@@ -17,12 +18,13 @@ public class SourceCodeDTO {
     private int linescount;
     private SourceCodeDTOData sourceCodeData;
 
-    public SourceCodeDTO(int id, int repoid, int languageid, int sourceid, int ownerid, int licenseid, String location, String filename, String content, String hash, String simhash, int linescount, String data) {
+    public SourceCodeDTO(int id, int repoid, int languageid, String languagename, int sourceid, int ownerid, int licenseid, String location, String filename, String content, String hash, String simhash, int linescount, String data) {
         Gson gson = new Gson();
 
         this.id = id;
         this.repoid = repoid;
         this.languageid = languageid;
+        this.languagename = languagename;
         this.sourceid = sourceid;
         this.ownerid = ownerid;
         this.licenseid = licenseid;
@@ -45,6 +47,10 @@ public class SourceCodeDTO {
 
     public int getLanguageid() {
         return languageid;
+    }
+
+    public String getLanguagename() {
+        return languagename;
     }
 
     public int getSourceid() {

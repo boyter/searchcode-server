@@ -272,6 +272,7 @@ public class SphinxIndexService implements IIndexService {
 
             boolean isResultSet = stmt.execute();
 
+            // TODO sourcecode needs to hold the connection till we are done
             if (isResultSet) {
                 resultSet = stmt.getResultSet();
 
@@ -356,7 +357,7 @@ public class SphinxIndexService implements IIndexService {
 
         codeResult.setCodePath(sourceCodeDTO.getLocation());
         codeResult.setFileName(sourceCodeDTO.getFilename());
-        codeResult.setLanguageName(sourceCodeDTO.getLanguageid() + Values.EMPTYSTRING);
+        codeResult.setLanguageName(sourceCodeDTO.getLanguagename());
         codeResult.setMd5hash(sourceCodeDTO.getHash());
         codeResult.setCodeLines(sourceCodeDTO.getLinescount() + Values.EMPTYSTRING);
         codeResult.setDocumentId(sourceCodeDTO.getId());
