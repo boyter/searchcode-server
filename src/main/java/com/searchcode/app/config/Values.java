@@ -152,6 +152,15 @@ public class Values {
     public static final String USERSESSIONID = "admin_user";
     public static final String EMPTYSTRING = "";
     public static final String SINGLE_SPACE = " ";
+    public static final String GIT = "git";
+    public static final String SVN = "svn";
+    public static final String FILE = "file";
+
+    // API Endpoint Values
+    public static final String PUB = "pub";
+    public static final String SIG = "sig";
+    public static final String HMAC = "hmac";
+
 
     // Cache lookup values
     public static final String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
