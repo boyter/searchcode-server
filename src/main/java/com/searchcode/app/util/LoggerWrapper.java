@@ -39,10 +39,10 @@ public class LoggerWrapper {
     private EvictingQueue apiLog = null;
     private EvictingQueue fineRecentCache = null;
 
-    public int BYTESLOGSIZE = 10 * 1024 * 1024;
-    public int LOGCOUNT = 10;
-    public boolean LOGSENABLED = true;
-    public Level LOGLEVELENUM = Level.SEVERE;
+    int BYTESLOGSIZE = 10 * 1024 * 1024;
+    int LOGCOUNT = 10;
+    private boolean LOGSENABLED = true;
+    Level LOGLEVELENUM = Level.SEVERE;
     private String LOGLEVEL = Values.DEFAULT_LOG_LEVEL;
     private String LOGPATH = Values.DEFAULT_LOG_PATH;
     private boolean LOGSTDOUT = false;
@@ -77,8 +77,6 @@ public class LoggerWrapper {
             this.LOGSENABLED = false;
             this.LOGLEVEL = "OFF";
         }
-
-
 
         if (!this.LOGLEVEL.equals("OFF")) {
             try {
@@ -146,6 +144,7 @@ public class LoggerWrapper {
         try {
             this.allCache.add(message);
             this.infoRecentCache.add(message);
+
             if (this.LOGSENABLED) {
                 this.logger.info(toLog);
             }
