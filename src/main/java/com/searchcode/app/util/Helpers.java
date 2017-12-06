@@ -94,8 +94,8 @@ public class Helpers {
             fileInputStream = new FileInputStream(new File(filePath));
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fileInputStream);
         } // Both the below should be caught before this point
-        catch(FileNotFoundException ex) {}
-        catch(IOException ex) {}
+        catch (FileNotFoundException ex) {}
+        catch (IOException ex) {}
         finally {
             IOUtils.closeQuietly(fileInputStream);
         }
@@ -113,7 +113,7 @@ public class Helpers {
         try {
             result = Integer.parseInt(toParse);
         }
-        catch (NumberFormatException ex){
+        catch (NumberFormatException ex) {
             result = Integer.parseInt(defaultValue);
         }
 
@@ -130,7 +130,7 @@ public class Helpers {
         try {
             result = Double.parseDouble(toParse);
         }
-        catch (NumberFormatException | NullPointerException ex){
+        catch (NumberFormatException | NullPointerException ex) {
             result = Double.parseDouble(defaultValue);
         }
 
