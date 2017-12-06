@@ -51,9 +51,7 @@ public class CompressTest {
         System.out.println("");
 
         System.out.println("     Savings: " + (previousCompressed - totalCompressedLength));
-
-
-
+        
 //        // Decompress the bytes
 //        Inflater decompresser = new Inflater();
 //        decompresser.setInput(output, 0, compressedDataLength);
