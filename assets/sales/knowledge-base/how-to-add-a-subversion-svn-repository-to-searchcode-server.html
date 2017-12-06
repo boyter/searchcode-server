@@ -1,0 +1,48 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to add a subversion (SVN) repository to searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">To add a subversion repository searchcode server you will need to login to the admin screens (or to use the API). From there you can click API Keys and then "Repository Add". Follow the steps below.</p>
+
+		<p class="em">1. Ensure that the svn client tools are installed. If you can run "svn help" then you are set. You will need to know the location of the svn binary as well. "which svn" should do this for you and for most Linux installs it will be /usr/bin/svn which is also the default value for the properties file</p>
+
+		<p class="em">2. In the root directory of the searchcode server install you need to edit the searchcode.properties file and set the values like so
+<pre><code>svn_enabled=true
+svn_binary_path=/usr/bin/svn # THIS SHOULD BE SET TO THE ACTUAL PATH OF SVN
+</code></pre>
+</p>
+
+<p class="em">
+3. Restart searchcode server to refresh the svn information.
+</p>
+
+<p class="em">
+4. Add a project as per the screenshot. Login to the admin page (default password is Adm1n234) click "Repository Add" and then fill in the details like below,
+
+<pre><code>Repository Name = The name you want your repository to be known as. For tortise svn I would set the name as tortisesvn
+SCM = From the drop down select SVN
+Repository Location = The location of your SVN repository. If you want only trunk I would specify the specific folder EG https://svn.code.sf.net/p/tortoisesvn/code/trunk
+Repository Username = The username you wish to use that has read access
+Repository Password = The password for the above user
+Repository Source = This can be a HTTP link to a useful location, quite often can be the same as SCM
+Repository Branch = You can ignore this value for SVN
+</code></pre>
+</p>
+
+<p class="em">
+5. Then click "Add Repository"</p>
+        </div>
+      </div>
