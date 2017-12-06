@@ -27,8 +27,7 @@ public class CompressTest {
     public static int totalUncompressedLength = 0;
     public static int totalCompressedLength = 0;
     public static String DICTIONARY = "";
-
-
+    
     public static void main(String[] args) throws Exception {
 
         CompressTest ct = new CompressTest();
@@ -51,7 +50,7 @@ public class CompressTest {
         System.out.println("");
 
         System.out.println("     Savings: " + (previousCompressed - totalCompressedLength));
-        
+
 //        // Decompress the bytes
 //        Inflater decompresser = new Inflater();
 //        decompresser.setInput(output, 0, compressedDataLength);
