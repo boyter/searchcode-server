@@ -40,8 +40,7 @@ public class CompressTest {
         int previousCompressed = totalCompressedLength;
 
         System.out.println("");
-
-
+        
         DICTIONARY = Files.readAllLines(Paths.get("/tmp/dictionary"), StandardCharsets.UTF_8).get(0);
         totalCompressedLength = 0;
         totalUncompressedLength = 0;
