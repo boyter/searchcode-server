@@ -1,4 +1,4 @@
-# A dead simple static site generater becaues I didn't like any others
+# A dead simple static site generator because I didn't like any others
 
 import os
 import sys
@@ -8,7 +8,7 @@ from subprocess import call
 # Target output
 target = './output/'
 
-# Genetic header/footer to be applied to every template
+# Generic header/footer to be applied to every template
 header = './generic/header.html'
 footer = './generic/footer.html'
 
