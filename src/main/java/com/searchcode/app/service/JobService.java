@@ -326,17 +326,17 @@ public class JobService implements IJobService {
     private void startRepositoryJobs() {
         // Create a pool of crawlers which read from the queue
         for (int i = 0; i < this.NUMBERGITPROCESSORS; i++) {
-            this.startIndexGitRepoJobs("" + i);
+            this.startIndexGitRepoJobs(Values.EMPTYSTRING + i);
         }
 
         if (SVNENABLED) {
             for (int i = 0; i < this.NUMBERSVNPROCESSORS; i++) {
-                this.startIndexSvnRepoJobs("" + i);
+                this.startIndexSvnRepoJobs(Values.EMPTYSTRING + i);
             }
         }
 
         for (int i = 0; i < this.NUMBERFILEPROCESSORS; i++) {
-            this.startIndexFileRepoJobs("" + i);
+            this.startIndexFileRepoJobs(Values.EMPTYSTRING + i);
         }
 
 
