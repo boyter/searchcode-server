@@ -19,7 +19,7 @@ from fabric.api import sudo
 from fabric.api import prompt
 from fabric.utils import warn
 from fabric.contrib.files import sed
-from fabric.context_managers import settings, hide, cd
+from fabric.context_managers import settings, hide, cd, lcd
 from fabric.colors import yellow
 
 import platform
@@ -60,6 +60,29 @@ def test():
 
 def test_docker():
     local('''docker build -t searchcode-server-test -f ./assets/docker/Dockerfile.test .''')
+    local('''docker run --rm \
+            -v ~/.m2/:/root/.m2/ \
+            -v $(PWD):/opt/app/ \
+            -w /opt/app/ \
+            searchcode-server-test mvn test''')
+
+
+def test_docker_e2e():
+    local('mkdir -p e2e_test')
+    local('mkdir -p ./e2e_test/git_example/')
+    local('mkdir -p ./e2e_test/svn_example/')
+    local('mkdir -p ./e2e_test/file_example/')
+
+    with lcd('./e2e_test/git_example/'):
+        local('echo "indextest git_example" > "git_example.py"')
+
+    with lcd('./e2e_test/svn_example/'):
+        local('echo "indextest svn_example" > "svn_example.py"')
+
+    with lcd('./e2e_test/file_example/'):
+        local('echo "indextest file_example" > "file_example.py"')
+
+    local('''docker build -t searchcode-server-test -f ./assets/docker/Dockerfile.test.e2e .''')
     local('''docker run --rm \
             -v ~/.m2/:/root/.m2/ \
             -v $(PWD):/opt/app/ \
