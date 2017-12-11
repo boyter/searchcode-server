@@ -24,7 +24,7 @@ import java.util.Optional;
 /**
  * Deals exclusively with API methods such as validation, creation of keys, deletion etc...
  */
-public class ApiService implements IApiService {
+public class ApiService {
 
     public enum HmacType { SHA1, SHA512};
 
