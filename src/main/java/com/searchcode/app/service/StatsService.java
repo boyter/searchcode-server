@@ -88,11 +88,11 @@ public class StatsService {
         long freeMemory = runtime.freeMemory();
         long usedMB = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
 
-        sb.append("free memory: " + format.format(freeMemory / 1024) + seperator);
-        sb.append("allocated memory: " + format.format(allocatedMemory / 1024) + seperator);
-        sb.append("max memory: " + format.format(maxMemory / 1024) + seperator);
-        sb.append("total free memory: " + format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024) + seperator);
-        sb.append("memory usage: " + usedMB + "MB");
+        sb.append("free memory: ").append(format.format(freeMemory / 1024)).append(seperator);
+        sb.append("allocated memory: ").append(format.format(allocatedMemory / 1024)).append(seperator);
+        sb.append("max memory: ").append(format.format(maxMemory / 1024)).append(seperator);
+        sb.append("total free memory: ").append(format.format((freeMemory + (maxMemory - allocatedMemory)) / 1024)).append(seperator);
+        sb.append("memory usage: ").append(usedMB).append("MB");
 
         return sb.toString();
     }
