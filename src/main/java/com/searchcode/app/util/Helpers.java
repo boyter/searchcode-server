@@ -170,7 +170,7 @@ public class Helpers {
         String line;
 
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), this.guessCharset(new File(filePath))));
 
             int lineCount = 0;
             while ((line = bufferedReader.readLine()) != null) {
@@ -190,7 +190,7 @@ public class Helpers {
         return fileLines;
     }
 
-    public Charset guessCharset(File file) throws IOException {
+    private Charset guessCharset(File file) throws IOException {
         return CharsetToolkit.guessEncoding(file, 4096, StandardCharsets.UTF_8);
     }
 
