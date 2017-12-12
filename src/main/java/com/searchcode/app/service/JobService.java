@@ -48,7 +48,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
  * TODO implement using below for the stopping and starting of jobs
  * http://stackoverflow.com/questions/7159080/how-to-interrupt-or-stop-currently-running-quartz-job#7159719
  */
-public class JobService implements IJobService {
+public class JobService {
 
     private final Helpers helpers;
     private final IRepo repo;
@@ -289,7 +289,6 @@ public class JobService implements IJobService {
      * TODO fix so this can only run once
      * TODO move the indexer job start into method like the above ones
      */
-    @Override
     public void initialJobs() {
         try {
             this.startDeleteJob();
@@ -387,7 +386,6 @@ public class JobService implements IJobService {
         FileUtils.moveDirectory(new File(troublesome), new File(newLocation));
     }
 
-    @Override
     public boolean forceEnqueue() {
         if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
@@ -401,7 +399,6 @@ public class JobService implements IJobService {
         return true;
     }
 
-    @Override
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
@@ -411,8 +408,7 @@ public class JobService implements IJobService {
 
         return repoResultList.size();
     }
-
-    @Override
+    
     public boolean forceEnqueue(RepoResult repoResult) {
         if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
