@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 public class SearchcodeLibTest extends TestCase {
 
     public void testCleanPipeline() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("{AB3FBE3A-410C-4FB2-84E0-B2D3434D1995}");
         assertThat(actual).contains(" AB3FBE3A-410C-4FB2-84E0-B2D3434D1995 ");
         assertThat(actual).contains(" {AB3FBE3A-410C-4FB2-84E0-B2D3434D1995} ");
@@ -25,7 +25,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCleanPipelineTwo() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("\"_updatedDate\"");
 
         assertThat(actual).contains(" _updatedDate ");
@@ -34,35 +34,35 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCleanPipelineThree() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("'shop_order_log',");
 
         assertThat(actual.contains(" 'shop_order_log' ")).isTrue();
     }
 
     public void testCleanPipelineDots() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("actual.contains");
 
         assertThat(actual).contains(" actual.contains ");
     }
 
     public void testCleanPipelineCustom() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("context.config.URL_REWRITE.iteritems():");
 
         assertThat(actual).contains(" URL_REWRITE ");
     }
 
     public void testCleanPipelineCustom2() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("task :install_something do");
 
         assertThat(actual).contains(" install_something ");
     }
 
     public void testIsBinaryBlackListWithNoDotFileName() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("a");
@@ -74,7 +74,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinary() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("a");
@@ -83,7 +83,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryAllNonAscii() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你");
@@ -92,7 +92,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryFalse() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
@@ -105,7 +105,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryTrue() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
@@ -118,7 +118,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryWhiteListedExtension() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
 
@@ -133,7 +133,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryWhiteListedPropertyExtension() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         sl.WHITE_LIST = new String[1];
         sl.WHITE_LIST[0] = "java";
 
@@ -149,7 +149,7 @@ public class SearchcodeLibTest extends TestCase {
 
         Data dataMock = mock(Data.class);
 
-        SearchcodeLib sl = new SearchcodeLib(null, fileClassifier, dataMock, new Helpers());
+        SearchCodeLib sl = new SearchCodeLib(null, fileClassifier, dataMock, new Helpers());
 
         sl.BLACK_LIST = new String[1];
         sl.BLACK_LIST[0] = "png";
@@ -161,13 +161,13 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryEmptyTrue() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         ArrayList<String> codeLines = new ArrayList<>();
         assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
     }
 
     public void testIsBinaryEdge1() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 95; i++) {
@@ -182,7 +182,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryEdge2() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 96; i++) {
@@ -197,7 +197,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsBinaryEdge3() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 200; i++) {
@@ -213,7 +213,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsMinifiedTrue() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 256; i++) {
@@ -226,7 +226,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsMinifiedWhiteListAlwaysWins() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
 
         ArrayList<String> whiteList = new ArrayList<>();
@@ -244,7 +244,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testIsMinifiedFalse() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
         for (int i=0; i < 255; i++) {
@@ -257,7 +257,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCodeOwnerSameTimeDifferntCount() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         List<CodeOwner> codeOwners = new ArrayList<>();
         codeOwners.add(new CodeOwner("Ben", 20, 1449809107));
@@ -268,7 +268,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCodeOwnerManyOwners() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         // 86400 seconds in a day
         int daySeconds = 86400;
@@ -285,7 +285,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCodeOwnerManyOwnersFirstWins() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         // 86400 seconds in a day
         int daySeconds = 86400;
@@ -304,7 +304,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCodeOwnerManyOwnersRandom() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         // 86400 seconds in a day
         int daySeconds = 86400;
@@ -323,7 +323,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCodeOwnerManyOwnersOldFile() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
 
         // 86400 seconds in a day
         int daySeconds = 86400;
@@ -339,63 +339,63 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testSplitKeywords() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.splitKeywords("testSplitKeywords", false);
         assertThat(actual).contains("test Split Keywords");
     }
 
     public void testSplitKeywords2() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.splitKeywords("map.put(\"isCommunity\", ISCOMMUNITY);", false);
         assertThat(actual).contains("is Community");
     }
 
     public void testSplitKeywords3() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.splitKeywords("TestSplitKeywords", false);
         assertThat(actual).contains("Test Split Keywords");
     }
 
     public void testSplitKeywords4() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.splitKeywords("SimpleThreadPool", true);
         assertThat(actual).contains(" SimpleThread ");
     }
 
     public void testSplitKeywords5() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.splitKeywords("SimpleThreadPool", false);
         assertThat(actual).doesNotContain("SimpleThread");
     }
 
     public void testInterestingKeywords() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.findInterestingKeywords("PURIFY_EXE=/depot/pure/purify.i386_linux2.7.4.14/purify");
         assertThat(actual).isEqualTo(" i386 linux2.7.4");
     }
 
     public void testInterestingKeywordsNull() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.findInterestingKeywords(null);
         assertThat(actual).isEqualTo("");
     }
 
     public void testInterestingCharacters() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.findInterestingCharacters("this 你好 chinese");
         assertThat(actual).contains(" 你 ");
         assertThat(actual).contains(" 好 ");
     }
 
     public void testInterestingCharactersNullExpectEmpty() {
-        SearchcodeLib sl = new SearchcodeLib();
+        SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.findInterestingCharacters(null);
         assertThat(actual).isEqualTo("");
     }
 
 
     public void testCountFilteredLinesSingleLine() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         ArrayList<String> lst = new ArrayList<>();
         lst.add("one");
@@ -405,7 +405,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCountFilteredLinesCommentLines() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         ArrayList<String> lst = new ArrayList<>();
         lst.add("// one");
@@ -418,7 +418,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCountFilteredLinesMixCommentLines() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         ArrayList<String> lst = new ArrayList<>();
         lst.add("// one");
@@ -433,7 +433,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testCountFilteredCommentTypes() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         ArrayList<String> lst = new ArrayList<>();
         lst.add("// comment");
@@ -452,7 +452,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testLanguageCostIgnore() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertThat(scl.languageCostIgnore("Text")).isTrue();
         assertThat(scl.languageCostIgnore("JSON")).isTrue();
         assertThat(scl.languageCostIgnore("Unknown")).isTrue();
@@ -462,7 +462,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testFormatQueryStringAnd() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         assertThat(scl.formatQueryStringAndDefault("test string")).isEqualTo("test   AND string");
         assertThat(scl.formatQueryStringAndDefault("test string other|")).isEqualTo("test   AND string   AND other\\|");
@@ -473,31 +473,31 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testFormatQueryStringOperators() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertEquals("test   AND   string", scl.formatQueryStringAndDefault("test AND string"));
         assertEquals("(test   AND   string)", scl.formatQueryStringAndDefault("(test AND string)"));
     }
 
     public void testFormatQueryStringDefaultAnd() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertEquals("test   AND string", scl.formatQueryStringAndDefault("test string"));
     }
 
     public void testFormatQueryStringOperatorsOr() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertEquals("test  AND  string", scl.formatQueryStringOrDefault("test AND string"));
         assertEquals("(test  AND  string)", scl.formatQueryStringOrDefault("(test AND string)"));
     }
 
     public void testFormatQueryStringDefaultOr() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertEquals("test  string", scl.formatQueryStringOrDefault("test string"));
     }
 
     public void testGenerateAltQueries() {
         SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
         Data dataMock = mock(Data.class);
-        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
+        SearchCodeLib scl = new SearchCodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         assertEquals(0, scl.generateAltQueries("supercalifragilisticexpialidocious").size());
         assertEquals("something", scl.generateAltQueries("something*").get(0));
@@ -507,7 +507,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltQueriesOther() {
         SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
         Data dataMock = mock(Data.class);
-        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
+        SearchCodeLib scl = new SearchCodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         spellingCorrector.putWord("deh");
         assertEquals("dep", scl.generateAltQueries("dep*").get(0));
@@ -517,7 +517,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateAltQueriesAnother() {
         SearchcodeSpellingCorrector spellingCorrector = new SearchcodeSpellingCorrector();
         Data dataMock = mock(Data.class);
-        SearchcodeLib scl = new SearchcodeLib(spellingCorrector, null, dataMock, new Helpers());
+        SearchCodeLib scl = new SearchCodeLib(spellingCorrector, null, dataMock, new Helpers());
 
         spellingCorrector.putWord("ann");
         assertEquals("stuff OR other", scl.generateAltQueries("stuff AND other").get(1));
@@ -525,17 +525,17 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testGenerateAltQueriesNoDupes() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertEquals(1, scl.generateAltQueries("test*").size());
     }
 
     public void testGenerateAltNeverEmptyString() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
         assertEquals(0, scl.generateAltQueries("+").size());
     }
 
     public void testGenerateBusBlurb() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
         codeFacetOwners.add(new CodeFacetOwner("Ben", 1));
@@ -551,7 +551,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testGenerateBusBlurbMore() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
         codeFacetOwners.add(new CodeFacetOwner("Ben", 6));
@@ -567,7 +567,7 @@ public class SearchcodeLibTest extends TestCase {
     }
 
     public void testGenerateBusBlurbStress() {
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         for (int i=0; i < 1000; i++) {
 
@@ -591,7 +591,7 @@ public class SearchcodeLibTest extends TestCase {
      */
     public void testGenerateAltQueriesFuzz() {
         Random rand = new Random();
-        SearchcodeLib scl = new SearchcodeLib();
+        SearchCodeLib scl = new SearchCodeLib();
 
         for(int i = 0; i < 10; i++) {
 

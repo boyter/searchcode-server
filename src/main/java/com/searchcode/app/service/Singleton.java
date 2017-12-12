@@ -41,7 +41,7 @@ public final class Singleton {
     private static ISpellingCorrector spellingCorrectorInstance = null;
     private static Queue<CodeIndexDocument> codeIndexQueue = null; // Documents ready to be indexed
 
-    private static SearchcodeLib searchcodeLib = null;
+    private static SearchCodeLib searchcodeLib = null;
     private static FileClassifier fileClassifier = null;
     private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
@@ -203,9 +203,9 @@ public final class Singleton {
         return loggerWrapper;
     }
 
-    public static synchronized SearchcodeLib getSearchCodeLib() {
+    public static synchronized SearchCodeLib getSearchCodeLib() {
         if (searchcodeLib == null) {
-            searchcodeLib = new SearchcodeLib();
+            searchcodeLib = new SearchCodeLib();
         }
 
         return searchcodeLib;
@@ -223,8 +223,8 @@ public final class Singleton {
      * Overwrites the internal searchcode lib with the new one which will refresh the data it needs. Mainly used to
      * change the minified settings.
      */
-    public static synchronized SearchcodeLib getSearchcodeLib() {
-        searchcodeLib = new SearchcodeLib();
+    public static synchronized SearchCodeLib getSearchcodeLib() {
+        searchcodeLib = new SearchCodeLib();
 
         return searchcodeLib;
     }

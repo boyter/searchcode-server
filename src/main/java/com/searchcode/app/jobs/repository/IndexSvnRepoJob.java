@@ -16,7 +16,7 @@ import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.SearchCodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
@@ -74,7 +74,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchCodeLib scl) {
         return getInfoExternal(codeLines.size(), repoName, fileRepoLocations, newString).getName();
     }
 

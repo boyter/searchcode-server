@@ -56,7 +56,7 @@ public class IndexService implements IIndexService {
 
     private final StatsService statsService;
     private final Data data;
-    private final SearchcodeLib searchcodeLib;
+    private final SearchCodeLib searchcodeLib;
     private final LoggerWrapper logger;
     private final Helpers helpers;
     private final JobService jobService;
@@ -104,7 +104,7 @@ public class IndexService implements IIndexService {
                 Singleton.getJobService());
     }
 
-    public IndexService(Data data, StatsService statsService, SearchcodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue, JobService jobService) {
+    public IndexService(Data data, StatsService statsService, SearchCodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue, JobService jobService) {
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;

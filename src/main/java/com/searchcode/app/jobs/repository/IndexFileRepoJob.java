@@ -17,7 +17,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.SearchCodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.quartz.*;
 
@@ -119,7 +119,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchCodeLib scl) {
         return "File System";
     }
 
