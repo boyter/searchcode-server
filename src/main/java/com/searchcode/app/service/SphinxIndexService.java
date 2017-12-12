@@ -8,7 +8,7 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -25,7 +25,7 @@ public class SphinxIndexService implements IIndexService {
     private final Helpers helpers;
     private final SphinxSearchConfig sphinxSearchConfig;
     private final SourceCode sourceCode;
-    private final SearchcodeLib searchcodeLib;
+    private final SearchCodeLib searchcodeLib;
     private final LanguageType languageType;
 
     private final int PAGE_LIMIT;
