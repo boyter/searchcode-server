@@ -610,7 +610,7 @@ public class IndexService implements IIndexService {
             reader.close();
         }
         catch(Exception ex) {
-            this.logger.severe("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
+            this.logger.warning("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
         }
 
         return fileLocations;
@@ -673,7 +673,7 @@ public class IndexService implements IIndexService {
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
         }
         catch (Exception ex) {
-            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.warning("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -720,7 +720,7 @@ public class IndexService implements IIndexService {
             }
         }
         catch (Exception ex) {
-            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.warning("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);
