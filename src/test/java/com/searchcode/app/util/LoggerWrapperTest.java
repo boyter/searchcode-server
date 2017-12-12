@@ -27,7 +27,7 @@ public class LoggerWrapperTest extends TestCase {
     public void testLoggerWrapperSevereAdd() {
         LoggerWrapper logger = new LoggerWrapper();
         assertThat(logger.getSevereLogs()).isEmpty();
-        logger.severe("test");
+        logger.severe("ignore this severe message");
         assertThat(logger.getSevereLogs()).hasSize(1);
     }
 
@@ -55,7 +55,7 @@ public class LoggerWrapperTest extends TestCase {
     public void testLoggerWrapperAll() {
         LoggerWrapper logger = new LoggerWrapper();
         assertThat(logger.getAllLogs()).isEmpty();
-        logger.severe("test");
+        logger.severe("ignore this severe message");
         assertThat(logger.getAllLogs()).hasSize(1);
 
         logger.info("test");
@@ -126,8 +126,8 @@ public class LoggerWrapperTest extends TestCase {
     public void testLoggerWrapperGetLogReversed() {
         LoggerWrapper logger = new LoggerWrapper();
 
-        logger.severe("one");
-        logger.severe("two");
+        logger.severe("ignore this severe message one");
+        logger.severe("ignore this severe message two");
         logger.info("one");
         logger.info("two");
         logger.warning("one");
@@ -138,8 +138,8 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getInfoLogs().get(0)).contains("two");
         assertThat(logger.getInfoLogs().get(1)).contains("one");
 
-        assertThat(logger.getSevereLogs().get(0)).contains("two");
-        assertThat(logger.getSevereLogs().get(1)).contains("one");
+        assertThat(logger.getSevereLogs().get(0)).contains("ignore this severe message two");
+        assertThat(logger.getSevereLogs().get(1)).contains("ignore this severe message one");
 
         assertThat(logger.getWarningLogs().get(0)).contains("two");
         assertThat(logger.getWarningLogs().get(1)).contains("one");
