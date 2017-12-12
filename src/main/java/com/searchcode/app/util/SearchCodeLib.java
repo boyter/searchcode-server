@@ -521,50 +521,50 @@ public class SearchCodeLib {
 
     public String generateBusBlurb(ProjectStats projectStats) {
 
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append("In this repository ").append(projectStats.getRepoFacetOwner().size());
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("In this repository ").append(projectStats.getRepoFacetOwner().size());
 
         if (projectStats.getRepoFacetOwner().size() == 1) {
-            stringBuffer.append(" committer has contributed to ");
+            stringBuilder.append(" committer has contributed to ");
         }
         else {
-            stringBuffer.append(" committers have contributed to ");
+            stringBuilder.append(" committers have contributed to ");
         }
 
         if (projectStats.getTotalFiles() == 1) {
-            stringBuffer.append(projectStats.getTotalFiles()).append(" file. ");
+            stringBuilder.append(projectStats.getTotalFiles()).append(" file. ");
         }
         else {
-            stringBuffer.append(projectStats.getTotalFiles()).append(" files. ");
+            stringBuilder.append(projectStats.getTotalFiles()).append(" files. ");
         }
 
         List<CodeFacetLanguage> codeFacetLanguages = projectStats.getCodeFacetLanguages();
 
         if (codeFacetLanguages.size() == 1) {
-            stringBuffer.append("The most important language in this repository is ").append(codeFacetLanguages.get(0).getLanguageName()).append(". ");
+            stringBuilder.append("The most important language in this repository is ").append(codeFacetLanguages.get(0).getLanguageName()).append(". ");
         }
         else {
-            stringBuffer.append("The most important languages in this repository are ");
+            stringBuilder.append("The most important languages in this repository are ");
 
             if (!codeFacetLanguages.isEmpty()) {
                 if (codeFacetLanguages.size() > 3) {
                     codeFacetLanguages = codeFacetLanguages.subList(0, 3);
                 }
                 for (int i = 0; i < codeFacetLanguages.size() - 1; i++) {
-                    stringBuffer.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
+                    stringBuilder.append(codeFacetLanguages.get(i).getLanguageName()).append(", ");
                 }
-                stringBuffer.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
+                stringBuilder.append(" and ").append(codeFacetLanguages.get(codeFacetLanguages.size() - 1).getLanguageName()).append(". ");
             }
         }
 
         if (!projectStats.getRepoFacetOwner().isEmpty()) {
             if (projectStats.getRepoFacetOwner().size() < 5) {
-                stringBuffer.append("The project has a low bus factor of ").append(projectStats.getRepoFacetOwner().size());
-                stringBuffer.append(" and will be in trouble if ").append(projectStats.getRepoFacetOwner().get(0).getOwner()).append(" is hit by a bus. ");
+                stringBuilder.append("The project has a low bus factor of ").append(projectStats.getRepoFacetOwner().size());
+                stringBuilder.append(" and will be in trouble if ").append(projectStats.getRepoFacetOwner().get(0).getOwner()).append(" is hit by a bus. ");
             } else if (projectStats.getRepoFacetOwner().size() < 15) {
-                stringBuffer.append("The project has bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+                stringBuilder.append("The project has bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
             } else {
-                stringBuffer.append("The project has high bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
+                stringBuilder.append("The project has high bus factor of ").append(projectStats.getRepoFacetOwner().size()).append(". ");
             }
         }
 
@@ -581,15 +581,15 @@ public class SearchCodeLib {
 
         int averageFilesWorked = (int)(sumAverageFilesWorked / projectStats.getRepoFacetOwner().size() * 100);
 
-        stringBuffer.append("The average person who commits this project has ownership of ");
-        stringBuffer.append(averageFilesWorked).append("% of files. ");
+        stringBuilder.append("The average person who commits this project has ownership of ");
+        stringBuilder.append(averageFilesWorked).append("% of files. ");
 
         if (!highKnowledge.isEmpty()) {
-            stringBuffer.append("The project relies on the following people; ");
-            stringBuffer.append(StringUtils.join(highKnowledge, ", ")).append(". ");
+            stringBuilder.append("The project relies on the following people; ");
+            stringBuilder.append(StringUtils.join(highKnowledge, ", ")).append(". ");
         }
 
-        return stringBuffer.toString().replace(",  and", " and");
+        return stringBuilder.toString().replace(",  and", " and");
     }
 
 //    /**
