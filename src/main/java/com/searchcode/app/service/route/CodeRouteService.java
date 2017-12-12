@@ -143,7 +143,7 @@ public class CodeRouteService {
 
         Repo repo = Singleton.getRepo();
 
-        SearchcodeLib scl = Singleton.getSearchcodeLib();
+        SearchCodeLib scl = Singleton.getSearchcodeLib();
         OWASPClassifier owaspClassifier = Singleton.getOwaspClassifier();
         RepositorySource repositorySource = Singleton.getRepositorySource();
 
@@ -240,7 +240,7 @@ public class CodeRouteService {
 
         String repoName = request.params(":reponame");
         Optional<RepoResult> repository = Singleton.getRepo().getRepoByName(repoName);
-        SearchcodeLib searchcodeLib = Singleton.getSearchCodeLib();
+        SearchCodeLib searchcodeLib = Singleton.getSearchCodeLib();
         Cocomo2 coco = new Cocomo2();
         Gson gson = new Gson();
 
@@ -314,7 +314,7 @@ public class CodeRouteService {
         Repo repo = Singleton.getRepo();
         Data data = Singleton.getData();
 
-        SearchcodeLib scl = Singleton.getSearchcodeLib();
+        SearchCodeLib scl = Singleton.getSearchcodeLib();
         CodeMatcher cm = new CodeMatcher(data);
         Map<String, Object> map = new HashMap<>();
 

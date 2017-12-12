@@ -17,7 +17,7 @@ import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.TimeCodeSearcher;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.SearchCodeLib;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.Request;
@@ -38,7 +38,7 @@ public class TimeSearchRouteService {
     public SearchResult getTimeSearch(Request request, Response response) {
         Data data = Singleton.getData();
 
-        SearchcodeLib scl = Singleton.getSearchcodeLib();
+        SearchCodeLib scl = Singleton.getSearchcodeLib();
         TimeCodeSearcher cs = new TimeCodeSearcher();
         CodeMatcher cm = new CodeMatcher(data);
 
@@ -143,7 +143,7 @@ public class TimeSearchRouteService {
         return page;
     }
 
-    private void getAltQueries(SearchcodeLib scl, String query, SearchResult searchResult) {
+    private void getAltQueries(SearchCodeLib scl, String query, SearchResult searchResult) {
         for(String altQuery: scl.generateAltQueries(query)) {
             searchResult.addAltQuery(altQuery);
         }

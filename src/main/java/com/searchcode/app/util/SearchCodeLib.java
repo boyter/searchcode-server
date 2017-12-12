@@ -25,7 +25,7 @@ import java.util.OptionalDouble;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SearchcodeLib {
+public class SearchCodeLib {
 
     private final ISpellingCorrector spellingCorrector;
     private final FileClassifier fileClassifier;
@@ -39,11 +39,11 @@ public class SearchcodeLib {
     public String[] WHITE_LIST = Properties.getProperties().getProperty(Values.BINARY_WHITE_LIST, Values.DEFAULT_BINARY_WHITE_LIST).split(",");
     public String[] BLACK_LIST = Properties.getProperties().getProperty(Values.BINARY_BLACK_LIST, Values.DEFAULT_BINARY_BLACK_LIST).split(",");
 
-    public SearchcodeLib() {
+    public SearchCodeLib() {
         this(Singleton.getSpellingCorrector(), new FileClassifier(), Singleton.getData(), Singleton.getHelpers());
     }
 
-    public SearchcodeLib(ISpellingCorrector spellingCorrector, FileClassifier fileClassifier, Data data, Helpers helpers) {
+    public SearchCodeLib(ISpellingCorrector spellingCorrector, FileClassifier fileClassifier, Data data, Helpers helpers) {
         this.spellingCorrector = spellingCorrector;
         this.fileClassifier = fileClassifier;
 

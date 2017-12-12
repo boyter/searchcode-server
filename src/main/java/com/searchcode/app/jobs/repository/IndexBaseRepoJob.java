@@ -14,7 +14,6 @@ package com.searchcode.app.jobs.repository;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.BinaryFinding;
-import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
@@ -22,13 +21,12 @@ import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.SearchCodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -40,7 +38,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.*;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public abstract class IndexBaseRepoJob implements Job {
@@ -78,7 +75,7 @@ public abstract class IndexBaseRepoJob implements Job {
     /**
      * This method to be implemented by the extending class
      */
-    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+    public String getCodeOwner(List<String> codeLines, String newString, String repoName, String fileRepoLocations, SearchCodeLib scl) {
         return null;
     }
 

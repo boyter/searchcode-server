@@ -20,7 +20,7 @@ import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.SearchcodeLib;
+import com.searchcode.app.util.SearchCodeLib;
 import com.searchcode.app.util.Timer;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FilenameUtils;
@@ -95,7 +95,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public String getCodeOwner(List<String> codeLines, String fileName, String repoName, String fileRepoLocations, SearchcodeLib scl) {
+    public String getCodeOwner(List<String> codeLines, String fileName, String repoName, String fileRepoLocations, SearchCodeLib scl) {
         List<CodeOwner> owners;
         Timer timer = Singleton.getNewTimer();
 
