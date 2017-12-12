@@ -11,7 +11,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.IRepo;
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.jobs.DeleteRepositoryJob;
 import com.searchcode.app.jobs.PopulateSpellingCorrectorJob;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
@@ -51,7 +51,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class JobService {
 
     private final Helpers helpers;
-    private final IRepo repo;
+    private final Repo repo;
     private int UPDATETIME = 600;
     private int FILEINDEXUPDATETIME = 3600;
     private int INDEXTIME = 1; // TODO allow this to be configurable

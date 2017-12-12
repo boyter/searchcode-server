@@ -29,7 +29,7 @@ import java.util.Optional;
  * Note that we use an in memory cache to avoid hitting the database too much. This was because when hit really hard
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
-public class Api implements IApi {
+public class Api {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
 

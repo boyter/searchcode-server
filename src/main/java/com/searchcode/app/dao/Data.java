@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Provides access to all methods required to get Data details from the database.
  */
-public class Data implements IData {
+public class Data {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
 
