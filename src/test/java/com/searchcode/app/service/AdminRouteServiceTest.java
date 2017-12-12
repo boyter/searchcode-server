@@ -101,7 +101,7 @@ public class AdminRouteServiceTest extends TestCase {
         Singleton.getLogger().apiLog("test");
         Singleton.getLogger().warning("test");
         Singleton.getLogger().searchLog("test");
-        Singleton.getLogger().severe("test");
+        Singleton.getLogger().severe("ignore this severe message");
         Singleton.getLogger().info("test");
 
         List<String> statValue = Arrays.asList("alllogs", "infologs", "warninglogs", "severelogs", "searchlogs", "apilogs");
