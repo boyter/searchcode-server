@@ -32,7 +32,7 @@ import java.util.Optional;
  * Note that we use an in memory cache to avoid hitting the database too much. This was because when hit really hard
  * that there would be timeouts and other database connection issues with the dreaded "Too many connections".
  */
-public class Repo implements IRepo {
+public class Repo {
 
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
@@ -49,7 +49,6 @@ public class Repo implements IRepo {
         this.logger = loggerWrapper;
     }
 
-    @Override
     public synchronized List<RepoResult> getAllRepo() {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -88,7 +87,6 @@ public class Repo implements IRepo {
         return repoResults;
     }
 
-    @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         List<RepoResult> repoResults = this.getAllRepo();
         List<RepoResult> matchRepoResults = new ArrayList<>();
@@ -114,7 +112,6 @@ public class Repo implements IRepo {
         return matchRepoResults;
     }
 
-    @Override
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
 
@@ -156,7 +153,6 @@ public class Repo implements IRepo {
         return repoResults;
     }
 
-    @Override
     public synchronized int getRepoCount() {
         int totalCount = 0;
 
@@ -185,7 +181,6 @@ public class Repo implements IRepo {
         return totalCount;
     }
 
-    @Override
     public synchronized Optional<RepoResult> getRepoByName(String repositoryName) {
         if (repositoryName == null) {
             return Optional.empty();
@@ -229,7 +224,6 @@ public class Repo implements IRepo {
         return result;
     }
 
-    @Override
     public synchronized Optional<RepoResult> getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
             return Optional.empty();
@@ -274,7 +268,6 @@ public class Repo implements IRepo {
         return result;
     }
 
-    @Override
     public synchronized void deleteRepoByName(String repositoryName) {
         Connection connection;
         PreparedStatement preparedStatement = null;
@@ -298,7 +291,6 @@ public class Repo implements IRepo {
     }
 
     // TODO add retry logic here as this can fail and as such should just trigger again
-    @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
         Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
 
