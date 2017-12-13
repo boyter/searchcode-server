@@ -224,6 +224,7 @@ public class App {
                 halt();
                 return null;
             }
+            
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", ISCOMMUNITY);
