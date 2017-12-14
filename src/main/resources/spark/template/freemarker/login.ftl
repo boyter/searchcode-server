@@ -9,6 +9,6 @@
 	   	<small><a href="/documentation/#properties">What's my password?</a></small>
 	 </form>
 
-	<#if passwordInvalid?? ><div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-warning-sign"></span> You appear to have used an invalid password or have not configured your <a href="/documentation/#properties" class="alert-link">properties file</a> correctly..</div></#if>
+	<#if passwordInvalid?? ><div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-warning-sign"></span> You appear to have used an invalid password or have not configured your <a href="/documentation/#properties" class="alert-link">properties file</a> correctly.</div></#if>
 
 </@layout.masterTemplate>
