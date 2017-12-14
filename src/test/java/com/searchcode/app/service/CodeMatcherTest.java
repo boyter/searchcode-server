@@ -346,13 +346,13 @@ public class CodeMatcherTest extends TestCase {
         String addString = "some additional stuff that random stuff that should not match but force it to work a bit harder then it normally would";
         List<String> code = new ArrayList<>();
         for (int i = 0; i < 9999; i++) {
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder stringBuilder = new StringBuilder();
 
             for(int j = 0; j < 5; j++) {
-                stringBuffer.append(addString);
+                stringBuilder.append(addString);
             }
 
-            code.add(stringBuffer.toString());
+            code.add(stringBuilder.toString());
         }
         code.add("this is some code");
 
