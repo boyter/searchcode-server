@@ -2,6 +2,7 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
+import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
@@ -16,7 +17,7 @@ public class StatsServiceTest extends TestCase {
 
         when(dataMock.getDataByName(Values.CACHE_TOTAL_SEARCH, "0")).thenReturn(null);
 
-        StatsService statsService = new StatsService(dataMock);
+        StatsService statsService = new StatsService(dataMock, new Helpers());
         statsService.incrementSearchCount();
 
         verify(dataMock, times(1)).saveData(Values.CACHE_TOTAL_SEARCH, "1");
@@ -27,7 +28,7 @@ public class StatsServiceTest extends TestCase {
 
         when(dataMock.getDataByName(Values.CACHE_TOTAL_SEARCH, "0")).thenReturn("100");
 
-        StatsService statsService = new StatsService(dataMock);
+        StatsService statsService = new StatsService(dataMock, new Helpers());
         statsService.incrementSearchCount();
 
         verify(dataMock, times(1)).saveData(Values.CACHE_TOTAL_SEARCH, "101");
@@ -38,7 +39,7 @@ public class StatsServiceTest extends TestCase {
 
         when(dataMock.getDataByName(Values.CACHE_TOTAL_SEARCH, "0")).thenReturn("" + Integer.MAX_VALUE);
 
-        StatsService statsService = new StatsService(dataMock);
+        StatsService statsService = new StatsService(dataMock, new Helpers());
         statsService.incrementSearchCount();
 
         verify(dataMock, times(1)).saveData(Values.CACHE_TOTAL_SEARCH, "1");

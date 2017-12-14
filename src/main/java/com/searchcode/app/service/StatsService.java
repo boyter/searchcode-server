@@ -27,18 +27,21 @@ import java.text.NumberFormat;
  */
 public class StatsService {
 
-    Data data;
+    private Data data;
+    private Helpers helpers;
 
     public StatsService() {
         this.data = Singleton.getData();
+        this.helpers = Singleton.getHelpers();
     }
 
-    public StatsService(Data data) {
+    public StatsService(Data data, Helpers helpers) {
         this.data = data;
+        this.helpers = helpers;
     }
 
     public void incrementSearchCount() {
-        int totalCount = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        int totalCount = this.helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
 
         if (totalCount == Integer.MAX_VALUE) {
             totalCount = 0;
@@ -53,7 +56,7 @@ public class StatsService {
     }
 
     public int getSearchCount() {
-        int totalCount = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        int totalCount = this.helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
         return totalCount;
     }
 
