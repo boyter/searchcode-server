@@ -16,10 +16,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.dto.Source;
-import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
-import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
@@ -490,7 +487,7 @@ public class AdminRouteService {
             case "loadaverage":
                 return this.statsService.getLoadAverage();
             case "uptime":
-                return this.statsService.getUptime();
+                return this.statsService.getUpTime();
             case "searchcount":
                 return Values.EMPTYSTRING + this.statsService.getSearchCount();
             case "runningjobs":
