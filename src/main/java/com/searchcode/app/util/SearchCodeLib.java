@@ -135,12 +135,12 @@ public class SearchCodeLib {
 
         String replaced = contents.replaceAll("\\w", "");
 
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder stringBuilder = new StringBuilder();
         for (char c: replaced.toCharArray()) {
-            stringBuffer.append(c).append(" ");
+            stringBuilder.append(c).append(" ");
         }
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     /**
