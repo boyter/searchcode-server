@@ -106,7 +106,7 @@ public class StatsService {
      * TODO add in larger time units such as days
      * TODO change to display something such as 3 days 4 hours 45 minutes 23 seconds
      */
-    public String getUptime() {
+    public String getUpTime() {
         RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
 
         int upTime = (int)(runtimeBean.getUptime() / 1000);

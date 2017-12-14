@@ -73,7 +73,7 @@ public class AdminRouteServiceTest extends TestCase {
 
         when(statsServiceMock.getMemoryUsage(any())).thenReturn("Yep");
         when(statsServiceMock.getLoadAverage()).thenReturn("Yep");
-        when(statsServiceMock.getUptime()).thenReturn("Yep");
+        when(statsServiceMock.getUpTime()).thenReturn("Yep");
 
         when(indexServiceMock.getIndexedDocumentCount()).thenReturn(100);
         when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
