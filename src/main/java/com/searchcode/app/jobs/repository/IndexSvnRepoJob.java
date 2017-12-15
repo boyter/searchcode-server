@@ -228,7 +228,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             InputStreamReader isr = new InputStreamReader(is, Values.CHARSET_UTF8);
             bufferedReader = new BufferedReader(isr);
             String line;
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
 
             while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("svn diff: " + line);

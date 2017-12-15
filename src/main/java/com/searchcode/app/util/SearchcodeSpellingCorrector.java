@@ -65,20 +65,6 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
         return sampleWords.subList(0, end);
     }
 
-    public List<String> getTopWords(int count) {
-        List<String> sampleWords = new ArrayList<>();
-
-        for (Map.Entry<String, Integer> entry : this.dictionary.entrySet()) {
-            sampleWords.add(entry.getValue() + " - " + entry.getKey());
-        }
-
-        Collections.sort(sampleWords);
-        Collections.reverse(sampleWords);
-        int end = sampleWords.size() >= 10 ? 10 : sampleWords.size();
-
-        return sampleWords.subList(0, end);
-    }
-
     @Override
     public void putWord(String word) {
         word = word.toLowerCase();
@@ -105,7 +91,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
 
         Map<String, Integer> possibleMatches = new HashMap<>();
 
-        List<String> closeEdits = wordEdits(word);
+        List<String> closeEdits = this.wordEdits(word);
         for (String closeEdit: closeEdits) {
             if (dictionary.containsKey(closeEdit)) {
                 possibleMatches.put(closeEdit, this.dictionary.get(closeEdit));
@@ -121,8 +107,8 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
             Object[] matches = Singleton.getHelpers().sortByValue(possibleMatches).keySet().toArray();
 
             // Try to match anything of the same length first
-            String bestMatch = "";
-            for(Object o: matches) {
+            String bestMatch = Values.EMPTYSTRING;
+            for (Object o: matches) {
                 if (o.toString().length() == word.length()) {
                     bestMatch = o.toString();
                 }
@@ -139,7 +125,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
         // Ok we did't find anything, so lets run the edits function on the previous results and use those
         // this gives us results which are 2 characters away from whatever was entered
         List<String> furtherEdits = new ArrayList<>();
-        for(String closeEdit: closeEdits) {
+        for (String closeEdit: closeEdits) {
             furtherEdits.addAll(this.wordEdits(closeEdit));
 
             if (furtherEdits.size() > this.VARIATIONSCOUNT) {
@@ -147,9 +133,9 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
             }
         }
 
-        for (String futherEdit: furtherEdits) {
-            if (dictionary.containsKey(futherEdit)) {
-                possibleMatches.put(futherEdit, this.dictionary.get(futherEdit));
+        for (String furtherEdit: furtherEdits) {
+            if (dictionary.containsKey(furtherEdit)) {
+                possibleMatches.put(furtherEdit, this.dictionary.get(furtherEdit));
             }
         }
 
@@ -158,8 +144,8 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
             Object[] matches = Singleton.getHelpers().sortByValue(possibleMatches).keySet().toArray();
 
             // Try to match anything of the same length first
-            String bestMatch = "";
-            for(Object o: matches) {
+            String bestMatch = Values.EMPTYSTRING;
+            for (Object o: matches) {
                 if (o.toString().length() == word.length()) {
                     bestMatch = o.toString();
                 }
@@ -180,11 +166,7 @@ public class SearchcodeSpellingCorrector implements ISpellingCorrector {
 
     @Override
     public boolean containsWord(String word) {
-        if (dictionary.containsKey(word)) {
-            return true;
-        }
-
-        return false;
+        return dictionary.containsKey(word);
     }
 
 

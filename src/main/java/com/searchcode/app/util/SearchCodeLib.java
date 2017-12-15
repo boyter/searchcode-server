@@ -135,16 +135,17 @@ public class SearchCodeLib {
 
         String replaced = contents.replaceAll("\\w", "");
 
-        StringBuffer stringBuffer = new StringBuffer();
-        for(char c: replaced.toCharArray()) {
-            stringBuffer.append(c).append(" ");
+        StringBuilder stringBuilder = new StringBuilder();
+        for (char c: replaced.toCharArray()) {
+            stringBuilder.append(c).append(" ");
         }
 
-        return stringBuffer.toString();
+        return stringBuilder.toString();
     }
 
     /**
      * List of languages to ignore displaying the cost for
+     * TODO move this into the database so it is configurable
      */
     public boolean languageCostIgnore(String languagename) {
 
@@ -173,7 +174,7 @@ public class SearchCodeLib {
      * fairly crude however without resorting to parsing which is slow its good enough for our purposes
      */
     public int countFilteredLines(List<String> codeLines) {
-        return codeLines.stream().map(x -> x.trim()).filter(x -> {
+        return codeLines.stream().map(String::trim).filter(x -> {
             return !(x.startsWith("//") ||
                     x.startsWith("#") ||
                     x.length() == 0 ||
@@ -405,7 +406,7 @@ public class SearchCodeLib {
         String or = " OR ";
         String not = " NOT ";
 
-        for(String term: split) {
+        for (String term: split) {
             switch (term) {
                 case "AND":
                     if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(and)) {
@@ -489,7 +490,7 @@ public class SearchCodeLib {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        for(String word: query.replaceAll(" +", " ").split(" ")) {
+        for (String word: query.replaceAll(" +", " ").split(" ")) {
             if (!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
                 stringBuilder.append(" ").append(this.spellingCorrector.correct(word));
             }
