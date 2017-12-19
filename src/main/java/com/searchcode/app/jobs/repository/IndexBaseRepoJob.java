@@ -165,8 +165,6 @@ public abstract class IndexBaseRepoJob implements Job {
                 this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getName());
                 this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
 
-
-
                 if (this.DELETEREPO) {
                     Singleton.getHelpers().tryDelete(repoLocations + "/" + repoResult.getName());
                 }
