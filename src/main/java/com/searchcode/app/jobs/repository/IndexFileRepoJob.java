@@ -93,13 +93,15 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 repoResult.getData().indexStatus = "success";
                 repoResult.getData().jobRunTime = Instant.now();
                 Singleton.getRepo().saveRepo(repoResult);
-
-                // Mark that this job is finished
-                // TODO ensure that this line is covered by tests
-                this.indexService.decrementRepoJobsCount();
+            }
+            catch (Exception ex) {
+                Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in IndexFileRepoJob.execute with message: " + ex.getMessage());
             }
             finally {
                 // Clean up the job
+                // Mark that this job is finished
+                // TODO ensure that this line is covered by tests
+                this.indexService.decrementRepoJobsCount();
                 Singleton.getRunningIndexRepoJobs().remove(repoResult.getName());
             }
         }
