@@ -16,6 +16,7 @@ import com.google.gson.JsonSyntaxException;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.OWASPMatchingResult;
 import com.searchcode.app.model.OWASPResult;
+import com.searchcode.app.service.Singleton;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -97,7 +98,7 @@ public class OWASPClassifier {
             database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            System.out.println(ex);
+            Singleton.getLogger().warning("Unable to load OWASP Database from disk " + ex);
         }
 
         return database;

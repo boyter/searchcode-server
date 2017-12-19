@@ -35,3 +35,6 @@ assets/integration_test/gitupdate/*.cpp
 
 assets/documentation/_build
 e2e_test/
+
+# Virtualenv
+searchcode-server/
