@@ -75,7 +75,6 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.CONTINUE;
             }
 
-
             IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) {
                 return FileVisitResult.CONTINUE;
@@ -107,7 +106,6 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
                 Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
-
             } else {
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), System.lineSeparator()), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));

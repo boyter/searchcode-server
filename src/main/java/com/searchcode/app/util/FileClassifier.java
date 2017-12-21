@@ -101,7 +101,7 @@ public class FileClassifier {
         String languageGuess = this.guessLanguage(codeLines, fileClassifierResults.toArray());
 
         // If there is still no decision then go for the first match
-        if (Singleton.getHelpers().isNullEmptyOrWhitespace(languageGuess)) {
+        if (this.helpers.isNullEmptyOrWhitespace(languageGuess)) {
             return fileClassifierResults.get(0).language;
         }
 
