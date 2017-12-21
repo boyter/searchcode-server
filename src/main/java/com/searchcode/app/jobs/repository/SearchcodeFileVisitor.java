@@ -51,11 +51,13 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.TERMINATE;
             }
 
+            Singleton.getLogger().info("MaxDiOrio convert file path");
             // Convert Path file to unix style that way everything is easier to reason about
             String fileParent = FilenameUtils.separatorsToUnix(filePath.getParent().toString());
             String fileToString = FilenameUtils.separatorsToUnix(filePath.toString());
             String fileName = filePath.getFileName().toString();
 
+            Singleton.getLogger().info("MaxDiOrio ignoreFile");
             if (this.indexBaseRepoJob.ignoreFile(fileParent)) {
                 return FileVisitResult.CONTINUE;
             }
@@ -63,11 +65,13 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             // This needs to be the primary key of the file
             fileLocationsMap.put(fileToString, null);
 
+            Singleton.getLogger().info("MaxDiOrio isUpdated");
             // If the file has not been updated since the last run then we can skip
             if (!this.indexBaseRepoJob.isUpdated(fileToString, repoResult.getData().jobRunTime)) {
                 return FileVisitResult.CONTINUE;
             }
 
+            Singleton.getLogger().info("MaxDiOrio getCodeLines");
             IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
             if (codeLinesReturn.isError()) {
                 fileLocationsMap.remove(fileToString);
@@ -75,20 +79,24 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
 
+            Singleton.getLogger().info("MaxDiOrio isMinified");
             IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) {
                 return FileVisitResult.CONTINUE;
             }
 
+            Singleton.getLogger().info("MaxDiOrio isEmpty");
             if (this.indexBaseRepoJob.checkIfEmpty(codeLinesReturn.getCodeLines(), fileName, reportList)) {
                 return FileVisitResult.CONTINUE;
             }
 
+            Singleton.getLogger().info("MaxDiOrio isBinary");
             if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 fileLocationsMap.remove(fileToString);
                 return FileVisitResult.CONTINUE;
             }
 
+            Singleton.getLogger().info("MaxDiOrio hash classifier");
             String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
             String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLinesReturn.getCodeLines());
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
@@ -96,6 +104,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getName(), fileRepoLocations, Singleton.getSearchCodeLib());
 
+            Singleton.getLogger().info("MaxDiOrio displayLocation");
             String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
             if ("file".equals(this.repoResult.getScm())) {
                 displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
@@ -105,13 +114,15 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
+                Singleton.getLogger().info("MaxDiOrio lowMemoryIndex");
                 Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
-
             } else {
+                Singleton.getLogger().info("MaxDiOrio indexQueue");
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
             }
 
+            Singleton.getLogger().info("MaxDiOrio addToLogIndexed");
             if (this.indexBaseRepoJob.LOGINDEXED) {
                 reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
             }
