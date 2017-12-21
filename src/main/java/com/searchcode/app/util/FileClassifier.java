@@ -101,7 +101,7 @@ public class FileClassifier {
         String languageGuess = this.guessLanguage(codeLines, fileClassifierResults.toArray());
 
         // If there is still no decision then go for the first match
-        if (Singleton.getHelpers().isNullEmptyOrWhitespace(languageGuess)) {
+        if (this.helpers.isNullEmptyOrWhitespace(languageGuess)) {
             return fileClassifierResults.get(0).language;
         }
 
@@ -150,7 +150,7 @@ public class FileClassifier {
             database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            Singleton.getLogger().warning("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
+            this.helpers.warning("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
         }
 
         return database;
