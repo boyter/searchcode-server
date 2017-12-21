@@ -449,7 +449,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
 
     /*
-     * The below are are shared among all extending classes
+     * The below are shared among all extending classes
      */
     public String getBlameFilePath(String fileLocationFilename) {
         String[] split = fileLocationFilename.split("/");

@@ -888,7 +888,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
         </p>
         <p>
           <b>OutOfMemoryError</b><br/>
-          If you are are getting the classic java out of memory error such as <br />
+          If you are getting the classic java out of memory error such as <br />
           <pre>java.lang.OutOfMemoryError: Java heap space</pre><br />
           There are a few things you can do. Try each one individually with a restart of your searchcode server instance.
 
