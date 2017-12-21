@@ -150,7 +150,7 @@ public class FileClassifier {
             database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            this.helpers.warning("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
+            Singleton.getLogger().warning("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
         }
 
         return database;
