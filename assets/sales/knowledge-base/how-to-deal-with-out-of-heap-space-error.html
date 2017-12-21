@@ -1,0 +1,32 @@
+      <div class="row blue-container top50">
+          <div class="container"> 
+            <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
+          </div>
+          <div class="container">
+            <h1 class="white">How to deal with java.lang.OutOfMemoryError: Java heap space in searchcode server</h1>
+        </div>
+      </div>
+       <div class="row dark-blue-container">
+          <div class="container">
+            <p class="white em padtop10"><a class="btn btn-default btn-xs" href="/knowledge-base/"><span class="glyphicon glyphicon-link" aria-hidden="true"></span> Back to Knowledge Base</a></p>
+        </div>
+      </div>
+
+
+       <div class="row top20">
+        <div class="container em">
+            <p class="em">If you are getting the classic java out of memory error such as the java.lang.OutOfMemoryError: Java heap space
+          There are a few things you can do. Try each one individually with a restart of your searchcode server instance.</p>
+
+           <ol>
+            <li>Upgrade the amount of system RAM available on the host system.</li>
+            <li>Edit the searchcode-server.sh or searchcode-server.bat file and add the Xmx and Xms arguments. Usually to within 70% of the total amount of RAM you would like your searchcode server instance to run with.</li>
+            <li>Install git and set the searchcode.properties property git_binary_path to the path of your git binary and set use_system_git to true.</li>
+            <li>Lower the value of max_document_queue_size.</li>
+            <li>Lower the value of max_file_line_depth to be less than the expected length of any file you need to search.</li>
+            <li>Set the searchcode.properties property low_memory to true and restart your instance. This should be method of last resort as it will lower memory usage with the impact of less indexing performance.</li>
+            <li>Set the searchcode.properties property spelling_corrector_size to a lower number such as 1000.</li>
+          </ol>
+
+        </div>
+      </div>
