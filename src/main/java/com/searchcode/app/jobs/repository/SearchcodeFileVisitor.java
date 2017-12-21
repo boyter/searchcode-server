@@ -51,13 +51,13 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.TERMINATE;
             }
 
-            Singleton.getLogger().info("MaxDiOrio convert file path");
+            Singleton.getLogger().info("MaxDiOrio convert file path " + filePath.toString());
             // Convert Path file to unix style that way everything is easier to reason about
             String fileParent = FilenameUtils.separatorsToUnix(filePath.getParent().toString());
             String fileToString = FilenameUtils.separatorsToUnix(filePath.toString());
             String fileName = filePath.getFileName().toString();
 
-            Singleton.getLogger().info("MaxDiOrio ignoreFile");
+            Singleton.getLogger().info("MaxDiOrio ignoreFile " + filePath.toString());
             if (this.indexBaseRepoJob.ignoreFile(fileParent)) {
                 return FileVisitResult.CONTINUE;
             }
@@ -65,13 +65,13 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             // This needs to be the primary key of the file
             fileLocationsMap.put(fileToString, null);
 
-            Singleton.getLogger().info("MaxDiOrio isUpdated");
+            Singleton.getLogger().info("MaxDiOrio isUpdated " + filePath.toString());
             // If the file has not been updated since the last run then we can skip
             if (!this.indexBaseRepoJob.isUpdated(fileToString, repoResult.getData().jobRunTime)) {
                 return FileVisitResult.CONTINUE;
             }
 
-            Singleton.getLogger().info("MaxDiOrio getCodeLines");
+            Singleton.getLogger().info("MaxDiOrio getCodeLines " + filePath.toString());
             IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
             if (codeLinesReturn.isError()) {
                 fileLocationsMap.remove(fileToString);
@@ -79,24 +79,24 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
 
-            Singleton.getLogger().info("MaxDiOrio isMinified");
+            Singleton.getLogger().info("MaxDiOrio isMinified " + filePath.toString());
             IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) {
                 return FileVisitResult.CONTINUE;
             }
 
-            Singleton.getLogger().info("MaxDiOrio isEmpty");
+            Singleton.getLogger().info("MaxDiOrio isEmpty " + filePath.toString());
             if (this.indexBaseRepoJob.checkIfEmpty(codeLinesReturn.getCodeLines(), fileName, reportList)) {
                 return FileVisitResult.CONTINUE;
             }
 
-            Singleton.getLogger().info("MaxDiOrio isBinary");
+            Singleton.getLogger().info("MaxDiOrio isBinary " + filePath.toString());
             if (this.indexBaseRepoJob.determineBinary(fileToString, fileName, codeLinesReturn.getCodeLines(), reportList)) {
                 fileLocationsMap.remove(fileToString);
                 return FileVisitResult.CONTINUE;
             }
 
-            Singleton.getLogger().info("MaxDiOrio hash classifier");
+            Singleton.getLogger().info("MaxDiOrio hash classifier " + filePath.toString());
             String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
             String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLinesReturn.getCodeLines());
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
@@ -104,7 +104,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getName(), fileRepoLocations, Singleton.getSearchCodeLib());
 
-            Singleton.getLogger().info("MaxDiOrio displayLocation");
+            Singleton.getLogger().info("MaxDiOrio displayLocation " + filePath.toString());
             String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
             if ("file".equals(this.repoResult.getScm())) {
                 displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
@@ -114,15 +114,15 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getLogger().info("MaxDiOrio lowMemoryIndex");
+                Singleton.getLogger().info("MaxDiOrio lowMemoryIndex " + filePath.toString());
                 Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
             } else {
-                Singleton.getLogger().info("MaxDiOrio indexQueue");
+                Singleton.getLogger().info("MaxDiOrio indexQueue " + filePath.toString());
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
                 Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
             }
 
-            Singleton.getLogger().info("MaxDiOrio addToLogIndexed");
+            Singleton.getLogger().info("MaxDiOrio addToLogIndexed " + filePath.toString());
             if (this.indexBaseRepoJob.LOGINDEXED) {
                 reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
             }
