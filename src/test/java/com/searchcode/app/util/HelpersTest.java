@@ -29,6 +29,14 @@ public class HelpersTest extends TestCase {
         assertEquals(5, result.size());
     }
 
+    public void testReadFileLinesIssue168() throws FileNotFoundException {
+        List<String> result = this.helpers.readFileLines("./README.md", 10);
+        assertEquals(10, result.size());
+
+        result = Singleton.getHelpers().readFileLines("./README.md", 5);
+        assertEquals(5, result.size());
+    }
+
     public void testIsNullEmptyOrWhitespace() {
         assertTrue(this.helpers.isNullEmptyOrWhitespace(null));
         assertTrue(this.helpers.isNullEmptyOrWhitespace(""));
