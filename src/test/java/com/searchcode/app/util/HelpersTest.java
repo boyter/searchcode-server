@@ -5,10 +5,7 @@ import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -32,30 +29,30 @@ public class HelpersTest extends TestCase {
     }
 
     public void testReadFileLinesIssue168() throws IOException {
-//        List<String> result = this.helpers.readFileLines("./assets/integration_test/odd_files/no_newlines", 10);
-//        assertEquals(3, result.size());
+        List<String> result = this.helpers.readFileLinesGuessEncoding("./assets/integration_test/odd_files/no_newlines", 10);
+        assertEquals(3, result.size());
 
-        StringBuilder stringBuilder = new StringBuilder();
-
-        Reader reader = new FileReader("./assets/integration_test/odd_files/no_newlines");
-//        Reader reader = new FileReader("./assets/integration_test/odd_files/generate.py");
-        try {
-            char[] chars = new char[8192];
-            for (int len; (len = reader.read(chars)) > 0;) {
-                stringBuilder.append(String.copyValueOf(chars).trim());
-
-                if (stringBuilder.length() > 30000000) {
-                    break;
-                }
-            }
-        } finally {
-            reader.close();
-        }
-
-        String temp = stringBuilder.toString();
-        String[] split = temp.split("\\r\\n|\\n|\\r");
-        int length = temp.length();
-        System.out.println(length);
+//        StringBuilder stringBuilder = new StringBuilder();
+//        Helpers helpers = new Helpers();
+//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("./assets/integration_test/odd_files/no_newlines"), helpers.guessCharset(new File("./assets/integration_test/odd_files/no_newlines"))));
+//
+//        try {
+//            char[] chars = new char[8192];
+//            for (int len; (len = bufferedReader.read(chars)) > 0;) {
+//                stringBuilder.append(String.copyValueOf(chars).trim());
+//
+//                if (stringBuilder.length() >= 30000000) {
+//                    break;
+//                }
+//            }
+//        } finally {
+//            bufferedReader.close();
+//        }
+//
+//        String temp = stringBuilder.toString();
+//        String[] split = temp.split("\\r\\n|\\n|\\r");
+//        int length = temp.length();
+//        System.out.println(length);
     }
 
     public void testIsNullEmptyOrWhitespace() {

@@ -171,24 +171,31 @@ public class Helpers {
     public List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
         List<String> fileLines = new ArrayList<>();
         BufferedReader bufferedReader = null;
-        String line;
+        StringBuilder stringBuilder = new StringBuilder();
 
         try {
-            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), guessCharset(new File(filePath))));
+            bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), this.guessCharset(new File(filePath))));
 
-            int lineCount = 0;
-            while ((line = bufferedReader.readLine()) != null) {
-                lineCount++;
+            char[] chars = new char[8192];
+            for (int len; (len = bufferedReader.read(chars)) > 0;) {
+                stringBuilder.append(String.copyValueOf(chars).trim());
 
-                fileLines.add(line);
-
-                if (lineCount == maxFileLineDepth) {
-                    return fileLines;
+                if (stringBuilder.length() >= 30000000) { // TODO move this to read from properties file
+                    break;
                 }
             }
         }
         finally {
             IOUtils.closeQuietly(bufferedReader);
+        }
+
+        String temp = stringBuilder.toString();
+        String[] split = temp.split("\\r\\n|\\n|\\r");
+
+        List<String> strings = Arrays.asList(split);
+
+        if (strings.size() > maxFileLineDepth) {
+            return strings.subList(0, maxFileLineDepth);
         }
 
         return fileLines;
