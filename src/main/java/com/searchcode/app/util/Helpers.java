@@ -139,37 +139,11 @@ public class Helpers {
         return result;
     }
 
-    /**
-     * Reads a certain amount of lines deep into a file to save on memory
-     */
-    public List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
-        List<String> lines = new ArrayList<>();
-        Scanner scanner = null;
-        File file = null;
-        int counter = 0;
-
-        try {
-            file = new File(filePath);
-            scanner = new Scanner(file);
-
-            while (scanner.hasNextLine() && counter < maxFileLineDepth) {
-                lines.add(scanner.nextLine());
-                counter++;
-            }
-        }
-        finally {
-            IOUtils.closeQuietly(scanner);
-        }
-
-        return lines;
-    }
-
     public int getCurrentTimeSeconds() {
         return (int) (System.currentTimeMillis() / 1000);
     }
 
     public List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
-        List<String> fileLines = new ArrayList<>();
         BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
 
@@ -198,7 +172,7 @@ public class Helpers {
             return strings.subList(0, maxFileLineDepth);
         }
 
-        return fileLines;
+        return strings;
     }
 
     public Charset guessCharset(File file) throws IOException {

@@ -20,17 +20,17 @@ public class HelpersTest extends TestCase {
         this.helpers = new Helpers();
     }
 
-    public void testReadFileLines() throws FileNotFoundException {
-        List<String> result = this.helpers.readFileLines("./README.md", 10);
+    public void testReadFileLines() throws IOException {
+        List<String> result = this.helpers.readFileLinesGuessEncoding("./README.md", 10);
         assertEquals(10, result.size());
 
-        result = Singleton.getHelpers().readFileLines("./README.md", 5);
+        result = Singleton.getHelpers().readFileLinesGuessEncoding("./README.md", 5);
         assertEquals(5, result.size());
     }
 
     public void testReadFileLinesIssue168() throws IOException {
         List<String> result = this.helpers.readFileLinesGuessEncoding("./assets/integration_test/odd_files/no_newlines", 10);
-        assertEquals(3, result.size());
+        assertEquals(1, result.size());
 
 //        StringBuilder stringBuilder = new StringBuilder();
 //        Helpers helpers = new Helpers();
