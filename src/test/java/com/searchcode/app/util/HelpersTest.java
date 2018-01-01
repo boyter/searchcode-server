@@ -38,11 +38,11 @@ public class HelpersTest extends TestCase {
         StringBuilder stringBuilder = new StringBuilder();
 
         Reader reader = new FileReader("./assets/integration_test/odd_files/no_newlines");
+//        Reader reader = new FileReader("./assets/integration_test/odd_files/generate.py");
         try {
             char[] chars = new char[8192];
             for (int len; (len = reader.read(chars)) > 0;) {
-                // process chars.
-                stringBuilder.append(String.copyValueOf(chars));
+                stringBuilder.append(String.copyValueOf(chars).trim());
             }
 
 
