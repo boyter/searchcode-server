@@ -26,6 +26,8 @@ import org.eclipse.jgit.lib.Repository;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -143,10 +145,21 @@ public class Helpers {
     public List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
         List<String> lines = new ArrayList<>();
         Scanner scanner = null;
+        File file = null;
         int counter = 0;
 
         try {
-            scanner = new Scanner(new File(filePath));
+            file = new File(filePath);
+            long length = file.length();
+
+            Path path = Paths.get(filePath);
+            try {
+                long lineCount = Files.lines(path).count();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            scanner = new Scanner(file);
 
             while (scanner.hasNextLine() && counter < maxFileLineDepth) {
                 lines.add(scanner.nextLine());

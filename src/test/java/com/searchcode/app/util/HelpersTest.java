@@ -6,7 +6,9 @@ import junit.framework.TestCase;
 import org.mockito.Mockito;
 
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -29,12 +31,28 @@ public class HelpersTest extends TestCase {
         assertEquals(5, result.size());
     }
 
-    public void testReadFileLinesIssue168() throws FileNotFoundException {
-        List<String> result = this.helpers.readFileLines("./README.md", 10);
-        assertEquals(10, result.size());
+    public void testReadFileLinesIssue168() throws IOException {
+//        List<String> result = this.helpers.readFileLines("./assets/integration_test/odd_files/no_newlines", 10);
+//        assertEquals(3, result.size());
 
-        result = Singleton.getHelpers().readFileLines("./README.md", 5);
-        assertEquals(5, result.size());
+        StringBuilder stringBuilder = new StringBuilder();
+
+        Reader reader = new FileReader("./assets/integration_test/odd_files/no_newlines");
+        try {
+            char[] chars = new char[8192];
+            for (int len; (len = reader.read(chars)) > 0;) {
+                // process chars.
+                stringBuilder.append(String.copyValueOf(chars));
+            }
+
+
+        } finally {
+            reader.close();
+        }
+
+        String temp = stringBuilder.toString();
+        int length = temp.length();
+        System.out.println(length);
     }
 
     public void testIsNullEmptyOrWhitespace() {
