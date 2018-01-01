@@ -43,14 +43,17 @@ public class HelpersTest extends TestCase {
             char[] chars = new char[8192];
             for (int len; (len = reader.read(chars)) > 0;) {
                 stringBuilder.append(String.copyValueOf(chars).trim());
+
+                if (stringBuilder.length() > 30000000) {
+                    break;
+                }
             }
-
-
         } finally {
             reader.close();
         }
 
         String temp = stringBuilder.toString();
+        String[] split = temp.split("\\r\\n|\\n|\\r");
         int length = temp.length();
         System.out.println(length);
     }

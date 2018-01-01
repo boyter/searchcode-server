@@ -63,6 +63,8 @@ public class Values {
     public static final String DEFAULTMAXDOCUMENTQUEUELINESIZE ="100000";
     public static final String MAXFILELINEDEPTH = "max_file_line_depth";
     public static final String DEFAULTMAXFILELINEDEPTH = "10000";
+    public static final String MAX_FILE_LENGTH_READ = "max_file_length_read";
+    public static final String DEFAULT_MAX_FILE_LENGTH_READ = "30000000";
     public static final String OWASPDATABASELOCATION = "owasp_database_location";
     public static final String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
     public static final String CLASSIFIER_DATABASE_LOCATION = "classifier_database_location";

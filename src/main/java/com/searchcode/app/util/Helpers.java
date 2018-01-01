@@ -150,15 +150,6 @@ public class Helpers {
 
         try {
             file = new File(filePath);
-            long length = file.length();
-
-            Path path = Paths.get(filePath);
-            try {
-                long lineCount = Files.lines(path).count();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
             scanner = new Scanner(file);
 
             while (scanner.hasNextLine() && counter < maxFileLineDepth) {

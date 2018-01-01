@@ -20,6 +20,7 @@ spelling_corrector_size=100000
 max_document_queue_size=1000
 max_document_queue_line_size=1000000
 max_file_line_depth=10000
+max_file_length_read=30000000
 use_system_git=false
 git_binary_path=/usr/bin/git
 api_enabled=false
