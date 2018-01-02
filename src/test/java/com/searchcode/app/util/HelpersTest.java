@@ -22,37 +22,30 @@ public class HelpersTest extends TestCase {
 
     public void testReadFileLines() throws IOException {
         List<String> result = this.helpers.readFileLinesGuessEncoding("./README.md", 10);
-        assertEquals(10, result.size());
+        assertThat(result.size()).isEqualTo(10);
 
         result = Singleton.getHelpers().readFileLinesGuessEncoding("./README.md", 5);
-        assertEquals(5, result.size());
+        assertThat(result.size()).isEqualTo(5);
     }
 
     public void testReadFileLinesIssue168() throws IOException {
-        List<String> result = this.helpers.readFileLinesGuessEncoding("./assets/integration_test/odd_files/no_newlines", 10);
-        assertEquals(1, result.size());
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempDir = new File(baseDir, "SearchcodeServerIssue168");
 
-//        StringBuilder stringBuilder = new StringBuilder();
-//        Helpers helpers = new Helpers();
-//        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream("./assets/integration_test/odd_files/no_newlines"), helpers.guessCharset(new File("./assets/integration_test/odd_files/no_newlines"))));
-//
-//        try {
-//            char[] chars = new char[8192];
-//            for (int len; (len = bufferedReader.read(chars)) > 0;) {
-//                stringBuilder.append(String.copyValueOf(chars).trim());
-//
-//                if (stringBuilder.length() >= 30000000) {
-//                    break;
-//                }
-//            }
-//        } finally {
-//            bufferedReader.close();
-//        }
-//
-//        String temp = stringBuilder.toString();
-//        String[] split = temp.split("\\r\\n|\\n|\\r");
-//        int length = temp.length();
-//        System.out.println(length);
+        if (!tempDir.exists()) {
+            tempDir.mkdir();
+        }
+
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempDir + "/no_newlines"), "utf-8"))) {
+            for (int i=0; i < 100000000; i++) { // About 100 MB
+                writer.write("a");
+            }
+        }
+
+        this.helpers.MAX_FILE_LENGTH_READ = 100;
+        List<String> result = this.helpers.readFileLinesGuessEncoding(tempDir + "/no_newlines", 10);
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).length()).isEqualTo(8192);
     }
 
     public void testIsNullEmptyOrWhitespace() {

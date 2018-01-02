@@ -50,6 +50,7 @@ import java.util.stream.Stream;
 public class Helpers {
 
     private java.util.Properties properties;
+    public int MAX_FILE_LENGTH_READ;
 
     public Helpers() {
         this(Properties.getProperties());
@@ -57,6 +58,7 @@ public class Helpers {
 
     public Helpers(java.util.Properties properties) {
         this.properties = properties;
+        this.MAX_FILE_LENGTH_READ = this.tryParseInt(Properties.getProperties().getProperty(Values.MAX_FILE_LENGTH_READ, Values.DEFAULT_MAX_FILE_LENGTH_READ), Values.DEFAULT_MAX_FILE_LENGTH_READ);
     }
 
     public List<RepoResult> filterRunningAndDeletedRepoJobs(List<RepoResult> repoResultList) {
@@ -154,7 +156,7 @@ public class Helpers {
             for (int len; (len = bufferedReader.read(chars)) > 0;) {
                 stringBuilder.append(String.copyValueOf(chars).trim());
 
-                if (stringBuilder.length() >= 30000000) { // TODO move this to read from properties file
+                if (stringBuilder.length() >= this.MAX_FILE_LENGTH_READ) {
                     break;
                 }
             }
