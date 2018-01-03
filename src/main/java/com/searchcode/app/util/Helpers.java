@@ -72,18 +72,15 @@ public class Helpers {
      * Attempts to delete the folder given and if it fails for some reason will move them
      * to the trash location
      */
-    public void tryDelete(String folder) {
+    public void tryDelete(String folder) throws IOException {
         try {
             FileUtils.deleteDirectory(Paths.get(folder).toFile());
         } catch (IOException ex) {
             Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
             String newLocation = this.properties.getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION) + "/" + dateFormat.format(date);
-            try {
-                FileUtils.moveDirectory(new File(folder), new File(newLocation));
-            } catch (IOException ex2) {
-                ex2.printStackTrace();
-            }
+
+            FileUtils.moveDirectory(new File(folder), new File(newLocation));
         }
     }
 
