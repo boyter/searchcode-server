@@ -213,6 +213,20 @@ public class AdminRouteService {
         return map;
     }
 
+    public Map<String, Object> adminGetRepo(Request request, Response response) {
+        Map<String, Object> map = new HashMap<>();
+        String repoName = request.params(":reponame");
+        Optional<RepoResult> repository = Singleton.getRepo().getRepoByName(repoName);
+
+
+        
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+
+        return map;
+    }
+
     public Map<String, Object> adminApi(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
