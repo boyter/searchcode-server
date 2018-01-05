@@ -298,6 +298,14 @@ public class App {
                 return null;
             });
 
+            get("/repo/edit/:reponame/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminRepo(request, response);
+
+                return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
+            });
+
             get("/repolist/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
