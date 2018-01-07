@@ -112,42 +112,4 @@
     </form>
 
 </div>
-
-<script src="/js/jquery-1.11.1.min.js"></script>
-<script>
-function validateRepoName() {
-  var input = $('#reponame');
-  var re = /^[a-zA-Z0-9-_]*$/;
-  var is_valid = re.test(input.val());
-
-  $.ajax('/api/repo/repo/?reponame=' + input.val())
-    .done(function(data, textStatus, jqXHR) {
-        if (is_valid && input.val() && (data === 'null' || data === null)) {
-            $('#reponame-formgroup').removeClass('has-error');
-        }
-        else {
-            $('#reponame-formgroup').addClass('has-error');
-        }
-    }).fail(function(xhr, ajaxOptions, thrownError) {
-        $('#reponame-formgroup').addClass('has-error');
-    });
-}
-
-function validateRepoUrl() {
-    var input = $('#repourl');
-
-    if (input.val()) {
-        $('#repourl-formgroup').removeClass('has-error');
-        return true;
-    }
-    else {
-        $('#repourl-formgroup').addClass('has-error');
-        return false;
-    }
-}
-
-$('#reponame').on('input', validateRepoName);
-$('#repourl').on('input', validateRepoUrl);
-</script>
-
 </@layout.masterTemplate>
