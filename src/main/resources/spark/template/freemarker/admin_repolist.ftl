@@ -77,7 +77,7 @@
                     <button class="btn btn-xs btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Reindex</button>
                 </td>
                 <td>
-                    <button class="btn btn-xs btn-default reindex" data-id="${result.name?html}" name="reindex" type="submit"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</button>
+                    <a class="btn btn-xs btn-default edit" data-id="${result.name?html}" name="edit" type="submit" href="/admin/repo/edit/${result.name?html}/"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a>
                 </td>
             </tr>
             </#items>
