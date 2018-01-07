@@ -18,9 +18,9 @@
     </div>
     <div class="col-md-10">
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Admin</h3>
-    <p>You can use this page to add repositories to index. If you need to maintain a large amount of repositories it is advised to use the API.</p>
+    <p>You can use this page to edit certain portions of a repostiory you have set to be indexed. If you cannot edit a field then you need to delete and add the repository again with the correct values.</p>
 
-    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Add</h3>
+    <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Edit</h3>
 
     <#if validatorResult??><div class="alert alert-danger" role="alert">${validatorResult.reason}</div></#if>
 
@@ -28,52 +28,45 @@
       <div class="form-group" id="reponame-formgroup">
         <label for="reponame" class="col-sm-2 control-label">Repository Name</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" id="reponame" value="<#if validatorResult??>${validatorResult.repoResult.name}</#if>" name="reponame" placeholder="Repository Name" required />
+          <input type="text" class="form-control" id="reponame" value="<#if repoResult??>${repoResult.name}</#if>" name="reponame" placeholder="Repository Name" required readonly />
           <span id="helpBlock2" class="help-block">Must consist of only only alphanumeric characters - or _ and be a unique name</span>
         </div>
       </div>
-      <div class="form-group">
-        <label for="reposcm" class="col-sm-2 control-label">SCM</label>
-        <div class="col-sm-10">
-          <select id="reposcm" name="reposcm" class="form-control">
-              <option value="git">GIT</option>
-              <option value="svn">SVN</option>
-              <option value="file">File System</option>
-          </select>
-        </div>
-      </div>
+     
+     TODO add display of SCM here
+
       <div class="form-group" id="repourl-formgroup">
           <label for="repourl" class="col-sm-2 control-label">Repository Location</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.url}</#if>" id="repourl" name="repourl" placeholder="Repository URL or File Path" required />
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.url}</#if>" id="repourl" name="repourl" placeholder="Repository URL or File Path" required readonly />
           </div>
       </div>
 
       <div class="form-group">
         <label for="repousername" class="col-sm-2 control-label">Repository Username</label>
         <div class="col-sm-10">
-          <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.username}</#if>" id="repousername" name="repousername" placeholder="Repository username if required" />
+          <input type="text" class="form-control" value="<#if repoResult??>${repoResult.username}</#if>" id="repousername" name="repousername" placeholder="Repository username if required" readonly />
         </div>
       </div>
 
       <div class="form-group">
           <label for="repopassword" class="col-sm-2 control-label">Repository Password</label>
           <div class="col-sm-10">
-            <input type="password" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.password}</#if>" id="repopassword" name="repopassword" placeholder="Repository password if required" />
+            <input type="password" class="form-control" value="<#if repoResult??>${repoResult.password}</#if>" id="repopassword" name="repopassword" placeholder="Repository password if required" readonly />
           </div>
       </div>
 
       <div class="form-group">
             <label for="reposource" class="col-sm-2 control-label">Repository Source</label>
             <div class="col-sm-10">
-              <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="reposource" name="reposource" placeholder="URL to repository source location or documentation" />
+              <input type="text" class="form-control" value="<#if repoResult??>${repoResult.source}</#if>" id="reposource" name="reposource" placeholder="URL to repository source location or documentation" />
             </div>
       </div>
 
       <div class="form-group">
           <label for="repobranch" class="col-sm-2 control-label">Repository Branch</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.branch}<#else>master</#if>" id="repobranch" name="repobranch" placeholder="For GIT repositories only what branch should be indexed" />
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.branch}<#else>master</#if>" id="repobranch" name="repobranch" placeholder="For GIT repositories only what branch should be indexed" readonly />
           </div>
       </div>
 
@@ -97,28 +90,23 @@
       <div class="form-group">
           <label for="sourceuser" class="col-sm-2 control-label">Source User</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceuser" name="sourceuser" placeholder="The user account that is used for the link." />
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.source}</#if>" id="sourceuser" name="sourceuser" placeholder="The user account that is used for the link." />
           </div>
       </div>
       <div class="form-group">
           <label for="sourceproject" class="col-sm-2 control-label">Source Project</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if validatorResult??>${validatorResult.repoResult.source}</#if>" id="sourceproject" name="sourceproject" placeholder="The project name that is used for the link." />
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.source}</#if>" id="sourceproject" name="sourceproject" placeholder="The project name that is used for the link." />
           </div>
       </div>
 
       <hr />
 
       <div class="form-group">
-        <label for="repobranch" class="col-sm-2 control-label">Add Another</label>
-        <div class="col-sm-10">
-          <input type="checkbox" style="margin-top:12px;" name="return" value="return">
-        </div>
-      </div>
 
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-          <input id="addRepository" type="submit" class="btn btn-primary" name="addRepo" value="Add Repository" />
+          <input id="addRepository" type="submit" class="btn btn-primary" name="addRepo" value="Update Repository" />
         </div>
       </div>
     </form>

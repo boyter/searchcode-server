@@ -301,7 +301,7 @@ public class App {
             get("/repo/edit/:reponame/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                Map<String, Object> map = adminRouteService.adminGetRepo(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
             });

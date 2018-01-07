@@ -218,11 +218,12 @@ public class AdminRouteService {
         String repoName = request.params(":reponame");
         Optional<RepoResult> repository = Singleton.getRepo().getRepoByName(repoName);
 
-
-        
+        repository.ifPresent(x -> map.put("repoResult", x));
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("repoCount", this.getStat("repoCount"));
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put("repositorySource", this.repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
 
         return map;
     }
