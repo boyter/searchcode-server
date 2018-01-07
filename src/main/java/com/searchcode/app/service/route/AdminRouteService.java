@@ -69,8 +69,8 @@ public class AdminRouteService {
 
     public String getStat(Request request, Response response) {
         if (request.queryParams().contains("statname")) {
-            String statname = request.queryParams("statname");
-            return this.getStat(statname);
+            String statName = request.queryParams("statname");
+            return this.getStat(statName);
         }
 
         return Values.EMPTYSTRING;
