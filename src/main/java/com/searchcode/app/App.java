@@ -306,6 +306,22 @@ public class App {
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
             });
 
+            post("/repo/edit/:reponame/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                ValidatorResult validatorResult = adminRouteService.postRepo(request, response);
+
+                if (!validatorResult.isValid) {
+                    Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                    map.put("validatorResult", validatorResult);
+                    return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo.ftl"));
+                }
+
+                response.redirect(request.url());
+                halt();
+                return null;
+            });
+
             get("/repolist/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
