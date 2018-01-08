@@ -33,7 +33,12 @@
         </div>
       </div>
      
-     TODO add display of SCM here
+     <div class="form-group" id="reposcm-formgroup">
+          <label for="reposcm" class="col-sm-2 control-label">Repository Source Control Manager</label>
+          <div class="col-sm-10">
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.scm}</#if>" id="reposcm" name="reposcm" placeholder="Repository Source Control Manager" required readonly />
+          </div>
+      </div>
 
       <div class="form-group" id="repourl-formgroup">
           <label for="repourl" class="col-sm-2 control-label">Repository Location</label>
@@ -81,7 +86,7 @@
               <#list repositorySource>
                 <option value=""></option>
                 <#items as result>
-                  <option value="${result}">${result}</option>
+                  <option value="${result}" <#if repoResult.data.source == result>selected</#if>>${result}</option>
                 </#items>
               </#list>
             </select>
@@ -90,13 +95,13 @@
       <div class="form-group">
           <label for="sourceuser" class="col-sm-2 control-label">Source User</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.source}</#if>" id="sourceuser" name="sourceuser" placeholder="The user account that is used for the link." />
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.data.user}</#if>" id="sourceuser" name="sourceuser" placeholder="The user account that is used for the link." />
           </div>
       </div>
       <div class="form-group">
           <label for="sourceproject" class="col-sm-2 control-label">Source Project</label>
           <div class="col-sm-10">
-            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.source}</#if>" id="sourceproject" name="sourceproject" placeholder="The project name that is used for the link." />
+            <input type="text" class="form-control" value="<#if repoResult??>${repoResult.data.project}</#if>" id="sourceproject" name="sourceproject" placeholder="The project name that is used for the link." />
           </div>
       </div>
 
