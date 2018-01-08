@@ -525,9 +525,9 @@ public class AdminRouteService {
             case "repoqueuesize":
                 return Values.EMPTYSTRING + (Singleton.getUniqueGitRepoQueue().size() + Singleton.getUniqueSvnRepoQueue().size() + Singleton.getUniqueFileRepoQueue().size());
             case "parserpaused":
-                return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused": "running";
+                return this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? Values.PAUSED : Values.RUNNING;
             case "adderpaused":
-                return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? "paused": "running";
+                return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? Values.PAUSED : Values.RUNNING;
             case "indexreadlocation":
                 return this.indexService.getINDEX_READ_LOCATION().toString();
             case "indexwritelocation":
