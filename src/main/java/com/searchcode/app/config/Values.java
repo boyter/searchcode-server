@@ -150,12 +150,13 @@ public class Values {
     public static final String GIT = "git";
     public static final String SVN = "svn";
     public static final String FILE = "file";
+    public static final String PAUSED = "paused";
+    public static final String RUNNING = "running";
 
     // API Endpoint Values
     public static final String PUB = "pub";
     public static final String SIG = "sig";
     public static final String HMAC = "hmac";
-
 
     // Cache lookup values
     public static final String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";
