@@ -15,15 +15,15 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RepoData;
 
 public class RepoResult {
-    private int rowId;
-    private String name = "";
-    private String scm = "";
-    private String url = "";
-    private String username = "";
-    private String password = "";
-    private String source = "";
-    private String branch = "";
-    private RepoData data;
+    private int rowId = -1;
+    private String name = Values.EMPTYSTRING;
+    private String scm = Values.EMPTYSTRING;
+    private String url = Values.EMPTYSTRING;
+    private String username = Values.EMPTYSTRING;
+    private String password = Values.EMPTYSTRING;
+    private String source = Values.EMPTYSTRING;
+    private String branch = Values.EMPTYSTRING;
+    private RepoData data = null;
 
     public RepoResult() {
     }
