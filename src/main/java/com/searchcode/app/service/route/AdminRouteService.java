@@ -390,7 +390,7 @@ public class AdminRouteService {
                 }
 
                 RepoResult repoResult = new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}");
-                ValidatorResult validate = this.validatorService.validate(repoResult);
+                ValidatorResult validate = this.validatorService.validate(repoResult, false);
 
                 if (validate.isValid) {
                     repo.saveRepo(repoResult);
@@ -436,7 +436,7 @@ public class AdminRouteService {
             }
 
             RepoResult repoResult = new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}");
-            validate = this.validatorService.validate(repoResult);
+            validate = this.validatorService.validate(repoResult, false);
 
             repoResult.getData().source = source[i];
             repoResult.getData().user = sourceuser[i];

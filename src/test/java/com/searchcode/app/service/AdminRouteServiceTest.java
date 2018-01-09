@@ -143,7 +143,7 @@ public class AdminRouteServiceTest extends TestCase {
         ValidatorService mockValidatorService = mock(ValidatorService.class);
 
         when(mockRepo.saveRepo(any())).thenReturn(true);
-        when(mockValidatorService.validate(any())).thenReturn(new ValidatorResult(true, ""));
+        when(mockValidatorService.validate(any(), anyBoolean())).thenReturn(new ValidatorResult(true, ""));
         when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.of(new RepoResult()));
 
         AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, mockValidatorService, null);
@@ -163,7 +163,7 @@ public class AdminRouteServiceTest extends TestCase {
         adminRouteService.postRepo(mockRequest, null);
         verify(mockRepo, times(2)).saveRepo(any());
         verify(mockJobService, times(2)).forceEnqueue(any());
-        verify(mockValidatorService, times(2)).validate(any());
+        verify(mockValidatorService, times(2)).validate(any(), anyBoolean());
     }
 
     public void testDeleteRepo() {

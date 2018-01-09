@@ -23,7 +23,7 @@ public class ValidatorService {
         this.helpers = helpers;
     }
 
-    public ValidatorResult validate(RepoResult repoResult) {
+    public ValidatorResult validate(RepoResult repoResult, boolean ignoreDuplicates) {
         if (repoResult == null || this.helpers.isNullEmptyOrWhitespace(repoResult.getName())) {
             return new ValidatorResult(false, "Repository Name cannot be empty or whitespace");
         }
@@ -38,9 +38,11 @@ public class ValidatorService {
             return new ValidatorResult(false, "Repository Name must match the regular expression ^[a-zA-Z0-9-_]*$");
         }
 
-        Optional<RepoResult> repoByName = this.repo.getRepoByName(repoResult.getName());
-        if (repoByName.isPresent()) {
-            return new ValidatorResult(false, "Repository Name must be unique");
+        if (!ignoreDuplicates) {
+            Optional<RepoResult> repoByName = this.repo.getRepoByName(repoResult.getName());
+            if (repoByName.isPresent()) {
+                return new ValidatorResult(false, "Repository Name must be unique");
+            }
         }
 
         return new ValidatorResult(true, Values.EMPTYSTRING);

@@ -16,19 +16,19 @@ public class ValidatorServiceTest extends TestCase {
 
     public void testRepoResultNull() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(null);
+        ValidatorResult validate = validatorService.validate(null, false);
         assertThat(validate.isValid).isFalse();
     }
 
     public void testRepoResultValidReponame() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some_thing", "something", "url", "", "", "source", "branch", "{}"));
+        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some_thing", "something", "url", "", "", "source", "branch", "{}"), false);
         assertThat(validate.isValid).isTrue();
     }
 
     public void testRepoResultInValidReponame() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some/thing", "something", "url", "", "", "source", "branch", "{}"));
+        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some/thing", "something", "url", "", "", "source", "branch", "{}"), false);
         assertThat(validate.isValid).isFalse();
     }
 
@@ -40,13 +40,25 @@ public class ValidatorServiceTest extends TestCase {
         when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
 
         RepoResult repoResult = new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}");
-        ValidatorResult validate = validatorService.validate(repoResult);
+        ValidatorResult validate = validatorService.validate(repoResult, false);
         assertThat(validate.isValid).isFalse();
+    }
+
+    public void testValidatorServiceExistingNameIgnored() {
+        Repo mockRepo = mock(Repo.class);
+
+        ValidatorService validatorService = new ValidatorService(mockRepo, new Helpers());
+
+        when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
+
+        RepoResult repoResult = new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}");
+        ValidatorResult validate = validatorService.validate(repoResult, true);
+        assertThat(validate.isValid).isTrue();
     }
 
     public void testRepoResultInValidUrl() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "something", "", "", "", "", "source", "branch", "{}"));
+        ValidatorResult validate = validatorService.validate(new RepoResult(0, "something", "", "", "", "", "source", "branch", "{}"), false);
         assertThat(validate.isValid).isFalse();
     }
 }
