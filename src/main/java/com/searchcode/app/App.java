@@ -314,6 +314,7 @@ public class App {
                 if (!validatorResult.isValid) {
                     Map<String, Object> map = adminRouteService.adminRepo(request, response);
                     map.put("validatorResult", validatorResult);
+                    map.put("repoResult", validatorResult.getRepoResult());
                     return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
                 }
 
