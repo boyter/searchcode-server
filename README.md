@@ -196,8 +196,9 @@ Change Log
 XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Reversed filename in search https://github.com/boyter/searchcode-server/issues/160
  - Add click through to original repository https://github.com/boyter/searchcode-server/issues/162
+ - Can now edit some properties of repositories https://github.com/boyter/searchcode-server/issues/162
  - Add filter by source https://github.com/boyter/searchcode-server/issues/162
- - Addtional images on main page https://github.com/boyter/searchcode-server/issues/166
+ - Additional images on main page https://github.com/boyter/searchcode-server/issues/166
  - Add fix to stop indexer crashing when encountering large files with no newlines https://github.com/boyter/searchcode-server/issues/168
 
 
