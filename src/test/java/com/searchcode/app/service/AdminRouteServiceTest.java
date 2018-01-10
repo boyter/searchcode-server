@@ -134,7 +134,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("reposource")).thenReturn(new String[0]);
         when(mockRequest.queryParamsValues("repobranch")).thenReturn(new String[0]);
 
-        adminRouteService.postRepo(mockRequest, null);
+        adminRouteService.postRepo(mockRequest, null, true);
     }
 
     public void testPostRepoMultipleRepo() {
@@ -160,7 +160,7 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("sourceuser")).thenReturn("master,master".split(","));
         when(mockRequest.queryParamsValues("sourceproject")).thenReturn("master,master".split(","));
 
-        adminRouteService.postRepo(mockRequest, null);
+        adminRouteService.postRepo(mockRequest, null, false);
         verify(mockRepo, times(2)).saveRepo(any());
         verify(mockJobService, times(2)).forceEnqueue(any());
         verify(mockValidatorService, times(2)).validate(any(), anyBoolean());

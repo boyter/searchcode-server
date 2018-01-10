@@ -278,7 +278,7 @@ public class App {
             post("/repo/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                ValidatorResult validatorResult = adminRouteService.postRepo(request, response);
+                ValidatorResult validatorResult = adminRouteService.postRepo(request, response, false);
 
                 if (!validatorResult.isValid) {
                     Map<String, Object> map = adminRouteService.adminRepo(request, response);
@@ -309,7 +309,7 @@ public class App {
             post("/repo/edit/:reponame/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                ValidatorResult validatorResult = adminRouteService.postRepo(request, response);
+                ValidatorResult validatorResult = adminRouteService.postRepo(request, response, true);
 
                 if (!validatorResult.isValid) {
                     Map<String, Object> map = adminRouteService.adminRepo(request, response);

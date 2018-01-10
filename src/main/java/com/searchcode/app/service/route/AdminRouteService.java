@@ -411,7 +411,7 @@ public class AdminRouteService {
         return validatorResults;
     }
 
-    public ValidatorResult postRepo(Request request, Response response) {
+    public ValidatorResult postRepo(Request request, Response response, boolean ignoreDuplicates) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
         String[] repourls = request.queryParamsValues("repourl");
@@ -436,7 +436,7 @@ public class AdminRouteService {
             }
 
             RepoResult repoResult = new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}");
-            validate = this.validatorService.validate(repoResult, false);
+            validate = this.validatorService.validate(repoResult, ignoreDuplicates);
 
             repoResult.getData().source = source[i];
             repoResult.getData().user = sourceuser[i];
