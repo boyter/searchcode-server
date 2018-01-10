@@ -411,6 +411,7 @@ public class AdminRouteService {
         return validatorResults;
     }
 
+    // TODO split out so we don't need the ignoreDuplicates param
     public ValidatorResult postRepo(Request request, Response response, boolean ignoreDuplicates) {
         String[] reponames = request.queryParamsValues("reponame");
         String[] reposcms = request.queryParamsValues("reposcm");
