@@ -18,7 +18,7 @@
     </div>
     <div class="col-md-10">
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Admin</h3>
-    <p>You can use this page to edit certain portions of a repostiory you have set to be indexed. If you cannot edit a field then you need to delete and add the repository again with the correct values.</p>
+    <p>You can use this page to edit certain portions of a repository you have set to be indexed. If you cannot edit a field then you need to delete and add the repository again with the correct values.</p>
 
     <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Repository Edit</h3>
 
