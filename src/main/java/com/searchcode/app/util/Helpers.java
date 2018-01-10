@@ -26,6 +26,8 @@ import org.eclipse.jgit.lib.Repository;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -48,6 +50,7 @@ import java.util.stream.Stream;
 public class Helpers {
 
     private java.util.Properties properties;
+    public int MAX_FILE_LENGTH_READ;
 
     public Helpers() {
         this(Properties.getProperties());
@@ -55,6 +58,7 @@ public class Helpers {
 
     public Helpers(java.util.Properties properties) {
         this.properties = properties;
+        this.MAX_FILE_LENGTH_READ = this.tryParseInt(Properties.getProperties().getProperty(Values.MAX_FILE_LENGTH_READ, Values.DEFAULT_MAX_FILE_LENGTH_READ), Values.DEFAULT_MAX_FILE_LENGTH_READ);
     }
 
     public List<RepoResult> filterRunningAndDeletedRepoJobs(List<RepoResult> repoResultList) {
@@ -68,18 +72,15 @@ public class Helpers {
      * Attempts to delete the folder given and if it fails for some reason will move them
      * to the trash location
      */
-    public void tryDelete(String folder) {
+    public void tryDelete(String folder) throws IOException {
         try {
             FileUtils.deleteDirectory(Paths.get(folder).toFile());
         } catch (IOException ex) {
             Date date = new Date();
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
             String newLocation = this.properties.getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION) + "/" + dateFormat.format(date);
-            try {
-                FileUtils.moveDirectory(new File(folder), new File(newLocation));
-            } catch (IOException ex2) {
-                ex2.printStackTrace();
-            }
+
+            FileUtils.moveDirectory(new File(folder), new File(newLocation));
         }
     }
 
@@ -137,49 +138,23 @@ public class Helpers {
         return result;
     }
 
-    /**
-     * Reads a certain amount of lines deep into a file to save on memory
-     */
-    public List<String> readFileLines(String filePath, int maxFileLineDepth) throws FileNotFoundException {
-        List<String> lines = new ArrayList<>();
-        Scanner scanner = null;
-        int counter = 0;
-
-        try {
-            scanner = new Scanner(new File(filePath));
-
-            while (scanner.hasNextLine() && counter < maxFileLineDepth) {
-                lines.add(scanner.nextLine());
-                counter++;
-            }
-        }
-        finally {
-            IOUtils.closeQuietly(scanner);
-        }
-
-        return lines;
-    }
-
     public int getCurrentTimeSeconds() {
         return (int) (System.currentTimeMillis() / 1000);
     }
 
     public List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
-        List<String> fileLines = new ArrayList<>();
         BufferedReader bufferedReader = null;
-        String line;
+        StringBuilder stringBuilder = new StringBuilder();
 
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), this.guessCharset(new File(filePath))));
 
-            int lineCount = 0;
-            while ((line = bufferedReader.readLine()) != null) {
-                lineCount++;
+            char[] chars = new char[8192];
+            for (int len; (len = bufferedReader.read(chars)) > 0;) {
+                stringBuilder.append(String.copyValueOf(chars).trim());
 
-                fileLines.add(line);
-
-                if (lineCount == maxFileLineDepth) {
-                    return fileLines;
+                if (stringBuilder.length() >= this.MAX_FILE_LENGTH_READ) {
+                    break;
                 }
             }
         }
@@ -187,7 +162,16 @@ public class Helpers {
             IOUtils.closeQuietly(bufferedReader);
         }
 
-        return fileLines;
+        String temp = stringBuilder.toString();
+        String[] split = temp.split("\\r\\n|\\n|\\r");
+
+        List<String> strings = Arrays.asList(split);
+
+        if (strings.size() > maxFileLineDepth) {
+            return strings.subList(0, maxFileLineDepth);
+        }
+
+        return strings;
     }
 
     private Charset guessCharset(File file) throws IOException {

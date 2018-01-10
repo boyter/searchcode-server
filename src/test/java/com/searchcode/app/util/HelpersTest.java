@@ -5,8 +5,7 @@ import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -21,12 +20,32 @@ public class HelpersTest extends TestCase {
         this.helpers = new Helpers();
     }
 
-    public void testReadFileLines() throws FileNotFoundException {
-        List<String> result = this.helpers.readFileLines("./README.md", 10);
-        assertEquals(10, result.size());
+    public void testReadFileLines() throws IOException {
+        List<String> result = this.helpers.readFileLinesGuessEncoding("./README.md", 10);
+        assertThat(result.size()).isEqualTo(10);
 
-        result = Singleton.getHelpers().readFileLines("./README.md", 5);
-        assertEquals(5, result.size());
+        result = Singleton.getHelpers().readFileLinesGuessEncoding("./README.md", 5);
+        assertThat(result.size()).isEqualTo(5);
+    }
+
+    public void testReadFileLinesIssue168() throws IOException {
+        File baseDir = new File(System.getProperty("java.io.tmpdir"));
+        File tempDir = new File(baseDir, "SearchcodeServerIssue168");
+
+        if (!tempDir.exists()) {
+            tempDir.mkdir();
+        }
+
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempDir + "/no_newlines"), "utf-8"))) {
+            for (int i=0; i < 100000000; i++) { // About 100 MB
+                writer.write("a");
+            }
+        }
+
+        this.helpers.MAX_FILE_LENGTH_READ = 100;
+        List<String> result = this.helpers.readFileLinesGuessEncoding(tempDir + "/no_newlines", 10);
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.get(0).length()).isEqualTo(8192);
     }
 
     public void testIsNullEmptyOrWhitespace() {

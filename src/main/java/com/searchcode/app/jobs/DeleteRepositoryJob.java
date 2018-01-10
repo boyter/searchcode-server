@@ -63,14 +63,14 @@ public class DeleteRepositoryJob implements Job {
                     String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
                     // remove the directory
-                    FileUtils.deleteDirectory(new File(repoLocations + x.getName() + "/"));
+                    Singleton.getHelpers().tryDelete(repoLocations + x.getName() + "/");
 
                     // Remove from the database
                     Singleton.getRepo().deleteRepoByName(x.getName());
-
                     // Remove from the persistent queue
                     Singleton.getDataService().removeFromPersistentDelete(x.getName());
-                } catch (IOException ignored) {
+                } catch (IOException ex) {
+                    Singleton.getLogger().warning("Error when trying to remove repository with exception " + ex);
                 }
             });
         }

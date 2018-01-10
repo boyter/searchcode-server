@@ -19,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -621,7 +622,7 @@ public class ApiRouteServiceTest extends TestCase {
         Repo mockRepo = mock(Repo.class);
 
         ValidatorService mockValidatorService = mock(ValidatorService.class);
-        when(mockValidatorService.validate(any())).thenReturn(new ValidatorResult(true, ""));
+        when(mockValidatorService.validate(any(), anyBoolean())).thenReturn(new ValidatorResult(true, ""));
         when(mockRepo.getRepoByName(anyString())).thenReturn(Optional.empty());
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, mockValidatorService, null, new Helpers());
@@ -728,7 +729,7 @@ public class ApiRouteServiceTest extends TestCase {
         ValidatorService mockValidatorService = mock(ValidatorService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=test&repourl=test&repotype=test&repousername=test&repopassword=test&reposource=test&repobranch=test", ApiService.HmacType.SHA1)).thenReturn(true);
-        when(mockValidatorService.validate(any())).thenReturn(new ValidatorResult(true, ""));
+        when(mockValidatorService.validate(any(), anyBoolean())).thenReturn(new ValidatorResult(true, ""));
         when(mockRepo.getRepoByName(anyString())).thenReturn(Optional.empty());
 
         ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, mockValidatorService, null, new Helpers());

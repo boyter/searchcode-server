@@ -367,7 +367,7 @@ public class ApiRouteService {
         newRepoResult.getData().project = sourceproject.orElse(Values.EMPTYSTRING);
         newRepoResult.getData().user = sourceuser.orElse(Values.EMPTYSTRING);
 
-        ValidatorResult validate = this.validatorService.validate(newRepoResult);
+        ValidatorResult validate = this.validatorService.validate(newRepoResult, false);
 
         if (!validate.isValid) {
             return new ApiResponse(false, validate.reason);

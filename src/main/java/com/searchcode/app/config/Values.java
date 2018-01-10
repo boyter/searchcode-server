@@ -63,6 +63,8 @@ public class Values {
     public static final String DEFAULTMAXDOCUMENTQUEUELINESIZE ="100000";
     public static final String MAXFILELINEDEPTH = "max_file_line_depth";
     public static final String DEFAULTMAXFILELINEDEPTH = "10000";
+    public static final String MAX_FILE_LENGTH_READ = "max_file_length_read";
+    public static final String DEFAULT_MAX_FILE_LENGTH_READ = "30000000";
     public static final String OWASPDATABASELOCATION = "owasp_database_location";
     public static final String DEFAULTOWASPDATABASELOCATION = "./include/owasp/database.json";
     public static final String CLASSIFIER_DATABASE_LOCATION = "classifier_database_location";
@@ -155,12 +157,13 @@ public class Values {
     public static final String GIT = "git";
     public static final String SVN = "svn";
     public static final String FILE = "file";
+    public static final String PAUSED = "paused";
+    public static final String RUNNING = "running";
 
     // API Endpoint Values
     public static final String PUB = "pub";
     public static final String SIG = "sig";
     public static final String HMAC = "hmac";
-
 
     // Cache lookup values
     public static final String CACHE_TOTAL_SEARCH = "statsservice-totalsearch";

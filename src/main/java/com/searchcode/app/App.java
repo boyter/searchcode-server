@@ -278,7 +278,7 @@ public class App {
             post("/repo/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                ValidatorResult validatorResult = adminRouteService.postRepo(request, response);
+                ValidatorResult validatorResult = adminRouteService.postRepo(request, response, false);
 
                 if (!validatorResult.isValid) {
                     Map<String, Object> map = adminRouteService.adminRepo(request, response);
@@ -294,6 +294,31 @@ public class App {
                     response.redirect("/admin/repolist/");
                 }
 
+                halt();
+                return null;
+            });
+
+            get("/repo/edit/:reponame/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminGetRepo(request, response);
+
+                return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
+            });
+
+            post("/repo/edit/:reponame/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                ValidatorResult validatorResult = adminRouteService.postRepo(request, response, true);
+
+                if (!validatorResult.isValid) {
+                    Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                    map.put("validatorResult", validatorResult);
+                    map.put("repoResult", validatorResult.getRepoResult());
+                    return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
+                }
+
+                response.redirect(request.url());
                 halt();
                 return null;
             });
