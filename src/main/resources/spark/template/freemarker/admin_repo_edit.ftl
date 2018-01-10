@@ -6,7 +6,7 @@
         <nav>
           <ul class="nav nav-pills nav-stacked span2">
             <li><a href="/admin/">Dashboard</a></li>
-            <li class="active"><a href="/admin/repo/">Repository Add</a></li>
+            <li><a href="/admin/repo/">Repository Add</a></li>
             <li><a href="/admin/repolist/">Repository List <span class="badge">${repoCount}</span></a></li>
             <li><a href="/admin/bulk/">Repository Bulk Add</a></li>
             <li><a href="/admin/api/">API Keys</a></li>
