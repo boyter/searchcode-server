@@ -20,6 +20,7 @@ import com.searchcode.app.dto.Source;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 
 import com.searchcode.app.util.RepositorySource;
@@ -44,6 +45,7 @@ public class AdminRouteService {
     private final StatsService statsService;
     private final ValidatorService validatorService;
     private final RepositorySource repositorySource;
+    private final LoggerWrapper loggerWrapper;
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
@@ -53,10 +55,11 @@ public class AdminRouteService {
              Singleton.getIndexService(),
              Singleton.getStatsService(),
              Singleton.getValidatorService(),
-             Singleton.getRepositorySource());
+             Singleton.getRepositorySource(),
+             Singleton.getLogger());
     }
 
-    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource) {
+    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource, LoggerWrapper loggerWrapper) {
         this.repo = repo;
         this.data = data;
         this.jobService = jobService;
@@ -65,6 +68,7 @@ public class AdminRouteService {
         this.statsService = statsService;
         this.validatorService = validatorService;
         this.repositorySource = repositorySource;
+        this.loggerWrapper = loggerWrapper;
     }
 
     public String getStat(Request request, Response response) {
@@ -469,8 +473,8 @@ public class AdminRouteService {
 
         repoResult.ifPresent(x ->  {
             x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
-            Singleton.getLogger().info("Resetting Job Run Time due to reindex request repoName:" + x.getName());
-            Singleton.getRepo().saveRepo(x);
+            this.loggerWrapper.info("Resetting Job Run Time due to reindex request repoName:" + x.getName());
+            this.repo.saveRepo(x);
             this.jobService.forceEnqueue(x);
         });
     }
@@ -492,12 +496,12 @@ public class AdminRouteService {
         }
     }
 
-    public String getStat(String statname) {
-        if (statname == null) {
+    public String getStat(String statName) {
+        if (statName == null) {
             return Values.EMPTYSTRING;
         }
 
-        switch (statname.toLowerCase()) {
+        switch (statName.toLowerCase()) {
             case "memoryusage":
                 return this.statsService.getMemoryUsage("<br>");
             case "loadaverage":
@@ -515,7 +519,7 @@ public class AdminRouteService {
             case "spellingcount":
                 return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
             case "repocount":
-                return Values.EMPTYSTRING + Singleton.getRepo().getRepoCount();
+                return Values.EMPTYSTRING + this.repo.getRepoCount();
             case "numdocs":
                 return Values.EMPTYSTRING + this.indexService.getIndexedDocumentCount();
             case "servertime":
@@ -523,19 +527,19 @@ public class AdminRouteService {
             case "deletionqueue":
                 return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
-                return StringUtils.join(Singleton.getLogger().getAllLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getAllLogs(), System.lineSeparator());
             case "infologs":
-                return StringUtils.join(Singleton.getLogger().getInfoLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getInfoLogs(), System.lineSeparator());
             case "warninglogs":
-                return StringUtils.join(Singleton.getLogger().getWarningLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getWarningLogs(), System.lineSeparator());
             case "finelogs":
-                return StringUtils.join(Singleton.getLogger().getFineLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getFineLogs(), System.lineSeparator());
             case "severelogs":
-                return StringUtils.join(Singleton.getLogger().getSevereLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getSevereLogs(), System.lineSeparator());
             case "searchlogs":
-                return StringUtils.join(Singleton.getLogger().getSearchLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getSearchLogs(), System.lineSeparator());
             case "apilogs":
-                return StringUtils.join(Singleton.getLogger().getApiLogs(), System.lineSeparator());
+                return StringUtils.join(this.loggerWrapper.getApiLogs(), System.lineSeparator());
             case "threads":
                 return Values.EMPTYSTRING + java.lang.Thread.activeCount();
             case "repoqueuesize":

@@ -620,7 +620,7 @@ public class IndexServiceTest extends TestCase {
 
         List<Thread> threadList = new ArrayList<>();
 
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 5; i++) {
             Thread thread = new Thread(() -> {
                 Collections.shuffle(methodList);
                 for (MethodRunner runner: methodList) {
