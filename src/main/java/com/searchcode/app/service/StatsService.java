@@ -62,7 +62,13 @@ public class StatsService {
 
     public String getLoadAverage() {
         OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
-        return Values.DECIMAL_FORMAT.format(osBean.getSystemLoadAverage());
+        String loadAverage = Values.DECIMAL_FORMAT.format(osBean.getSystemLoadAverage());
+
+        if (loadAverage.equals("-1")) {
+            loadAverage = "Unknown";
+        }
+
+        return loadAverage;
     }
 
     public String getArch() {
