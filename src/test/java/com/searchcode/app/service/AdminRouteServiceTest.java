@@ -4,7 +4,6 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.route.AdminRouteService;
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 import spark.Request;
