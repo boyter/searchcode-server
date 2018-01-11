@@ -22,6 +22,7 @@ public class SQLiteMemoryDatabaseConfig implements IDatabaseConfig {
     public synchronized Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
+                Singleton.getHelpers().closeQuietly(connection);
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite::memory:");
             }
