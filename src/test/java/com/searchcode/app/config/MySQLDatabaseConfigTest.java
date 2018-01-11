@@ -13,10 +13,4 @@ public class MySQLDatabaseConfigTest extends TestCase {
         MySQLDatabaseConfig mySQLDatabaseConfig = new MySQLDatabaseConfig();
         mySQLDatabaseConfig.getConnection();
     }
-
-    public void testConnectionSphinx() throws Exception {
-        SphinxSearchConfig ssc = new SphinxSearchConfig();
-        Optional<Connection> connection = ssc.getConnection("localhost");
-        assertThat(connection.get()).isNotNull();
-    }
 }
