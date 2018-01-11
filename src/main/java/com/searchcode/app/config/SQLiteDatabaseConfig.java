@@ -24,6 +24,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
     public synchronized Connection getConnection() throws SQLException {
         try {
             if (connection == null || connection.isClosed()) {
+                Singleton.getHelpers().closeQuietly(connection);
                 String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
 
                 Class.forName("org.sqlite.JDBC");
