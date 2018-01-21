@@ -130,6 +130,10 @@ public class CodeRouteService {
         }
 
         map.put("photoId", CommonRouteService.getPhotoId());
+        if (request.queryParams().contains("photoId")) {
+            map.put("photoId", request.queryParams("photoId"));
+        }
+
         map.put("numDocs", this.indexService.getIndexedDocumentCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);

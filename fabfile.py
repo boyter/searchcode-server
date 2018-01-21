@@ -96,7 +96,7 @@ def js_test():
 
 def test_integration():
     print(yellow('Be sure to run: "fab compile_js configure_prod run" first'))
-    js_test()
+    # js_test()
     local("python ./assets/integration_test/test.py")
     local("python ./assets/integration_test/fuzztest.py")
     local("python ./assets/integration_test/signed_testing.py")
