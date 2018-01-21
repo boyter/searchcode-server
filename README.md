@@ -169,6 +169,13 @@ To upgrade your current instance of searchcode perform the following steps.
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
 
+Random
+------
+
+Background images are all resized using the following command prior to being committed
+
+	convert 1.jpg -quality 75 -resize 1600x1200 1.jpg
+
 Luke
 ----
 
