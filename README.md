@@ -207,7 +207,7 @@ XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Add filter by source https://github.com/boyter/searchcode-server/issues/162
  - Additional images on main page https://github.com/boyter/searchcode-server/issues/166
  - Add fix to stop indexer crashing when encountering large files with no newlines https://github.com/boyter/searchcode-server/issues/168
-
+ - Version check now checks searchcodeserver.com
 
 29 September 2017 - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
  - Add link to repository source on repository overview page https://github.com/boyter/searchcode-server/issues/126
