@@ -120,7 +120,7 @@ def pushtagbranch():
 
 
 def build_all_release():
-    js_test()
+    #js_test()
     build_release()
     build_community_release()
 
