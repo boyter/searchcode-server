@@ -19,6 +19,10 @@ import org.quartz.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +36,14 @@ import java.util.Optional;
 public class DeleteRepositoryJob implements Job {
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+
+        // Always attempt to clean the trash directory
+        try {
+            String newLocation = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
+            FileUtils.deleteDirectory(Paths.get(newLocation).toFile());
+        } catch (IOException ex) {
+            Singleton.getLogger().warning("Error when trying to clean trash " + ex);
+        }
 
         // TODO make this loop able to be set in properties file
         for (int i = 0; i < 10; i++) {

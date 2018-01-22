@@ -169,6 +169,13 @@ To upgrade your current instance of searchcode perform the following steps.
 
 It is also worth comparing your searchcode.properties file to the new one (or the documentation page) as there may be new configuration that you can use. Also be sure to check the settings page as there is likely to be new settings you can use.
 
+Random
+------
+
+Background images are all resized using the following command prior to being committed
+
+	convert 1.jpg -quality 75 -resize 1600x1200 1.jpg
+
 Luke
 ----
 
@@ -200,7 +207,7 @@ XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Add filter by source https://github.com/boyter/searchcode-server/issues/162
  - Additional images on main page https://github.com/boyter/searchcode-server/issues/166
  - Add fix to stop indexer crashing when encountering large files with no newlines https://github.com/boyter/searchcode-server/issues/168
-
+ - Version check now checks searchcodeserver.com
 
 29 September 2017 - 1.3.11 https://github.com/boyter/searchcode-server/projects/4
  - Add link to repository source on repository overview page https://github.com/boyter/searchcode-server/issues/126

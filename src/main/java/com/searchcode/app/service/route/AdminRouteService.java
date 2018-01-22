@@ -11,12 +11,14 @@
 package com.searchcode.app.service.route;
 
 
+import com.google.gson.Gson;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.Source;
+import com.searchcode.app.dto.Version;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
@@ -481,19 +483,21 @@ public class AdminRouteService {
     }
 
     public String checkVersion() {
-        String version;
+        Version version;
         try {
-            version = IOUtils.toString(new URL("https://searchcode.com/product/version/")).replace("\"", Values.EMPTYSTRING);
+            Gson gson = new Gson();
+            String downloaded = IOUtils.toString(new URL("https://searchcodeserver.com/version.json"));
+            version = gson.fromJson(downloaded, Version.class);
         }
-        catch(IOException ex) {
+        catch(Exception ex) {
             return "Unable to determine if running the latest version. Check https://searchcodeserver.com/pricing.html for the latest release.";
         }
 
-        if (App.VERSION.equals(version)) {
-            return "Your searchcode server version " + version + " is the latest.";
+        if (App.VERSION.equals(version.getVersion())) {
+            return "Your searchcode server version " + App.VERSION + " is the latest.";
         }
         else {
-            return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version + ".";
+            return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version.getVersion() + ".";
         }
     }
 
