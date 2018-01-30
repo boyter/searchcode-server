@@ -7,17 +7,17 @@ import pprint
 import sqlite3
 
 '''Simple usage of the signed key API endpoints.'''
-publickey = "APIK-gZq0naQTvkO2ThCJPhVW1VAKSfX"
-privatekey = "G8B6iCC7YxKGl8yEnSZ7SZZYDVMUCmxe"
+publickey = "APIK-K1KBVOlbTDElXVMa86sn5zHnsyF"
+privatekey = "RmpGihBgvJx9pT2cYk7Q0RbeFeSKlQ8f"
 
 # Connect to mysql and add our keys
 # http://pythoncentral.io/introduction-to-sqlite-in-python/
-db = sqlite3.connect('searchcode.sqlite')
-cursor = db.cursor()
-cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
-db.commit()
-cursor.execute('INSERT INTO api (publickey,privatekey,lastused,data) VALUES (?,?,?,?)', (publickey, privatekey, '', ''))
-db.commit()
+# db = sqlite3.connect('searchcode.sqlite')
+# cursor = db.cursor()
+# cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
+# db.commit()
+# cursor.execute('INSERT INTO api (publickey,privatekey,lastused,data) VALUES (?,?,?,?)', (publickey, privatekey, '', ''))
+# db.commit()
 
 blns = None
 try:
@@ -65,6 +65,6 @@ for line in blns:
         data = urllib2.urlopen(url)
         assert 200 == data.getcode()
 
-cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
-cursor.execute("DELETE FROM repo")
-db.commit()
+# cursor.execute("DELETE FROM api WHERE publickey = '%s'" % (publickey))
+# cursor.execute("DELETE FROM repo")
+# db.commit()
