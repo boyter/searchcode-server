@@ -129,7 +129,7 @@ public class CodeRouteService {
             return new ModelAndView(map, "search_ajax.ftl");
         }
 
-        map.put("photoId", CommonRouteService.getPhotoId());
+        map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));
         if (request.queryParams().contains("photoId")) {
             map.put("photoId", request.queryParams("photoId"));
         }
@@ -445,7 +445,7 @@ public class CodeRouteService {
             return new ModelAndView(map, "searchresults.ftl");
         }
 
-        map.put("photoId", CommonRouteService.getPhotoId());
+        map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));
         map.put("numDocs", this.indexService.getCodeIndexLinesCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);

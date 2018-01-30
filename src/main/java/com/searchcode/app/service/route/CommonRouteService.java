@@ -151,8 +151,8 @@ public class CommonRouteService {
         return highlighter;
     }
     
-    public static int getPhotoId() {
-        Random random = new Random(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
-        return random.nextInt((42 - 1) + 1);
+    public static int getPhotoId(int seed) {
+        Random random = new Random();
+        return random.nextInt(42) + 1;
     }
 }
