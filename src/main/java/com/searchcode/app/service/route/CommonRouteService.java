@@ -152,7 +152,7 @@ public class CommonRouteService {
     }
     
     public static int getPhotoId(int seed) {
-        Random random = new Random();
+        Random random = new Random(seed);
         return random.nextInt(42) + 1;
     }
 }
