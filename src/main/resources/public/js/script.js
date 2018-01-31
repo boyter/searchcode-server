@@ -1287,7 +1287,7 @@ if (typeof preload !== 'undefined') {
 
     SearchModel.activerepositoryfilters(preload.repositoryFacets);
     _.each(preload.repositoryFacets, function(e) { 
-        SearchModel.toggle_filter('repository', e);
+        SearchModel.toggle_filter('repo', e);
     });
 
     SearchModel.activeownfilters(preload.ownerFacets);
