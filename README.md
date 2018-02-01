@@ -455,4 +455,5 @@ Deployment Checklist
  - update new release into gumroad
  - tweet success
  - update code from old version to new version then mvn test
+ - set NOT SPECIFIED YET again
  - push to github
