@@ -190,7 +190,7 @@ Use of this software is governed by the Fair Source License included in the LICE
 
 In order to deal with the case of my death or this software becoming abandoned it has an open eventually clause where the licence will change exactly 3 years after the publish date of a version release. This means that if version 1.0.0 was released on 1 July 2010 then it can be taken using the listed alternate licence on 2 July 2013. This licence, version and time is all specified below.
 
-After the following date NOT SPECIFIED YET the software version '1.3.12' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
+After the following date 01 February 2021 the software version '1.3.12' is dual licenced under the Fair Source Licence included in the LICENSE.txt file or under the GNU General Public License Version 3 with terms specified at https://www.gnu.org/licenses/gpl-3.0.txt
 
 OWASP Database is licensed under https://creativecommons.org/licenses/by-sa/3.0/ sourced under Creative Commons from https://codecrawler.codeplex.com/ https://www.owasp.org/index.php/Category:OWASP_Code_Crawler and https://www.owasp.org/index.php/OWASP_Code_Review_Guide_Table_of_Contents this database was modified to JSON and with slight corrections to spelling and puncuation where applicable.
 
@@ -200,7 +200,7 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
+01 February 2018 - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Reversed filename in search https://github.com/boyter/searchcode-server/issues/160
  - Add click through to original repository https://github.com/boyter/searchcode-server/issues/162
  - Can now edit some properties of repositories https://github.com/boyter/searchcode-server/issues/162
@@ -436,3 +436,19 @@ XX XXXX XXXX - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Inital release
 
 Join the chat at https://gitter.im/searchcode-server/Lobby
+
+
+Deployment Checklist
+--------------------
+
+ - update README.md and replace NOT SPECIFIED YET with current date and the change log entry
+ - fab build_all_release
+ - scp searchcode-server-community.tar.gz to searchcodeserver.com
+ - generate sha1sum and md5sum of searchcode-server-community.tar.gz
+ - update pricing.html with hashes calculated in previous step
+ - check that version.json is correct version
+ - fab all setup_site
+ - git update and push
+ - mark new release on github
+ - update new release into gumroad
+ - tweet success
