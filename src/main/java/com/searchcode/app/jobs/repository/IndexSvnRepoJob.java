@@ -59,8 +59,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.updateSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
+    public RepositoryChanged updateExistingRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
+        return this.updateSvnRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
@@ -156,12 +156,11 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         return owner;
     }
 
-
-    public RepositoryChanged updateSvnRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, boolean useCredentials) {
+    public RepositoryChanged updateSvnRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean changed = false;
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
-        Singleton.getLogger().info("SVN: attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
+        Singleton.getLogger().info("SVN: attempting to pull latest from " + repoResult.getUrl() + " for " + repoResult.getName());
 
 
         ProcessBuilder processBuilder;
@@ -169,15 +168,15 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update");
         }
         else {
-            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update", "--username", repoUserName, "--password", repoPassword);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update", "--username", repoResult.getUsername(), "--password", repoResult.getPassword());
         }
 
-        processBuilder.directory(new File(repoLocations + repoName));
+        processBuilder.directory(new File(repoLocations + repoResult.getDirectoryName()));
         Process process = null;
         BufferedReader bufferedReader = null;
 
         try {
-            String previousRevision = this.getCurrentRevision(repoLocations, repoName);
+            String previousRevision = this.getCurrentRevision(repoLocations, repoResult.getDirectoryName());
             Singleton.getLogger().info("SVN: update previous revision " + previousRevision);
 
             process = processBuilder.start();
@@ -191,15 +190,15 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
                 Singleton.getLogger().info("svn update: " + line);
             }
 
-            String currentRevision = this.getCurrentRevision(repoLocations, repoName);
+            String currentRevision = this.getCurrentRevision(repoLocations, repoResult.getDirectoryName());
             Singleton.getLogger().info("SVN: update current revision " + currentRevision);
 
             if (!previousRevision.equals(currentRevision)) {
-                return this.getDiffBetweenRevisions(repoLocations, repoName, previousRevision);
+                return this.getDiffBetweenRevisions(repoLocations, repoResult.getDirectoryName(), previousRevision);
             }
         } catch (IOException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);

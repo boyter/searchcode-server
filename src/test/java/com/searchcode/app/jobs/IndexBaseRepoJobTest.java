@@ -56,9 +56,6 @@ public class IndexBaseRepoJobTest extends TestCase {
     }
 
     public void testExecuteHasMethodInQueueNewRepository() throws JobExecutionException {
-//        when(sharedServiceMock.getPauseBackgroundJobs()).thenReturn(false);
-//        when(sharedServiceMock.getBackgroundJobsEnabled()).thenReturn(true);
-
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob(indexServiceMock);
         IndexGitRepoJob spy = spy(indexGitRepoJob);
         spy.haveRepoResult = false;

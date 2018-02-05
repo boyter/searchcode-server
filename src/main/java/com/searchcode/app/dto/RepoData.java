@@ -26,14 +26,14 @@ public class RepoData {
     public RepoData() {}
 
     public String getSource() {
-        return source;
+        return this.source;
     }
 
     public String getUser() {
-        return user;
+        return this.user;
     }
 
     public String getProject() {
-        return project;
+        return this.project;
     }
 }

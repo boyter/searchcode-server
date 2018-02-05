@@ -51,10 +51,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean haveRepoResult = false;
     public IndexService indexService = Singleton.getIndexService();
 
-    /**
-     * This method to be implemented by the extending class
-     */
-    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+    public RepositoryChanged updateExistingRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         return null;
     }
 
@@ -62,6 +59,13 @@ public abstract class IndexBaseRepoJob implements Job {
      * This method to be implemented by the extending class
      */
     public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
+        return null;
+    }
+
+    /**
+     * This method to be implemented by the extending class
+     */
+    public RepositoryChanged getNewRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         return null;
     }
 
@@ -148,9 +152,9 @@ public abstract class IndexBaseRepoJob implements Job {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
                         new RunningIndexJob("Indexing", Singleton.getHelpers().getCurrentTimeSeconds()));
 
-                this.checkCloneSuccess(repoResult.getName(), repoLocations);
+                this.checkCloneSuccess(repoResult.getDirectoryName(), repoLocations);
 
-                String repoGitLocation = repoLocations + "/" + repoResult.getName() + "/.git/";
+                String repoGitLocation = repoLocations + "/" + repoResult.getDirectoryName() + "/.git/";
 
                 File file = new File(repoGitLocation);
                 boolean existingRepo = file.exists();
@@ -158,19 +162,18 @@ public abstract class IndexBaseRepoJob implements Job {
                 RepositoryChanged repositoryChanged;
 
                 if (existingRepo) {
-                    repositoryChanged = this.updateExistingRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
+                    repositoryChanged = this.updateExistingRepository(repoResult, repoLocations, useCredentials);
                 } else {
-                    repositoryChanged = this.getNewRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
+                    // repositoryChanged = this.getNewRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
+                    repositoryChanged = this.getNewRepository(repoResult, repoLocations, useCredentials);
                 }
 
-                // Write file indicating we have sucessfully cloned
+                // Write file indicating we have successfully cloned
                 this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getName());
                 this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
 
-
-
                 if (this.DELETEREPO) {
-                    Singleton.getHelpers().tryDelete(repoLocations + "/" + repoResult.getName());
+                    Singleton.getHelpers().tryDelete(repoLocations + "/" + repoResult.getDirectoryName());
                 }
             }
             catch (Exception ex) {
