@@ -129,12 +129,12 @@
 <script>
 function validateRepoName() {
   var input = $('#reponame');
-  var re = /^[a-zA-Z0-9-_]*$/;
-  var is_valid = re.test(input.val());
+  // var re = /^[a-zA-Z0-9-_]*$/;
+  // var is_valid = re.test(input.val());
 
   $.ajax('/api/repo/repo/?reponame=' + input.val())
     .done(function(data, textStatus, jqXHR) {
-        if (is_valid && input.val() && (data === 'null' || data === null)) {
+        if (input.val() && (data === 'null' || data === null)) {
             $('#reponame-formgroup').removeClass('has-error');
         }
         else {

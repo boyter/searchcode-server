@@ -84,9 +84,9 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return this.updateGitRepository(repoResult, repoLocations, useCredentials);
     }
 
-        @Override
-    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+    @Override
+    public RepositoryChanged getNewRepository(RepoResult repoResult,String repoLocations, boolean useCredentials) {
+        return this.cloneGitRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
@@ -381,28 +381,28 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     /**
      * Clones the repository from scratch
      */
-    public RepositoryChanged cloneGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
+    public RepositoryChanged cloneGitRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean successful = false;
-        Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
+        Singleton.getLogger().info("Attempting to clone " + repoResult.getUrl());
 
         Git call = null;
 
         try {
             CloneCommand cloneCommand = Git.cloneRepository();
-            cloneCommand.setURI(repoRemoteLocation);
-            cloneCommand.setDirectory(new File(repoLocations + "/" + repoName + "/"));
+            cloneCommand.setURI(repoResult.getUrl());
+            cloneCommand.setDirectory(new File(repoLocations + "/" + repoResult.getDirectoryName() + "/"));
             cloneCommand.setCloneAllBranches(true);
-            cloneCommand.setBranch(branch);
+            cloneCommand.setBranch(repoResult.getBranch());
 
             if (useCredentials) {
-                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoResult.getUsername(), repoResult.getPassword()));
             }
 
             call = cloneCommand.call();
             successful = true;
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(call);
