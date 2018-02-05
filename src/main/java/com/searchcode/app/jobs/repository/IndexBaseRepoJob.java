@@ -169,7 +169,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 }
 
                 // Write file indicating we have successfully cloned
-                this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getName());
+                this.createCloneUpdateSuccess(repoLocations + "/" + repoResult.getDirectoryName());
                 this.triggerIndex(repoResult, repoResult.getName(), repoResult.getUrl(), repoLocations, repoGitLocation, existingRepo, repositoryChanged);
 
                 if (this.DELETEREPO) {
@@ -247,7 +247,7 @@ public abstract class IndexBaseRepoJob implements Job {
      * index of the files.
      */
     public void updateIndex(RepoResult repoResult, String repoLocations, String repoRemoteLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        String repoGitLocation = repoLocations + "/" + repoResult.getName();
+        String repoGitLocation = repoLocations + "/" + repoResult.getDirectoryName();
         Path docDir = Paths.get(repoGitLocation);
 
         Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
