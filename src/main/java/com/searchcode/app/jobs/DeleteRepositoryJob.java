@@ -75,7 +75,7 @@ public class DeleteRepositoryJob implements Job {
                     String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
                     // remove the directory
-                    Singleton.getHelpers().tryDelete(repoLocations + x.getName() + "/");
+                    Singleton.getHelpers().tryDelete(repoLocations + x.getDirectoryName() + "/");
 
                     // Remove from the database
                     Singleton.getRepo().deleteRepoByName(x.getName());
