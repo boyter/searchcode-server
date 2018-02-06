@@ -143,7 +143,9 @@ def build_release():
     local('rm -rf ./searchcode-server/*')
     local('mv ./release ./searchcode-server')
     local('cp -R include ./searchcode-server/release/')
-    local('tar cvzf searchcode-server.tar.gz searchcode-server')
+    local('tar cvf searchcode-server.tar searchcode-server && gzip --no-name -f searchcode-server.tar')
+    local('md5sum searchcode-server.tar.gz')
+    local('sha1sum searchcode-server.tar.gz')
 
 
 def build_community_release():
@@ -163,8 +165,9 @@ def build_community_release():
     local('rm -rf ./searchcode-server-community/*')
     local('mv ./release ./searchcode-server-community')
     local('cp -R include ./searchcode-server-community/release/')
-    local(
-        'tar cvzf searchcode-server-community.tar.gz searchcode-server-community')
+    local('tar cvf searchcode-server-community.tar searchcode-server-community && gzip --no-name -f searchcode-server-community.tar')
+    local('md5sum searchcode-server-community.tar.gz')
+    local('sha1sum searchcode-server-community.tar.gz')
 
 
 def compile_js():
