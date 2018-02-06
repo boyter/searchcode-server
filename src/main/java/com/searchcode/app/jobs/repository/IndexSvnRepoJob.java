@@ -64,8 +64,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.checkoutSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
+    public RepositoryChanged getNewRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
+        return this.checkoutSvnRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
@@ -327,19 +327,19 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
 
-    public RepositoryChanged checkoutSvnRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, boolean useCredentials) {
+    public RepositoryChanged checkoutSvnRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean successful = false;
-        Singleton.getLogger().info("Attempting to checkout " + repoRemoteLocation);
+        Singleton.getLogger().info("Attempting to checkout " + repoResult.getUrl());
 
         ProcessBuilder processBuilder;
 
         // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
         // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
         if (useCredentials) {
-            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", repoResult.getUrl(), repoResult.getDirectoryName());
         }
         else {
-            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoUserName, "--password", repoPassword, repoRemoteLocation, repoName);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoResult.getUsername(), "--password", repoResult.getPassword(), repoResult.getUrl(), repoResult.getDirectoryName());
         }
 
         processBuilder.directory(new File(repoLocations));
@@ -370,7 +370,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             successful = true;
 
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);

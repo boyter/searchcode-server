@@ -58,13 +58,6 @@ public abstract class IndexBaseRepoJob implements Job {
     /**
      * This method to be implemented by the extending class
      */
-    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return null;
-    }
-
-    /**
-     * This method to be implemented by the extending class
-     */
     public RepositoryChanged getNewRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         return null;
     }
