@@ -28,15 +28,13 @@ public class ValidatorService {
             return new ValidatorResult(false, "Repository Name cannot be empty or whitespace");
         }
 
+        if (!repoResult.getName().trim().equals(repoResult.getName())) {
+            return new ValidatorResult(false, "Repository Name cannot begin or end with whitespace");
+        }
+
         if (this.helpers.isNullEmptyOrWhitespace(repoResult.getUrl())) {
             return new ValidatorResult(false, "Repository Location cannot be empty or whitespace");
         }
-
-//        boolean matches = repoResult.getName().matches("^[a-zA-Z0-9-_]*$");
-//
-//        if (!matches) {
-//            return new ValidatorResult(false, "Repository Name must match the regular expression ^[a-zA-Z0-9-_]*$");
-//        }
 
         if (!ignoreDuplicates) {
             Optional<RepoResult> repoByName = this.repo.getRepoByName(repoResult.getName());
