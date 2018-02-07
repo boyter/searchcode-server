@@ -200,7 +200,9 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXXXXXX XXXX - 1.3.13
+XX XXXXXXXX XXXX - 1.3.13 https://github.com/boyter/searchcode-server/projects/6
+ - Repository names now support any character https://github.com/boyter/searchcode-server/issues/122
+ - Better reporting on repository failures with indicator in repository list admin page https://github.com/boyter/searchcode-server/issues/164
 
 01 February 2018 - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Reversed filename in search https://github.com/boyter/searchcode-server/issues/160

@@ -23,6 +23,8 @@ public class RepoData {
     public String user = Values.EMPTYSTRING;
     public String project = Values.EMPTYSTRING;
 
+    public String indexError = Values.EMPTYSTRING;
+
     public RepoData() {}
 
     public String getSource() {
@@ -35,5 +37,9 @@ public class RepoData {
 
     public String getProject() {
         return this.project;
+    }
+
+    public String getIndexError() {
+        return this.indexError;
     }
 }

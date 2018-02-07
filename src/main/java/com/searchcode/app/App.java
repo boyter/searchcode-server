@@ -331,6 +331,13 @@ public class App {
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repolist.ftl"));
             });
 
+            get("/repo/error/:reponame/", (request, response) -> {
+                checkLoggedIn(request, response);
+                AdminRouteService adminRouteService = new AdminRouteService();
+                Map<String, Object> map = adminRouteService.adminGetRepo(request, response);
+                return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_error.ftl"));
+            });
+
             get("/bulk/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();

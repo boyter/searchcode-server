@@ -139,6 +139,7 @@ public abstract class IndexBaseRepoJob implements Job {
             this.haveRepoResult = true;
             Singleton.getLogger().info("Indexing " + repoResult.getName());
             repoResult.getData().indexStatus = "indexing";
+            repoResult.getData().indexError = Values.EMPTYSTRING;
             Singleton.getRepo().saveRepo(repoResult);
 
             try {
@@ -150,14 +151,13 @@ public abstract class IndexBaseRepoJob implements Job {
                 String repoGitLocation = repoLocations + "/" + repoResult.getDirectoryName() + "/.git/";
 
                 File file = new File(repoGitLocation);
-                boolean existingRepo = file.exists();
+                boolean existingRepo = file.exists(); // TODO this assumes git every time? Correct????
                 boolean useCredentials = repoResult.getUsername() != null && !repoResult.getUsername().isEmpty();
                 RepositoryChanged repositoryChanged;
 
                 if (existingRepo) {
                     repositoryChanged = this.updateExistingRepository(repoResult, repoLocations, useCredentials);
                 } else {
-                    // repositoryChanged = this.getNewRepository(repoResult.getName(), repoResult.getUrl(), repoResult.getUsername(), repoResult.getPassword(), repoLocations, repoResult.getBranch(), useCredentials);
                     repositoryChanged = this.getNewRepository(repoResult, repoLocations, useCredentials);
                 }
 

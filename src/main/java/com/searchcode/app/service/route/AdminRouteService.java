@@ -191,7 +191,7 @@ public class AdminRouteService {
                     indexOffset = 0;
                 }
             }
-            catch(NumberFormatException ex) {
+            catch (NumberFormatException ex) {
                 indexOffset = 0;
             }
         }

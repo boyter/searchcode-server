@@ -368,7 +368,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException | GitAPIException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            String error = "ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage();
+            Singleton.getLogger().warning(error);
+            repoResult.getData().indexError = error;
+            Singleton.getRepo().saveRepo(repoResult);
         }
         finally {
             Singleton.getHelpers().closeQuietly(localRepository);
@@ -402,7 +405,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             successful = true;
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            String error = ("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning(error);
+            repoResult.getData().indexError = error;
+            Singleton.getRepo().saveRepo(repoResult);
         }
         finally {
             Singleton.getHelpers().closeQuietly(call);

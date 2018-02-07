@@ -1,5 +1,6 @@
 <#import "masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="Repository List">
+<#setting url_escaping_charset="UTF-8">
 
 <div class="row inside-container">
     <div class="col-md-2">
@@ -59,6 +60,7 @@
                 <th></th>
                 <th></th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -79,6 +81,7 @@
                 <td>
                     <a class="btn btn-xs btn-default edit" data-id="${result.name?html}" name="edit" type="submit" href="/admin/repo/edit/${result.name?html}/"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span> Edit</a>
                 </td>
+                <td><#if result.data.indexError != "" ><a class="btn btn-xs btn-default edit" name="edit" type="submit" href="/admin/repo/error/${result.name?url}/"><span style="color: #d9534f;" class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span></#if></td>
             </tr>
             </#items>
         </tbody>
