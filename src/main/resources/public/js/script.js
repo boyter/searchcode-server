@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 /**
@@ -1175,7 +1175,7 @@ var SearchResultsComponent = {
                 return '/file/' + result.codeId + '/' + result.codePath;
             },
             getrepositoryhref: function(result) {
-                return '/repository/overview/' + result.repoName + '/';
+                return '/repository/overview/' + encodeURI(result.repoName) + '/';
             },
             gethreflineno: function(result, lineNumber) {
                 return '/file/' + result.codeId + '/' + result.codePath + '#' + lineNumber;
@@ -1287,7 +1287,7 @@ if (typeof preload !== 'undefined') {
 
     SearchModel.activerepositoryfilters(preload.repositoryFacets);
     _.each(preload.repositoryFacets, function(e) { 
-        SearchModel.toggle_filter('repository', e);
+        SearchModel.toggle_filter('repo', e);
     });
 
     SearchModel.activeownfilters(preload.ownerFacets);

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 package com.searchcode.app.jobs.repository;
@@ -17,6 +17,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
@@ -80,13 +81,13 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.updateGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+    public RepositoryChanged updateExistingRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
+        return this.updateGitRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
-    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.cloneGitRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, repoBranch, useCredentials);
+    public RepositoryChanged getNewRepository(RepoResult repoResult,String repoLocations, boolean useCredentials) {
+        return this.cloneGitRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
@@ -303,21 +304,20 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return codeOwners;
     }
 
-
     /**
      * Update a git repository and return if it has changed and the differences
      */
-    public RepositoryChanged updateGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
+    public RepositoryChanged updateGitRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean changed = false;
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
-        Singleton.getLogger().info("Attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
+        Singleton.getLogger().info("Attempting to pull latest from " + repoLocations + " for " + repoResult.getName());
 
         Repository localRepository = null;
         Git git = null;
 
         try {
-            localRepository = new FileRepository(new File(repoLocations + "/" + repoName + "/.git"));
+            localRepository = new FileRepository(new File(repoLocations + "/" + repoResult.getDirectoryName() + "/.git"));
 
             Ref head = localRepository.getRef("HEAD");
             git = new Git(localRepository);
@@ -328,7 +328,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             PullCommand pullCmd = git.pull();
 
             if (useCredentials) {
-                pullCmd.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+                pullCmd.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoResult.getUsername(), repoResult.getPassword()));
             }
 
             pullCmd.call();
@@ -352,9 +352,9 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
 
                 List<DiffEntry> entries = git.diff()
-                                            .setNewTree(newTreeIter)
-                                            .setOldTree(oldTreeIter)
-                                            .call();
+                        .setNewTree(newTreeIter)
+                        .setOldTree(oldTreeIter)
+                        .call();
 
 
                 for( DiffEntry entry : entries ) {
@@ -369,7 +369,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException | GitAPIException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoName + "\n with message: " + ex.getMessage());
+            String error = "ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage();
+            Singleton.getLogger().warning(error);
+            repoResult.getData().indexError = error;
+            Singleton.getRepo().saveRepo(repoResult);
         }
         finally {
             Singleton.getHelpers().closeQuietly(localRepository);
@@ -379,32 +382,34 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         return new RepositoryChanged(changed, changedFiles, deletedFiles);
     }
 
-
     /**
      * Clones the repository from scratch
      */
-    public RepositoryChanged cloneGitRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String branch, boolean useCredentials) {
+    public RepositoryChanged cloneGitRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean successful = false;
-        Singleton.getLogger().info("Attempting to clone " + repoRemoteLocation);
+        Singleton.getLogger().info("Attempting to clone " + repoResult.getUrl());
 
         Git call = null;
 
         try {
             CloneCommand cloneCommand = Git.cloneRepository();
-            cloneCommand.setURI(repoRemoteLocation);
-            cloneCommand.setDirectory(new File(repoLocations + "/" + repoName + "/"));
+            cloneCommand.setURI(repoResult.getUrl());
+            cloneCommand.setDirectory(new File(repoLocations + "/" + repoResult.getDirectoryName() + "/"));
             cloneCommand.setCloneAllBranches(true);
-            cloneCommand.setBranch(branch);
+            cloneCommand.setBranch(repoResult.getBranch());
 
             if (useCredentials) {
-                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoUserName, repoPassword));
+                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(repoResult.getUsername(), repoResult.getPassword()));
             }
 
             call = cloneCommand.call();
             successful = true;
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoName + "\n with message: " + ex.getMessage());
+            String error = ("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning(error);
+            repoResult.getData().indexError = error;
+            Singleton.getRepo().saveRepo(repoResult);
         }
         finally {
             Singleton.getHelpers().closeQuietly(call);

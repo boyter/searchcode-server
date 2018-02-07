@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 package com.searchcode.app.jobs;
@@ -75,7 +75,7 @@ public class DeleteRepositoryJob implements Job {
                     String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
                     // remove the directory
-                    Singleton.getHelpers().tryDelete(repoLocations + x.getName() + "/");
+                    Singleton.getHelpers().tryDelete(repoLocations + x.getDirectoryName() + "/");
 
                     // Remove from the database
                     Singleton.getRepo().deleteRepoByName(x.getName());

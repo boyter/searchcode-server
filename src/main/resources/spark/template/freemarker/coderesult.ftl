@@ -1,5 +1,6 @@
 <#import "masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="${repoName} ${codePath}">
+<#setting url_escaping_charset="UTF-8">
 
 <div class="row">
 
@@ -130,12 +131,12 @@ $('#toggleFileTree').click(function(e) {
 
     if(filetreedata === null) {
       $('#fileTreeResults').html('<center><img src="/img/loading.gif" /></center>');
-      $.ajax('/api/repo/repotree/?reponame=${repoName?html}')
+      $.ajax('/api/repo/repotree/?reponame=${repoName?url}')
        .done(function(data, textStatus, jqXHR) {
           filetreedata = true;
           var displayString = '';
           $.each(data.codeResultList, function(index, value) {
-            var ahref = '/file/' + value.codeId + '/${repoName?html}/' + value.displayLocation;
+            var ahref = '/file/' + value.codeId + '/${repoName?url}/' + value.displayLocation;
             displayString += '<a href="' + ahref + '">/' + value.displayLocation + '</a><br>';
           });
 

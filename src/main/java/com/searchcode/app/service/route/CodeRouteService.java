@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 package com.searchcode.app.service.route;
@@ -129,7 +129,7 @@ public class CodeRouteService {
             return new ModelAndView(map, "search_ajax.ftl");
         }
 
-        map.put("photoId", CommonRouteService.getPhotoId());
+        map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));
         if (request.queryParams().contains("photoId")) {
             map.put("photoId", request.queryParams("photoId"));
         }
@@ -445,7 +445,7 @@ public class CodeRouteService {
             return new ModelAndView(map, "searchresults.ftl");
         }
 
-        map.put("photoId", CommonRouteService.getPhotoId());
+        map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));
         map.put("numDocs", this.indexService.getCodeIndexLinesCount());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);

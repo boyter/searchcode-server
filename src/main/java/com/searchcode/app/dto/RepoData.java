@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 package com.searchcode.app.dto;
@@ -23,17 +23,23 @@ public class RepoData {
     public String user = Values.EMPTYSTRING;
     public String project = Values.EMPTYSTRING;
 
+    public String indexError = Values.EMPTYSTRING;
+
     public RepoData() {}
 
     public String getSource() {
-        return source;
+        return this.source;
     }
 
     public String getUser() {
-        return user;
+        return this.user;
     }
 
     public String getProject() {
-        return project;
+        return this.project;
+    }
+
+    public String getIndexError() {
+        return this.indexError;
     }
 }

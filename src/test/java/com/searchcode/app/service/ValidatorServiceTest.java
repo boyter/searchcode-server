@@ -26,10 +26,19 @@ public class ValidatorServiceTest extends TestCase {
         assertThat(validate.isValid).isTrue();
     }
 
-    public void testRepoResultInValidReponame() {
+    public void testRepoResultValidSlashesEtcReponame() {
         ValidatorService validatorService = new ValidatorService();
         ValidatorResult validate = validatorService.validate(new RepoResult(0, "some/thing", "something", "url", "", "", "source", "branch", "{}"), false);
-        assertThat(validate.isValid).isFalse();
+        assertThat(validate.isValid).isTrue();
+
+        validate = validatorService.validate(new RepoResult(0, "some/thing", "something", "url", "", "", "source", "branch", "{}"), false);
+        assertThat(validate.isValid).isTrue();
+
+        validate = validatorService.validate(new RepoResult(0, "some\\thing", "something", "url", "", "", "source", "branch", "{}"), false);
+        assertThat(validate.isValid).isTrue();
+
+        validate = validatorService.validate(new RepoResult(0, "some\\thing@!#&^%!@&*@)(&!@(#&^@!#", "something", "url", "", "", "source", "branch", "{}"), false);
+        assertThat(validate.isValid).isTrue();
     }
 
     public void testValidatorServiceExistingName() {

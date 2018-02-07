@@ -29,6 +29,7 @@ def setup_site():
     put('output', '/var/www/html')
     sudo('cp -R /var/www/html/output/* /var/www/html/')
     sudo('rm -rf /var/www/html/output')
+    sudo('cp ~/searchcode-server-community.tar.gz /var/www/html/')
 
 
 # TODO should be a cron job

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 package com.searchcode.app.jobs.repository;
@@ -59,13 +59,13 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public RepositoryChanged updateExistingRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.updateSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
+    public RepositoryChanged updateExistingRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
+        return this.updateSvnRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
-    public RepositoryChanged getNewRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, String repoBranch, boolean useCredentials) {
-        return this.checkoutSvnRepository(repoName, repoRemoteLocation, repoUserName, repoPassword, repoLocations, useCredentials);
+    public RepositoryChanged getNewRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
+        return this.checkoutSvnRepository(repoResult, repoLocations, useCredentials);
     }
 
     @Override
@@ -156,12 +156,11 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         return owner;
     }
 
-
-    public RepositoryChanged updateSvnRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, boolean useCredentials) {
+    public RepositoryChanged updateSvnRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean changed = false;
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
-        Singleton.getLogger().info("SVN: attempting to pull latest from " + repoRemoteLocation + " for " + repoName);
+        Singleton.getLogger().info("SVN: attempting to pull latest from " + repoResult.getUrl() + " for " + repoResult.getName());
 
 
         ProcessBuilder processBuilder;
@@ -169,15 +168,15 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update");
         }
         else {
-            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update", "--username", repoUserName, "--password", repoPassword);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update", "--username", repoResult.getUsername(), "--password", repoResult.getPassword());
         }
 
-        processBuilder.directory(new File(repoLocations + repoName));
+        processBuilder.directory(new File(repoLocations + repoResult.getDirectoryName()));
         Process process = null;
         BufferedReader bufferedReader = null;
 
         try {
-            String previousRevision = this.getCurrentRevision(repoLocations, repoName);
+            String previousRevision = this.getCurrentRevision(repoLocations, repoResult.getDirectoryName());
             Singleton.getLogger().info("SVN: update previous revision " + previousRevision);
 
             process = processBuilder.start();
@@ -191,15 +190,15 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
                 Singleton.getLogger().info("svn update: " + line);
             }
 
-            String currentRevision = this.getCurrentRevision(repoLocations, repoName);
+            String currentRevision = this.getCurrentRevision(repoLocations, repoResult.getDirectoryName());
             Singleton.getLogger().info("SVN: update current revision " + currentRevision);
 
             if (!previousRevision.equals(currentRevision)) {
-                return this.getDiffBetweenRevisions(repoLocations, repoName, previousRevision);
+                return this.getDiffBetweenRevisions(repoLocations, repoResult.getDirectoryName(), previousRevision);
             }
         } catch (IOException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -328,19 +327,19 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
 
-    public RepositoryChanged checkoutSvnRepository(String repoName, String repoRemoteLocation, String repoUserName, String repoPassword, String repoLocations, boolean useCredentials) {
+    public RepositoryChanged checkoutSvnRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean successful = false;
-        Singleton.getLogger().info("Attempting to checkout " + repoRemoteLocation);
+        Singleton.getLogger().info("Attempting to checkout " + repoResult.getUrl());
 
         ProcessBuilder processBuilder;
 
         // http://serverfault.com/questions/158349/how-to-stop-subversion-from-prompting-about-server-certificate-verification-fai
         // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
         if (useCredentials) {
-            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", repoRemoteLocation, repoName);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", repoResult.getUrl(), repoResult.getDirectoryName());
         }
         else {
-            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoUserName, "--password", repoPassword, repoRemoteLocation, repoName);
+            processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoResult.getUsername(), "--password", repoResult.getPassword(), repoResult.getUrl(), repoResult.getDirectoryName());
         }
 
         processBuilder.directory(new File(repoLocations));
@@ -371,7 +370,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             successful = true;
 
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);

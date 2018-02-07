@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.12
+ * Version 1.3.13
  */
 
 package com.searchcode.app.model;
@@ -13,6 +13,7 @@ package com.searchcode.app.model;
 import com.google.gson.Gson;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RepoData;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class RepoResult {
     private int rowId = -1;
@@ -75,12 +76,22 @@ public class RepoResult {
         return this.name;
     }
 
+    // Use this in order to determine checkout directory as otherwise
+    // it may be invalid on the filesystem
     public String getDirectoryName() {
-        return this.name.replaceAll("\\W+", Values.EMPTYSTRING + this.getRowId());
+        // Must check if name is different and if so append hash to avoid
+        // issue of collisions
+
+        String toReturn = this.name.replaceAll("\\W+", Values.EMPTYSTRING);
+
+        if (!toReturn.equals(this.name)) {
+            toReturn += "_" + DigestUtils.sha1Hex(this.name);
+        }
+
+        return toReturn;
     }
 
     public void setName(String name) {
-        name = name.replace(' ', '-');
         this.name = name;
     }
 
