@@ -57,8 +57,13 @@ public class SearchcodeLibTest extends TestCase {
     public void testCleanPipelineCustom2() {
         SearchCodeLib sl = new SearchCodeLib();
         String actual = sl.codeCleanPipeline("task :install_something do");
-
         assertThat(actual).contains(" install_something ");
+    }
+
+    public void testCodeCleanPipelineIssue165() {
+        SearchCodeLib searchCodeLib = new SearchCodeLib();
+        String actual = searchCodeLib.codeCleanPipeline("handler: com.origin.lambda.Main::hourlySummary");
+        assertThat(actual).contains(" hourlySummary ");
     }
 
     public void testIsBinaryBlackListWithNoDotFileName() {
