@@ -1131,7 +1131,7 @@
     "keywords": ["pkgname", "pkgver", "arch", "license"]
   },
   {
-    "language": "Cargo File",
+    "language": "Tom's Obvious, Minimal Language ",
     "extensions": [
       "toml"
     ],

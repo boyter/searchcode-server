@@ -162,8 +162,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                     try {
                         commitTime = (int) (df.parse(split[2]).getTime() / 1000);
                     }
-                    catch(ParseException ex) {
-                        Singleton.getLogger().info("time parse expection for " + repoName + fileName);
+                    catch (ParseException ex) {
+                        Singleton.getLogger().info("time parse exception for " + repoName + fileName);
                     }
 
                     if (owners.containsKey(author)) {
@@ -187,7 +187,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 String[] split = fileName.split("/");
 
                 if ( split.length != 1) {
-                    codeOwners = getBlameInfoExternal(codeLinesSize, repoName, repoLocations, String.join("/", Arrays.asList(split).subList(1, split.length)));
+                    codeOwners = this.getBlameInfoExternal(codeLinesSize, repoName, repoLocations, String.join("/", Arrays.asList(split).subList(1, split.length)));
                 }
 
             } else {
