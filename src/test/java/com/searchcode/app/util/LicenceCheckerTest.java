@@ -1,8 +1,9 @@
 package com.searchcode.app.util;
 
 import com.searchcode.app.model.LicenseResult;
-import com.searchcode.app.model.OWASPResult;
 import junit.framework.TestCase;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,8 +14,16 @@ public class LicenceCheckerTest extends TestCase {
         assertThat(licenceChecker.getDatabase()).hasAtLeastOneElementOfType(LicenseResult.class);
     }
 
-    public void testIdentifier() {
+    public void testSingleIdentifier() {
         LicenceChecker licenceChecker = new LicenceChecker();
-        licenceChecker.identifierGuessLicence("This is some text # SPDX-License-Identifier: GPL-2.0 and some other text\n\nThis is some text # SPDX-License-Identifier: GPL-2.0+ and some other text\n\n");
+        List<String> matches = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os");
+        assertThat(matches.get(0)).isEqualTo("GPL-2.0");
+    }
+
+    public void testMultipleIdentifier() {
+        LicenceChecker licenceChecker = new LicenceChecker();
+        List<String> matches = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os \n # SPDX-License-Identifier: MIT ");
+        assertThat(matches.get(0)).isEqualTo("GPL-2.0");
+        assertThat(matches.get(1)).isEqualTo("MIT");
     }
 }

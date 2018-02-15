@@ -49,13 +49,16 @@ public class LicenceChecker {
 
 
 
-    public void identifierGuessLicence(String content) {
+    public List<String> identifierGuessLicence(String content) {
         Matcher matcher = Pattern.compile("SPDX-License-Identifier:\\s+(.*?)[ |\\n|\\r\\n]").matcher(content);
 
+        ArrayList<String> matches = new ArrayList<>();
+
         while (matcher.find()) {
-            String group = matcher.group();
-            System.out.println(group);
+            matches.add(matcher.group(1));
         }
+
+        return matches;
     }
 
     /**
