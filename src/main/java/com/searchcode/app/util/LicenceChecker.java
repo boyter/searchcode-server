@@ -12,6 +12,8 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LicenceChecker {
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.LICENSE_DATABASE_LOCATION, Values.DEFAULT_LICENSE_DATABASE_LOCATION);
@@ -23,6 +25,37 @@ public class LicenceChecker {
 
     public List<LicenseResult> getDatabase() {
         return this.database;
+    }
+
+    public void processFile() {
+//        licenseGuesses = guessLicense(string(content), deepGuess, loadDatabase())
+//        licenseIdentified = identifierGuessLicence(string(content), loadDatabase())
+    }
+
+//    func identifierGuessLicence(content string, licenses []License) []LicenseMatch {
+//        matchingLicenses := []LicenseMatch{}
+//        matches := spdxLicenceRegex.FindAllStringSubmatch(content, -1)
+//
+//        for _, val := range matches {
+//            for _, license := range licenses {
+//                if license.LicenseId == strings.TrimSpace(val[1]) {
+//                    matchingLicenses = append(matchingLicenses, LicenseMatch{LicenseId: license.LicenseId, Percentage: 1})
+//                }
+//            }
+//        }
+//
+//        return matchingLicenses
+//    }
+
+
+
+    public void identifierGuessLicence(String content) {
+        Matcher matcher = Pattern.compile("SPDX-License-Identifier:\\s+(.*?)[ |\\n|\\r\\n]").matcher(content);
+
+        while (matcher.find()) {
+            String group = matcher.group();
+            System.out.println(group);
+        }
     }
 
     /**
