@@ -34,6 +34,20 @@ public class Vectorspace {
         return 0;
     }
 
+    public HashMap<String, Integer> concordance(String document) {
+        HashMap<String, Integer> concordance = new HashMap<>();
+
+        return concordance;
+    }
+
+    // TODO consider moving this out, must match the logic for building the licence database 100%
+    public String cleanText(String document) {
+        document = document.toLowerCase();
+        document = document.replaceAll("[^a-zA-Z0-9 ]", " ");
+        document = document.replaceAll("\\s+", " ");
+        return document.trim();
+    }
+
 //    public Dictionary<string, int> Concordance(string document)
 //    {
 //        var con = new Dictionary<string, int>();

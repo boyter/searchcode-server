@@ -47,4 +47,15 @@ public class VectorspaceTest extends TestCase {
 
         assertThat(relation).isGreaterThanOrEqualTo(0.79);
     }
+
+    public void testCleanText() {
+        Vectorspace vectorspace = new Vectorspace();
+        assertThat(vectorspace.cleanText("This is a document")).isEqualTo("this is a document");
+        assertThat(vectorspace.cleanText("This is a  document")).isEqualTo("this is a document");
+        assertThat(vectorspace.cleanText("This is a document    ")).isEqualTo("this is a document");
+        assertThat(vectorspace.cleanText("     This is a document")).isEqualTo("this is a document");
+        assertThat(vectorspace.cleanText("This is a Document")).isEqualTo("this is a document");
+        assertThat(vectorspace.cleanText("99This is a document")).isEqualTo("99this is a document");
+        assertThat(vectorspace.cleanText("!@##$%^&*()This is a document")).isEqualTo("this is a document");
+    }
 }
