@@ -46,6 +46,18 @@ public class VectorspaceTest extends TestCase {
         double relation = vectorspace.relation(hashMap1, hashMap2);
 
         assertThat(relation).isGreaterThanOrEqualTo(0.79);
+        assertThat(relation).isLessThanOrEqualTo(0.8);
+    }
+
+    public void testEndToEnd() {
+        Vectorspace vectorspace = new Vectorspace();
+        HashMap<String, Integer> concordance1 = vectorspace.concordance("The code search solution for companies that build or maintain software who want to improve productivity and shorten development time by getting value from their existing source code.");
+        HashMap<String, Integer> concordance2 = vectorspace.concordance(">Uncover the hidden value of your existing code. Why re-write what you already have? Find it quickly, reuse and save time.");
+
+        double relation = vectorspace.relation(concordance1, concordance2);
+
+        assertThat(relation).isGreaterThanOrEqualTo(0.2724);
+        assertThat(relation).isLessThanOrEqualTo(0.2725);
     }
 
     public void testCleanText() {

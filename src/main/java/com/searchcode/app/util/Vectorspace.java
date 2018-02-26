@@ -1,9 +1,17 @@
 package com.searchcode.app.util;
 
 
+import com.searchcode.app.service.Singleton;
+
 import java.util.HashMap;
 
 public class Vectorspace {
+
+    private final Helpers helpers;
+
+    public Vectorspace() {
+        this.helpers = Singleton.getHelpers();
+    }
 
     public double magnitude(HashMap<String, Integer> concordance) {
         double total = 0.0;
@@ -37,6 +45,16 @@ public class Vectorspace {
     public HashMap<String, Integer> concordance(String document) {
         HashMap<String, Integer> concordance = new HashMap<>();
 
+        for (String word: this.cleanText(document).split(" ")) {
+            if (!this.helpers.isNullEmptyOrWhitespace(word)) {
+                if (concordance.containsKey(word)) {
+                    concordance.put(word, concordance.get(word) + 1);
+                } else {
+                    concordance.put(word, 1);
+                }
+            }
+        }
+
         return concordance;
     }
 
@@ -47,26 +65,4 @@ public class Vectorspace {
         document = document.replaceAll("\\s+", " ");
         return document.trim();
     }
-
-//    public Dictionary<string, int> Concordance(string document)
-//    {
-//        var con = new Dictionary<string, int>();
-//
-//        foreach (var word in document.ToLower().Trim().Split(' '))
-//        {
-//            if (!string.IsNullOrWhiteSpace(word))
-//            {
-//                if (con.ContainsKey(word))
-//                {
-//                    con[word] = con[word] + 1;
-//                }
-//                else
-//                {
-//                    con[word] = 1;
-//                }
-//            }
-//        }
-//
-//        return con;
-//    }
 }
