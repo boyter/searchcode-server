@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.model.LicenseMatch;
 import com.searchcode.app.model.LicenseResult;
 import com.searchcode.app.service.Singleton;
 
@@ -16,11 +17,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LicenceChecker {
+    private final Vectorspace vectorSpace;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.LICENSE_DATABASE_LOCATION, Values.DEFAULT_LICENSE_DATABASE_LOCATION);
     private ArrayList<LicenseResult> database = new ArrayList<>();
 
     public LicenceChecker() {
         this.database = this.loadDatabase();
+        this.vectorSpace = new Vectorspace();
     }
 
     public List<LicenseResult> getDatabase() {
@@ -39,8 +42,26 @@ public class LicenceChecker {
         return null;
     }
 
-    public void keywordGuessLicense(String content) {
+    public ArrayList<LicenseMatch> keywordGuessLicense(String content) {
+        ArrayList<LicenseMatch> licenseMatches = new ArrayList<>();
+        String cleanContent = this.vectorSpace.cleanText(content);
 
+        for (LicenseResult licenseResult: this.database) {
+            int keywordMatch = 0;
+
+            for (String keyword: licenseResult.keywords) {
+                if (content.contains(keyword)) {
+                    keywordMatch++;
+                }
+            }
+
+            if (keywordMatch >= 1) {
+                float percentage = keywordMatch / licenseResult.keywords.size();
+                licenseMatches.add(new LicenseMatch(licenseResult.licenseId, percentage));
+            }
+        }
+
+        return licenseMatches;
     }
 
 //    func keywordGuessLicense(content string, licenses []License) []LicenseMatch {
