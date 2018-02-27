@@ -35,13 +35,10 @@ public class LicenceChecker {
 //        licenseIdentified = identifierGuessLicence(string(content), loadDatabase())
     }
 
-    public ArrayList<LicenseResult> guessLicense(String content) {
-        for (LicenseResult licenseResult: this.database) {
-
-        }
-        return null;
-    }
-
+    /**
+     * Given a string will scan through it using keywords to try and
+     * identify which license it has
+     */
     public ArrayList<LicenseMatch> keywordGuessLicense(String content) {
         ArrayList<LicenseMatch> licenseMatches = new ArrayList<>();
         String cleanContent = this.vectorSpace.cleanText(content);
@@ -64,31 +61,13 @@ public class LicenceChecker {
         return licenseMatches;
     }
 
-//    func keywordGuessLicense(content string, licenses []License) []LicenseMatch {
-//        content = cleanText(content)
-//
-//        matchingLicenses := []LicenseMatch{}
-//
-//        for _, license := range licenses {
-//            keywordmatch := 0
-//            contains := false
-//
-//            for _, keyword := range license.Keywords {
-//                contains = strings.Contains(content, strings.ToLower(keyword))
-//
-//                if contains == true {
-//                    keywordmatch++
-//                }
-//            }
-//
-//            if keywordmatch > 0 {
-//                percentage := (float64(keywordmatch) / float64(len(license.Keywords))) * 100
-//                matchingLicenses = append(matchingLicenses, LicenseMatch{LicenseId: license.LicenseId, Percentage: percentage})
-//            }
-//        }
-//
-//        return matchingLicenses
-//    }
+
+    public ArrayList<LicenseResult> guessLicense(String content) {
+        for (LicenseResult licenseResult: this.database) {
+
+        }
+        return null;
+    }
 
 //    func guessLicense(content string, deepguess bool, licenses []License) []LicenseMatch {
 //        matchingLicenses := []LicenseMatch{}
@@ -144,6 +123,9 @@ public class LicenceChecker {
 //    }
 
 
+    /**
+     * Looks for licenses using the SPDX License Identifier syntax
+     */
     public List<String> identifierGuessLicence(String content) {
         Matcher matcher = Pattern.compile("SPDX-License-Identifier:\\s+(.*?)[ |\\n|\\r\\n]").matcher(content);
 
@@ -167,14 +149,14 @@ public class LicenceChecker {
             LicenseResult[] myArray = gson.fromJson(new FileReader(this.DATABASEPATH), LicenseResult[].class);
             database = new ArrayList<>(Arrays.asList(myArray));
 
-            Vectorspace vectorspace = new Vectorspace();
+            Vectorspace vec = new Vectorspace();
 
             for (LicenseResult licenseResult: database) {
-                licenseResult.concordance = vectorspace.concordance(licenseResult.licenseText);
+                licenseResult.concordance = vec.concordance(licenseResult.licenseText);
             }
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            Singleton.getLogger().warning("Unable to load OWASP Database from disk " + ex);
+            Singleton.getLogger().warning("Unable to load License Database from disk " + ex);
         }
 
         return database;
