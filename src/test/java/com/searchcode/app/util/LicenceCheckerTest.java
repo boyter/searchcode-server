@@ -14,6 +14,11 @@ public class LicenceCheckerTest extends TestCase {
         assertThat(licenceChecker.getDatabase()).hasAtLeastOneElementOfType(LicenseResult.class);
     }
 
+    public void testLoadDatabaseConcordance() {
+        LicenceChecker licenceChecker = new LicenceChecker();
+        assertThat(licenceChecker.getDatabase().get(0).concordance).isNotEmpty();
+    }
+
     public void testSingleIdentifier() {
         LicenceChecker licenceChecker = new LicenceChecker();
         List<String> matches = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os");

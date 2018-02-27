@@ -33,11 +33,41 @@ public class LicenceChecker {
     }
 
     public ArrayList<LicenseResult> guessLicense(String content) {
-        for(LicenseResult licenseResult: this.database) {
+        for (LicenseResult licenseResult: this.database) {
 
         }
         return null;
     }
+
+    public void keywordGuessLicense(String content) {
+
+    }
+
+//    func keywordGuessLicense(content string, licenses []License) []LicenseMatch {
+//        content = cleanText(content)
+//
+//        matchingLicenses := []LicenseMatch{}
+//
+//        for _, license := range licenses {
+//            keywordmatch := 0
+//            contains := false
+//
+//            for _, keyword := range license.Keywords {
+//                contains = strings.Contains(content, strings.ToLower(keyword))
+//
+//                if contains == true {
+//                    keywordmatch++
+//                }
+//            }
+//
+//            if keywordmatch > 0 {
+//                percentage := (float64(keywordmatch) / float64(len(license.Keywords))) * 100
+//                matchingLicenses = append(matchingLicenses, LicenseMatch{LicenseId: license.LicenseId, Percentage: percentage})
+//            }
+//        }
+//
+//        return matchingLicenses
+//    }
 
 //    func guessLicense(content string, deepguess bool, licenses []License) []LicenseMatch {
 //        matchingLicenses := []LicenseMatch{}
@@ -115,6 +145,12 @@ public class LicenceChecker {
             Gson gson = new GsonBuilder().create();
             LicenseResult[] myArray = gson.fromJson(new FileReader(this.DATABASEPATH), LicenseResult[].class);
             database = new ArrayList<>(Arrays.asList(myArray));
+
+            Vectorspace vectorspace = new Vectorspace();
+
+            for (LicenseResult licenseResult: database) {
+                licenseResult.concordance = vectorspace.concordance(licenseResult.licenseText);
+            }
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
             Singleton.getLogger().warning("Unable to load OWASP Database from disk " + ex);
