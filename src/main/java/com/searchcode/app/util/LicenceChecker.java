@@ -7,7 +7,9 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.model.LicenseMatch;
 import com.searchcode.app.model.LicenseResult;
 import com.searchcode.app.service.Singleton;
+import com.sun.java.swing.plaf.windows.TMSchema;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.regex.Pattern;
 public class LicenceChecker {
     private final Vectorspace vectorSpace;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.LICENSE_DATABASE_LOCATION, Values.DEFAULT_LICENSE_DATABASE_LOCATION);
+    private String LICENSE_FILES = Properties.getProperties().getProperty(Values.LICENSE_FILES, Values.DEFAULT_LICENSE_FILES);
     private ArrayList<LicenseResult> database = new ArrayList<>();
 
     public LicenceChecker() {
@@ -29,6 +32,10 @@ public class LicenceChecker {
 
     public List<LicenseResult> getDatabase() {
         return this.database;
+    }
+
+    public List<File> identifyPotentialLicenseFiles(List<File> fileList) {
+        return null;
     }
 
     public void processFile() {
