@@ -31,27 +31,19 @@ public class LicenceChecker {
     }
 
     public List<File> identifyPotentialLicenseFiles(List<File> fileList) {
-        return null;
-    }
+        String[] licenses = this.LICENSE_FILES.toLowerCase().split(",");
+        List<File> matches = new ArrayList<>();
 
-    public void processFile() {
-//        licenseGuesses = guessLicense(string(content), deepGuess, loadDatabase())
-//        licenseIdentified = identifierGuessLicence(string(content), loadDatabase())
-    }
-
-    public List<LicenseResult> guessLicense(String content) {
-
-        List<LicenseResult> licenseResults = this.identifierGuessLicence(content);
-
-        if (!licenseResults.isEmpty()) {
-            return licenseResults;
+        for (File file: fileList) {
+            for (String license: licenses) {
+                if (file.getName().toLowerCase().contains(license)) {
+                    matches.add(file);
+                }
+            }
         }
 
-
-
-        return null;
+        return matches;
     }
-
 
     /**
      * Given a string will scan through it using keywords to try and

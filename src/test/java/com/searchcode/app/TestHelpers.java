@@ -20,6 +20,21 @@ public class TestHelpers {
         return tempPath;
     }
 
+    public static File createDirectoryWithLicenseFiles(String unique) throws IOException {
+        File tempPath = clearAndCreateTempPath(unique);
+
+        createFile(tempPath, "LICENSE", "EndToEndTestFile EndToEndTestFile1");
+        createFile(tempPath, "LICENSE.txt", "EndToEndTestFile EndToEndTestFile1");
+        createFile(tempPath, "LICENCE",  "EndToEndTestFile EndToEndTestFile2");
+        createFile(tempPath, "LICENCE.txt",  "EndToEndTestFile EndToEndTestFile3");
+        createFile(tempPath, "README.txt",  "EndToEndTestFile EndToEndTestFile3");
+        createFile(tempPath, "COPYING.txt",  "EndToEndTestFile EndToEndTestFile3");
+        createFile(tempPath, "LICENCE.md",  "EndToEndTestFile EndToEndTestFile3");
+        createFile(tempPath, "COPYING.md",  "EndToEndTestFile EndToEndTestFile3");
+
+        return tempPath;
+    }
+
     public static File createFile(File tempDir, String filename, String contents) throws IOException {
         File file = new File(tempDir, filename);
 
