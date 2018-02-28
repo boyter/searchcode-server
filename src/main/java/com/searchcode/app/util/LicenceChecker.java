@@ -7,7 +7,6 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.model.LicenseMatch;
 import com.searchcode.app.model.LicenseResult;
 import com.searchcode.app.service.Singleton;
-import com.sun.java.swing.plaf.windows.TMSchema;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,6 +42,17 @@ public class LicenceChecker {
 //        licenseIdentified = identifierGuessLicence(string(content), loadDatabase())
     }
 
+    public ArrayList<LicenseResult> guessLicense(String content) {
+
+
+
+        for (LicenseResult licenseResult: this.database) {
+
+        }
+        return null;
+    }
+
+
     /**
      * Given a string will scan through it using keywords to try and
      * identify which license it has
@@ -70,72 +80,10 @@ public class LicenceChecker {
         return licenseMatches;
     }
 
-
-    public ArrayList<LicenseResult> guessLicense(String content) {
-        for (LicenseResult licenseResult: this.database) {
-
-        }
-        return null;
-    }
-
-//    func guessLicense(content string, deepguess bool, licenses []License) []LicenseMatch {
-//        matchingLicenses := []LicenseMatch{}
-//
-//        for _, license := range keywordGuessLicense(content, licenses) {
-//            matchingLicense := License{}
-//
-//            for _, l := range licenses {
-//                if l.LicenseId == license.LicenseId {
-//                    matchingLicense = l
-//                    break
-//                }
-//            }
-//
-//            runecontent := []rune(content)
-//            trimto := utf8.RuneCountInString(matchingLicense.LicenseText)
-//
-//            if trimto > len(runecontent) {
-//                trimto = len(runecontent)
-//            }
-//
-//            contentConcordance := vectorspace.BuildConcordance(string(runecontent[:trimto]))
-//            relation := vectorspace.Relation(matchingLicense.Concordance, contentConcordance)
-//
-//            if relation >= confidence {
-//                matchingLicenses = append(matchingLicenses, LicenseMatch{LicenseId: license.LicenseId, Percentage: relation})
-//            }
-//        }
-//
-//        if len(matchingLicenses) == 0 && deepguess == true {
-//            for _, license := range licenses {
-//                runecontent := []rune(content)
-//                trimto := utf8.RuneCountInString(license.LicenseText)
-//
-//                if trimto > len(runecontent) {
-//                    trimto = len(runecontent)
-//                }
-//
-//                contentConcordance := vectorspace.BuildConcordance(string(runecontent[:trimto]))
-//                relation := vectorspace.Relation(license.Concordance, contentConcordance)
-//
-//                if relation >= confidence {
-//                    matchingLicenses = append(matchingLicenses, LicenseMatch{LicenseId: license.LicenseId, Percentage: relation})
-//                }
-//            }
-//        }
-//
-//        sort.Slice(matchingLicenses, func(i, j int) bool {
-//            return matchingLicenses[i].Percentage > matchingLicenses[j].Percentage
-//        })
-//
-//        return matchingLicenses
-//    }
-
-
     /**
      * Looks for licenses using the SPDX License Identifier syntax
      */
-    public List<String> identifierGuessLicence(String content) {
+    public List<LicenseResult> identifierGuessLicence(String content) {
         Matcher matcher = Pattern.compile("SPDX-License-Identifier:\\s+(.*?)[ |\\n|\\r\\n]").matcher(content);
 
         ArrayList<String> matches = new ArrayList<>();
@@ -144,7 +92,16 @@ public class LicenceChecker {
             matches.add(matcher.group(1));
         }
 
-        return matches;
+        List<LicenseResult> result = new ArrayList<>();
+        for (String match: matches) {
+            for (LicenseResult licenseResult: this.database) {
+                if (match.toLowerCase().equals(licenseResult.licenseId.toLowerCase())) {
+                    result.add(licenseResult);
+                }
+            }
+        }
+
+        return result;
     }
 
     /**

@@ -25,15 +25,15 @@ public class LicenceCheckerTest extends TestCase {
 
     public void testSingleIdentifier() {
         LicenceChecker licenceChecker = new LicenceChecker();
-        List<String> matches = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os");
-        assertThat(matches.get(0)).isEqualTo("GPL-2.0");
+        List<LicenseResult> licenseResults = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os");
+        assertThat(licenseResults.get(0).licenseId).isEqualTo("GPL-2.0");
     }
 
     public void testMultipleIdentifier() {
         LicenceChecker licenceChecker = new LicenceChecker();
-        List<String> matches = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os \n # SPDX-License-Identifier: MIT ");
-        assertThat(matches.get(0)).isEqualTo("GPL-2.0");
-        assertThat(matches.get(1)).isEqualTo("MIT");
+        List<LicenseResult> licenseResults = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os \n # SPDX-License-Identifier: MIT ");
+        assertThat(licenseResults.get(0).licenseId).isEqualTo("GPL-2.0");
+        assertThat(licenseResults.get(1).licenseId).isEqualTo("MIT");
     }
 
     public void testKeywordMatchNoMatch() {
