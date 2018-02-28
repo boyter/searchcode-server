@@ -11,10 +11,7 @@ import com.searchcode.app.service.Singleton;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,13 +39,16 @@ public class LicenceChecker {
 //        licenseIdentified = identifierGuessLicence(string(content), loadDatabase())
     }
 
-    public ArrayList<LicenseResult> guessLicense(String content) {
+    public List<LicenseResult> guessLicense(String content) {
 
+        List<LicenseResult> licenseResults = this.identifierGuessLicence(content);
 
-
-        for (LicenseResult licenseResult: this.database) {
-
+        if (!licenseResults.isEmpty()) {
+            return licenseResults;
         }
+
+
+
         return null;
     }
 
@@ -57,7 +57,7 @@ public class LicenceChecker {
      * Given a string will scan through it using keywords to try and
      * identify which license it has
      */
-    public List<LicenseMatch> keywordGuessLicense(String content) {
+    public Optional<LicenseResult> keywordGuessLicense(String content) {
         List<LicenseMatch> licenseMatches = Collections.synchronizedList(new ArrayList<>());
         String cleanContent = this.vectorSpace.cleanText(content);
 
@@ -66,7 +66,7 @@ public class LicenceChecker {
             int keywordMatch = 0;
 
             for (String keyword: licenseResult.keywords) {
-                if (content.contains(keyword)) {
+                if (cleanContent.contains(keyword)) {
                     keywordMatch++;
                 }
             }
@@ -77,7 +77,17 @@ public class LicenceChecker {
             }
         });
 
-        return licenseMatches;
+        licenseMatches.sort((x, y) -> Float.compare(y.percentage, x.percentage));
+
+        for (LicenseMatch licenseMatch: licenseMatches) {
+            for (LicenseResult licenseResult: this.database) {
+                if (licenseResult.licenseId.equals(licenseMatch.licenseId)) {
+                    return Optional.of(licenseResult);
+                }
+            }
+        }
+
+        return Optional.empty();
     }
 
     /**
