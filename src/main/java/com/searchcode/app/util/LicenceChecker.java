@@ -16,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LicenceChecker {
+
     private final Vectorspace vectorSpace;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.LICENSE_DATABASE_LOCATION, Values.DEFAULT_LICENSE_DATABASE_LOCATION);
     private String LICENSE_FILES = Properties.getProperties().getProperty(Values.LICENSE_FILES, Values.DEFAULT_LICENSE_FILES);
@@ -30,6 +31,10 @@ public class LicenceChecker {
         return this.database;
     }
 
+    /**
+     * Scan through a list of files returning those that look like they might be
+     * license files
+     */
     public List<File> identifyPotentialLicenseFiles(List<File> fileList) {
         String[] licenses = this.LICENSE_FILES.toLowerCase().split(",");
         List<File> matches = new ArrayList<>();

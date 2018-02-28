@@ -58,6 +58,7 @@ public final class Singleton {
     private static ValidatorService validatorService = null;
     private static IndexService indexService = null;
     private static CodeMatcher codematcher = null;
+    private static LicenceChecker licenceChecker = null;
 
     private static OWASPClassifier owaspClassifier = null;
     private static RepositorySource repositorySource = null;
@@ -95,6 +96,13 @@ public final class Singleton {
             codematcher = new CodeMatcher();
         }
         return codematcher;
+    }
+
+    public static synchronized LicenceChecker getLicenceChecker() {
+        if (licenceChecker == null) {
+            licenceChecker = new LicenceChecker();
+        }
+        return licenceChecker;
     }
 
     public static synchronized UniqueRepoQueue getUniqueGitRepoQueue() {
