@@ -1,6 +1,7 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.dto.CodeLinesReturn;
+import com.searchcode.app.dto.IsMinifiedReturn;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
@@ -113,7 +114,7 @@ public class IndexBaseRepoJobTest extends TestCase {
         indexGitRepoJob.LOGINDEXED = true;
         List<String[]> reportList = new ArrayList<>();
 
-        IndexBaseRepoJob.IsMinifiedReturn isMinified = indexGitRepoJob.getIsMinified(new ArrayList<>(), "", reportList);
+        IsMinifiedReturn isMinified = indexGitRepoJob.getIsMinified(new ArrayList<>(), "", reportList);
 
         assertThat(isMinified.isMinified()).isFalse();
         assertThat(isMinified.getReportList().isEmpty()).isTrue();

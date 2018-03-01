@@ -13,10 +13,7 @@ package com.searchcode.app.jobs.repository;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.BinaryFinding;
-import com.searchcode.app.dto.CodeLinesReturn;
-import com.searchcode.app.dto.RepositoryChanged;
-import com.searchcode.app.dto.RunningIndexJob;
+import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
@@ -514,25 +511,6 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (!success) {
             throw new IOException("Unable to delete directory " + file.getAbsolutePath());
-        }
-    }
-
-
-    public class IsMinifiedReturn {
-        private final boolean isMinified;
-        private final List<String[]> reportList;
-
-        public IsMinifiedReturn(boolean isMinified, List<String[]> reportList) {
-            this.isMinified = isMinified;
-            this.reportList = reportList;
-        }
-
-        public boolean isMinified() {
-            return isMinified;
-        }
-
-        public List<String[]> getReportList() {
-            return reportList;
         }
     }
 }
