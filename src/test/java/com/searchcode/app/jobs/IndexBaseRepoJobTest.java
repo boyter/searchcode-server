@@ -1,5 +1,6 @@
 package com.searchcode.app.jobs;
 
+import com.searchcode.app.dto.CodeLinesReturn;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
@@ -89,7 +90,7 @@ public class IndexBaseRepoJobTest extends TestCase {
         indexGitRepoJob.LOGINDEXED = true;
         List<String[]> reportList = new ArrayList<>();
 
-        IndexBaseRepoJob.CodeLinesReturn codeLines = indexGitRepoJob.getCodeLines("", reportList);
+        CodeLinesReturn codeLines = indexGitRepoJob.getCodeLines("", reportList);
 
         assertThat(codeLines.isError()).isTrue();
         assertThat(codeLines.getReportList().get(0)[1]).isEqualTo("excluded");
@@ -101,7 +102,7 @@ public class IndexBaseRepoJobTest extends TestCase {
         indexGitRepoJob.LOGINDEXED = false;
         List<String[]> reportList = new ArrayList<>();
 
-        IndexBaseRepoJob.CodeLinesReturn codeLines = indexGitRepoJob.getCodeLines("", reportList);
+        CodeLinesReturn codeLines = indexGitRepoJob.getCodeLines("", reportList);
 
         assertThat(codeLines.isError()).isTrue();
         assertThat(codeLines.getReportList().isEmpty()).isTrue();

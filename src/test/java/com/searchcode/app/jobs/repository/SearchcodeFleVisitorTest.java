@@ -1,6 +1,7 @@
 package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.dao.Data;
+import com.searchcode.app.dto.CodeLinesReturn;
 import com.searchcode.app.dto.RepoData;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -28,6 +29,7 @@ public class SearchcodeFleVisitorTest extends TestCase {
         RepoData repoData = new RepoData();
         repoData.jobRunTime = Instant.MIN;
         when(repoResult.getData()).thenReturn(repoData);
+        when(mockIndexBase.getCodeLines(any(), any())).thenReturn(new CodeLinesReturn(null, null, false));
 
         SearchcodeFileVisitor<Path> searchcodeFileVisitor = new SearchcodeFileVisitor<>(mockIndexBase, repoResult, "./", "");
         Files.walkFileTree( Paths.get("./"), EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, searchcodeFileVisitor);

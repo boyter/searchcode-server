@@ -2,6 +2,7 @@ package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.CodeLinesReturn;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.FilenameUtils;
@@ -68,7 +69,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.CONTINUE;
             }
 
-            IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
+            CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
             if (codeLinesReturn.isError()) {
                 fileLocationsMap.remove(fileToString);
                 return FileVisitResult.CONTINUE;

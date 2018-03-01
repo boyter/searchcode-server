@@ -14,6 +14,7 @@ package com.searchcode.app.jobs.repository;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.BinaryFinding;
+import com.searchcode.app.dto.CodeLinesReturn;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
@@ -516,29 +517,6 @@ public abstract class IndexBaseRepoJob implements Job {
         }
     }
 
-    public class CodeLinesReturn {
-        private final List<String> codeLines;
-        private final boolean error;
-        private final List<String[]> reportList;
-
-        public CodeLinesReturn(List<String> codeLines, List<String[]> reportList, boolean error) {
-            this.codeLines = codeLines;
-            this.reportList = reportList;
-            this.error = error;
-        }
-
-        public List<String> getCodeLines() {
-            return codeLines;
-        }
-
-        public List<String[]> getReportList() {
-            return reportList;
-        }
-
-        public boolean isError() {
-            return error;
-        }
-    }
 
     public class IsMinifiedReturn {
         private final boolean isMinified;
