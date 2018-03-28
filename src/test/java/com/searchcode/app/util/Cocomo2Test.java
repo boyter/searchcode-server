@@ -14,11 +14,6 @@ public class Cocomo2Test extends TestCase {
 
         assertTrue(estimatedCost >= 560);
         assertTrue(estimatedCost <= 600);
-
-        estimatedCost = sl.estimateCost(sl.estimateEffort(77873), 56000); // ~ 2615760
-
-        assertTrue(estimatedCost >= 2600000);
-        assertTrue(estimatedCost <= 2650000);
     }
 
     public void testCocomo1740Lines() {
