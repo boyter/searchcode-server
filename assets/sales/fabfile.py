@@ -57,6 +57,7 @@ def setup_installs():
     sudo('apt-get -y update')
     sudo('apt-get -y --force-yes install %s' % ' '.join(packages))
     sudo('certbot certonly --standalone -d searchcodeserver.com')
+    sudo('certbot certonly --standalone -d boyter.org')
 
     put('config/nginx/nginx.frontend.conf', '/etc/nginx/sites-available/default')
     sudo('service nginx restart')
