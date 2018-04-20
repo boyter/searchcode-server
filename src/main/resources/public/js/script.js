@@ -1175,7 +1175,7 @@ var SearchResultsComponent = {
                 return '/file/' + result.codeId + '/' + result.codePath;
             },
             getrepositoryhref: function(result) {
-                return '/repository/overview/' + encodeURI(result.repoName) + '/';
+                return '/repository/overview/' + encodeURIComponent(result.repoName) + '/';
             },
             gethreflineno: function(result, lineNumber) {
                 return '/file/' + result.codeId + '/' + result.codePath + '#' + lineNumber;
