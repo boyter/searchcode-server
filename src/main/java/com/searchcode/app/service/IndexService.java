@@ -649,17 +649,18 @@ public class IndexService implements IIndexService {
             for (int i = 0; i < results.totalHits; i++) {
                 Document doc = searcher.doc(hits[i].doc);
 
-                if (!this.searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
-                    int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
-                    totalCodeLines += lines;
-                    String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+                String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+                int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
 
-                    if (linesCount.containsKey(languageName)) {
-                        linesCount.put(languageName, linesCount.get(languageName) + lines);
-                    }
-                    else {
-                        linesCount.put(languageName, lines);
-                    }
+                if (!this.searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
+                    totalCodeLines += lines;
+                }
+
+                if (linesCount.containsKey(languageName)) {
+                    linesCount.put(languageName, linesCount.get(languageName) + lines);
+                }
+                else {
+                    linesCount.put(languageName, lines);
                 }
             }
 
