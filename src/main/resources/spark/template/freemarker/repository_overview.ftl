@@ -26,7 +26,7 @@
                 <#if source == "" >
                     ${repoLocation}
                 <#else>
-                    <a href="${source}">${repoLocation}</a>
+                    <a href="${source}">${source}</a>
                 </#if>
             </td>
             <td><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Total Files</td>
