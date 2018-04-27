@@ -626,7 +626,7 @@ public class IndexService implements IIndexService {
 
             reader.close();
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             this.logger.warning("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
         }
 
