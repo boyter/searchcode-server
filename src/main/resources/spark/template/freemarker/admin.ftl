@@ -190,7 +190,8 @@ default_and_match=${default_and_match}
 log_indexed=${log_indexed}
 follow_links=${follow_links}
 deep_guess_files=${deep_guess_files}
-host_name=${host_name}</textarea>
+host_name=${host_name}
+index_all_fields=${index_all_fields}</textarea>
         </div>
 
         <div style="width:100%; display: inline-block;">
