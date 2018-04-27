@@ -293,10 +293,10 @@ public class IndexService implements IIndexService {
         }
         if (this.indexAllFields.contains("interesting")) {
             indexBuilder.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents())).append(" ");
-            indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents())).append(" ");
+            indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
         }
 
-        String indexContents = this.searchcodeLib.codeCleanPipeline(indexBuilder.toString());
+        String indexContents = indexBuilder.toString();
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
