@@ -17,14 +17,12 @@ import java.util.regex.Pattern;
 
 public class LicenceChecker {
 
-    private final Vectorspace vectorSpace;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.LICENSE_DATABASE_LOCATION, Values.DEFAULT_LICENSE_DATABASE_LOCATION);
     private String LICENSE_FILES = Properties.getProperties().getProperty(Values.LICENSE_FILES, Values.DEFAULT_LICENSE_FILES);
-    private ArrayList<LicenseResult> database = new ArrayList<>();
+    private ArrayList<LicenseResult> database;
 
     public LicenceChecker() {
         this.database = this.loadDatabase();
-        this.vectorSpace = new Vectorspace();
     }
 
     public List<LicenseResult> getDatabase() {
@@ -56,7 +54,7 @@ public class LicenceChecker {
      */
     public Optional<LicenseResult> keywordGuessLicense(String content) {
         List<LicenseMatch> licenseMatches = Collections.synchronizedList(new ArrayList<>());
-        String cleanContent = this.vectorSpace.cleanText(content);
+        String cleanContent = this.cleanText(content);
 
         // Parallel stream is about 3x faster for this
         this.database.parallelStream().forEach(licenseResult -> {
@@ -121,17 +119,19 @@ public class LicenceChecker {
             Gson gson = new GsonBuilder().create();
             LicenseResult[] myArray = gson.fromJson(new FileReader(this.DATABASEPATH), LicenseResult[].class);
             database = new ArrayList<>(Arrays.asList(myArray));
-
-            Vectorspace vec = new Vectorspace();
-
-            for (LicenseResult licenseResult: database) {
-                licenseResult.concordance = vec.concordance(licenseResult.licenseText);
-            }
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
             Singleton.getLogger().warning("Unable to load License Database from disk " + ex);
         }
 
         return database;
+    }
+
+    // TODO consider moving this out, must match the logic for building the licence database 100%
+    public String cleanText(String document) {
+        document = document.toLowerCase();
+        document = document.replaceAll("[^a-zA-Z0-9 ]", " ");
+        document = document.replaceAll("\\s+", " ");
+        return document.trim();
     }
 }

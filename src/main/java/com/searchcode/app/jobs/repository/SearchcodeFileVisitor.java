@@ -105,11 +105,46 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 }
             }
 
+            // TODO actually work out the license here
+            String license = "";
+
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
+                Singleton.getIndexService().indexDocument(
+                        new CodeIndexDocument(
+                                fileToString,
+                                this.repoResult.getName(),
+                                fileName,
+                                fileLocation,
+                                fileLocationFilename,
+                                md5Hash,
+                                languageName,
+                                codeLinesReturn.getCodeLines().size(),
+                                StringUtils.join(codeLinesReturn.getCodeLines(), " "),
+                                repoRemoteLocation,
+                                codeOwner,
+                                displayLocation,
+                                this.repoResult.getData().source,
+                                license)
+                );
             } else {
                 Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
-                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
+                Singleton.getCodeIndexQueue().add(
+                        new CodeIndexDocument(
+                                fileToString,
+                                this.repoResult.getName(),
+                                fileName,
+                                fileLocation,
+                                fileLocationFilename,
+                                md5Hash,
+                                languageName,
+                                codeLinesReturn.getCodeLines().size(),
+                                StringUtils.join(codeLinesReturn.getCodeLines(), " "),
+                                repoRemoteLocation,
+                                codeOwner,
+                                displayLocation,
+                                this.repoResult.getData().source,
+                                license)
+                );
             }
 
             if (this.indexBaseRepoJob.LOGINDEXED) {

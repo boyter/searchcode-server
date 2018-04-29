@@ -140,6 +140,7 @@ public class Values {
     public static final String REPONAME = "reponame";
     public static final String CODEOWNER = "codeowner";
     public static final String SOURCE = "source";
+    public static final String LICENSE = "license";
 
     // Lucene values for literal search
     public static final String FILE_NAME_LITERAL = "fn";

@@ -22,10 +22,6 @@ public class LicenceCheckerTest extends TestCase {
         assertThat(licenceChecker.getDatabase()).hasAtLeastOneElementOfType(LicenseResult.class);
     }
 
-    public void testLoadDatabaseConcordance() {
-        assertThat(licenceChecker.getDatabase().get(0).concordance).isNotEmpty();
-    }
-
     public void testSingleIdentifier() {
         List<LicenseResult> licenseResults = licenceChecker.identifierGuessLicence("# SPDX-License-Identifier: GPL-2.0 \n import os");
         assertThat(licenseResults.get(0).licenseId).isEqualTo("GPL-2.0");
@@ -68,5 +64,15 @@ public class LicenceCheckerTest extends TestCase {
         List<File> fileList = licenceChecker.identifyPotentialLicenseFiles(files);
 
         assertThat(fileList).hasSize(8);
+    }
+
+    public void testCleanText() {
+        assertThat(licenceChecker.cleanText("This is a document")).isEqualTo("this is a document");
+        assertThat(licenceChecker.cleanText("This is a  document")).isEqualTo("this is a document");
+        assertThat(licenceChecker.cleanText("This is a document    ")).isEqualTo("this is a document");
+        assertThat(licenceChecker.cleanText("     This is a document")).isEqualTo("this is a document");
+        assertThat(licenceChecker.cleanText("This is a Document")).isEqualTo("this is a document");
+        assertThat(licenceChecker.cleanText("99This is a document")).isEqualTo("99this is a document");
+        assertThat(licenceChecker.cleanText("!@##$%^&*()This is a document")).isEqualTo("this is a document");
     }
 }

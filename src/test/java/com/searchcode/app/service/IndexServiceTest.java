@@ -48,7 +48,8 @@ public class IndexServiceTest extends TestCase {
             "repoRemoteLocation",
             this.codeOwner,
             "mydisplaylocation",
-            "source");
+            "source",
+            "license");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -139,10 +140,11 @@ public class IndexServiceTest extends TestCase {
                 "repoRemoteLocation",
                 "code Owner",
                 "displayLocation",
-                "code Source"
+                "code Source",
+                "license"
         ));
 
-        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(25);
+        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(27);
 
         IndexableField[] fields = indexFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
@@ -515,7 +517,8 @@ public class IndexServiceTest extends TestCase {
                 "repoRemoteLocation",
                 this.codeOwner,
                 "mydisplaylocation",
-                "source"));
+                "source",
+                "license"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("actual.contains", null, 0, false);
@@ -538,7 +541,8 @@ public class IndexServiceTest extends TestCase {
                 "repoRemoteLocation",
                 this.codeOwner,
                 "mydisplaylocation",
-                "source"));
+                "source",
+                "license"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("emaN*", null, 0, false);

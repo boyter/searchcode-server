@@ -269,6 +269,9 @@ public class IndexService implements IIndexService {
         if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getSource())) {
             document.add(new SortedSetDocValuesFacetField(Values.SOURCE, codeIndexDocument.getSource()));
         }
+        if (!this.helpers.isNullEmptyOrWhitespace(codeIndexDocument.getLicense())) {
+            document.add(new SortedSetDocValuesFacetField(Values.LICENSE, codeIndexDocument.getLicense()));
+        }
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
 
@@ -317,6 +320,7 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
         document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
         document.add(new TextField(Values.SOURCE,                   this.helpers.replaceForIndex(codeIndexDocument.getSource()), Field.Store.YES));
+        document.add(new TextField(Values.LICENSE,                  codeIndexDocument.getLicense(), Field.Store.YES));
 
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));

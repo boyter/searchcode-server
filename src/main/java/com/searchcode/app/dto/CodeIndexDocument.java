@@ -34,10 +34,11 @@ public class CodeIndexDocument {
     private String schash;
     private String displayLocation; // What we actually should use for UI
     private String source;
+    private String license;
 
     public CodeIndexDocument() {}
 
-    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner, String displayLocation, String source) {
+    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner, String displayLocation, String source, String license) {
         this.setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
         this.setRepoName(repoName);
         this.setFileName(fileName);
@@ -52,6 +53,7 @@ public class CodeIndexDocument {
         this.schash = Values.EMPTYSTRING;
         this.displayLocation = displayLocation;
         this.source = source;
+        this.license = license;
     }
 
     /**
@@ -212,4 +214,6 @@ public class CodeIndexDocument {
     public String getSource() {
         return source;
     }
+
+    public String getLicense() {return license; }
 }
