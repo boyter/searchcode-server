@@ -26,7 +26,7 @@
                 <#if source == "" >
                     ${repoLocation}
                 <#else>
-                    <a href="${source}">${repoLocation}</a>
+                    <a href="${source}">${source}</a>
                 </#if>
             </td>
             <td><span class="glyphicon glyphicon-file" aria-hidden="true"></span> Total Files</td>
@@ -48,7 +48,8 @@
                               <strong>By File Count</strong><br />
                               <#list languageFacet>
                               <#items as result>
-                                  <a href="/?q=ln:${result.languageNameSearchable}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} files ${(result.count / totalFiles * 100)?ceiling}% of project</small><br />
+                                  <a href="/?q=ln:${result.languageNameSearchable}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} files
+                                  <#if totalFiles != 0>${(result.count / totalFiles * 100)?ceiling}% of project</#if></small><br />
                               </#items>
                               </#list>
                           </td>
@@ -56,7 +57,8 @@
                               <strong>By Line Count</strong><br />
                               <#list codeByLines>
                               <#items as result>
-                                   <a href="/?q=ln:${result.languageNameSearchable}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} lines ${(result.count / totalCodeLines * 100)?ceiling}% of project</small><br />
+                                   <a href="/?q=ln:${result.languageNameSearchable}&repo=${repoName?html}&lit=true">${result.languageName}</a> <small style="color: #999;">${result.count} lines
+                                  <#if totalCodeLines != 0>${(result.count / totalCodeLines * 100)?ceiling}% of project</#if></small><br />
                               </#items>
                               </#list>
                           </td>

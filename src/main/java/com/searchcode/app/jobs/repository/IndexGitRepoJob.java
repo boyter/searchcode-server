@@ -95,14 +95,14 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public String getCodeOwner(List<String> codeLines, String fileName, String repoName, String fileRepoLocations, SearchCodeLib scl) {
+    public String getCodeOwner(List<String> codeLines, String fileName, String repoDirectory, String fileRepoLocations, SearchCodeLib scl) {
         List<CodeOwner> owners;
         Timer timer = Singleton.getNewTimer();
 
         if (this.USE_SYSTEM_GIT) {
-            owners = this.getBlameInfoExternal(codeLines.size(), repoName, fileRepoLocations, fileName);
+            owners = this.getBlameInfoExternal(codeLines.size(), repoDirectory, fileRepoLocations, fileName);
         } else {
-            owners = this.getBlameInfo(codeLines.size(), repoName, fileRepoLocations, fileName);
+            owners = this.getBlameInfo(codeLines.size(), repoDirectory, fileRepoLocations, fileName);
         }
 
         return scl.codeOwner(owners);
@@ -299,7 +299,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             Singleton.getLogger().info("IllegalArgumentException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
         }
 
-        System.gc(); // Try to clean up
         return codeOwners;
     }
 

@@ -113,6 +113,8 @@ public class Values {
     public static final String DEFAULT_DELETE_REPO_AFTER_PROCESS = "false";
     public static final String LICENSE_FILES = "license_files";
     public static final String DEFAULT_LICENSE_FILES = "license,licence,copying,readme";
+    public static final String INDEX_ALL_FIELDS = "index_all_fields";
+    public static final String DEFAULT_INDEX_ALL_FIELDS = "content,filename,filenamereverse,path,interesting";
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";

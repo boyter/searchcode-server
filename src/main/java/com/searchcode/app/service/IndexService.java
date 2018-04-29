@@ -86,6 +86,8 @@ public class IndexService implements IIndexService {
     private boolean repoJobExit = false;        // Controls if repo indexing jobs should exit instantly
     private int codeIndexLinesCount = 0;
 
+    private List<String> indexAllFields; // Contains the fields that should be added to the all portion of the index
+
     ///////////////////////////////////////////////////////////////////////
     // The below store state for when the reindexing + flip should occur
     //////////////////////////////////////////////////////////////////////
@@ -114,6 +116,8 @@ public class IndexService implements IIndexService {
 
         this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
+
+        this.indexAllFields = Arrays.asList(Properties.getProperties().getProperty(Values.INDEX_ALL_FIELDS, Values.DEFAULT_INDEX_ALL_FIELDS).split(","));
 
         // Locations that should never change once class created
         this.INDEX_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_A);
@@ -266,20 +270,33 @@ public class IndexService implements IIndexService {
             document.add(new SortedSetDocValuesFacetField(Values.SOURCE, codeIndexDocument.getSource()));
         }
 
-
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
 
         // This is the main pipeline for making code searchable and probably the most important
         // part of the indexer codebase
-        String indexContents = this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName()) + " " +
-                new StringBuilder(codeIndexDocument.getFileName()).reverse().toString() + " " +
-                this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true) + " " +
-                codeIndexDocument.getFileLocationFilename() + " " +
-                codeIndexDocument.getFileLocation() + " " +
-                this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true) + " " +
-                this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents()) + " " +
-                this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents()) + " " +
-                this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()).toLowerCase();
+        StringBuilder indexBuilder = new StringBuilder();
+
+        if (this.indexAllFields.contains("filename")) {
+            indexBuilder.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+        }
+        if (this.indexAllFields.contains("filenamereverse")) {
+            indexBuilder.append(new StringBuilder(codeIndexDocument.getFileName()).reverse().toString()).append(" ");
+        }
+        if (this.indexAllFields.contains("path")) {
+            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true)).append(" ");
+            indexBuilder.append(codeIndexDocument.getFileLocationFilename()).append(" ");
+            indexBuilder.append(codeIndexDocument.getFileLocation()).append(" ");
+        }
+        if (this.indexAllFields.contains("content")) {
+            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true)).append(" ");
+            indexBuilder.append( this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents())).append(" ");
+        }
+        if (this.indexAllFields.contains("interesting")) {
+            indexBuilder.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents())).append(" ");
+            indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
+        }
+
+        String indexContents = indexBuilder.toString();
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
@@ -609,7 +626,7 @@ public class IndexService implements IIndexService {
 
             reader.close();
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             this.logger.warning("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
         }
 
@@ -649,17 +666,18 @@ public class IndexService implements IIndexService {
             for (int i = 0; i < results.totalHits; i++) {
                 Document doc = searcher.doc(hits[i].doc);
 
-                if (!this.searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
-                    int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
-                    totalCodeLines += lines;
-                    String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+                String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+                int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
 
-                    if (linesCount.containsKey(languageName)) {
-                        linesCount.put(languageName, linesCount.get(languageName) + lines);
-                    }
-                    else {
-                        linesCount.put(languageName, lines);
-                    }
+                if (!this.searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
+                    totalCodeLines += lines;
+                }
+
+                if (linesCount.containsKey(languageName)) {
+                    linesCount.put(languageName, linesCount.get(languageName) + lines);
+                }
+                else {
+                    linesCount.put(languageName, lines);
                 }
             }
 
