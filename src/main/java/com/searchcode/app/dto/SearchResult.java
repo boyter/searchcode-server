@@ -171,5 +171,5 @@ public class SearchResult {
         this.codeFacetSources = codeFacetSources;
     }
 
-    public List<CodeFacetLicense> getCodeFacetLicense() { return codeFacetLicense; }
+    public List<CodeFacetLicense> getLicenseFacetResults() { return codeFacetLicense; }
 }

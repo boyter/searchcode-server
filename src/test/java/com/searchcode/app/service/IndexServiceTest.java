@@ -36,6 +36,7 @@ public class IndexServiceTest extends TestCase {
     private String repoName = "b89bb20026ff426dae30ab92e1e59b19";
     private String languageName = "languageName";
     private String codeOwner = "codeOwner";
+    private String license = "license";
     private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename",
             this.repoName,
             "fileName",
@@ -49,7 +50,7 @@ public class IndexServiceTest extends TestCase {
             this.codeOwner,
             "mydisplaylocation",
             "source",
-            "license");
+            this.license);
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -175,6 +176,7 @@ public class IndexServiceTest extends TestCase {
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
         assertThat(contents.getOwnerFacetResults().size()).isNotZero();
+        assertThat(contents.getLicenseFacetResults().size()).isNotZero();
 
         assertThat(this.indexService.getIndexedDocumentCount()).isNotZero();
 
@@ -193,6 +195,7 @@ public class IndexServiceTest extends TestCase {
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
         assertThat(contents.getRepoFacetResults().size()).isNotZero();
         assertThat(contents.getOwnerFacetResults().size()).isNotZero();
+        assertThat(contents.getLicenseFacetResults().size()).isNotZero();
 
         assertThat(contents.getCodeResultList().get(0).getDisplayLocation()).isEqualTo("mydisplaylocation");
 
@@ -224,6 +227,8 @@ public class IndexServiceTest extends TestCase {
         assertThat(contents.getRepoFacetResults().get(0).getCount()).isEqualTo(1);
         assertThat(contents.getOwnerFacetResults().get(0).getOwner()).isEqualTo(this.codeOwner);
         assertThat(contents.getOwnerFacetResults().get(0).getCount()).isEqualTo(1);
+        assertThat(contents.getLicenseFacetResults().get(0).getLicense()).isEqualTo(this.license);
+        assertThat(contents.getLicenseFacetResults().get(0).getCount()).isEqualTo(1);
 
         this.indexService.deleteByCodeId(this.codeId);
     }

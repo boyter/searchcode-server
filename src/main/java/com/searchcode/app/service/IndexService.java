@@ -230,6 +230,7 @@ public class IndexService implements IIndexService {
                         facetsConfig.setIndexFieldName(Values.REPONAME, Values.REPONAME);
                         facetsConfig.setIndexFieldName(Values.CODEOWNER, Values.CODEOWNER);
                         facetsConfig.setIndexFieldName(Values.SOURCE, Values.SOURCE);
+                        facetsConfig.setIndexFieldName(Values.LICENSE, Values.LICENSE);
 
                         Document document = this.buildDocument(x);
 
