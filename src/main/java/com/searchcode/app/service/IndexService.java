@@ -643,7 +643,7 @@ public class IndexService implements IIndexService {
     @Override
     public ProjectStats getProjectStats(String repoName) {
         if (this.helpers.isNullEmptyOrWhitespace(repoName)) {
-            return new ProjectStats(0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+            return new ProjectStats(0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
 
         int totalCodeLines = 0;
@@ -651,6 +651,7 @@ public class IndexService implements IIndexService {
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
         List<CodeFacetLanguage> codeByLines = new ArrayList<>();
+        List<CodeFacetLicense> codeFacetLicenses = new ArrayList<>();
 
         IndexReader reader = null;
 
@@ -693,6 +694,7 @@ public class IndexService implements IIndexService {
             totalFiles = results.totalHits;
             codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
+            codeFacetLicenses = this.getLicenseFacetResults(searcher, reader,query);
         }
         catch (Exception ex) {
             this.logger.warning("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
@@ -701,7 +703,7 @@ public class IndexService implements IIndexService {
             this.helpers.closeQuietly(reader);
         }
 
-        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, codeByLines, repoFacetOwners);
+        return new ProjectStats(totalCodeLines, totalFiles, codeFacetLanguages, codeByLines, repoFacetOwners, codeFacetLicenses);
     }
 
     /**

@@ -17,16 +17,18 @@ public class ProjectStats {
     private List<CodeFacetLanguage> codeFacetLanguages;
     private List<CodeFacetLanguage> codeByLines;
     private List<CodeFacetOwner> repoFacetOwner;
+    private List<CodeFacetLicense> codeFacetLicenses;
 
     private int totalCodeLines;
     private int totalFiles;
 
-    public ProjectStats(int totalCodeLines, int totalFiles, List<CodeFacetLanguage> codeFacetLanguages, List<CodeFacetLanguage> codeByLines, List<CodeFacetOwner> repoFacetOwner) {
+    public ProjectStats(int totalCodeLines, int totalFiles, List<CodeFacetLanguage> codeFacetLanguages, List<CodeFacetLanguage> codeByLines, List<CodeFacetOwner> repoFacetOwner, List<CodeFacetLicense> codeFacetLicenses) {
         this.totalCodeLines = totalCodeLines;
         this.totalFiles = totalFiles;
         this.codeFacetLanguages = codeFacetLanguages;
         this.codeByLines = codeByLines;
         this.repoFacetOwner = repoFacetOwner;
+        this.codeFacetLicenses = codeFacetLicenses;
     }
 
     public List<CodeFacetLanguage> getCodeFacetLanguages() {
@@ -64,4 +66,6 @@ public class ProjectStats {
     public List<CodeFacetLanguage> getCodeByLines() {
         return codeByLines;
     }
+
+    public List<CodeFacetLicense> getCodeFacetLicenses() { return codeFacetLicenses; }
 }
