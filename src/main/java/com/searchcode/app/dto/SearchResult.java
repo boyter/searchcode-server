@@ -24,6 +24,7 @@ public class SearchResult {
     private List<CodeFacetRepo> repoFacetResults = new ArrayList<>();
     private List<CodeFacetOwner> repoOwnerResults = new ArrayList<>();
     private List<CodeFacetSource> codeFacetSources = new ArrayList<>();
+    private List<CodeFacetLicense> codeFacetLicense = new ArrayList<>();
     private List<CodeFacetYearMonthDay> repoFacetYearMonthDay = new ArrayList<>();
     private List<CodeFacetYearMonth> repoFacetYearMonth = new ArrayList<>();
     private List<CodeFacetYear> repoFacetYear = new ArrayList<>();
@@ -33,7 +34,7 @@ public class SearchResult {
 
     public SearchResult() {}
 
-    public SearchResult(int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults, List<CodeFacetSource> codeFacetSources) {
+    public SearchResult(int totalHits, int page, String query, List<CodeResult> codeResultList, List<Integer> pages, List<CodeFacetLanguage> languageFacetResults, List<CodeFacetRepo> repoFacetResults, List<CodeFacetOwner> repoOwnerResults, List<CodeFacetSource> codeFacetSources, List<CodeFacetLicense> codeFacetLicense) {
         this.setTotalHits(totalHits);
         this.setPage(page);
         this.setQuery(query);
@@ -43,6 +44,7 @@ public class SearchResult {
         this.setRepoFacetResults(repoFacetResults);
         this.setOwnerFacetResults(repoOwnerResults);
         this.setCodeFacetSources(codeFacetSources);
+        this.codeFacetLicense = codeFacetLicense;
     }
 
     public int getTotalHits() {
@@ -168,4 +170,6 @@ public class SearchResult {
     public void setCodeFacetSources(List<CodeFacetSource> codeFacetSources) {
         this.codeFacetSources = codeFacetSources;
     }
+
+    public List<CodeFacetLicense> getCodeFacetLicense() { return codeFacetLicense; }
 }

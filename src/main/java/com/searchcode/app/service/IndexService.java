@@ -713,7 +713,7 @@ public class IndexService implements IIndexService {
         List<CodeResult> codeResults = new ArrayList<>();
 
         if (this.helpers.isNullEmptyOrWhitespace(repoName)) {
-            return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null, null);
+            return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null, null, null);
         }
 
 
@@ -750,7 +750,7 @@ public class IndexService implements IIndexService {
 
         codeResults.sort(Comparator.comparing(x -> x.displayLocation));
 
-        return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null, null);
+        return new SearchResult(0, 0, Values.EMPTYSTRING, codeResults, null, null, null, null, null, null);
     }
 
     /**
@@ -942,10 +942,11 @@ public class IndexService implements IIndexService {
 
         List<CodeFacetLanguage> codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
         List<CodeFacetRepo> repoFacetLanguages = this.getRepoFacetResults(searcher, reader, query);
-        List<CodeFacetOwner> repoFacetOwner= this.getOwnerFacetResults(searcher, reader, query);
-        List<CodeFacetSource> repoFacetSource= this.getSourceFacetResults(searcher, reader, query);
+        List<CodeFacetOwner> repoFacetOwner = this.getOwnerFacetResults(searcher, reader, query);
+        List<CodeFacetSource> repoFacetSource = this.getSourceFacetResults(searcher, reader, query);
+        List<CodeFacetLicense> repoFacetLicense = this.getLicenseFacetResults(searcher, reader, query);
 
-        return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner, repoFacetSource);
+        return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner, repoFacetSource, repoFacetLicense);
     }
 
     private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId) {
@@ -1101,6 +1102,35 @@ public class IndexService implements IIndexService {
         } catch (Exception ignore) {}
 
         return codeFacetSource;
+    }
+
+    /**
+     * Returns the matching source facets for a given query
+     */
+    private List<CodeFacetLicense> getLicenseFacetResults(IndexSearcher searcher, IndexReader reader, Query query) {
+        List<CodeFacetLicense> codeFacetLicense = new ArrayList<>();
+
+        try {
+            SortedSetDocValuesReaderState state = new DefaultSortedSetDocValuesReaderState(reader, Values.LICENSE);
+            FacetsCollector fc = new FacetsCollector();
+            FacetsCollector.search(searcher, query, 10, fc);
+            Facets facets = new SortedSetDocValuesFacetCounts(state, fc);
+            FacetResult result = facets.getTopChildren(this.CHILD_FACET_LIMIT, Values.LICENSE);
+
+            if (result != null) {
+                int stepThrough = result.childCount > this.CHILD_FACET_LIMIT ? this.CHILD_FACET_LIMIT : result.childCount;
+
+                for (int i = 0; i < stepThrough; i++) {
+                    LabelAndValue lv = result.labelValues[i];
+
+                    if (lv != null && lv.value != null) {
+                        codeFacetLicense.add(new CodeFacetLicense(lv.label, lv.value.intValue()));
+                    }
+                }
+            }
+        } catch (Exception ignore) {}
+
+        return codeFacetLicense;
     }
 
     /**
