@@ -98,8 +98,8 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getDirectoryName(), fileRepoLocations, Singleton.getSearchCodeLib());
 
             String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
-            if ("file".equals(this.repoResult.getScm())) {
-                displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
+            if (Values.FILE.equals(this.repoResult.getScm())) {
+                displayLocation = fileToString.replace(this.repoResult.getUrl(), Values.EMPTYSTRING);
                 if (displayLocation.startsWith("/")) {
                     displayLocation = displayLocation.substring(displayLocation.indexOf("/") + 1, displayLocation.length());
                 }
