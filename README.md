@@ -207,6 +207,8 @@ XX XXXXXXXX XXXX - 1.3.13 https://github.com/boyter/searchcode-server/projects/6
  - Better reporting on repository failures with indicator in repository list admin page https://github.com/boyter/searchcode-server/issues/164
  - Resolve issue where By File Count and By Line Count would not match on repository overview page
  - Add ability to control what file fields are indexed https://github.com/boyter/searchcode-server/issues/179
+ - Resolve broken filter when using upper/lower case in filters https://github.com/boyter/searchcode-server/issues/184
+ - Resolve bug where files were re-read accidently resulting in invalid counts https://github.com/boyter/searchcode-server/issues/185
 
 01 February 2018 - 1.3.12 https://github.com/boyter/searchcode-server/projects/5
  - Reversed filename in search https://github.com/boyter/searchcode-server/issues/160
