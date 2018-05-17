@@ -715,7 +715,7 @@ var SearchSourcesFilterComponent = {
 
                 if (SearchModel.sourcefiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.source.toLowerCase().indexOf(SearchModel.sourcefiltertext()) !== -1; 
+                        return e.source.toLowerCase().indexOf(SearchModel.sourcefiltertext().toLowerCase()) !== -1; 
                     } );
                 }
 
@@ -802,7 +802,7 @@ var SearchRepositoriesFilterComponent = {
 
                 if (SearchModel.repofiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.repoName.toLowerCase().indexOf(SearchModel.repofiltertext()) !== -1; 
+                        return e.repoName.toLowerCase().indexOf(SearchModel.repofiltertext().toLowerCase()) !== -1; 
                     } );
                 }
 
@@ -889,7 +889,7 @@ var SearchLanguagesFilterComponent = {
 
                 if (SearchModel.langfiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.languageName.toLowerCase().indexOf(SearchModel.langfiltertext()) !== -1; 
+                        return e.languageName.toLowerCase().indexOf(SearchModel.langfiltertext().toLowerCase()) !== -1; 
                     });
                 }
 
@@ -977,7 +977,7 @@ var SearchOwnersFilterComponent = {
 
                 if (SearchModel.ownerfiltertext().length !== 0) {
                     toreturn = _.filter(toreturn, function (e) { 
-                        return e.owner.toLowerCase().indexOf(SearchModel.ownerfiltertext()) !== -1; 
+                        return e.owner.toLowerCase().indexOf(SearchModel.ownerfiltertext().toLowerCase()) !== -1; 
                     });
                 }
 
