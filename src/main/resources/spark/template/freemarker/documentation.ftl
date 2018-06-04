@@ -750,6 +750,8 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
               <dd>Boolean value true or false. If set to true when a file is encountered that cannot be classified though naming conventions its keywords will be analysed and a best guess made. This can be CPU heavy or incorrectly classify some files. Defaults to false.</dd>
               <dt>host_name</dt>
               <dd>String value. Set this to the expected DNS host name for your searchcode server instance. This will allow things like RSS links to work.</dd>
+              <dt>index_all_fields</dt>
+              <dd>A list of file content that will be added to the all portion of the index. You could use this to exclude filename or paths. Defaults to index_all_fields=content,filename,filenamereverse,path,interesting</dd>
             </dl>
         </p>
 

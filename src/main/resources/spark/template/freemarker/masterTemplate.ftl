@@ -46,7 +46,7 @@
           <#if isCommunity??>
               <#if isCommunity == true><br /><br />You are running <a href="https://searchcode.com/product/download/">searchcode server community edition</a>.</#if>
           </#if>
-          <br><br><small>&copy; searchcode 2018</small>
+          <br><br><small>&copy; searchcode ${.now?string('yyyy')}</small>
         </p>
       </div>
     </div>

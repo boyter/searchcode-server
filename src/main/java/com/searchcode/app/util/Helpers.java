@@ -149,7 +149,7 @@ public class Helpers {
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), this.guessCharset(new File(filePath))));
 
-            char[] chars = new char[8192];
+            char[] chars = new char[MAX_FILE_LENGTH_READ];
             for (int len; (len = bufferedReader.read(chars)) > 0;) {
                 stringBuilder.append(String.copyValueOf(chars).trim());
 
@@ -157,6 +157,7 @@ public class Helpers {
                     break;
                 }
             }
+
         }
         finally {
             IOUtils.closeQuietly(bufferedReader);

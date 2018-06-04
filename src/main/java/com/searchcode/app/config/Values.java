@@ -117,6 +117,8 @@ public class Values {
     public static final String DEFAULT_INDEX_SERVICE = "internal";
     public static final String SPHINX_SERVERS_SHARDS = "sphinx_servers_shards";
     public static final String DEFAULT_SPHINX_SERVERS_SHARDS = "localhost:1";
+    public static final String INDEX_ALL_FIELDS = "index_all_fields";
+    public static final String DEFAULT_INDEX_ALL_FIELDS = "content,filename,filenamereverse,path,interesting";
 
     // Lucene stored values for indexing / searching
     public static final String CONTENTS = "contents";

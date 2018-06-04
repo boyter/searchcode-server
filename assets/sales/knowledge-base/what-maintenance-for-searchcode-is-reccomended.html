@@ -3,7 +3,7 @@
             <a href="/"><h1><img src="/images/searchcode_logo_white.png" height="40px" /></h1></a>
           </div>
           <div class="container">
-            <h1 class="white">Reccomended maintenance for searchcode server</h1>
+            <h1 class="white">Recommended maintenance for searchcode server</h1>
         </div>
       </div>
        <div class="row dark-blue-container">
@@ -15,7 +15,7 @@
        <div class="row top20">
         <div class="container em">
 
-<p class="em">Generally searchcode server once installed looks after itself. However a few things are reccomended to ensure that you can rebuild your deployement quickly and to identify any issues that may have cropped up.</p>
+<p class="em">Generally searchcode server once installed looks after itself. However a few things are recommended to ensure that you can rebuild your deployement quickly and to identify any issues that may have cropped up.</p>
 
 <p class="em"><strong>1.</strong> Have an automated method of deploying searchcode server. Deployment as such can be done in an automated method using Puppet, Fabric, Chef, Ansible or otherwise. Keep an automated backup of the <code>searchcode.sqlite</code> and <code>searchcode.properties</code> files. When rebuilding searchcode copy both into the searchcode install directory and searchcode will analyse the code and rebuild the index. This process will take longer for setups that contain many or large repositories. If faster restores are required then you can restore the <code>index</code> and <code>repo</code> directories as well.</p>
 

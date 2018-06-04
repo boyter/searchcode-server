@@ -42,7 +42,7 @@ public class HelpersTest extends TestCase {
             }
         }
 
-        this.helpers.MAX_FILE_LENGTH_READ = 100;
+        this.helpers.MAX_FILE_LENGTH_READ = 8192;
         List<String> result = this.helpers.readFileLinesGuessEncoding(tempDir + "/no_newlines", 10);
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).length()).isEqualTo(8192);
