@@ -4,6 +4,7 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.LanguageTypeDTO;
 import com.searchcode.app.dto.SourceCodeDTO;
 import com.searchcode.app.model.CodeResult;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
@@ -19,14 +20,16 @@ import java.util.Optional;
 public class SourceCode {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
+    private final LanguageType languageType;
 
     public SourceCode() {
-        this(new MySQLDatabaseConfig(), Singleton.getHelpers());
+        this(new MySQLDatabaseConfig(), Singleton.getHelpers(), Singleton.getLanguageType());
     }
 
-    public SourceCode(IDatabaseConfig dbConfig, Helpers helpers) {
+    public SourceCode(IDatabaseConfig dbConfig, Helpers helpers, LanguageType languageType) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.languageType = languageType;
     }
 
     public synchronized int getMaxId() {
@@ -282,16 +285,21 @@ public class SourceCode {
 
         try {
             conn = this.dbConfig.getConnection();
-            String query = "INSERT INTO `sourcecode` (`id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, `content`, `hash`, `simhash`, `linescount`, `data`) VALUES " +
-                    "(NULL, ?, (SELECT id FROM languagetype WHERE type = ?), ?, ?, ?, ?, ?, COMPRESS(?), ?, ?, ?, ?)";
 
+            // If the language does not exist then create it
+            Optional<LanguageTypeDTO> languageType = this.languageType.createLanguageType(codeIndexDocument.getLanguageName());
+
+            String query = "INSERT INTO `sourcecode` (`id`, `repoid`, `languageid`, `sourceid`, `ownerid`, `licenseid`, `location`, `filename`, `content`, `hash`, `simhash`, `linescount`, `data`) VALUES " +
+                    "(NULL, ?, ?, ?, ?, ?, ?, ?, COMPRESS(?), ?, ?, ?, ?)";
+
+            // Why is this here and not above??
             if (existing.isPresent()) {
                 return existing.get();
             }
 
             stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
             stmt.setInt(1, 31337);
-            stmt.setString(2, codeIndexDocument.getLanguageName());
+            stmt.setInt(2, languageType.get().getId());
             stmt.setInt(3, 31337);
             stmt.setInt(4, 31337);
             stmt.setInt(5, 31337);
