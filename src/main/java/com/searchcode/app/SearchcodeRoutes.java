@@ -20,9 +20,7 @@ public class SearchcodeRoutes {
             return new JsonTransformer().render(true);
         });
 
-
-
-        get("/file/:codeid/:reponame/*", (request, response) -> {
+        get("/file/:codeid/*/*", (request, response) -> {
             response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl"));

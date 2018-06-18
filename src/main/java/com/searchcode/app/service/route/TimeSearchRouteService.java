@@ -131,15 +131,7 @@ public class TimeSearchRouteService {
     private int getPage(Request request) {
         int page = 0;
 
-        if (request.queryParams().contains("p")) {
-            try {
-                page = Integer.parseInt(request.queryParams("p"));
-                page = page > 19 ? 19 : page;
-            }
-            catch(NumberFormatException ex) {
-                page = 0;
-            }
-        }
+        page = CodeRouteService.getPage(request, page);
         return page;
     }
 
