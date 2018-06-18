@@ -15,7 +15,6 @@ import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import spark.Spark;
 
