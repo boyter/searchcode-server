@@ -203,7 +203,7 @@ Change Log
 ==========
 
 XX XXXX XXXX - 1.3.14 https://github.com/boyter/searchcode-server/projects/7
- - 
+ - Move over to scc language definitions for identifying languages https://github.com/boyter/searchcode-server/issues/186
 
 15 June 2018 - 1.3.13 https://github.com/boyter/searchcode-server/projects/6
  - Repository names now support any character https://github.com/boyter/searchcode-server/issues/122
