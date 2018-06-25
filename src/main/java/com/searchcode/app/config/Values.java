@@ -161,6 +161,7 @@ public class Values {
     public static final String FILE = "file";
     public static final String PAUSED = "paused";
     public static final String RUNNING = "running";
+    public static final String UNKNOWN_LANGUAGE = "Unknown";
 
     // API Endpoint Values
     public static final String PUB = "pub";

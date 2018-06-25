@@ -10,15 +10,12 @@
 
 package com.searchcode.app.dto;
 
-
 public class FileClassifierResult {
-    public String language = null;
-    public String[] extensions = {};
-    public String[] keywords = {};
+    public String[] extensions;
+    public String[] line_comment;
+    public String[] complexitychecks;
 
-    public FileClassifierResult(String language, String extensions, String keywords) {
-        this.language = language;
+    public FileClassifierResult(String extensions) {
         this.extensions = extensions.toLowerCase().split(",");
-        this.keywords = keywords.toLowerCase().split(",");
     }
 }
