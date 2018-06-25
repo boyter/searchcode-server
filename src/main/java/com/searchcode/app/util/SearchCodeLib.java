@@ -18,10 +18,7 @@ import com.searchcode.app.service.Singleton;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.OptionalDouble;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -263,7 +260,9 @@ public class SearchCodeLib {
         }
 
         // Check if whitelisted extention IE what we know about
-        for (FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
+        HashMap<String, FileClassifierResult> database = fileClassifier.getDatabase();
+        for (String key: database.keySet()) {
+            FileClassifierResult fileClassifierResult = database.get(key);
             for (String extention: fileClassifierResult.extensions) {
                 if (lowerFileName.endsWith("." + extention)) {
                     return new BinaryFinding(false, "appears in internal extension whitelist");

@@ -8,6 +8,7 @@ import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -129,7 +130,10 @@ public class SearchcodeLibTest extends TestCase {
 
         FileClassifier fileClassifier = new FileClassifier();
 
-        for (FileClassifierResult fileClassifierResult: fileClassifier.getDatabase()) {
+        HashMap<String, FileClassifierResult> database = fileClassifier.getDatabase();
+
+        for (String key: database.keySet()) {
+            FileClassifierResult fileClassifierResult = database.get(key);
             for (String extension: fileClassifierResult.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
@@ -150,7 +154,7 @@ public class SearchcodeLibTest extends TestCase {
 
     public void testIsBinaryBlackListedPropertyExtension() {
         FileClassifier fileClassifier = new FileClassifier();
-        fileClassifier.setDatabase(new ArrayList<>());
+        fileClassifier.setDatabase(new HashMap<>());
 
         Data dataMock = mock(Data.class);
 
