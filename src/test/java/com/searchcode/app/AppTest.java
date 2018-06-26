@@ -5,6 +5,9 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,5 +50,11 @@ public class AppTest extends TestCase
         }else {
             assertTrue(false);
         }
+    }
+
+    public void testTest() throws ScriptException {
+        ScriptEngineManager factory = new ScriptEngineManager();
+        ScriptEngine engine = factory.getEngineByName("JavaScript");
+        engine.eval("print('Hello, World')");
     }
 }

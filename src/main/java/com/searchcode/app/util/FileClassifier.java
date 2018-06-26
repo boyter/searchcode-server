@@ -12,22 +12,23 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.HashMap;
-import java.util.List;
 
+/**
+ * This class uses the database from the scc project in order to classify files under a specific language.
+ * It used to work by allowing for duplicate entries, but now assumes that there is only 1 extension for each
+ * file type.
+ */
 public class FileClassifier {
 
-    private final Helpers helpers;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.CLASSIFIER_DATABASE_LOCATION, Values.DEFAULT_CLASSIFIER_DATABASE_LOCATION);
     private HashMap<String, FileClassifierResult> database;
 
     public FileClassifier() {
         this.database = this.loadDatabase();
-        this.helpers = Singleton.getHelpers();
     }
 
     public FileClassifier(HashMap<String, FileClassifierResult> database) {
         this.database = database;
-        this.helpers = Singleton.getHelpers();
     }
 
     public HashMap<String, FileClassifierResult> getDatabase() {
