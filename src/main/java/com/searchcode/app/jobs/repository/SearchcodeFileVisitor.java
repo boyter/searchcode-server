@@ -90,7 +90,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
             String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
-            String languageName = Singleton.getFileClassifier().languageGuesser(fileName, codeLinesReturn.getCodeLines());
+            String languageName = Singleton.getFileClassifier().languageGuesser(fileName);
             String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
