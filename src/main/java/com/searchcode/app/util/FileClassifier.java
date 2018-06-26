@@ -49,10 +49,9 @@ public class FileClassifier {
     }
 
     /**
-     * Given a filename and the lines inside the file attempts to guess the type of the file.
-     * TODO When no match attempt to identify using the file keywords
+     * Given a filename guesses the file type
      */
-    public String languageGuesser(String fileName, List<String> codeLines) {
+    public String languageGuesser(String fileName) {
 
         fileName = fileName.toLowerCase();
         String extension = this.getExtension(fileName);

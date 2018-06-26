@@ -118,7 +118,7 @@ public class CodeMatcher {
         int matching = 0;
 
         // Go through each line finding matching lines
-        for(int i = 0; i < searchThrough; i++) {
+        for (int i = 0; i < searchThrough; i++) {
             String matchRes = code.get(i).toLowerCase().replaceAll("\\s+", " ");
             matching = 0;
 
@@ -135,7 +135,7 @@ public class CodeMatcher {
 
         // Get the adjacent lines
         List<CodeMatchResult> adajacentLines = new LinkedList<>();
-        for(CodeMatchResult cmr: resultLines) {
+        for (CodeMatchResult cmr: resultLines) {
             int linenumber = cmr.getLineNumber();
             int previouslinenumber = linenumber - 1;
             int nextlinenumber = linenumber + 1;
@@ -155,14 +155,14 @@ public class CodeMatcher {
         if (resultLines.size() == 0) {
             searchThrough = codesize > MATCHLINES ? MATCHLINES : codesize;
 
-            for(int i = 0; i < searchThrough; i++) {
+            for (int i = 0; i < searchThrough; i++) {
                 resultLines.add(new CodeMatchResult(code.get(i), false, false, 0, i));
             }
         }
 
         // Highlight the lines if required but always escape everything
         if (highlightLine) {
-            for(CodeMatchResult cmr: resultLines) {
+            for (CodeMatchResult cmr: resultLines) {
                 if (cmr.isMatching()) {
                     String line = Values.EMPTYSTRING;
                     try {
@@ -177,7 +177,7 @@ public class CodeMatcher {
                 }
             }
         } else {
-            for(CodeMatchResult cmr: resultLines) {
+            for (CodeMatchResult cmr: resultLines) {
                 cmr.setLine( StringEscapeUtils.escapeHtml4(cmr.getLine()) );
             }
         }
