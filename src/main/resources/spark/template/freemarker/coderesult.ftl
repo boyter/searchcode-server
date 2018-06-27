@@ -163,7 +163,6 @@ document.onmouseup = gText;
 if (!document.all) {
     document.captureEvents(Event.MOUSEUP);
 }
-
 </script>
 
 <#if highlight>
