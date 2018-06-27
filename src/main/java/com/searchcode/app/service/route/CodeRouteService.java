@@ -22,9 +22,11 @@ import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.python.util.PythonInterpreter;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -234,6 +236,27 @@ public class CodeRouteService {
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+
+        PythonInterpreter interpreter = new PythonInterpreter();
+        interpreter.set("code", String.join(System.getProperty("line.separator"), codeResult.code));
+
+        interpreter.exec("from pygments import highlight\n" +
+                "from pygments.lexers import PythonLexer, guess_lexer, BashLexer\n" +
+                "from pygments.formatters import HtmlFormatter\n" +
+                "\n" +
+                "# TODO make this a bit nicer\n" +
+                "try:\n" +
+                "    lexer = guess_lexer(code)\n" +
+                "    content = highlight(code, lexer, HtmlFormatter(linenos=True, lineanchors='l'))\n" +
+                "    css = HtmlFormatter().get_style_defs('.highlight')\n" +
+                "except:\n" +
+                "    lexer = BashLexer()\n" +
+                "    content = highlight(code, lexer, HtmlFormatter(linenos=True, lineanchors='l'))\n" +
+                "    css = HtmlFormatter().get_style_defs('.highlight')");
+
+        map.put("codeContent", interpreter.get("content", String.class));
+        map.put("codeCss", interpreter.get("css", String.class));
+
 
         return map;
     }

@@ -125,6 +125,17 @@
             <artifactId>opencsv</artifactId>
             <version>2.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.python</groupId>
+            <artifactId>jython-standalone</artifactId>
+            <version>2.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.pygments</groupId>
+            <artifactId>pygments</artifactId>
+            <version>1.5</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- Search Library -->
         <dependency>
             <groupId>org.apache.lucene</groupId>

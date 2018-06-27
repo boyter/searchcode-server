@@ -3,7 +3,9 @@ package com.searchcode.app;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.mindrot.jbcrypt.BCrypt;
+import org.python.util.PythonInterpreter;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -53,8 +55,45 @@ public class AppTest extends TestCase
     }
 
     public void testTest() throws ScriptException {
-        ScriptEngineManager factory = new ScriptEngineManager();
-        ScriptEngine engine = factory.getEngineByName("JavaScript");
-        engine.eval("print('Hello, World')");
+        PythonInterpreter interpreter = new PythonInterpreter();
+        for (int i=0; i<50; i++) {
+
+
+        // Set a variable with the content you want to work with
+
+
+        // Simple use Pygments as you would in Python
+
+
+
+            String code = "PythonInterpreter interpreter = new PythonInterpreter(); " + i;
+            for (int j = 0; j < 500; j++) {
+                code += RandomStringUtils.randomAscii(9);
+            }
+
+            long l = System.currentTimeMillis();
+            interpreter.set("code", code);
+
+            interpreter.exec("from pygments import highlight\n" +
+                    "from pygments.lexers import PythonLexer, guess_lexer, BashLexer\n" +
+                    "from pygments.formatters import HtmlFormatter\n" +
+                    "\n" +
+                    "# TODO make this a bit nicer\n" +
+                    "try:\n" +
+                    "    lexer = guess_lexer(code)\n" +
+                    "    content = highlight(code, lexer, HtmlFormatter(linenos=True, lineanchors='l'))\n" +
+                    "    css = HtmlFormatter().get_style_defs('.highlight')\n" +
+                    "except:\n" +
+                    "    lexer = BashLexer()\n" +
+                    "    content = highlight(code, lexer, HtmlFormatter(linenos=True, lineanchors='l'))\n" +
+                    "    css = HtmlFormatter().get_style_defs('.highlight')");
+
+            // Get the result that has been set in a variable
+//            System.out.println(interpreter.get("content", String.class));
+//            System.out.println(interpreter.get("css", String.class));
+            System.out.println(System.currentTimeMillis() - l);
+        }
+
+
     }
 }

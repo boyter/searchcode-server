@@ -117,6 +117,11 @@
     </table>
 </div>
 
+<b>Something</b>
+<div>
+    ${codeContent}
+</div>
+
 
 <script>
 $('#toggleOwasp').click(function(e) {
