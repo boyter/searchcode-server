@@ -121,7 +121,9 @@
 <div>
     ${codeContent}
 </div>
-
+<style>
+    ${codeCss}
+</style>
 
 <script>
 $('#toggleOwasp').click(function(e) {
