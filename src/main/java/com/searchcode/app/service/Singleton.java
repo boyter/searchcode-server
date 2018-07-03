@@ -58,6 +58,7 @@ public final class Singleton {
     private static ValidatorService validatorService = null;
     private static IndexService indexService = null;
     private static CodeMatcher codematcher = null;
+    private static SyntaxHighlighter syntaxHighlighter = null;
 
     private static OWASPClassifier owaspClassifier = null;
     private static RepositorySource repositorySource = null;
@@ -125,6 +126,14 @@ public final class Singleton {
         }
 
         return indexService;
+    }
+
+    public static synchronized SyntaxHighlighter getSyntaxHighlighter() {
+        if (syntaxHighlighter == null) {
+            syntaxHighlighter = new SyntaxHighlighter();
+        }
+
+        return syntaxHighlighter;
     }
 
     /**

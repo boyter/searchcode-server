@@ -47,7 +47,7 @@ public class CodeMatcher {
 
         List<CodeResult> results = new ArrayList<>();
 
-        for(CodeResult code: codeResult) {
+        for (CodeResult code: codeResult) {
             List<CodeMatchResult> result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
 
             if (result != null) {
@@ -63,14 +63,14 @@ public class CodeMatcher {
      * Actually does the matching for a single code result given the match terms
      */
     public List<CodeMatchResult> matchResults(List<String> code, List<String> matchTerms, boolean highlightLine) {
-        List<CodeMatchResult> resultLines = findMatchingLines(code, matchTerms, highlightLine);
+        List<CodeMatchResult> resultLines = this.findMatchingLines(code, matchTerms, highlightLine);
         List<CodeMatchResult> newResultLines = new ArrayList<>();
 
         // get the top matching lines for this result
         resultLines.sort((p1, p2) -> Integer.valueOf(p2.getLineMatches()).compareTo(p1.getLineMatches()));
 
         // gets the best snippets based on number of matches
-        for(int i = 0; i < resultLines.size(); i++) {
+        for (int i = 0; i < resultLines.size(); i++) {
             CodeMatchResult match = resultLines.get(i);
             match.setLineNumber(match.getLineNumber() + 1);
 
@@ -245,6 +245,7 @@ public class CodeMatcher {
      * Given a string and the terms we want to highlight attempts to parse it apart and surround the matching
      * terms with <strong> tags.
      * TODO a bug exists here, see test cases for details
+     * TODO make this work with syntax highlighting
      */
     public String highlightLine(String line, List<String> matchTerms) throws StringIndexOutOfBoundsException {
 
@@ -256,11 +257,11 @@ public class CodeMatcher {
         List<String> tokens = Arrays.asList(line.split(" "));
         List<String> returnList = new ArrayList<>();
 
-        for(String token: tokens) {
+        for (String token: tokens) {
 
             String longestTerm = "";
 
-            for(String term: terms) {
+            for (String term: terms) {
                 // Find the longest matching
                 if (term.replace(")", "").endsWith("*")) {
                     if (token.toLowerCase().contains(term.replace(")", "").replace("*", ""))) {
