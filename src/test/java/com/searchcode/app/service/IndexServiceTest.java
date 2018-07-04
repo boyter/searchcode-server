@@ -576,7 +576,7 @@ public class IndexServiceTest extends TestCase {
                 "md5hash",
                 this.languageName,
                 100,
-                "PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);",
+                "PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable); std::cout << \"A fixed-size array:\\n\"; void RegisterVector(const std::string V_AS, ",
                 "repoRemoteLocation",
                 this.codeOwner,
                 "mydisplaylocation",
@@ -584,6 +584,10 @@ public class IndexServiceTest extends TestCase {
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("PhysicsServer::get_singleton", null, 0, false);
+        assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
+        search = this.indexService.search("std::cout", null, 0, false);
+        assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
+        search = this.indexService.search("std::string", null, 0, false);
         assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
     }
 
