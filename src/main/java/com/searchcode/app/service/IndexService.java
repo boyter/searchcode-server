@@ -271,32 +271,7 @@ public class IndexService implements IIndexService {
         }
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
-
-        // This is the main pipeline for making code searchable and probably the most important
-        // part of the indexer codebase
-        StringBuilder indexBuilder = new StringBuilder();
-
-        if (this.indexAllFields.contains("filename")) {
-            indexBuilder.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
-        }
-        if (this.indexAllFields.contains("filenamereverse")) {
-            indexBuilder.append(new StringBuilder(codeIndexDocument.getFileName()).reverse().toString()).append(" ");
-        }
-        if (this.indexAllFields.contains("path")) {
-            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true)).append(" ");
-            indexBuilder.append(codeIndexDocument.getFileLocationFilename()).append(" ");
-            indexBuilder.append(codeIndexDocument.getFileLocation()).append(" ");
-        }
-        if (this.indexAllFields.contains("content")) {
-            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true)).append(" ");
-            indexBuilder.append( this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents())).append(" ");
-        }
-        if (this.indexAllFields.contains("interesting")) {
-            indexBuilder.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents())).append(" ");
-            indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
-        }
-
-        String indexContents = indexBuilder.toString();
+        String indexContents = indexContentPipeline(codeIndexDocument);
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
@@ -321,6 +296,34 @@ public class IndexService implements IIndexService {
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
         return document;
+    }
+
+    public String indexContentPipeline(CodeIndexDocument codeIndexDocument) {
+        // This is the main pipeline for making code searchable and probably the most important
+        // part of the indexer codebase
+        StringBuilder indexBuilder = new StringBuilder();
+
+        if (this.indexAllFields.contains("filename")) {
+            indexBuilder.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
+        }
+        if (this.indexAllFields.contains("filenamereverse")) {
+            indexBuilder.append(new StringBuilder(codeIndexDocument.getFileName()).reverse().toString()).append(" ");
+        }
+        if (this.indexAllFields.contains("path")) {
+            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true)).append(" ");
+            indexBuilder.append(codeIndexDocument.getFileLocationFilename()).append(" ");
+            indexBuilder.append(codeIndexDocument.getFileLocation()).append(" ");
+        }
+        if (this.indexAllFields.contains("content")) {
+            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true)).append(" ");
+            indexBuilder.append( this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents())).append(" ");
+        }
+        if (this.indexAllFields.contains("interesting")) {
+            indexBuilder.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents())).append(" ");
+            indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
+        }
+
+        return indexBuilder.toString();
     }
 
     /**

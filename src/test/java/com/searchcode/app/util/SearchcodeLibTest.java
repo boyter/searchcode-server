@@ -67,6 +67,12 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).contains(" hourlySummary ");
     }
 
+    public void testCodeCleanPipelineIssue188() {
+        SearchCodeLib searchCodeLib = new SearchCodeLib();
+        String actual = searchCodeLib.codeCleanPipeline("PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);");
+        assertThat(actual).contains(" PhysicsServer::get_singleton ");
+    }
+
     public void testIsBinaryBlackListWithNoDotFileName() {
         SearchCodeLib sl = new SearchCodeLib();
 

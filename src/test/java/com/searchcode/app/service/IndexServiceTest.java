@@ -158,7 +158,7 @@ public class IndexServiceTest extends TestCase {
 
         // Verifies that we ran through the pipeline
         fields = indexFields.getFields(Values.CONTENTS);
-        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename emanelif  file name file filename filelocationfilename filelocation   contents contents contents contents contents contents  ");
+        AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo(" filename filename filename filename filename filename filename emanelif  file name file filename filelocationfilename filelocation   contents contents contents contents contents contents contents  ");
     }
 
     public void testSearch() throws IOException {
@@ -495,6 +495,25 @@ public class IndexServiceTest extends TestCase {
         }})).isEqualTo(" && (source:something)");
     }
 
+    public void testIndexContentPipeline() {
+        this.indexService = new IndexService();
+        String result = this.indexService.indexContentPipeline(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
+                this.repoName,
+                "fileName",
+                "fileLocation",
+                "fileLocationFilename",
+                "md5hash",
+                this.languageName,
+                100,
+                "PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);",
+                "repoRemoteLocation",
+                this.codeOwner,
+                "mydisplaylocation",
+                "source"));
+
+        assertThat(result).isNotEmpty();
+    }
+
     ///////////////////////////////////////////////////
     // Regression and search odd cases
     ///////////////////////////////////////////////////
@@ -542,6 +561,29 @@ public class IndexServiceTest extends TestCase {
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("emaN*", null, 0, false);
+        assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
+    }
+
+    public void testIndexIssue188() throws IOException {
+        this.indexService = new IndexService();
+
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        queue.add(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
+                this.repoName,
+                "fileName",
+                "fileLocation",
+                "fileLocationFilename",
+                "md5hash",
+                this.languageName,
+                100,
+                "PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);",
+                "repoRemoteLocation",
+                this.codeOwner,
+                "mydisplaylocation",
+                "source"));
+        this.indexService.indexDocument(queue);
+
+        SearchResult search = this.indexService.search("PhysicsServer::get_singleton", null, 0, false);
         assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
     }
 

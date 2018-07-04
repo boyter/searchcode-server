@@ -336,10 +336,12 @@ public class SearchCodeLib {
      * Cleans and formats the code into something that can be indexed by lucene while supporting searches such as
      * i++ matching for(int i=0;i<100;i++;){
      */
-    public String codeCleanPipeline(String contents) {
-        if (contents == null) {
+    public String codeCleanPipeline(String originalContents) {
+        if (originalContents == null) {
             return Values.EMPTYSTRING;
         }
+
+        String modifiedContents = originalContents;
 
         StringBuilder indexContents = new StringBuilder();
 
@@ -347,40 +349,49 @@ public class SearchCodeLib {
         // Modify the contents to match strings correctly
         char[] firstReplacements = {'<', '>', ')', '(', '[', ']', '|', '=', ',', ':'};
         for (char c : firstReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] otherReplacements = {'.'};
         for (char c : otherReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] secondReplacements = {';', '{', '}', '/'};
         for (char c : secondReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] forthReplacements = {'"', '\''};
         for (char c : forthReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         // Now do it for other characters
         char[] replacements = {'\'', '"', '.', ';', '=', '(', ')', '[', ']', '_', ';', '@', '#'};
         for (char c : replacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] thirdReplacements = {'-'};
         for (char c : thirdReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
+
+        // Issue 188 Fixes
+        modifiedContents = originalContents;
+        char[] replacements188 = {'(', ')', '<', '>'};
+        for (char c : replacements188) {
+            modifiedContents = modifiedContents.replace(c, ' ');
+        }
+        indexContents.append(" ").append(modifiedContents);
+
 
         return indexContents.toString();
     }
