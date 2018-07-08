@@ -45,7 +45,6 @@ follow_links=false
 deep_guess_files=false
 host_name=localhost:8080
 index_all_fields=content,filename,filenamereverse,path,interesting
-# The below will probably be moved into the settings page at some point in the
-# future.
+# The below will probably be moved into the settings page at some point in the future
 password=Adm1n234
 encryption_key=39dc5f2168e412be3a9faf9d08482114
