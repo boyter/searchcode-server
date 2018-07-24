@@ -14,6 +14,8 @@ public class FileClassifierResult {
     public String[] extensions;
     public String[] line_comment;
     public String[] complexitychecks;
+    public String[][] multi_line;
+    public String[][] quotes;
 
     public FileClassifierResult(String extensions) {
         this.extensions = extensions.toLowerCase().split(",");

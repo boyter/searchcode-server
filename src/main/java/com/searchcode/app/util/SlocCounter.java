@@ -1,8 +1,14 @@
 package com.searchcode.app.util;
 
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.FileClassifierResult;
+import com.searchcode.app.service.Singleton;
+
+import java.util.HashMap;
 
 public class SlocCounter {
+
+    private final HashMap<String, FileClassifierResult> database;
 
     public enum State {
         S_BLANK,
@@ -15,8 +21,47 @@ public class SlocCounter {
         S_STRING,
     }
 
-    public void countStats(CodeIndexDocument codeIndexDocument) {
-//        codeIndexDocument.getContents();
+    public SlocCounter() {
+        this.database = Singleton.getFileClassifier().getDatabase();
+    }
+
+    public int countStats(CodeIndexDocument codeIndexDocument) {
+        String contents = codeIndexDocument.getContents();
+
+        if (contents.isEmpty()) {
+            return 0;
+        }
+
+        FileClassifierResult fileClassifierResult = this.database.get(codeIndexDocument.getLanguageName());
+
+        State currentState = State.S_BLANK;
+
+        int linesCount = 1;
+        int blankCount = 0;
+        int codeCount = 0;
+        int commentCount = 0;
+
+        for (int i=0; i < contents.length(); i++) {
+            switch (currentState) {
+                case S_BLANK:
+                case S_MULTICOMMENT_BLANK:
+
+                    break;
+                case S_CODE:
+                    break;
+                case S_STRING:
+                    break;
+                case S_MULTICOMMENT:
+                case S_MULTICOMMENT_CODE:
+                    break;
+            }
+
+            if (contents.charAt(i) == '\n') {
+                linesCount++;
+            }
+        }
+
+        return linesCount;
     }
 
     /*
