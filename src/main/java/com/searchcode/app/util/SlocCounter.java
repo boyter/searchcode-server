@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2016 Boyter Online Services
+ *
+ * Use of this software is governed by the Fair Source License included
+ * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
+ * see the README.md for when this clause will take effect
+ *
+ * Version 1.3.14
+ */
+
 package com.searchcode.app.util;
 
 import com.searchcode.app.dto.CodeIndexDocument;
@@ -25,6 +35,26 @@ public class SlocCounter {
         this.database = Singleton.getFileClassifier().getDatabase();
     }
 
+    public boolean checkForMatch(char currentByte, int index, int endPoint, String[] matches, String content) {
+        boolean potentialMatch = true;
+
+        for (int i = 0; i < matches.length; i++) { // For each match
+            if (currentByte == matches[i].charAt(0)) { // If the first character matches
+                for (int j = 0; j < matches[i].length(); j++) { // Check if the rest match
+                    if (matches[i].charAt(j) != content.charAt(index + j)) {
+                        potentialMatch = false;
+                    }
+                }
+
+                if (potentialMatch) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public int countStats(CodeIndexDocument codeIndexDocument) {
         String contents = codeIndexDocument.getContents();
 
@@ -41,11 +71,14 @@ public class SlocCounter {
         int codeCount = 0;
         int commentCount = 0;
 
-        for (int i=0; i < contents.length(); i++) {
+        for (int index=0; index < contents.length(); index++) {
             switch (currentState) {
                 case S_BLANK:
                 case S_MULTICOMMENT_BLANK:
-
+                    if (checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.line_comment, contents)) {
+                        currentState = State.S_COMMENT;
+                        break;
+                    }
                     break;
                 case S_CODE:
                     break;
@@ -56,8 +89,16 @@ public class SlocCounter {
                     break;
             }
 
-            if (contents.charAt(i) == '\n') {
+            if (contents.charAt(index) == '\n') {
                 linesCount++;
+
+                switch(currentState) {
+                    case S_COMMENT:
+                    case S_MULTICOMMENT:
+                    case S_MULTICOMMENT_BLANK:
+                        commentCount++;
+                        break;
+                }
             }
         }
 
