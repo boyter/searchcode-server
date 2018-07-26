@@ -126,8 +126,22 @@ public class SlocCounter {
                     }
                     break;
                 case S_CODE:
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.multi_line, contents)) {
+                        currentState = State.S_MULTICOMMENT_CODE;
+                        break;
+                    }
+
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.quotes, contents)) {
+                        currentState = State.S_STRING;
+                        break;
+                    } else{
+                        // TODO complexity check here
+                    }
                     break;
                 case S_STRING:
+//                    if fileJob.Content[index-1] != '\\' && checkForMatchSingle(fileJob.Content[index], index, endPoint, endString, fileJob) {
+//                        currentState = S_CODE
+//                    }
                     break;
                 case S_MULTICOMMENT:
                 case S_MULTICOMMENT_CODE:
