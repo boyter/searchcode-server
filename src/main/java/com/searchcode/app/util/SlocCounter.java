@@ -56,6 +56,27 @@ public class SlocCounter {
         return false;
     }
 
+    public boolean checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
+        boolean potentialMatch = true;
+
+        for (int i = 0; i < matches.length; i++) { // For each match
+            if (currentByte == matches[i][0].charAt(0)) { // If the first character matches
+                for (int j = 0; j < matches[i][0].length(); j++) { // Check if the rest match
+                    if (matches[i][0].charAt(j) != content.charAt(index + j)) {
+                        potentialMatch = false;
+                        break;
+                    }
+                }
+
+                if (potentialMatch) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public int countStats(CodeIndexDocument codeIndexDocument) {
         String contents = codeIndexDocument.getContents();
 
@@ -76,10 +97,21 @@ public class SlocCounter {
             switch (currentState) {
                 case S_BLANK:
                 case S_MULTICOMMENT_BLANK:
-                    if (checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.line_comment, contents)) {
+                    if (this.checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.line_comment, contents)) {
                         currentState = State.S_COMMENT;
                         break;
                     }
+
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.multi_line, contents)) {
+                        currentState = State.S_MULTICOMMENT;
+                        break;
+                    }
+
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.quotes, contents)) {
+                        currentState = State.S_STRING;
+                        break;
+                    }
+
                     break;
                 case S_CODE:
                     break;
@@ -94,10 +126,19 @@ public class SlocCounter {
                 linesCount++;
 
                 switch(currentState) {
+                    case S_BLANK:
+                        blankCount++;
+                        break;
                     case S_COMMENT:
                     case S_MULTICOMMENT:
                     case S_MULTICOMMENT_BLANK:
                         commentCount++;
+                        break;
+                    case S_CODE:
+                    case S_STRING:
+                    case S_COMMENT_CODE:
+                    case S_MULTICOMMENT_CODE:
+                        codeCount++;
                         break;
                 }
             }
