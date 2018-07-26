@@ -56,6 +56,26 @@ public class SlocCounter {
         return false;
     }
 
+    public boolean checkForMatchSingle(char currentByte, int index, int endPoint, String match, String content) {
+        boolean potentialMatch = true;
+
+        // TODO add end of content checks
+        if (match.length() != 0 && currentByte == match.charAt(0)) { // If the first character matches
+            for (int j = 0; j < match.length(); j++) { // Check if the rest match
+                if (match.charAt(j) != content.charAt(index + j)) {
+                    potentialMatch = false;
+                }
+            }
+
+            if (potentialMatch) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     public boolean checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
         boolean potentialMatch = true;
 
@@ -63,6 +83,27 @@ public class SlocCounter {
             if (currentByte == matches[i][0].charAt(0)) { // If the first character matches
                 for (int j = 0; j < matches[i][0].length(); j++) { // Check if the rest match
                     if (matches[i][0].charAt(j) != content.charAt(index + j)) {
+                        potentialMatch = false;
+                        break;
+                    }
+                }
+
+                if (potentialMatch) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public boolean checkForMatchMultiClose(char currentByte, int index, int endPoint, String[][] matches, String content) {
+        boolean potentialMatch = true;
+
+        for (int i = 0; i < matches.length; i++) { // For each match
+            if (currentByte == matches[i][1].charAt(0)) { // If the first character matches
+                for (int j = 0; j < matches[i][1].length(); j++) { // Check if the rest match
+                    if (matches[i][1].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
                         break;
                     }
@@ -139,12 +180,25 @@ public class SlocCounter {
                     }
                     break;
                 case S_STRING:
-//                    if fileJob.Content[index-1] != '\\' && checkForMatchSingle(fileJob.Content[index], index, endPoint, endString, fileJob) {
-//                        currentState = S_CODE
-//                    }
+                    // TODO actually store and pass in the matching condition we want
+                    if (contents.charAt(index-1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, 0, "", contents)) {
+                        currentState = State.S_CODE;
+                    }
                     break;
                 case S_MULTICOMMENT:
                 case S_MULTICOMMENT_CODE:
+                    if (this.checkForMatchMultiClose(contents.charAt(index), index, 0, fileClassifierResult.multi_line, contents)) {
+                        if (currentState == State.S_MULTICOMMENT_CODE) {
+                            currentState = State.S_CODE;
+                        } else {
+                            // TODO check if out of bounds
+                            if (this.isWhitespace(contents.charAt(index+1))) {
+                                currentState = State.S_MULTICOMMENT_BLANK;
+                            } else {
+                                currentState = State.S_MULTICOMMENT_CODE;
+                            }
+                        }
+                    }
                     break;
             }
 
