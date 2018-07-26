@@ -38,6 +38,7 @@ public class SlocCounter {
     public boolean checkForMatch(char currentByte, int index, int endPoint, String[] matches, String content) {
         boolean potentialMatch = true;
 
+        // TODO add end of content checks
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i].charAt(0)) { // If the first character matches
                 for (int j = 0; j < matches[i].length(); j++) { // Check if the rest match
