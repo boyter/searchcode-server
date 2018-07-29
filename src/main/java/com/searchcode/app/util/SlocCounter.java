@@ -10,6 +10,7 @@
 
 package com.searchcode.app.util;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
@@ -74,7 +75,7 @@ public class SlocCounter {
     }
 
 
-    public boolean checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
+    public String checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
         boolean potentialMatch = true;
 
         for (int i = 0; i < matches.length; i++) { // For each match
@@ -87,12 +88,13 @@ public class SlocCounter {
                 }
 
                 if (potentialMatch) {
-                    return true;
+                    // Refers to the closing condition for the matching open
+                    return matches[i][1];
                 }
             }
         }
 
-        return false;
+        return null;
     }
 
     public boolean checkForMatchMultiClose(char currentByte, int index, int endPoint, String[][] matches, String content) {
@@ -136,6 +138,7 @@ public class SlocCounter {
         State currentState = State.S_BLANK;
 
         int endPoint = contents.length() - 1;
+        String endString = null;
         int linesCount = 1;
         int blankCount = 0;
         int codeCount = 0;
@@ -151,12 +154,14 @@ public class SlocCounter {
                         break;
                     }
 
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
+                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
+                    if (endString != null) {
                         currentState = State.S_MULTICOMMENT;
                         break;
                     }
 
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents)) {
+                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
+                    if (endString != null) {
                         currentState = State.S_STRING;
                         break;
                     }
@@ -170,12 +175,14 @@ public class SlocCounter {
                     }
                     break;
                 case S_CODE:
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
+                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
+                    if (endString != null) {
                         currentState = State.S_MULTICOMMENT_CODE;
                         break;
                     }
 
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents)) {
+                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
+                    if (endString != null) {
                         currentState = State.S_STRING;
                         break;
                     } else if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
@@ -183,8 +190,7 @@ public class SlocCounter {
                     }
                     break;
                 case S_STRING:
-                    // TODO actually store and pass in the matching condition we want
-                    if (contents.charAt(index-1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, "", contents)) {
+                    if (contents.charAt(index-1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, endString, contents)) {
                         currentState = State.S_CODE;
                     }
                     break;
