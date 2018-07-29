@@ -22,12 +22,12 @@ public class SlocCounterTest extends TestCase {
         assertThat(linesCount).isNotZero();
     }
 
-    public void testBounds() {
+    public void testBoundsExceptions() {
         CodeIndexDocument codeIndexDocument = new CodeIndexDocument();
         codeIndexDocument.setLanguageName("Java");
         codeIndexDocument.setContents("if switch for while do loop != == && || ");
 
-//        int linesCount = this.slocCounter.countStats(codeIndexDocument);
-//        assertThat(linesCount).isNotZero();
+        int linesCount = this.slocCounter.countStats(codeIndexDocument);
+        assertThat(linesCount).isNotZero();
     }
 }

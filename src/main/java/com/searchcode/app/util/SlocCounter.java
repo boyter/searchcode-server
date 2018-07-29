@@ -38,11 +38,10 @@ public class SlocCounter {
     public boolean checkForMatch(char currentByte, int index, int endPoint, String[] matches, String content) {
         boolean potentialMatch = true;
 
-        // TODO add end of content checks
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i].charAt(0)) { // If the first character matches
                 for (int j = 0; j < matches[i].length(); j++) { // Check if the rest match
-                    if (matches[i].charAt(j) != content.charAt(index + j)) {
+                    if (index + j <= endPoint && matches[i].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
                     }
                 }
@@ -59,10 +58,9 @@ public class SlocCounter {
     public boolean checkForMatchSingle(char currentByte, int index, int endPoint, String match, String content) {
         boolean potentialMatch = true;
 
-        // TODO add end of content checks
         if (match.length() != 0 && currentByte == match.charAt(0)) { // If the first character matches
             for (int j = 0; j < match.length(); j++) { // Check if the rest match
-                if (match.charAt(j) != content.charAt(index + j)) {
+                if (index + j <= endPoint && match.charAt(j) != content.charAt(index + j)) {
                     potentialMatch = false;
                 }
             }
@@ -82,7 +80,7 @@ public class SlocCounter {
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i][0].charAt(0)) { // If the first character matches
                 for (int j = 0; j < matches[i][0].length(); j++) { // Check if the rest match
-                    if (matches[i][0].charAt(j) != content.charAt(index + j)) {
+                    if (index + j <= endPoint && matches[i][0].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
                         break;
                     }
@@ -103,7 +101,7 @@ public class SlocCounter {
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i][1].charAt(0)) { // If the first character matches
                 for (int j = 0; j < matches[i][1].length(); j++) { // Check if the rest match
-                    if (matches[i][1].charAt(j) != content.charAt(index + j)) {
+                    if (index + j <= endPoint && matches[i][1].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
                         break;
                     }
@@ -137,6 +135,7 @@ public class SlocCounter {
 
         State currentState = State.S_BLANK;
 
+        int endPoint = contents.length() - 1;
         int linesCount = 1;
         int blankCount = 0;
         int codeCount = 0;
@@ -147,17 +146,17 @@ public class SlocCounter {
             switch (currentState) {
                 case S_BLANK:
                 case S_MULTICOMMENT_BLANK:
-                    if (this.checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.line_comment, contents)) {
+                    if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.line_comment, contents)) {
                         currentState = State.S_COMMENT;
                         break;
                     }
 
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.multi_line, contents)) {
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
                         currentState = State.S_MULTICOMMENT;
                         break;
                     }
 
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.quotes, contents)) {
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents)) {
                         currentState = State.S_STRING;
                         break;
                     }
@@ -165,38 +164,38 @@ public class SlocCounter {
                     if (!this.isWhitespace(contents.charAt(index))) {
                         currentState = State.S_CODE;
 
-                        if (this.checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.complexitychecks, contents)) {
+                        if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
                             complexity++;
                         }
                     }
                     break;
                 case S_CODE:
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.multi_line, contents)) {
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
                         currentState = State.S_MULTICOMMENT_CODE;
                         break;
                     }
 
-                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.quotes, contents)) {
+                    if (this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents)) {
                         currentState = State.S_STRING;
                         break;
-                    } else if (this.checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.complexitychecks, contents)) {
+                    } else if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
                         complexity++;
                     }
                     break;
                 case S_STRING:
                     // TODO actually store and pass in the matching condition we want
-                    if (contents.charAt(index-1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, 0, "", contents)) {
+                    if (contents.charAt(index-1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, "", contents)) {
                         currentState = State.S_CODE;
                     }
                     break;
                 case S_MULTICOMMENT:
                 case S_MULTICOMMENT_CODE:
-                    if (this.checkForMatchMultiClose(contents.charAt(index), index, 0, fileClassifierResult.multi_line, contents)) {
+                    if (this.checkForMatchMultiClose(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
                         if (currentState == State.S_MULTICOMMENT_CODE) {
                             currentState = State.S_CODE;
                         } else {
                             // TODO check if out of bounds
-                            if (this.isWhitespace(contents.charAt(index+1))) {
+                            if (index + 1 <= endPoint && this.isWhitespace(contents.charAt(index+1))) {
                                 currentState = State.S_MULTICOMMENT_BLANK;
                             } else {
                                 currentState = State.S_MULTICOMMENT_CODE;
