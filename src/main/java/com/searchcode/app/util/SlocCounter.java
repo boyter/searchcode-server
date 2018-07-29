@@ -141,6 +141,7 @@ public class SlocCounter {
         int blankCount = 0;
         int codeCount = 0;
         int commentCount = 0;
+        int complexity = 0;
 
         for (int index=0; index < contents.length(); index++) {
             switch (currentState) {
@@ -163,7 +164,10 @@ public class SlocCounter {
 
                     if (!this.isWhitespace(contents.charAt(index))) {
                         currentState = State.S_CODE;
-                        // TODO complexity check here
+
+                        if (this.checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.complexitychecks, contents)) {
+                            complexity++;
+                        }
                     }
                     break;
                 case S_CODE:
@@ -175,8 +179,8 @@ public class SlocCounter {
                     if (this.checkForMatchMultiOpen(contents.charAt(index), index, 0, fileClassifierResult.quotes, contents)) {
                         currentState = State.S_STRING;
                         break;
-                    } else{
-                        // TODO complexity check here
+                    } else if (this.checkForMatch(contents.charAt(index), index, 0, fileClassifierResult.complexitychecks, contents)) {
+                        complexity++;
                     }
                     break;
                 case S_STRING:
@@ -202,10 +206,12 @@ public class SlocCounter {
                     break;
             }
 
+            // This means the end of processing the line so calculate the stats according to what state
+            // we are currently in
             if (contents.charAt(index) == '\n') {
                 linesCount++;
 
-                switch(currentState) {
+                switch (currentState) {
                     case S_BLANK:
                         blankCount++;
                         break;
@@ -220,6 +226,15 @@ public class SlocCounter {
                     case S_MULTICOMMENT_CODE:
                         codeCount++;
                         break;
+                }
+
+                // If we are in a multiline comment that started after some code then we need
+                // to move to a multiline comment if a multiline comment then stay there
+                // otherwise we reset back into a blank state
+                if (currentState != State.S_MULTICOMMENT && currentState != State.S_MULTICOMMENT_CODE) {
+                    currentState = State.S_BLANK;
+                } else {
+                    currentState = State.S_MULTICOMMENT;
                 }
             }
         }

@@ -15,10 +15,19 @@ public class SlocCounterTest extends TestCase {
     public void testSomething() {
         CodeIndexDocument codeIndexDocument = new CodeIndexDocument();
         codeIndexDocument.setLanguageName("Python");
-        codeIndexDocument.setContents("import this\n#comment\nprint this\nprint 'something'");
+        codeIndexDocument.setContents("import this\n#comment\nprint this if something\nprint 'something'");
 
         int linesCount = this.slocCounter.countStats(codeIndexDocument);
 
         assertThat(linesCount).isNotZero();
+    }
+
+    public void testBounds() {
+        CodeIndexDocument codeIndexDocument = new CodeIndexDocument();
+        codeIndexDocument.setLanguageName("Java");
+        codeIndexDocument.setContents("if switch for while do loop != == && || ");
+
+//        int linesCount = this.slocCounter.countStats(codeIndexDocument);
+//        assertThat(linesCount).isNotZero();
     }
 }
