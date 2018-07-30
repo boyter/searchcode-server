@@ -138,7 +138,7 @@ public class SlocCounter {
 
         int endPoint = contents.length() - 1;
         String endString = null;
-        int linesCount = 1;
+        int linesCount = 0;
         int blankCount = 0;
         int codeCount = 0;
         int commentCount = 0;
@@ -212,7 +212,7 @@ public class SlocCounter {
 
             // This means the end of processing the line so calculate the stats according to what state
             // we are currently in
-            if (contents.charAt(index) == '\n') {
+            if (contents.charAt(index) == '\n' || index == endPoint) {
                 linesCount++;
 
                 switch (currentState) {
