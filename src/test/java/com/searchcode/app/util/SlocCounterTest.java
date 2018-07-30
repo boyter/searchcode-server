@@ -17,9 +17,8 @@ public class SlocCounterTest extends TestCase {
         codeIndexDocument.setLanguageName("Python");
         codeIndexDocument.setContents("import this\n#comment\nprint this if something\nprint 'something'");
 
-        int linesCount = this.slocCounter.countStats(codeIndexDocument);
-
-        assertThat(linesCount).isNotZero();
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(codeIndexDocument);
+        assertThat(slocCount.linesCount).isNotZero();
     }
 
     public void testBoundsExceptions() {
@@ -27,7 +26,7 @@ public class SlocCounterTest extends TestCase {
         codeIndexDocument.setLanguageName("Java");
         codeIndexDocument.setContents("if switch for while do loop != == && || ");
 
-        int linesCount = this.slocCounter.countStats(codeIndexDocument);
-        assertThat(linesCount).isNotZero();
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(codeIndexDocument);
+        assertThat(slocCount.linesCount).isNotZero();
     }
 }

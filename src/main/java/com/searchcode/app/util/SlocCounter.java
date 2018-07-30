@@ -10,7 +10,6 @@
 
 package com.searchcode.app.util;
 
-import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
@@ -126,11 +125,11 @@ public class SlocCounter {
         return true;
     }
 
-    public int countStats(CodeIndexDocument codeIndexDocument) {
+    public SlocCount countStats(CodeIndexDocument codeIndexDocument) {
         String contents = codeIndexDocument.getContents();
 
         if (contents.isEmpty()) {
-            return 0;
+            return new SlocCount();
         }
 
         FileClassifierResult fileClassifierResult = this.database.get(codeIndexDocument.getLanguageName());
@@ -244,6 +243,24 @@ public class SlocCounter {
             }
         }
 
-        return linesCount;
+        return new SlocCount(linesCount, blankCount, codeCount, commentCount, complexity);
+    }
+
+    public class SlocCount {
+        public int linesCount = 0;
+        public int blankCount = 0;
+        public int codeCount = 0;
+        public int commentCount = 0;
+        public int complexity = 0;
+
+        public SlocCount() {}
+
+        public SlocCount(int linesCount, int blankCount, int codeCount, int commentCount, int complexity) {
+            this.linesCount = linesCount;
+            this.blankCount = blankCount;
+            this.codeCount = codeCount;
+            this.commentCount = commentCount;
+            this.complexity = complexity;
+        }
     }
 }
