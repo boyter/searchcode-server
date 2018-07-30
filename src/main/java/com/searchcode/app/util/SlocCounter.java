@@ -36,10 +36,12 @@ public class SlocCounter {
     }
 
     public boolean checkForMatch(char currentByte, int index, int endPoint, String[] matches, String content) {
-        boolean potentialMatch = true;
+
 
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i].charAt(0)) { // If the first character matches
+                boolean potentialMatch = true;
+
                 for (int j = 0; j < matches[i].length(); j++) { // Check if the rest match
                     if (index + j <= endPoint && matches[i].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
@@ -56,9 +58,11 @@ public class SlocCounter {
     }
 
     public boolean checkForMatchSingle(char currentByte, int index, int endPoint, String match, String content) {
-        boolean potentialMatch = true;
+
 
         if (match.length() != 0 && currentByte == match.charAt(0)) { // If the first character matches
+            boolean potentialMatch = true;
+
             for (int j = 0; j < match.length(); j++) { // Check if the rest match
                 if (index + j <= endPoint && match.charAt(j) != content.charAt(index + j)) {
                     potentialMatch = false;
@@ -75,10 +79,12 @@ public class SlocCounter {
 
 
     public String checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
-        boolean potentialMatch = true;
+
 
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i][0].charAt(0)) { // If the first character matches
+                boolean potentialMatch = true;
+
                 for (int j = 0; j < matches[i][0].length(); j++) { // Check if the rest match
                     if (index + j <= endPoint && matches[i][0].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
@@ -97,10 +103,12 @@ public class SlocCounter {
     }
 
     public boolean checkForMatchMultiClose(char currentByte, int index, int endPoint, String[][] matches, String content) {
-        boolean potentialMatch = true;
+
 
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i][1].charAt(0)) { // If the first character matches
+                boolean potentialMatch = true;
+
                 for (int j = 0; j < matches[i][1].length(); j++) { // Check if the rest match
                     if (index + j <= endPoint && matches[i][1].charAt(j) != content.charAt(index + j)) {
                         potentialMatch = false;
@@ -125,6 +133,14 @@ public class SlocCounter {
         return true;
     }
 
+    /**
+     * Reimplementation of scc https://github.com/boyter/scc/ ported from
+     * Go into Java and specific for the searchcode project.
+     *
+     * NB this does not perform the jump ahead portion of the scc where bytes
+     * already looked at are jumped in order to make it simpler to understand
+     * which means it is probably slower than the Go version.
+     */
     public SlocCount countStats(CodeIndexDocument codeIndexDocument) {
         if (codeIndexDocument == null) {
             return new SlocCount();
