@@ -26,6 +26,29 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.complexity).isEqualTo(0);
     }
 
+    public void testEmptyFile() {
+        CodeIndexDocument codeIndexDocument = new CodeIndexDocument();
+        codeIndexDocument.setLanguageName("C++");
+        codeIndexDocument.setContents("");
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(codeIndexDocument);
+        assertThat(slocCount.linesCount).isEqualTo(0);
+    }
+
+    public void testNullFile() {
+        CodeIndexDocument codeIndexDocument = new CodeIndexDocument();
+        codeIndexDocument.setLanguageName("Lisp");
+        codeIndexDocument.setContents(null);
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(codeIndexDocument);
+        assertThat(slocCount.linesCount).isEqualTo(0);
+    }
+
+    public void testNullDocument() {
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(null);
+        assertThat(slocCount.linesCount).isEqualTo(0);
+    }
+
     public void testBoundsExceptions() {
         CodeIndexDocument codeIndexDocument = new CodeIndexDocument();
         codeIndexDocument.setLanguageName("Java");

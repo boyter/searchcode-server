@@ -126,9 +126,13 @@ public class SlocCounter {
     }
 
     public SlocCount countStats(CodeIndexDocument codeIndexDocument) {
+        if (codeIndexDocument == null) {
+            return new SlocCount();
+        }
+
         String contents = codeIndexDocument.getContents();
 
-        if (contents.isEmpty()) {
+        if (contents == null || contents.isEmpty()) {
             return new SlocCount();
         }
 
