@@ -35,4 +35,13 @@ public class CodeIndexDocumentTest extends TestCase {
         cd.setRepoLocationRepoNameLocationFilename(".//this/");
         assertThat(cd.getRepoLocationRepoNameLocationFilename()).isEqualTo("./this/");
     }
+
+    public void testTesty() {
+        CodeIndexDocument cd = new CodeIndexDocument()
+                                    .setContents("something")
+                                    .setRepoRemoteLocation("something");
+
+        assertThat(cd.getContents()).isEqualTo("something");
+        assertThat(cd.getRepoRemoteLocation()).isEqualTo("something");
+    }
 }

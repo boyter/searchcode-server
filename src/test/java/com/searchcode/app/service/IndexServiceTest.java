@@ -36,19 +36,20 @@ public class IndexServiceTest extends TestCase {
     private String repoName = "b89bb20026ff426dae30ab92e1e59b19";
     private String languageName = "languageName";
     private String codeOwner = "codeOwner";
-    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename",
-            this.repoName,
-            "fileName",
-            "fileLocation",
-            "fileLocationFilename",
-            "md5hash",
-            this.languageName,
-            100,
-            this.contents,
-            "repoRemoteLocation",
-            this.codeOwner,
-            "mydisplaylocation",
-            "source");
+    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument()
+            .setRepoLocationRepoNameLocationFilename("repoLocationRepoNameLocationFilename")
+            .setRepoName(this.repoName)
+            .setFileName("fileName")
+            .setFileLocation("fileLocation")
+            .setFileLocationFilename("fileLocationFilename")
+            .setMd5hash("md5hash")
+            .setLanguageName(this.languageName)
+            .setCodeLines(100)
+            .setContents(this.contents)
+            .setRepoRemoteLocation("repoRemoteLocation")
+            .setCodeOwner(this.codeOwner)
+            .setDisplayLocation("mydisplaylocation")
+            .setSource("source");
 
     public void testIndexDocumentEndToEnd() throws IOException {
         this.indexService = new IndexService();
@@ -69,7 +70,7 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService();
         this.indexService.indexDocument(this.codeIndexDocument);
 
-        CodeResult codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
+        CodeResult codeResult = this.indexService.getCodeResultByCodeId(this.codeIndexDocument.getHash());
         assertThat(codeResult.getCodeId()).isEqualTo(this.codeId);
 
         this.indexService.deleteByCodeId(this.codeId);
@@ -126,21 +127,20 @@ public class IndexServiceTest extends TestCase {
 
     public void testBuildDocument() {
         this.indexService = new IndexService();
-        Document indexFields = this.indexService.buildDocument(new CodeIndexDocument(
-                "repoLocationRepoNameLocationFilename",
-                "repo Name",
-                "fileName",
-                "fileLocation",
-                "fileLocationFilename",
-                "md5hash",
-                "language Name",
-                10,
-                "contents",
-                "repoRemoteLocation",
-                "code Owner",
-                "displayLocation",
-                "code Source"
-        ));
+        Document indexFields = this.indexService.buildDocument(new CodeIndexDocument()
+            .setRepoLocationRepoNameLocationFilename("repoLocationRepoNameLocationFilename")
+            .setRepoName("repo Name")
+            .setFileName("fileName")
+            .setFileLocation("fileLocation")
+            .setFileLocationFilename("fileLocationFilename")
+            .setMd5hash("md5hash")
+            .setLanguageName("language Name")
+            .setCodeLines(10)
+            .setContents("contents")
+            .setRepoRemoteLocation("repoRemoteLocation")
+            .setCodeOwner("code Owner")
+            .setDisplayLocation("displayLocation")
+            .setSource("code source"));
 
         AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(25);
 
@@ -497,19 +497,19 @@ public class IndexServiceTest extends TestCase {
 
     public void testIndexContentPipeline() {
         this.indexService = new IndexService();
-        String result = this.indexService.indexContentPipeline(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
-                this.repoName,
-                "fileName",
-                "fileLocation",
-                "fileLocationFilename",
-                "md5hash",
-                this.languageName,
-                100,
-                "PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);",
-                "repoRemoteLocation",
-                this.codeOwner,
-                "mydisplaylocation",
-                "source"));
+        String result = this.indexService.indexContentPipeline(new CodeIndexDocument()
+            .setRepoName(this.repoName)
+            .setFileName("fileName")
+            .setFileLocation("fileLocation")
+            .setFileLocationFilename("fileLocationFilename")
+            .setMd5hash("md5hash")
+            .setLanguageName(this.languageName)
+            .setCodeLines(199)
+            .setContents("PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);")
+            .setRepoRemoteLocation("repoRemoteLocation")
+            .setCodeOwner(this.codeOwner)
+            .setDisplayLocation("mydisplaylocation")
+            .setSource("source"));
 
         assertThat(result).isNotEmpty();
     }
@@ -522,19 +522,20 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService();
 
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-        queue.add(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
-                this.repoName,
-                "fileName",
-                "fileLocation",
-                "fileLocationFilename",
-                "md5hash",
-                this.languageName,
-                100,
-                "actual.contains",
-                "repoRemoteLocation",
-                this.codeOwner,
-                "mydisplaylocation",
-                "source"));
+        queue.add(new CodeIndexDocument()
+                .setRepoLocationRepoNameLocationFilename("something")
+                .setRepoName(this.repoName)
+                .setFileName("fileName")
+                .setFileLocation("fileLocation")
+                .setFileLocationFilename("fileLocationFilename")
+                .setMd5hash("md5hash")
+                .setLanguageName(this.languageName)
+                .setCodeLines(199)
+                .setContents("actual.contains")
+                .setRepoRemoteLocation("repoRemoteLocation")
+                .setCodeOwner(this.codeOwner)
+                .setDisplayLocation("mydisplaylocation")
+                .setSource("source"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("actual.contains", null, 0, false);
@@ -545,19 +546,20 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService();
 
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-        queue.add(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
-                this.repoName,
-                "fileName",
-                "fileLocation",
-                "fileLocationFilename",
-                "md5hash",
-                this.languageName,
-                100,
-                "actual.contains",
-                "repoRemoteLocation",
-                this.codeOwner,
-                "mydisplaylocation",
-                "source"));
+        queue.add(new CodeIndexDocument()
+                .setRepoLocationRepoNameLocationFilename("something")
+                .setRepoName(this.repoName)
+                .setFileName("fileName")
+                .setFileLocation("fileLocation")
+                .setFileLocationFilename("fileLocationFilename")
+                .setMd5hash("md5hash")
+                .setLanguageName(this.languageName)
+                .setCodeLines(199)
+                .setContents("PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);")
+                .setRepoRemoteLocation("repoRemoteLocation")
+                .setCodeOwner(this.codeOwner)
+                .setDisplayLocation("mydisplaylocation")
+                .setSource("source"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("emaN*", null, 0, false);
@@ -568,19 +570,20 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService();
 
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-        queue.add(new CodeIndexDocument("repoLocationRepoNameLocationFilename",
-                this.repoName,
-                "fileName",
-                "fileLocation",
-                "fileLocationFilename",
-                "md5hash",
-                this.languageName,
-                100,
-                "PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable); std::cout << \"A fixed-size array:\\n\"; void RegisterVector(const std::string V_AS, ",
-                "repoRemoteLocation",
-                this.codeOwner,
-                "mydisplaylocation",
-                "source"));
+        queue.add(new CodeIndexDocument()
+                .setRepoLocationRepoNameLocationFilename("something")
+                .setRepoName(this.repoName)
+                .setFileName("fileName")
+                .setFileLocation("fileLocation")
+                .setFileLocationFilename("fileLocationFilename")
+                .setMd5hash("md5hash")
+                .setLanguageName(this.languageName)
+                .setCodeLines(199)
+                .setContents("PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable); std::cout << \\\"A fixed-size array:\\\\n\\\"; void RegisterVector(const std::string V_AS,")
+                .setRepoRemoteLocation("repoRemoteLocation")
+                .setCodeOwner(this.codeOwner)
+                .setDisplayLocation("mydisplaylocation")
+                .setSource("source"));
         this.indexService.indexDocument(queue);
 
         SearchResult search = this.indexService.search("PhysicsServer::get_singleton", null, 0, false);
