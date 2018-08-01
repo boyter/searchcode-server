@@ -94,15 +94,6 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isFalse();
     }
 
-    public void testIsBinaryAllNonAscii() {
-        SearchCodeLib sl = new SearchCodeLib();
-
-        ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add("你");
-
-        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isTrue();
-    }
-
     public void testIsBinaryFalse() {
         SearchCodeLib sl = new SearchCodeLib();
 
@@ -123,6 +114,8 @@ public class SearchcodeLibTest extends TestCase {
         for (int i=0; i < 256; i++) {
             minified.append("你");
         }
+        char nul = 0;
+        minified.append(nul);
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add(minified.toString());
 
@@ -133,6 +126,8 @@ public class SearchcodeLibTest extends TestCase {
         SearchCodeLib sl = new SearchCodeLib();
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
+        char nul = 0;
+        codeLines.add("" + nul);
 
         FileClassifier fileClassifier = new FileClassifier();
 
@@ -154,6 +149,8 @@ public class SearchcodeLibTest extends TestCase {
 
         ArrayList<String> codeLines = new ArrayList<>();
         codeLines.add("你你你你你你你你你你你你你你你你你你你你你你你你你你你");
+        char nul = 0;
+        codeLines.add("" + nul);
 
         assertThat(sl.isBinary(codeLines, "myfile.JAVA").isBinary()).isFalse();
     }
@@ -181,50 +178,14 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
     }
 
-    public void testIsBinaryEdge1() {
+    public void testIsBinaryNullByte() {
         SearchCodeLib sl = new SearchCodeLib();
 
-        StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 95; i++) {
-            minified.append("你");
-        }
-        minified.append("aaaaa");
-
         ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified.toString());
+        char nul = 0;
+        codeLines.add("" + nul);
 
-        assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
-    }
-
-    public void testIsBinaryEdge2() {
-        SearchCodeLib sl = new SearchCodeLib();
-
-        StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 96; i++) {
-            minified.append("你");
-        }
-        minified.append("aaaa");
-
-        ArrayList<String> codeLines = new ArrayList<>();
-        codeLines.add(minified.toString());
-
-        assertThat(sl.isBinary(codeLines, "").isBinary()).isTrue();
-    }
-
-    public void testIsBinaryEdge3() {
-        SearchCodeLib sl = new SearchCodeLib();
-
-        StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 200; i++) {
-            minified.append("a");
-        }
-        ArrayList<String> codeLines = new ArrayList<>();
-
-        for (int i=0; i < 200; i++) {
-            codeLines.add(minified.toString());
-        }
-
-        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isFalse();
+        assertThat(sl.isBinary(codeLines, "somefilename").isBinary()).isTrue();
     }
 
     public void testIsMinifiedTrue() {

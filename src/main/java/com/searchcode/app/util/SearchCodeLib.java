@@ -270,40 +270,21 @@ public class SearchCodeLib {
             }
         }
 
-        // If we aren't meant to guess then assume it isnt binary
+        // If we aren't meant to guess then assume it isn't binary
         if (!this.GUESS_BINARY) {
             return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 
-        int lines = codeLines.size() < 10000 ? codeLines.size() : 10000;
-        double asciiCount = 0;
-        double nonAsciiCount = 0;
-
-        for (int i=0; i < lines; i++) {
+        // GNU Grep, ripgrep and git all take the approach that if a file as a nul
+        // byte in it then it is binary. If its good enough for those giants
+        // its good enough for us.
+        for (int i = 0; i < codeLines.size(); i++) {
             String line = codeLines.get(i);
             for (int j = 0; j < line.length(); j++) {
-                if (((int)line.charAt(j)) <= 128) {
-                    asciiCount++;
-                }
-                else {
-                    nonAsciiCount++;
+                if (line.charAt(j) == 0) {
+                    return new BinaryFinding(true, "nul byte found");
                 }
             }
-        }
-
-        if (nonAsciiCount == 0) {
-            return new BinaryFinding(false, Values.EMPTYSTRING);
-        }
-
-        if (asciiCount == 0) {
-            return new BinaryFinding(true, "all characters found non-ascii");
-        }
-
-        // If only 30% of characters are ascii then its probably binary
-        double percent = asciiCount / (asciiCount + nonAsciiCount);
-
-        if (percent < 0.30) {
-            return new BinaryFinding(true, "only 30% of characters are non-ascii");
         }
 
         return new BinaryFinding(false, Values.EMPTYSTRING);

@@ -64,7 +64,7 @@ public class FileClassifier {
      */
     public String languageGuesser(String fileName) {
         fileName = fileName.toLowerCase();
-        String extension;
+        String extension = Values.EMPTYSTRING;
 
         Optional<String> lang = this.checkIfExtentionExists(fileName);
 
@@ -74,7 +74,7 @@ public class FileClassifier {
         }
 
         if (!lang.isPresent()) {
-            extension = this.getExtension(fileName);
+            extension = this.getExtension(extension);
             lang = this.checkIfExtentionExists(extension);
         }
 

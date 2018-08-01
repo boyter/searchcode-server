@@ -39,23 +39,6 @@ public class CodeIndexDocument {
         this.schash = Values.EMPTYSTRING; // Needs to be set to avoid issues with indexing
     }
 
-//    public CodeIndexDocument(String repoLocationRepoNameLocationFilename, String repoName, String fileName, String fileLocation, String fileLocationFilename, String md5hash, String languageName, int codeLines, String contents, String repoRemoteLocation, String codeOwner, String displayLocation, String source) {
-//        this.setRepoLocationRepoNameLocationFilename(repoLocationRepoNameLocationFilename);
-//        this.setRepoName(repoName);
-//        this.setFileName(fileName);
-//        this.setFileLocation(fileLocation);
-//        this.setFileLocationFilename(fileLocationFilename);
-//        this.setMd5hash(md5hash);
-//        this.setLanguageName(languageName);
-//        this.setCodeLines(codeLines);
-//        this.setContents(contents);
-//        this.setRepoRemoteLocation(repoRemoteLocation);
-//        this.setCodeOwner(codeOwner);
-//        this.schash = Values.EMPTYSTRING;
-//        this.displayLocation = displayLocation;
-//        this.source = source;
-//    }
-
     /**
      * Used for identification for this specific file in the index
      */

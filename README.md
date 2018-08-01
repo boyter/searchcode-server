@@ -205,6 +205,7 @@ Change Log
 XX XXXX XXXX - 1.3.14 https://github.com/boyter/searchcode-server/projects/7
  - Move over to scc language definitions for identifying languages https://github.com/boyter/searchcode-server/issues/186
  - Resolve issue with searching for identifiers in C++ namespaces https://github.com/boyter/searchcode-server/issues/188
+ - Improved binary file detection with technique taken from GNU Grep, ripgrep and git of checking for nul byte
 
 15 June 2018 - 1.3.13 https://github.com/boyter/searchcode-server/projects/6
  - Repository names now support any character https://github.com/boyter/searchcode-server/issues/122

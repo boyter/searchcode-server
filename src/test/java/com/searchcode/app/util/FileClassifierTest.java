@@ -51,4 +51,9 @@ public class FileClassifierTest extends TestCase {
         String result = this.fileClassifier.languageGuesser(".gitignore");
         assertThat(result).isEqualTo("gitignore");
     }
+
+    public void testLanguageGuesserCssBug() {
+        String result = this.fileClassifier.languageGuesser("kimbie.dark.css");
+        assertThat(result).isEqualTo("CSS");
+    }
 }
