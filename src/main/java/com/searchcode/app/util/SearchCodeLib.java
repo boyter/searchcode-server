@@ -300,7 +300,7 @@ public class SearchCodeLib {
         double best = 0;
         String owner = "Unknown";
 
-        for(CodeOwner codeOwner: codeOwners) {
+        for (CodeOwner codeOwner: codeOwners) {
             double age = (currentUnix - codeOwner.getMostRecentUnixCommitTimestamp()) / 60 / 60;
             double calc = codeOwner.getNoLines() / Math.pow((age), 1.8);
 
