@@ -109,7 +109,6 @@ public class SearchCodeLib {
 
         // Performance improvement hack
         if (contents.length() > this.MAX_SPLIT_LENGTH) {
-
             // Add AAA to ensure we dont split the last word if it was cut off
             contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
