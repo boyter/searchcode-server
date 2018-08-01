@@ -127,7 +127,6 @@ public class App {
             path("/v1", () -> {
                 get("/version/", (request, response) -> {
                     addJsonHeaders(response);
-                    SearchRouteService searchRouteService = new SearchRouteService();
                     return new JsonTransformer().render(new VersionResponse().setVersion(VERSION));
                 });
             });
