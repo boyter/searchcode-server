@@ -14,6 +14,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dto.api.VersionResponse;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
@@ -121,6 +122,16 @@ public class App {
         ////////////////////////////////////////////////////
 
         path("/api", () -> {
+
+            // All new API endpoints should go in here to allow public exposure and versioning
+            path("/v1", () -> {
+                get("/version/", (request, response) -> {
+                    addJsonHeaders(response);
+                    SearchRouteService searchRouteService = new SearchRouteService();
+                    return new JsonTransformer().render(new VersionResponse().setVersion(VERSION));
+                });
+            });
+
             get("/codesearch/", (request, response) -> {
                 addJsonHeaders(response);
                 SearchRouteService searchRouteService = new SearchRouteService();
