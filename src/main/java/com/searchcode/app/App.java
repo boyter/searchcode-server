@@ -122,10 +122,14 @@ public class App {
         ////////////////////////////////////////////////////
 
         path("/api", () -> {
-
             // All new API endpoints should go in here to allow public exposure and versioning
             path("/v1", () -> {
                 get("/version/", (request, response) -> {
+                    addJsonHeaders(response);
+                    return new JsonTransformer().render(new VersionResponse().setVersion(VERSION));
+                });
+
+                get("/health-check/", (request, response) -> {
                     addJsonHeaders(response);
                     return new JsonTransformer().render(new VersionResponse().setVersion(VERSION));
                 });
