@@ -28,20 +28,6 @@ public class RepoResult {
 
     public RepoResult() {}
 
-//    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
-//        Gson gson = new Gson();
-//
-//        this.setRowId(rowId);
-//        this.setName(name);
-//        this.setScm(scm);
-//        this.setUrl(url);
-//        this.setUsername(username);
-//        this.setPassword(password);
-//        this.setSource(source);
-//        this.setBranch(branch);
-//        this.setData(gson.fromJson(data, RepoData.class));
-//    }
-
     /**
      * Required because we use this in the UniqueRepoQueue and in a few other places to ensure we don't
      * add multiples of the same repo
