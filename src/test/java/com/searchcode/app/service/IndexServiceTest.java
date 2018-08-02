@@ -652,7 +652,7 @@ public class IndexServiceTest extends TestCase {
                         .setPassword("password")
                         .setSource("source")
                         .setBranch("branch")
-                        .setData("{}}"));
+                        .setData("{}"));
             } catch (IOException ex) {
                 assertThat(true).isFalse();
             }

@@ -457,7 +457,7 @@ public class ApiRouteServiceTest extends TestCase {
                     .setPassword("password")
                     .setSource("source")
                     .setBranch("branch")
-                    .setData("\"{\\\"averageIndexTimeSeconds\\\":1}\""))
+                    .setData("{\"averageIndexTimeSeconds\":1}"))
         );
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null, new Helpers());
