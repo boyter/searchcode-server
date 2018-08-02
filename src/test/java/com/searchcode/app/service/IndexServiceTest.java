@@ -641,7 +641,22 @@ public class IndexServiceTest extends TestCase {
         methodList.add(arg -> this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000)));
         methodList.add(arg -> this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000)));
         methodList.add(arg -> this.indexService.getCodeIndexLinesCount());
-        methodList.add(arg -> { try { this.indexService.deleteByRepo(new RepoResult(0, RandomStringUtils.randomAscii(rand.nextInt(20) + 1), "", "", "", "", "", "", "{}")); } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> {
+            try {
+                this.indexService.deleteByRepo(new RepoResult()
+                        .setRowId(0)
+                        .setName(RandomStringUtils.randomAscii(rand.nextInt(20) + 1))
+                        .setScm("scm")
+                        .setUrl("url")
+                        .setUsername("username")
+                        .setPassword("password")
+                        .setSource("source")
+                        .setBranch("branch")
+                        .setData("{}}"));
+            } catch (IOException ex) {
+                assertThat(true).isFalse();
+            }
+        });
         methodList.add(arg -> { try { this.indexService.deleteAll(); } catch (IOException e) { assertThat(true).isFalse(); }});
         methodList.add(arg -> this.indexService.flipIndex());
         methodList.add(arg -> this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));

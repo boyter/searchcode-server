@@ -360,7 +360,16 @@ public class ApiRouteService {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        RepoResult newRepoResult = new RepoResult(-1, reponames.orElse(Values.EMPTYSTRING), repotype.orElse(Values.EMPTYSTRING), repourls.orElse(Values.EMPTYSTRING), repousername.orElse(Values.EMPTYSTRING), repopassword.orElse(Values.EMPTYSTRING), reposource.orElse(Values.EMPTYSTRING), repobranch.orElse(Values.EMPTYSTRING), "{}");
+        RepoResult newRepoResult = new RepoResult()
+                .setRowId(-1)
+                .setName(reponames.orElse(Values.EMPTYSTRING))
+                .setScm(repotype.orElse(Values.EMPTYSTRING))
+                .setUrl(repourls.orElse(Values.EMPTYSTRING))
+                .setUsername(repousername.orElse(Values.EMPTYSTRING))
+                .setPassword(repopassword.orElse(Values.EMPTYSTRING))
+                .setSource(reposource.orElse(Values.EMPTYSTRING))
+                .setBranch(repobranch.orElse(Values.EMPTYSTRING))
+                .setData("{}");
 
         // Set optional fields
         newRepoResult.getData().source = source.orElse(Values.EMPTYSTRING);

@@ -396,7 +396,17 @@ public class AdminRouteService {
                     scm = "git";
                 }
 
-                RepoResult repoResult = new RepoResult(-1, repoparams[0], scm, repoparams[2], repoparams[3], repoparams[4], repoparams[5], branch, "{}");
+                RepoResult repoResult = new RepoResult()
+                        .setRowId(-1)
+                        .setName(repoparams[0])
+                        .setScm(scm)
+                        .setUrl(repoparams[2])
+                        .setUsername(repoparams[3])
+                        .setPassword(repoparams[4])
+                        .setSource(repoparams[5])
+                        .setBranch(branch)
+                        .setData("{}");
+
                 ValidatorResult validate = this.validatorService.validate(repoResult, false);
 
                 if (validate.isValid) {
@@ -443,7 +453,17 @@ public class AdminRouteService {
                 branch = "master";
             }
 
-            RepoResult repoResult = new RepoResult(-1, reponames[i], reposcms[i], repourls[i], repousername[i], repopassword[i], reposource[i], branch, "{}");
+            RepoResult repoResult = new RepoResult()
+                    .setRowId(-1)
+                    .setName(reponames[i])
+                    .setScm(reposcms[i])
+                    .setUrl(repourls[i])
+                    .setUsername(repousername[i])
+                    .setPassword(repopassword[i])
+                    .setSource(reposource[i])
+                    .setBranch(branch)
+                    .setData("{}");
+
             validate = this.validatorService.validate(repoResult, ignoreDuplicates);
 
             repoResult.getData().source = source[i];

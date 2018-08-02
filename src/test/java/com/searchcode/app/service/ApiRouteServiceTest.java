@@ -448,7 +448,16 @@ public class ApiRouteServiceTest extends TestCase {
         );
 
         when(repoMock.getRepoByName("somename")).thenReturn(
-            Optional.of(new RepoResult(0, "name", "scm", "url", "username", "password", "source", "branch", "{\"averageIndexTimeSeconds\":1}"))
+            Optional.of(new RepoResult()
+                    .setRowId(0)
+                    .setName("name")
+                    .setScm("scm")
+                    .setUrl("url")
+                    .setUsername("username")
+                    .setPassword("password")
+                    .setSource("source")
+                    .setBranch("branch")
+                    .setData("\"{\\\"averageIndexTimeSeconds\\\":1}\""))
         );
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null, new Helpers());
@@ -468,8 +477,17 @@ public class ApiRouteServiceTest extends TestCase {
         );
 
         when(repoMock.getRepoByName("somename")).thenReturn(
-                Optional.of(new RepoResult(0, "name", "scm", "url", "username", "password", "source", "branch", "\n" +
-                        "{\"rowId\":1,\"name\":\"test\",\"scm\":\"git\",\"url\":\"/test/\",\"username\":\"\",\"password\":\"\",\"source\":\"\",\"branch\":\"master\",\"data\":{\"averageIndexTimeSeconds\":9,\"indexStatus\":\"success\",\"jobRunTime\":{\"seconds\":1496356541,\"nanos\":188000000}}}"))
+                Optional.of(new RepoResult()
+                        .setRowId(0)
+                        .setName("name")
+                        .setScm("scm")
+                        .setUrl("url")
+                        .setUsername("username")
+                        .setPassword("password")
+                        .setSource("source")
+                        .setBranch("branch")
+                        .setData("{\"rowId\":1,\"name\":\"test\",\"scm\":\"git\",\"url\":\"/test/\",\"username\":\"\",\"password\":\"\",\"source\":\"\",\"branch\":\"master\",\"data\":{\"averageIndexTimeSeconds\":9,\"indexStatus\":\"success\",\"jobRunTime\":{\"seconds\":1496356541,\"nanos\":188000000}}}"))
+
         );
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null, new Helpers());

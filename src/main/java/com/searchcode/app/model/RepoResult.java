@@ -26,22 +26,21 @@ public class RepoResult {
     private String branch = Values.EMPTYSTRING;
     private RepoData data = null;
 
-    public RepoResult() {
-    }
+    public RepoResult() {}
 
-    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
-        Gson gson = new Gson();
-
-        this.setRowId(rowId);
-        this.setName(name);
-        this.setScm(scm);
-        this.setUrl(url);
-        this.setUsername(username);
-        this.setPassword(password);
-        this.setSource(source);
-        this.setBranch(branch);
-        this.setData(gson.fromJson(data, RepoData.class));
-    }
+//    public RepoResult(int rowId, String name, String scm, String url, String username, String password, String source, String branch, String data) {
+//        Gson gson = new Gson();
+//
+//        this.setRowId(rowId);
+//        this.setName(name);
+//        this.setScm(scm);
+//        this.setUrl(url);
+//        this.setUsername(username);
+//        this.setPassword(password);
+//        this.setSource(source);
+//        this.setBranch(branch);
+//        this.setData(gson.fromJson(data, RepoData.class));
+//    }
 
     /**
      * Required because we use this in the UniqueRepoQueue and in a few other places to ensure we don't
@@ -68,8 +67,9 @@ public class RepoResult {
         return rowId;
     }
 
-    public void setRowId(int rowId) {
+    public RepoResult setRowId(int rowId) {
         this.rowId = rowId;
+        return this;
     }
 
     public String getName() {
@@ -91,65 +91,73 @@ public class RepoResult {
         return toReturn;
     }
 
-    public void setName(String name) {
+    public RepoResult setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getScm() {
         return scm;
     }
 
-    public void setScm(String scm) {
+    public RepoResult setScm(String scm) {
         this.scm = scm;
+        return this;
     }
 
     public String getUrl() {
         return url;
     }
 
-    public void setUrl(String url) {
+    public RepoResult setUrl(String url) {
         this.url = url;
+        return this;
     }
 
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
+    public RepoResult setUsername(String username) {
         if (username == null) {
             username = Values.EMPTYSTRING;
         }
         this.username = username;
+
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public RepoResult setPassword(String password) {
         if (password == null) {
             password = Values.EMPTYSTRING;
         }
         this.password = password;
+        return this;
     }
 
     public String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public RepoResult setSource(String source) {
         if (source == null) {
             source = Values.EMPTYSTRING;
         }
         this.source = source;
+        return this;
     }
 
     public String getBranch() {
         return branch;
     }
 
-    public void setBranch(String branch) {
+    public RepoResult setBranch(String branch) {
         this.branch = branch;
+        return this;
     }
 
     @Override
@@ -166,7 +174,14 @@ public class RepoResult {
         return gson.toJson(this.data);
     }
 
-    public void setData(RepoData data) {
+    public RepoResult setData(RepoData data) {
         this.data = data;
+        return this;
+    }
+
+    public RepoResult setData(String data) {
+        Gson gson = new Gson();
+        this.setData(gson.fromJson(data, RepoData.class));
+        return this;
     }
 }
