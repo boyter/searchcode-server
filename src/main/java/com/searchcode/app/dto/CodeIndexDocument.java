@@ -21,19 +21,25 @@ public class CodeIndexDocument {
     private String fileLocationFilename;
     private String md5hash;
     private String languageName;
-    private int codeLines;
+    private int lines; // How many lines in the file
+    private int codeLines; // How many lines are code
+    private int commentLines; // How many lines are comments
+    private int blankLines; // How many lines are blank
+    private int complexity; // Complexity calculation taken from scc
     private String contents;
     private String repoRemoteLocation;
     private String codeOwner;
+    private String schash;
+    private String displayLocation; // Actually used on the UI display
+    private String source;
+
+    // The below are used to support historical searches which is not currently used
     private String revision;
     private String yearMonthDay;
     private String yearMonth;
     private String year;
     private String message;
     private String deleted; // Used for time filter to know when this entry was removed
-    private String schash;
-    private String displayLocation; // What we actually should use for UI
-    private String source;
 
     public CodeIndexDocument() {
         this.schash = Values.EMPTYSTRING; // Needs to be set to avoid issues with indexing
@@ -109,12 +115,48 @@ public class CodeIndexDocument {
         return this;
     }
 
+    public int getLines() {
+        return this.lines;
+    }
+
+    public CodeIndexDocument setLines(int lines) {
+        this.lines = lines;
+        return this;
+    }
+
     public int getCodeLines() {
         return codeLines;
     }
 
     public CodeIndexDocument setCodeLines(int codeLines) {
         this.codeLines = codeLines;
+        return this;
+    }
+
+    public int getBlankLines() {
+        return this.blankLines;
+    }
+
+    public CodeIndexDocument setBlankLines(int blankLines) {
+        this.blankLines = blankLines;
+        return this;
+    }
+
+    public int getCommentLines() {
+        return this.commentLines;
+    }
+
+    public CodeIndexDocument setCommentLines(int commentLines) {
+        this.commentLines = commentLines;
+        return this;
+    }
+
+    public int getComplexity() {
+        return this.complexity;
+    }
+
+    public CodeIndexDocument setComplexity(int complexity) {
+        this.complexity = complexity;
         return this;
     }
 

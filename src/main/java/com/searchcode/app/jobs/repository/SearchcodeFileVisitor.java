@@ -14,6 +14,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 
+/**
+ * This class is responsible for walking the file tree after a checkout
+ * and processing the files ready to be indexed.
+ */
 public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
     private final IndexBaseRepoJob indexBaseRepoJob;
@@ -43,10 +47,12 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
         try {
             java.nio.file.Path filePath = (java.nio.file.Path)file;
 
+            // If pause or terminate has been triggered than exit at first opportunity
             if (this.indexBaseRepoJob.shouldJobPauseOrTerminate()) {
                 return FileVisitResult.TERMINATE;
             }
 
+            // If this repository has since been deleted stop processing it
             if (Singleton.getDataService().getPersistentDelete().contains(this.repoResult.getName())) {
                 return FileVisitResult.TERMINATE;
             }
