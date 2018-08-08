@@ -57,6 +57,7 @@ public class CodeIndexDocument {
     }
 
     public CodeIndexDocument setRepoLocationRepoNameLocationFilename(String repoLocationRepoNameLocationFilename) {
+        // TODO move this out of here, lets keep these things as simple as possible
         this.repoLocationRepoNameLocationFilename = repoLocationRepoNameLocationFilename.replace("//", "/");
         return this;
     }

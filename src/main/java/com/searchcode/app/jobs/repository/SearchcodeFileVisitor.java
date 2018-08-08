@@ -101,6 +101,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getDirectoryName(), fileRepoLocations, Singleton.getSearchCodeLib());
 
+
             String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
 
             if (Values.FILE.equals(this.repoResult.getScm())) {

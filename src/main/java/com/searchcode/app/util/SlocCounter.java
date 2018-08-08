@@ -135,18 +135,12 @@ public class SlocCounter {
      * already looked at are jumped in order to make it simpler to understand
      * which means it is probably slower than the Go version.
      */
-    public SlocCount countStats(CodeIndexDocument codeIndexDocument) {
-        if (codeIndexDocument == null) {
-            return new SlocCount();
-        }
-
-        String contents = codeIndexDocument.getContents();
-
+    public SlocCount countStats(String contents, String languageName) {
         if (contents == null || contents.isEmpty()) {
             return new SlocCount();
         }
 
-        FileClassifierResult fileClassifierResult = this.database.get(codeIndexDocument.getLanguageName());
+        FileClassifierResult fileClassifierResult = this.database.get(languageName);
 
         State currentState = State.S_BLANK;
 
