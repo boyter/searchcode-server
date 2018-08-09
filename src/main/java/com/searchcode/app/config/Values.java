@@ -121,7 +121,11 @@ public class Values {
     public static final String FILELOCATIONFILENAME = "filelocationfilename";
     public static final String FILENAME = "filename";
     public static final String MD5HASH = "md5hash";
+    public static final String LINES ="lines";
     public static final String CODELINES = "codelines";
+    public static final String BLANKLINES = "blanklines";
+    public static final String COMMENTLINES = "commentlines";
+    public static final String COMPLEXITY = "complexity";
     public static final String REPOLOCATION = "repolocation";
     public static final String MODIFIED = "modified";
     public static final String REVISION = "revision";

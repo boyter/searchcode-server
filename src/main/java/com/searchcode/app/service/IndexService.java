@@ -284,7 +284,11 @@ public class IndexService implements IIndexService {
         document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    this.helpers.replaceForIndex(codeIndexDocument.getLanguageName()).toLowerCase(), Field.Store.NO));
+        document.add(new IntField(Values.LINES,                     codeIndexDocument.getLines(), Field.Store.YES));
         document.add(new IntField(Values.CODELINES,                 codeIndexDocument.getCodeLines(), Field.Store.YES));
+        document.add(new IntField(Values.BLANKLINES,                codeIndexDocument.getBlankLines(), Field.Store.YES));
+        document.add(new IntField(Values.COMMENTLINES,              codeIndexDocument.getCommentLines(), Field.Store.YES));
+        document.add(new IntField(Values.COMPLEXITY,                codeIndexDocument.getComplexity(), Field.Store.YES));
         document.add(new TextField(Values.CONTENTS,                 indexContents.toLowerCase(), Field.Store.NO));
         document.add(new TextField(Values.REPOLOCATION,             codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
         document.add(new TextField(Values.CODEOWNER,                codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));

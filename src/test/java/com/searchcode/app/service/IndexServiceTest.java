@@ -135,14 +135,18 @@ public class IndexServiceTest extends TestCase {
             .setFileLocationFilename("fileLocationFilename")
             .setMd5hash("md5hash")
             .setLanguageName("language Name")
+            .setLines(10)
             .setCodeLines(10)
+            .setBlankLines(5)
+            .setCommentLines(5)
+            .setComplexity(20)
             .setContents("contents")
             .setRepoRemoteLocation("repoRemoteLocation")
             .setCodeOwner("code Owner")
             .setDisplayLocation("displayLocation")
             .setSource("code source"));
 
-        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(25);
+        AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(29);
 
         IndexableField[] fields = indexFields.getFields(Values.REPONAME);
         AssertionsForClassTypes.assertThat(fields[0].stringValue()).isEqualTo("repo_Name");
