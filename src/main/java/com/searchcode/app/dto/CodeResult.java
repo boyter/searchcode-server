@@ -37,6 +37,8 @@ public class CodeResult {
     public String displayLocation = "";
     public String source = "";
 
+    public CodeResult(){}
+
     public CodeResult(List<String> code, List<CodeMatchResult>matchingResults) {
         this.setCode(code);
         this.setMatchingResults(matchingResults);
@@ -46,96 +48,108 @@ public class CodeResult {
         return code;
     }
 
-    public void setCode(List<String> code) {
+    public CodeResult setCode(List<String> code) {
         this.code = code;
+        return this;
     }
 
     public List<CodeMatchResult> getMatchingResults() {
         return matchingResults;
     }
 
-    public void setMatchingResults(List<CodeMatchResult> matchingResults) {
+    public CodeResult setMatchingResults(List<CodeMatchResult> matchingResults) {
         this.matchingResults = matchingResults;
+        return this;
     }
 
     public String getCodePath() {
         return codePath;
     }
 
-    public void setCodePath(String codePath) {
+    public CodeResult setCodePath(String codePath) {
         this.codePath = codePath;
+        return this;
     }
 
     public String getFileName() {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
+    public CodeResult setFileName(String fileName) {
         this.fileName = fileName;
+        return this;
     }
 
     public String getFileLocation() {
         return fileLocation;
     }
 
-    public void setFileLocation(String fileLocation) {
+    public CodeResult setFileLocation(String fileLocation) {
         this.fileLocation = fileLocation;
+        return this;
     }
 
     public String getMd5hash() {
         return md5hash;
     }
 
-    public void setMd5hash(String md5hash) {
+    public CodeResult setMd5hash(String md5hash) {
         this.md5hash = md5hash;
+        return this;
     }
 
     public String getLanguageName() {
         return languageName;
     }
 
-    public void setLanguageName(String languageName) {
+    public CodeResult setLanguageName(String languageName) {
         this.languageName = languageName;
+        return this;
     }
 
     public String getCodeLines() {
         return codeLines;
     }
 
-    public void setCodeLines(String codeLines) {
+    public CodeResult setCodeLines(String codeLines) {
         this.codeLines = codeLines;
+        return this;
     }
 
     public int getDocumentId() {
         return documentId;
     }
 
-    public void setDocumentId(int documentId) {
+    public CodeResult setDocumentId(int documentId) {
         this.documentId = documentId;
+        return this;
     }
 
     public String getRepoName() {
         return repoName;
     }
 
-    public void setRepoName(String repoName) {
+    public CodeResult setRepoName(String repoName) {
         this.repoName = repoName;
+        return this;
     }
 
     public String getRepoLocation() {
         return repoLocation;
     }
 
-    public void setRepoLocation(String repoLocation) {
+    public CodeResult setRepoLocation(String repoLocation) {
         this.repoLocation = repoLocation;
+        return this;
     }
 
     public String getCodeOwner() {
         return codeOwner;
     }
 
-    public void setCodeOwner(String codeOwner) {
+    public CodeResult setCodeOwner(String codeOwner) {
         this.codeOwner = codeOwner;
+        return this;
     }
 
     public String getRevision() {
@@ -174,31 +188,35 @@ public class CodeResult {
         return codeId;
     }
 
-    public void setCodeId(String codeId) {
+    public CodeResult setCodeId(String codeId) {
         this.codeId = codeId;
+        return this;
     }
 
     public String getFilePath() {
         return filePath;
     }
 
-    public void setFilePath(String path) {
+    public CodeResult setFilePath(String path) {
         this.filePath = path;
+        return this;
     }
 
     public String getDisplayLocation() {
         return displayLocation;
     }
 
-    public void setDisplayLocation(String displayLocation) {
+    public CodeResult setDisplayLocation(String displayLocation) {
         this.displayLocation = displayLocation;
+        return this;
     }
 
     public String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public CodeResult setSource(String source) {
         this.source = source;
+        return this;
     }
 }

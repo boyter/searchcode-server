@@ -952,21 +952,22 @@ public class IndexService implements IIndexService {
     }
 
     private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId) {
-        CodeResult codeResult = new CodeResult(code, null);
-        codeResult.setFilePath(filePath);
-
-        codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-        codeResult.setFileName(doc.get(Values.FILENAME));
-        codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
-        codeResult.setMd5hash(doc.get(Values.MD5HASH));
-        codeResult.setCodeLines(doc.get(Values.CODELINES));
-        codeResult.setDocumentId(docId);
-        codeResult.setRepoName(doc.get(Values.REPONAME));
-        codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
-        codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
-        codeResult.setCodeId(doc.get(Values.CODEID));
-        codeResult.setDisplayLocation(doc.get(Values.DISPLAY_LOCATION));
-        codeResult.setSource(doc.get(Values.SOURCE));
+        CodeResult codeResult = new CodeResult()
+                .setCode(code)
+                .setMatchingResults(null)
+                .setFilePath(filePath)
+                .setCodePath(doc.get(Values.FILELOCATIONFILENAME))
+                .setFileName(doc.get(Values.FILENAME))
+                .setLanguageName(doc.get(Values.LANGUAGENAME))
+                .setMd5hash(doc.get(Values.MD5HASH))
+                .setCodeLines(doc.get(Values.CODELINES))
+                .setDocumentId(docId)
+                .setRepoName(doc.get(Values.REPONAME))
+                .setRepoLocation(doc.get(Values.REPOLOCATION))
+                .setCodeOwner(doc.get(Values.CODEOWNER))
+                .setCodeId(doc.get(Values.CODEID))
+                .setDisplayLocation(doc.get(Values.DISPLAY_LOCATION))
+                .setSource(doc.get(Values.SOURCE));
 
         return codeResult;
     }
