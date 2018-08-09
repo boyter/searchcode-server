@@ -4,6 +4,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.SlocCounter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -100,6 +101,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getDirectoryName(), fileRepoLocations, Singleton.getSearchCodeLib());
+            SlocCounter.SlocCount slocCount = Singleton.getSlocCounter().countStats(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"), languageName);
 
 
             String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
@@ -119,7 +121,11 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 .setFileLocationFilename(fileLocationFilename)
                 .setMd5hash(md5Hash)
                 .setLanguageName(languageName)
-                .setCodeLines(codeLinesReturn.getCodeLines().size())
+                .setCodeLines(slocCount.codeCount)
+                .setBlankLines(slocCount.blankCount)
+                .setCommentLines(slocCount.commentCount)
+                .setLines(slocCount.linesCount)
+                .setComplexity(slocCount.complexity)
                 .setContents(StringUtils.join(codeLinesReturn.getCodeLines(), " "))
                 .setRepoRemoteLocation(repoRemoteLocation)
                 .setCodeOwner(codeOwner)
