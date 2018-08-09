@@ -10,6 +10,8 @@
 
 package com.searchcode.app.dto;
 
+import com.searchcode.app.config.Values;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,24 +20,28 @@ import java.util.List;
 public class CodeResult {
     public List<String> code = new ArrayList<>();
     public List<CodeMatchResult> matchingResults = new ArrayList<>();
-    public String filePath = "";
-    public String codePath = "";
-    public String fileName = "";
-    public String fileLocation = "";
-    public String md5hash = "";
-    public String languageName = "";
-    public String codeLines = "";
+    public String filePath = Values.EMPTYSTRING;
+    public String codePath = Values.EMPTYSTRING;
+    public String fileName = Values.EMPTYSTRING;
+    public String fileLocation = Values.EMPTYSTRING;
+    public String md5hash = Values.EMPTYSTRING;
+    public String languageName = Values.EMPTYSTRING;
+    public String lines = Values.EMPTYSTRING;
+    public String codeLines = Values.EMPTYSTRING;
+    public String blankLines = Values.EMPTYSTRING;
+    public String commentLines = Values.EMPTYSTRING;
+    public String complexity = Values.EMPTYSTRING;
     public int documentId = 0;
-    public String repoName = "";
-    public String repoLocation = "";
-    public String codeOwner = "";
-    public String revision = "";
-    public String yearMonthDay = "";
-    public String deleted = "";
-    public String message = "";
-    public String codeId = "";
-    public String displayLocation = "";
-    public String source = "";
+    public String repoName = Values.EMPTYSTRING;
+    public String repoLocation = Values.EMPTYSTRING;
+    public String codeOwner = Values.EMPTYSTRING;
+    public String revision = Values.EMPTYSTRING;
+    public String yearMonthDay = Values.EMPTYSTRING;
+    public String deleted = Values.EMPTYSTRING;
+    public String message = Values.EMPTYSTRING;
+    public String codeId = Values.EMPTYSTRING;
+    public String displayLocation = Values.EMPTYSTRING;
+    public String source = Values.EMPTYSTRING;
 
     public CodeResult(){}
 
@@ -107,12 +113,48 @@ public class CodeResult {
         return this;
     }
 
+    public String getLines() {
+        return lines;
+    }
+
+    public CodeResult setLines(String lines) {
+        this.lines = lines;
+        return this;
+    }
+
     public String getCodeLines() {
         return codeLines;
     }
 
     public CodeResult setCodeLines(String codeLines) {
         this.codeLines = codeLines;
+        return this;
+    }
+
+    public String getCommentLines() {
+        return commentLines;
+    }
+
+    public CodeResult setCommentLines(String commentLines) {
+        this.commentLines = commentLines;
+        return this;
+    }
+
+    public String getBlankLines() {
+        return blankLines;
+    }
+
+    public CodeResult setBlankLines(String blankLines) {
+        this.blankLines = blankLines;
+        return this;
+    }
+
+    public String getComplexity() {
+        return complexity;
+    }
+
+    public CodeResult setComplexity(String complexity) {
+        this.complexity = complexity;
         return this;
     }
 
