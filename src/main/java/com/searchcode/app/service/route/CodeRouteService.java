@@ -210,7 +210,7 @@ public class CodeRouteService {
         map.put("fileName", codeResult.fileName);
 
         map.put("codePath", codeResult.getDisplayLocation());
-        map.put("codeLength", codeResult.codeLines);
+        map.put("codeLength", codeResult.lines);
 
         map.put("linenos", lineNos.toString());
 
