@@ -157,7 +157,7 @@ public class CodeRouteServiceTest extends TestCase {
         CodeRouteService codeRouteService = new CodeRouteService(indexService);
 
         CodeResult codeResult = new CodeResult(new ArrayList<>(), new ArrayList<>());
-        codeResult.setCodeLines("100");
+        codeResult.setLines("100");
         codeResult.setLanguageName("LanguageName");
         codeResult.setMd5hash("md5hash");
         codeResult.setRepoName("myRepo");

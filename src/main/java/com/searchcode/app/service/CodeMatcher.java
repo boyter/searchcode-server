@@ -256,7 +256,7 @@ public class CodeMatcher {
         List<String> tokens = Arrays.asList(line.split(" "));
         List<String> returnList = new ArrayList<>();
 
-        for(String token: tokens) {
+        for (String token: tokens) {
 
             String longestTerm = "";
 

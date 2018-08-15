@@ -142,13 +142,21 @@ public class Helpers {
         return (int) (System.currentTimeMillis() / 1000);
     }
 
+    /**
+     * Reads a file into list of strings but will attempt to guess the encoding.
+     * Has and additional check MAX_FILE_LENGTH_READ which will ensure it only reads
+     * as deep into the file as that many bytes to avoid files with no newlines
+     * using all the memory
+     * NB if you change this method pay attention to performance as it can slow
+     * everything down considerably if implemented poorly
+     */
     public List<String> readFileLinesGuessEncoding(String filePath, int maxFileLineDepth) throws IOException {
         BufferedReader bufferedReader = null;
         StringBuilder stringBuilder = new StringBuilder();
 
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), this.guessCharset(new File(filePath))));
-            
+
             int i = 0;
             int count = 0;
             while((i = bufferedReader.read()) != -1 && count < MAX_FILE_LENGTH_READ) {
