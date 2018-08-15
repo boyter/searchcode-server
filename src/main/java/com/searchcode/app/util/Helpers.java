@@ -148,16 +148,13 @@ public class Helpers {
 
         try {
             bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), this.guessCharset(new File(filePath))));
-
-            char[] chars = new char[MAX_FILE_LENGTH_READ];
-            for (int len; (len = bufferedReader.read(chars)) > 0;) {
-                stringBuilder.append(String.copyValueOf(chars).trim());
-
-                if (stringBuilder.length() >= this.MAX_FILE_LENGTH_READ) {
-                    break;
-                }
+            
+            int i = 0;
+            int count = 0;
+            while((i = bufferedReader.read()) != -1 && count < MAX_FILE_LENGTH_READ) {
+                stringBuilder.append((char)i);
+                count++;
             }
-
         }
         finally {
             IOUtils.closeQuietly(bufferedReader);
