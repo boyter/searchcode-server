@@ -3133,7 +3133,11 @@
       "!= ",
       "== "
     ],
-    "extensions": [],
+    "extensions": [
+      "csig",
+      "sconstruct",
+      "sconscript"
+    ],
     "multi_line": [],
     "quotes": [
       [
@@ -5376,5 +5380,14 @@
         "\""
       ]
     ]
+  },
+  "AsciiDoc": {
+    "line_comment": [],
+    "complexitychecks": [],
+    "extensions": [
+      "adoc"
+    ],
+    "multi_line": [],
+    "quotes": []
   }
 }
