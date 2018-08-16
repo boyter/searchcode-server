@@ -223,7 +223,7 @@ public class IndexService implements IIndexService {
             codeIndexDocumentList.parallelStream()
                     .forEach(x -> {
                         this.logger.info("Indexing file " + x.getRepoLocationRepoNameLocationFilename());
-                        this.decrementCodeIndexLinesCount(x.getCodeLines());
+                        this.decrementCodeIndexLinesCount(x.getLines());
 
                         FacetsConfig facetsConfig = new FacetsConfig();
                         facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
