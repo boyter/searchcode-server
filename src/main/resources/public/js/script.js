@@ -747,6 +747,7 @@ var SearchSourcesFilterComponent = {
     view: function(ctrl, args) {
         var showmoreless = m('div');
 
+        return showmoreless;
         if (args.sourcefilters === undefined || args.sourcefilters.length == 0) {
             return showmoreless;
         }
