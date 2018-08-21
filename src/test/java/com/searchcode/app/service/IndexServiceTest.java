@@ -45,6 +45,7 @@ public class IndexServiceTest extends TestCase {
             .setMd5hash("md5hash")
             .setLanguageName(this.languageName)
             .setCodeLines(100)
+            .setLines(99)
             .setContents(this.contents)
             .setRepoRemoteLocation("repoRemoteLocation")
             .setCodeOwner(this.codeOwner)
@@ -392,7 +393,7 @@ public class IndexServiceTest extends TestCase {
 
         ProjectStats projectStats = this.indexService.getProjectStats(this.repoName);
         assertThat(projectStats.getTotalFiles()).isEqualTo(1);
-        assertThat(projectStats.getTotalCodeLines()).isEqualTo(100);
+        assertThat(projectStats.getTotalCodeLines()).isEqualTo(99);
     }
 
     public void testGetProjectFileTree() throws IOException {
