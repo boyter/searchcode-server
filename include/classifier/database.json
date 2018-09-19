@@ -159,7 +159,8 @@
         "|#"
       ]
     ],
-    "quotes": []
+    "quotes": [],
+    "nestedmultiline": true
   },
   "LESS": {
     "line_comment": [
@@ -209,7 +210,8 @@
         "-/"
       ]
     ],
-    "quotes": []
+    "quotes": [],
+    "nestedmultiline": true
   },
   "Ceylon": {
     "line_comment": [
@@ -489,14 +491,23 @@
       [
         "/*",
         "*/"
+      ],
+      [
+        "/+",
+        "+/"
       ]
     ],
     "quotes": [
       [
         "\"",
         "\""
+      ],
+      [
+        "'",
+        "'"
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "Sass": {
     "line_comment": [
@@ -564,7 +575,8 @@
         "\"",
         "\""
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "ColdFusion CFScript": {
     "line_comment": [
@@ -779,7 +791,8 @@
         "\"",
         "\""
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "Zsh": {
     "line_comment": [
@@ -1896,7 +1909,8 @@
         "\\\"\\\"\\\"",
         "\\\"\\\"\\\""
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "Ur/Web": {
     "line_comment": [],
@@ -2134,7 +2148,8 @@
       "== "
     ],
     "extensions": [
-      "rake"
+      "rake",
+      "rakefile"
     ],
     "multi_line": [
       [
@@ -2282,7 +2297,8 @@
         "\"",
         "\""
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "Prolog": {
     "line_comment": [
@@ -3600,7 +3616,8 @@
         "|#"
       ]
     ],
-    "quotes": []
+    "quotes": [],
+    "nestedmultiline": true
   },
   "AutoHotKey": {
     "line_comment": [
@@ -4054,7 +4071,8 @@
         "\"",
         "\""
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "Autoconf": {
     "line_comment": [
@@ -4206,7 +4224,8 @@
         "\\\"\\\"\\\"",
         "\\\"\\\"\\\""
       ]
-    ]
+    ],
+    "nestedmultiline": true
   },
   "Haskell": {
     "line_comment": [
@@ -5389,5 +5408,172 @@
     ],
     "multi_line": [],
     "quotes": []
+  },
+  "Meson":{
+    "line_comment":[
+      "#"
+    ],
+    "complexitychecks": [
+      "foreach ",
+      "if ",
+      "elif ",
+      "unless ",
+      "and ",
+      "or ",
+      "else "
+    ],
+    "quotes":[
+      ["'", "'"],
+      ["'''", "'''"]
+    ],
+    "extensions":[
+      "meson.build",
+      "meson_options.txt"
+    ]
+  },
+  "SAS": {
+    "line_comment": [
+      "*"
+    ],
+    "complexitychecks": [
+      "do",
+      "%do",
+      "if",
+      "%if",
+      "else",
+      "%else",
+      "case",
+      "or",
+      "and",
+      "^=",
+      "¬=",
+      "~=",
+      "ne",
+      "eq"
+    ],
+    "extensions": [
+      "sas"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ],
+      [
+        "'",
+        "'"
+      ]
+    ]
+  },
+  "Stata": {
+    "line_comment": [
+      "//",
+      "*"
+    ],
+    "complexitychecks": [
+      "foreach",
+      "forvalues",
+      "if",
+      "else",
+      "while",
+      "switch",
+      "|",
+      "&",
+      "!=",
+      "=="
+    ],
+    "extensions": [
+      "do",
+      "ado"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ],
+      [
+        "`\"",
+        "\"'"
+      ]
+    ]
+  },
+  "Zig":{
+    "line_comment":[
+      "//"
+    ],
+    "complexitychecks": [
+      "while ",
+      "for ",
+      "if ",
+      "else ",
+      "defer ",
+      "switch",
+      "||",
+      "&&",
+      "!=",
+      "=="
+    ],
+    "quotes":[
+      ["\\\"", "\\\""],
+      ["\\\\", "\n"]
+    ],
+    "extensions":[
+      "zig"
+    ]
+  },
+  "Powershell":{
+    "line_comment":[
+      "#"
+    ],
+    "multi_line": [
+      [
+        "<#",
+        "#>"
+      ]
+    ],
+    "complexitychecks": [
+      "while ",
+      "while(",
+      "until ",
+      "until(",
+      "for ",
+      "for(",
+      "foreach ",
+      "foreach(",
+      "if ",
+      "elseif ",
+      "else ",
+      "switch",
+      "switch(",
+      "-gt",
+      "-lt",
+      "-eq",
+      "-ne",
+      "-ge",
+      "-le",
+      "-in",
+      "-notin",
+      "-contains",
+      "-notcontains"
+    ],
+    "quotes":[
+      ["\"", "\""]
+    ],
+    "extensions":[
+      "ps1",
+      "psm1"
+    ]
   }
 }
