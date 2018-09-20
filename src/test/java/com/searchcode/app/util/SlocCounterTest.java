@@ -47,4 +47,53 @@ public class SlocCounterTest extends TestCase {
         SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
         assertThat(slocCount.complexity).isEqualTo(8);
     }
+
+    public void testTokeiTest() {
+        String language = "Rust";
+        String contents = "// 39 lines 32 code 2 comments 5 blanks\n" +
+                "\n" +
+                "/* /**/ */\n" +
+                "fn main() {\n" +
+                "  let start = \"/*\";\n" +
+                "  loop {\n" +
+                "      if x.len() >= 2 && x[0] == '*' && x[1] == '/' { // found the */\n" +
+                "          break;\n" +
+                "      }\n" +
+                "  }\n" +
+                "}\n" +
+                "\n" +
+                "fn foo() {\n" +
+                "  let this_ends = \"a \\\"test/*.\";\n" +
+                "  call1();\n" +
+                "  call2();\n" +
+                "  let this_does_not = /* a /* nested */ comment \" */\n" +
+                "      \"*/another /*test\n" +
+                "          call3();\n" +
+                "          */\";\n" +
+                "}\n" +
+                "\n" +
+                "fn foobar() {\n" +
+                "  let does_not_start = // \"\n" +
+                "      \"until here,\n" +
+                "      test/*\n" +
+                "      test\"; // a quote: \"\n" +
+                "  let also_doesnt_start = /* \" */\n" +
+                "      \"until here,\n" +
+                "      test,*/\n" +
+                "      test\"; // another quote: \"\n" +
+                "}\n" +
+                "\n" +
+                "fn foo() {\n" +
+                "  let a = 4; // /*\n" +
+                "  let b = 5;\n" +
+                "  let c = 6; // */\n" +
+                "}\n" +
+                "\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(39);
+        assertThat(slocCount.codeCount).isEqualTo(33);
+        assertThat(slocCount.blankCount).isEqualTo(5);
+        assertThat(slocCount.commentCount).isEqualTo(1);
+    }
 }
