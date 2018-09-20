@@ -16,6 +16,7 @@ public class FileClassifierResult {
     public String[] complexitychecks;
     public String[][] multi_line;
     public String[][] quotes;
+    public boolean nestedmultiline;
 
     public FileClassifierResult(String extensions) {
         this.extensions = extensions.toLowerCase().split(",");

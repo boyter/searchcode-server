@@ -14,6 +14,7 @@ import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SlocCounter {
@@ -146,6 +147,7 @@ public class SlocCounter {
 
         int endPoint = contents.length() - 1;
         String endString = null;
+        ArrayList<String> endComments = new ArrayList<>();
         int linesCount = 0;
         int blankCount = 0;
         int codeCount = 0;
@@ -153,69 +155,79 @@ public class SlocCounter {
         int complexity = 0;
 
         for (int index=0; index < contents.length(); index++) {
-            switch (currentState) {
-                case S_BLANK:
-                case S_MULTICOMMENT_BLANK:
-                    if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.line_comment, contents)) {
-                        currentState = State.S_COMMENT;
-                        break;
-                    }
 
-                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
-                    if (endString != null) {
-                        currentState = State.S_MULTICOMMENT;
-                        break;
-                    }
-
-                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
-                    if (endString != null) {
-                        currentState = State.S_STRING;
-                        break;
-                    }
-
-                    if (!this.isWhitespace(contents.charAt(index))) {
-                        currentState = State.S_CODE;
-
-                        if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
-                            complexity++;
-                        }
-                    }
-                    break;
-                case S_CODE:
-                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
-                    if (endString != null) {
-                        currentState = State.S_MULTICOMMENT_CODE;
-                        break;
-                    }
-
-                    endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
-                    if (endString != null) {
-                        currentState = State.S_STRING;
-                        break;
-                    } else if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
-                        complexity++;
-                    }
-                    break;
-                case S_STRING:
-                    if (contents.charAt(index-1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, endString, contents)) {
-                        currentState = State.S_CODE;
-                    }
-                    break;
-                case S_MULTICOMMENT:
-                case S_MULTICOMMENT_CODE:
-                    if (this.checkForMatchMultiClose(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
-                        if (currentState == State.S_MULTICOMMENT_CODE) {
-                            currentState = State.S_CODE;
-                        } else {
-                            // TODO check if out of bounds
-                            if (index + 1 <= endPoint && this.isWhitespace(contents.charAt(index+1))) {
-                                currentState = State.S_MULTICOMMENT_BLANK;
-                            } else {
+            if (!isWhitespace(contents.charAt(index))) {
+                switch (currentState) {
+                    case S_CODE:
+                        if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
+                            endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
+                            if (endString != null) {
+                                endComments.add(endString);
                                 currentState = State.S_MULTICOMMENT_CODE;
+                                break;
                             }
                         }
-                    }
-                    break;
+
+                        if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.line_comment, contents)) {
+                            currentState = State.S_COMMENT_CODE;
+                            break;
+                        }
+
+                        endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
+                        if (endString != null) {
+                            currentState = State.S_STRING;
+                            break;
+                        } else if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
+                            complexity++;
+                        }
+                        break;
+                    case S_MULTICOMMENT_BLANK:
+                        if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.line_comment, contents)) {
+                            currentState = State.S_COMMENT;
+                            break;
+                        }
+
+                        endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
+                        if (endString != null) {
+                            currentState = State.S_MULTICOMMENT;
+                            break;
+                        }
+
+                        endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
+                        if (endString != null) {
+                            currentState = State.S_STRING;
+                            break;
+                        }
+
+                        if (!this.isWhitespace(contents.charAt(index))) {
+                            currentState = State.S_CODE;
+
+                            if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
+                                complexity++;
+                            }
+                        }
+                        break;
+                    case S_STRING:
+                        if (contents.charAt(index - 1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, endString, contents)) {
+                            currentState = State.S_CODE;
+                        }
+                        break;
+                    case S_MULTICOMMENT:
+                    case S_MULTICOMMENT_CODE:
+                        if (this.checkForMatchMultiClose(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
+                            if (currentState == State.S_MULTICOMMENT_CODE) {
+                                currentState = State.S_CODE;
+                            } else {
+                                // TODO check if out of bounds
+                                if (index + 1 <= endPoint && this.isWhitespace(contents.charAt(index + 1))) {
+                                    currentState = State.S_MULTICOMMENT_BLANK;
+                                } else {
+                                    currentState = State.S_MULTICOMMENT_CODE;
+                                }
+                            }
+                        }
+                        break;
+                }
             }
 
             // This means the end of processing the line so calculate the stats according to what state
