@@ -262,13 +262,13 @@ public class SlocCounter {
                         break;
                 }
 
-                // If we are in a multiline comment that started after some code then we need
-                // to move to a multiline comment if a multiline comment then stay there
-                // otherwise we reset back into a blank state
-                if (currentState != State.S_MULTICOMMENT && currentState != State.S_MULTICOMMENT_CODE) {
-                    currentState = State.S_BLANK;
-                } else {
+
+                if (currentState == State.S_MULTICOMMENT || currentState == State.S_MULTICOMMENT_CODE) {
                     currentState = State.S_MULTICOMMENT;
+                } else if (currentState == State.S_STRING) {
+                    currentState = State.S_STRING;
+                } else {
+                    currentState = State.S_BLANK;
                 }
             }
         }
