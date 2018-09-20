@@ -48,6 +48,76 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.complexity).isEqualTo(8);
     }
 
+    public void testMultiLine() {
+        String language = "C++";
+        String contents = "/*\n" +
+                "*\n" +
+                "*/";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(3);
+        assertThat(slocCount.codeCount).isEqualTo(0);
+        assertThat(slocCount.commentCount).isEqualTo(3);
+    }
+
+    public void testRegression() {
+        String language = "C++";
+        String contents = "/**/\n" +
+                "i\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+
+        assertThat(slocCount.linesCount).isEqualTo(2);
+        assertThat(slocCount.codeCount).isEqualTo(1);
+        assertThat(slocCount.commentCount).isEqualTo(1);
+        assertThat(slocCount.blankCount).isEqualTo(1);
+    }
+
+    public void testRakefile() {
+        String language = "Rakefile";
+        String contents = "# 10 lines 4 code 2 comments 4 blanks\n" +
+                "\n" +
+                "# this is a rakefile\n" +
+                "\n" +
+                "task default: %w[test]\n" +
+                "\n" +
+                "task :test do # not counted\n" +
+                "  ruby \"test/unittest.rb\"\n" +
+                "end\n" +
+                "\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(10);
+        assertThat(slocCount.codeCount).isEqualTo(4);
+        assertThat(slocCount.commentCount).isEqualTo(2);
+        assertThat(slocCount.blankCount).isEqualTo(4);
+    }
+
+    public void testCPlusPlus() {
+        String language = "C++";
+        String contents = "/* 15 lines 7 code 4 comments 4 blanks */\n" +
+                "\n" +
+                "#include <iostream>\n" +
+                "\n" +
+                "\n" +
+                "using namespace std;\n" +
+                "\n" +
+                "/*\n" +
+                " * Simple test\n" +
+                " */\n" +
+                "int main()\n" +
+                "{\n" +
+                "    cout<<\"Hello world\"<<endl;\n" +
+                "    return 0;\n" +
+                "}\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(15);
+        assertThat(slocCount.codeCount).isEqualTo(7);
+        assertThat(slocCount.commentCount).isEqualTo(4);
+        assertThat(slocCount.blankCount).isEqualTo(4);
+    }
+
     public void testTokeiTest() {
         String language = "Rust";
         String contents = "// 39 lines 32 code 2 comments 5 blanks\n" +

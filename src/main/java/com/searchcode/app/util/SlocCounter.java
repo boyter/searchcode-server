@@ -162,6 +162,7 @@ public class SlocCounter {
                         if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
+                                index += endString.length() - 1;
                                 endComments.add(endString);
                                 currentState = State.S_MULTICOMMENT_CODE;
                                 break;
@@ -192,6 +193,7 @@ public class SlocCounter {
                         if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
+                                index += endString.length() - 1;
                                 endComments.add(endString);
                                 currentState = State.S_MULTICOMMENT_CODE;
                                 break;
@@ -220,8 +222,9 @@ public class SlocCounter {
                         if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
+                                index += endString.length() - 1;
                                 endComments.add(endString);
-                                currentState = State.S_MULTICOMMENT_CODE;
+                                currentState = State.S_MULTICOMMENT;
                                 break;
                             }
                         }
