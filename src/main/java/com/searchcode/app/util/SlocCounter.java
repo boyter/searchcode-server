@@ -181,16 +181,49 @@ public class SlocCounter {
                             complexity++;
                         }
                         break;
+                    case S_STRING:
+                        if (contents.charAt(index - 1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, endString, contents)) {
+                            currentState = State.S_CODE;
+                        }
+                        break;
+                    case S_MULTICOMMENT:
+                    case S_MULTICOMMENT_CODE:
+
+                        if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
+                            endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
+                            if (endString != null) {
+                                endComments.add(endString);
+                                currentState = State.S_MULTICOMMENT_CODE;
+                                break;
+                            }
+                        }
+
+                        if (this.checkForMatchSingle(contents.charAt(index), index, endPoint, endComments.get(endComments.size()-1), contents)) {
+                            endComments.remove(endComments.size()-1);
+
+                            if (endComments.size() == 0) {
+                                if (currentState == State.S_MULTICOMMENT_CODE) {
+                                    currentState = State.S_CODE;
+                                } else {
+                                    currentState = State.S_MULTICOMMENT_BLANK;
+                                }
+                            }
+                        }
+                        break;
+                    case S_BLANK:
                     case S_MULTICOMMENT_BLANK:
                         if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.line_comment, contents)) {
                             currentState = State.S_COMMENT;
                             break;
                         }
 
-                        endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
-                        if (endString != null) {
-                            currentState = State.S_MULTICOMMENT;
-                            break;
+                        if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
+                            endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
+                            if (endString != null) {
+                                endComments.add(endString);
+                                currentState = State.S_MULTICOMMENT_CODE;
+                                break;
+                            }
                         }
 
                         endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
@@ -199,32 +232,9 @@ public class SlocCounter {
                             break;
                         }
 
-                        if (!this.isWhitespace(contents.charAt(index))) {
-                            currentState = State.S_CODE;
-
-                            if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
-                                complexity++;
-                            }
-                        }
-                        break;
-                    case S_STRING:
-                        if (contents.charAt(index - 1) != '\\' && this.checkForMatchSingle(contents.charAt(index), index, endPoint, endString, contents)) {
-                            currentState = State.S_CODE;
-                        }
-                        break;
-                    case S_MULTICOMMENT:
-                    case S_MULTICOMMENT_CODE:
-                        if (this.checkForMatchMultiClose(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents)) {
-                            if (currentState == State.S_MULTICOMMENT_CODE) {
-                                currentState = State.S_CODE;
-                            } else {
-                                // TODO check if out of bounds
-                                if (index + 1 <= endPoint && this.isWhitespace(contents.charAt(index + 1))) {
-                                    currentState = State.S_MULTICOMMENT_BLANK;
-                                } else {
-                                    currentState = State.S_MULTICOMMENT_CODE;
-                                }
-                            }
+                        currentState = State.S_CODE;
+                        if (this.checkForMatch(contents.charAt(index), index, endPoint, fileClassifierResult.complexitychecks, contents)) {
+                            complexity++;
                         }
                         break;
                 }
