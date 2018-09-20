@@ -70,7 +70,7 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.linesCount).isEqualTo(2);
         assertThat(slocCount.codeCount).isEqualTo(1);
         assertThat(slocCount.commentCount).isEqualTo(1);
-        assertThat(slocCount.blankCount).isEqualTo(1);
+        assertThat(slocCount.blankCount).isEqualTo(0);
     }
 
     public void testRakefile() {

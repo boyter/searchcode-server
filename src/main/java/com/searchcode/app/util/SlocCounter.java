@@ -57,8 +57,6 @@ public class SlocCounter {
     }
 
     public boolean checkForMatchSingle(char currentByte, int index, int endPoint, String match, String content) {
-
-
         if (match.length() != 0 && currentByte == match.charAt(0)) { // If the first character matches
             boolean potentialMatch = true;
 
@@ -99,27 +97,6 @@ public class SlocCounter {
         return null;
     }
 
-    public boolean checkForMatchMultiClose(char currentByte, int index, int endPoint, String[][] matches, String content) {
-        for (int i = 0; i < matches.length; i++) { // For each match
-            if (currentByte == matches[i][1].charAt(0)) { // If the first character matches
-                boolean potentialMatch = true;
-
-                for (int j = 0; j < matches[i][1].length(); j++) { // Check if the rest match
-                    if (index + j <= endPoint && matches[i][1].charAt(j) != content.charAt(index + j)) {
-                        potentialMatch = false;
-                        break;
-                    }
-                }
-
-                if (potentialMatch) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
     public boolean isWhitespace(char currentByte) {
         if (currentByte != ' ' && currentByte != '\t' && currentByte != '\n' && currentByte != '\r') {
             return false;
@@ -129,12 +106,8 @@ public class SlocCounter {
     }
 
     /**
-     * Reimplementation of scc https://github.com/boyter/scc/ ported from
+     * Reimplementation of scc https://github.com/boyter/scc/ 1.9.0 ported from
      * Go into Java and specific for the searchcode project.
-     *
-     * NB this does not perform the jump ahead portion of the scc where bytes
-     * already looked at are jumped in order to make it simpler to understand
-     * which means it is probably slower than the Go version.
      */
     public SlocCount countStats(String contents, String languageName) {
         if (contents == null || contents.isEmpty()) {
@@ -201,6 +174,7 @@ public class SlocCounter {
                         }
 
                         if (this.checkForMatchSingle(contents.charAt(index), index, endPoint, endComments.get(endComments.size()-1), contents)) {
+                            index += endComments.get(endComments.size()-1).length() - 1;
                             endComments.remove(endComments.size()-1);
 
                             if (endComments.size() == 0) {
