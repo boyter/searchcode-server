@@ -104,12 +104,12 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             SlocCounter.SlocCount slocCount = Singleton.getSlocCounter().countStats(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"), languageName);
 
 
-            String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
+            String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1);
 
             if (Values.FILE.equals(this.repoResult.getScm())) {
                 displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
                 if (displayLocation.startsWith("/")) {
-                    displayLocation = displayLocation.substring(displayLocation.indexOf("/") + 1, displayLocation.length());
+                    displayLocation = displayLocation.substring(displayLocation.indexOf("/") + 1);
                 }
             }
 
@@ -136,7 +136,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             if (this.indexBaseRepoJob.LOWMEMORY) {
                 Singleton.getIndexService().indexDocument(codeIndexDocument);
             } else {
-                Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
+                Singleton.getIndexService().incrementCodeIndexLinesCount(slocCount.linesCount);
                 Singleton.getCodeIndexQueue().add(codeIndexDocument);
             }
 
