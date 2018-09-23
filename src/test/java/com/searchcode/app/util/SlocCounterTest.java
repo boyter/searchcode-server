@@ -118,6 +118,36 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.blankCount).isEqualTo(4);
     }
 
+    public void testRuby() {
+        String language = "Ruby";
+        String contents = "# 20 lines 9 code 8 comments 3 blanks\n" +
+                "x = 3\n" +
+                "if x < 2\n" +
+                "  p = \"Smaller\"\n" +
+                "else\n" +
+                "  p = \"Bigger\"\n" +
+                "end\n" +
+                "\n" +
+                "=begin\n" +
+                "  Comments\n" +
+                "  Comments\n" +
+                "  Comments\n" +
+                "  Comments\n" +
+                "=end\n" +
+                "\n" +
+                "# testing.\n" +
+                "while x > 2 and x < 10\n" +
+                "  x += 1\n" +
+                "end\n" +
+                "\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(20);
+        assertThat(slocCount.codeCount).isEqualTo(9);
+        assertThat(slocCount.commentCount).isEqualTo(8);
+        assertThat(slocCount.blankCount).isEqualTo(3);
+    }
+
     public void testTokeiTest() {
         String language = "Rust";
         String contents = "// 39 lines 32 code 2 comments 5 blanks\n" +

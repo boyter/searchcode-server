@@ -10,7 +10,6 @@
 
 package com.searchcode.app.util;
 
-import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
 
