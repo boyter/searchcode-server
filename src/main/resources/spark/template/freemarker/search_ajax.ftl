@@ -49,5 +49,5 @@ var preload = ${searchResultJson};
 </script>
 ${embed}
 </body>
-<script src="/js/mithril.min.js"></script><script src="/js/underscore-min.js"></script><script src="/js/chart.js"></script><script src="/js/cache.js"></script><script src="/js/script.js"></script>
+<script src="/js/script.min.js"></script>
 </html>
