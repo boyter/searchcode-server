@@ -25,19 +25,20 @@ public class SphinxIndexServiceTest extends TestCase {
                 .forEach(x -> sphinxIndexService.search("test", null, 0, false));
     }
 
-    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument("repoLocationRepoNameLocationFilename",
-            "this is a repositoryname",
-            "fileName",
-            "fileLocation",
-            "fileLocationFilename",
-            "md5hash",
-            "language name",
-            100,
-            "this is some content to search on test",
-            "repoRemoteLocation",
-            "owner",
-            "mydisplaylocation",
-            "source");
+    private CodeIndexDocument codeIndexDocument = new CodeIndexDocument()
+            .setRepoLocationRepoNameLocationFilename("repoLocationRepoNameLocationFilename")
+            .setRepoName("this is a repositoryname")
+            .setFileName("fileName")
+            .setFileLocation("fileLocation")
+            .setFileLocationFilename("fileLocationFilename")
+            .setMd5hash("md5hash")
+            .setLanguageName("language name")
+            .setCodeLines(100)
+            .setContents("this is some content to search on test")
+            .setRepoRemoteLocation("repoRemoteLocation")
+            .setCodeOwner("owner")
+            .setDisplayLocation("mydisplaylocation")
+            .setSource("source");
 
 
     public void testGetShardCountExpectingZero() {

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.service;
@@ -60,6 +60,7 @@ public final class Singleton {
 
     private static IIndexService indexService = null;
     private static CodeMatcher codematcher = null;
+    private static SlocCounter slocCounter = null;
 
     private static OWASPClassifier owaspClassifier = null;
     private static RepositorySource repositorySource = null;
@@ -137,6 +138,14 @@ public final class Singleton {
         }
 
         return indexService;
+    }
+
+    public static synchronized SlocCounter getSlocCounter() {
+        if (slocCounter == null) {
+            slocCounter = new SlocCounter();
+        }
+
+        return slocCounter;
     }
 
     /**

@@ -17,7 +17,16 @@ public class UniqueRepoQueueTest extends TestCase {
     public void testEnqueueMultipleTimes() {
         UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
 
-        RepoResult rr = new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "");
+        RepoResult rr = new RepoResult()
+                .setRowId(1)
+                .setName("exists")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
 
         queue.add(rr);
         queue.add(rr);
@@ -28,8 +37,26 @@ public class UniqueRepoQueueTest extends TestCase {
     public void testEnqueueSameRepoMultipleTimes() {
         UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
 
-        RepoResult rr1 = new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "");
-        RepoResult rr2 = new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "");
+        RepoResult rr1 = new RepoResult()
+                .setRowId(1)
+                .setName("exists")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
+        RepoResult rr2 = new RepoResult()
+                .setRowId(1)
+                .setName("exists")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
 
         queue.add(rr1);
         queue.add(rr2);
@@ -40,8 +67,26 @@ public class UniqueRepoQueueTest extends TestCase {
     public void testEnqueueDifferent() {
         UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
 
-        RepoResult rr1 = new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "");
-        RepoResult rr2 = new RepoResult(2, "name2", "scm", "url", "username", "password", "source", "branch", "");
+        RepoResult rr1 = new RepoResult()
+                .setRowId(1)
+                .setName("name1")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
+        RepoResult rr2 = new RepoResult()
+                .setRowId(2)
+                .setName("name2")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
 
         queue.add(rr1);
         queue.add(rr2);
@@ -52,8 +97,26 @@ public class UniqueRepoQueueTest extends TestCase {
     public void testOrderAndPoll() {
         UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
 
-        RepoResult rr1 = new RepoResult(1, "name", "scm", "url", "username", "password", "source", "branch", "");
-        RepoResult rr2 = new RepoResult(2, "name2", "scm", "url", "username", "password", "source", "branch", "");
+        RepoResult rr1 = new RepoResult()
+                .setRowId(1)
+                .setName("name1")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
+        RepoResult rr2 = new RepoResult()
+                .setRowId(2)
+                .setName("name2")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
 
         queue.add(rr1);
         queue.add(rr2);
@@ -72,8 +135,26 @@ public class UniqueRepoQueueTest extends TestCase {
         queue1.clear();
         queue2.clear();
 
-        RepoResult rr1 = new RepoResult(1, "name", "git", "url", "username", "password", "source", "branch", "");
-        RepoResult rr2 = new RepoResult(2, "name2", "svn", "url", "username", "password", "source", "branch", "");
+        RepoResult rr1 = new RepoResult()
+                .setRowId(1)
+                .setName("name1")
+                .setScm("git")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
+        RepoResult rr2 = new RepoResult()
+                .setRowId(2)
+                .setName("name2")
+                .setScm("svn")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
 
         queue1.add(rr1);
         queue2.add(rr2);
@@ -87,8 +168,26 @@ public class UniqueRepoQueueTest extends TestCase {
     public void testQueueClear() {
         UniqueRepoQueue queue = new UniqueRepoQueue();
 
-        queue.add(new RepoResult(1, "name", "git", "url", "username", "password", "source", "branch", ""));
-        queue.add(new RepoResult(2, "name2", "svn", "url", "username", "password", "source", "branch", ""));
+        queue.add(new RepoResult()
+                .setRowId(1)
+                .setName("name1")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"));
+        queue.add(new RepoResult()
+                .setRowId(2)
+                .setName("name2")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"));
 
         assertThat(queue.size()).isEqualTo(2);
         queue.clear();

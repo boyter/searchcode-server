@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.service;
@@ -223,7 +223,7 @@ public class IndexService implements IIndexService {
             codeIndexDocumentList.parallelStream()
                     .forEach(x -> {
                         this.logger.info("Indexing file " + x.getRepoLocationRepoNameLocationFilename());
-                        this.decrementCodeIndexLinesCount(x.getCodeLines());
+                        this.decrementCodeIndexLinesCount(x.getLines());
 
                         FacetsConfig facetsConfig = new FacetsConfig();
                         facetsConfig.setIndexFieldName(Values.LANGUAGENAME, Values.LANGUAGENAME);
@@ -271,7 +271,38 @@ public class IndexService implements IIndexService {
         }
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
+        String indexContents = indexContentPipeline(codeIndexDocument);
 
+        document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILENAME,                 codeIndexDocument.getFileName(), Field.Store.YES));
+        document.add(new TextField(Values.FILE_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getFileName()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+        document.add(new TextField(Values.DISPLAY_LOCATION,         codeIndexDocument.getDisplayLocation(), Field.Store.YES));
+        document.add(new TextField(Values.DISPLAY_LOCATION_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getDisplayLocation()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    this.helpers.replaceForIndex(codeIndexDocument.getLanguageName()).toLowerCase(), Field.Store.NO));
+        document.add(new IntField(Values.LINES,                     codeIndexDocument.getLines(), Field.Store.YES));
+        document.add(new IntField(Values.CODELINES,                 codeIndexDocument.getCodeLines(), Field.Store.YES));
+        document.add(new IntField(Values.BLANKLINES,                codeIndexDocument.getBlankLines(), Field.Store.YES));
+        document.add(new IntField(Values.COMMENTLINES,              codeIndexDocument.getCommentLines(), Field.Store.YES));
+        document.add(new IntField(Values.COMPLEXITY,                codeIndexDocument.getComplexity(), Field.Store.YES));
+        document.add(new TextField(Values.CONTENTS,                 indexContents.toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.REPOLOCATION,             codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+        document.add(new TextField(Values.CODEOWNER,                codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
+        document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
+        document.add(new TextField(Values.SOURCE,                   this.helpers.replaceForIndex(codeIndexDocument.getSource()), Field.Store.YES));
+
+        // Extra metadata in this case when it was last indexed
+        document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
+        return document;
+    }
+
+    public String indexContentPipeline(CodeIndexDocument codeIndexDocument) {
         // This is the main pipeline for making code searchable and probably the most important
         // part of the indexer codebase
         StringBuilder indexBuilder = new StringBuilder();
@@ -296,31 +327,7 @@ public class IndexService implements IIndexService {
             indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
         }
 
-        String indexContents = indexBuilder.toString();
-
-        document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.FILENAME,                 codeIndexDocument.getFileName(), Field.Store.YES));
-        document.add(new TextField(Values.FILE_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getFileName()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
-        document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
-        document.add(new TextField(Values.DISPLAY_LOCATION,         codeIndexDocument.getDisplayLocation(), Field.Store.YES));
-        document.add(new TextField(Values.DISPLAY_LOCATION_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getDisplayLocation()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
-        document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    this.helpers.replaceForIndex(codeIndexDocument.getLanguageName()).toLowerCase(), Field.Store.NO));
-        document.add(new IntField(Values.CODELINES,                 codeIndexDocument.getCodeLines(), Field.Store.YES));
-        document.add(new TextField(Values.CONTENTS,                 indexContents.toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.REPOLOCATION,             codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-        document.add(new TextField(Values.CODEOWNER,                codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
-        document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
-        document.add(new TextField(Values.SOURCE,                   this.helpers.replaceForIndex(codeIndexDocument.getSource()), Field.Store.YES));
-
-        // Extra metadata in this case when it was last indexed
-        document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
-        return document;
+        return indexBuilder.toString();
     }
 
     /**
@@ -670,11 +677,8 @@ public class IndexService implements IIndexService {
                 Document doc = searcher.doc(hits[i].doc);
 
                 String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
-                int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.CODELINES), "0");
-
-                if (!this.searchcodeLib.languageCostIgnore(doc.get(Values.LANGUAGENAME))) {
-                    totalCodeLines += lines;
-                }
+                int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.LINES), "0");
+                totalCodeLines += lines;
 
                 if (linesCount.containsKey(languageName)) {
                     linesCount.put(languageName, linesCount.get(languageName) + lines);
@@ -948,21 +952,26 @@ public class IndexService implements IIndexService {
     }
 
     private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId) {
-        CodeResult codeResult = new CodeResult(code, null);
-        codeResult.setFilePath(filePath);
-
-        codeResult.setCodePath(doc.get(Values.FILELOCATIONFILENAME));
-        codeResult.setFileName(doc.get(Values.FILENAME));
-        codeResult.setLanguageName(doc.get(Values.LANGUAGENAME));
-        codeResult.setMd5hash(doc.get(Values.MD5HASH));
-        codeResult.setCodeLines(doc.get(Values.CODELINES));
-        codeResult.setDocumentId(docId);
-        codeResult.setRepoName(doc.get(Values.REPONAME));
-        codeResult.setRepoLocation(doc.get(Values.REPOLOCATION));
-        codeResult.setCodeOwner(doc.get(Values.CODEOWNER));
-        codeResult.setCodeId(doc.get(Values.CODEID));
-        codeResult.setDisplayLocation(doc.get(Values.DISPLAY_LOCATION));
-        codeResult.setSource(doc.get(Values.SOURCE));
+        CodeResult codeResult = new CodeResult()
+                .setCode(code)
+                .setMatchingResults(null)
+                .setFilePath(filePath)
+                .setCodePath(doc.get(Values.FILELOCATIONFILENAME))
+                .setFileName(doc.get(Values.FILENAME))
+                .setLanguageName(doc.get(Values.LANGUAGENAME))
+                .setMd5hash(doc.get(Values.MD5HASH))
+                .setLines(doc.get(Values.LINES))
+                .setCodeLines(doc.get(Values.CODELINES))
+                .setCommentLines(doc.get(Values.COMMENTLINES))
+                .setBlankLines(doc.get(Values.BLANKLINES))
+                .setComplexity(doc.get(Values.COMPLEXITY))
+                .setDocumentId(docId)
+                .setRepoName(doc.get(Values.REPONAME))
+                .setRepoLocation(doc.get(Values.REPOLOCATION))
+                .setCodeOwner(doc.get(Values.CODEOWNER))
+                .setCodeId(doc.get(Values.CODEID))
+                .setDisplayLocation(doc.get(Values.DISPLAY_LOCATION))
+                .setSource(doc.get(Values.SOURCE));
 
         return codeResult;
     }

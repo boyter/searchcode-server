@@ -4,6 +4,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.SlocCounter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.omg.CORBA.Environment;
@@ -15,6 +16,10 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 
 
+/**
+ * This class is responsible for walking the file tree after a checkout
+ * and processing the files ready to be indexed.
+ */
 public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
     private final IndexBaseRepoJob indexBaseRepoJob;
@@ -44,10 +49,12 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
         try {
             java.nio.file.Path filePath = (java.nio.file.Path)file;
 
+            // If pause or terminate has been triggered than exit at first opportunity
             if (this.indexBaseRepoJob.shouldJobPauseOrTerminate()) {
                 return FileVisitResult.TERMINATE;
             }
 
+            // If this repository has since been deleted stop processing it
             if (Singleton.getDataService().getPersistentDelete().contains(this.repoResult.getName())) {
                 return FileVisitResult.TERMINATE;
             }
@@ -95,20 +102,44 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
             String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
             String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getDirectoryName(), fileRepoLocations, Singleton.getSearchCodeLib());
+            SlocCounter.SlocCount slocCount = Singleton.getSlocCounter().countStats(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"), languageName);
 
-            String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1, fileLocationFilename.length());
-            if ("file".equals(this.repoResult.getScm())) {
+
+            String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1);
+
+            if (Values.FILE.equals(this.repoResult.getScm())) {
                 displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
                 if (displayLocation.startsWith("/")) {
-                    displayLocation = displayLocation.substring(displayLocation.indexOf("/") + 1, displayLocation.length());
+                    displayLocation = displayLocation.substring(displayLocation.indexOf("/") + 1);
                 }
             }
 
+            CodeIndexDocument codeIndexDocument = new CodeIndexDocument()
+                .setRepoLocationRepoNameLocationFilename(fileToString)
+                .setRepoName(this.repoResult.getName())
+                .setFileName(fileName)
+                .setFileLocation(fileLocation)
+                .setFileLocationFilename(fileLocationFilename)
+                .setMd5hash(md5Hash)
+                .setLanguageName(languageName)
+                .setCodeLines(slocCount.codeCount)
+                .setBlankLines(slocCount.blankCount)
+                .setCommentLines(slocCount.commentCount)
+                .setLines(slocCount.linesCount)
+                .setComplexity(slocCount.complexity)
+                .setContents(StringUtils.join(codeLinesReturn.getCodeLines(), " "))
+                .setRepoRemoteLocation(repoRemoteLocation)
+                .setCodeOwner(codeOwner)
+                .setSchash(Values.EMPTYSTRING)
+                .setDisplayLocation(displayLocation)
+                .setSource(this.repoResult.getData().source);
+
             if (this.indexBaseRepoJob.LOWMEMORY) {
-                Singleton.getIndexService().indexDocument(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), " "), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
+                Singleton.getIndexService().indexDocument(codeIndexDocument);
             } else {
-                Singleton.getIndexService().incrementCodeIndexLinesCount(codeLinesReturn.getCodeLines().size());
-                Singleton.getCodeIndexQueue().add(new CodeIndexDocument(fileToString, this.repoResult.getName(), fileName, fileLocation, fileLocationFilename, md5Hash, languageName, codeLinesReturn.getCodeLines().size(), StringUtils.join(codeLinesReturn.getCodeLines(), System.lineSeparator()), repoRemoteLocation, codeOwner, displayLocation, this.repoResult.getData().source));
+
+                Singleton.getIndexService().incrementCodeIndexLinesCount(slocCount.linesCount);
+                Singleton.getCodeIndexQueue().add(codeIndexDocument);
             }
 
             if (this.indexBaseRepoJob.LOGINDEXED) {

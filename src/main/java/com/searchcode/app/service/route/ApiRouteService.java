@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.service.route;
@@ -360,7 +360,16 @@ public class ApiRouteService {
             return new ApiResponse(false, "repository name already exists");
         }
 
-        RepoResult newRepoResult = new RepoResult(-1, reponames.orElse(Values.EMPTYSTRING), repotype.orElse(Values.EMPTYSTRING), repourls.orElse(Values.EMPTYSTRING), repousername.orElse(Values.EMPTYSTRING), repopassword.orElse(Values.EMPTYSTRING), reposource.orElse(Values.EMPTYSTRING), repobranch.orElse(Values.EMPTYSTRING), "{}");
+        RepoResult newRepoResult = new RepoResult()
+                .setRowId(-1)
+                .setName(reponames.orElse(Values.EMPTYSTRING))
+                .setScm(repotype.orElse(Values.EMPTYSTRING))
+                .setUrl(repourls.orElse(Values.EMPTYSTRING))
+                .setUsername(repousername.orElse(Values.EMPTYSTRING))
+                .setPassword(repopassword.orElse(Values.EMPTYSTRING))
+                .setSource(reposource.orElse(Values.EMPTYSTRING))
+                .setBranch(repobranch.orElse(Values.EMPTYSTRING))
+                .setData("{}");
 
         // Set optional fields
         newRepoResult.getData().source = source.orElse(Values.EMPTYSTRING);

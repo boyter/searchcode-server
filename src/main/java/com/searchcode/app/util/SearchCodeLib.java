@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.util;
@@ -109,7 +109,6 @@ public class SearchCodeLib {
 
         // Performance improvement hack
         if (contents.length() > this.MAX_SPLIT_LENGTH) {
-
             // Add AAA to ensure we dont split the last word if it was cut off
             contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
@@ -270,40 +269,21 @@ public class SearchCodeLib {
             }
         }
 
-        // If we aren't meant to guess then assume it isnt binary
+        // If we aren't meant to guess then assume it isn't binary
         if (!this.GUESS_BINARY) {
             return new BinaryFinding(false, Values.EMPTYSTRING);
         }
 
-        int lines = codeLines.size() < 10000 ? codeLines.size() : 10000;
-        double asciiCount = 0;
-        double nonAsciiCount = 0;
-
-        for (int i=0; i < lines; i++) {
+        // GNU Grep, ripgrep and git all take the approach that if a file as a nul
+        // byte in it then it is binary. If its good enough for those giants
+        // its good enough for us.
+        for (int i = 0; i < codeLines.size(); i++) {
             String line = codeLines.get(i);
             for (int j = 0; j < line.length(); j++) {
-                if (((int)line.charAt(j)) <= 128) {
-                    asciiCount++;
-                }
-                else {
-                    nonAsciiCount++;
+                if (line.charAt(j) == 0) {
+                    return new BinaryFinding(true, "nul byte found");
                 }
             }
-        }
-
-        if (nonAsciiCount == 0) {
-            return new BinaryFinding(false, Values.EMPTYSTRING);
-        }
-
-        if (asciiCount == 0) {
-            return new BinaryFinding(true, "all characters found non-ascii");
-        }
-
-        // If only 30% of characters are ascii then its probably binary
-        double percent = asciiCount / (asciiCount + nonAsciiCount);
-
-        if (percent < 0.30) {
-            return new BinaryFinding(true, "only 30% of characters are non-ascii");
         }
 
         return new BinaryFinding(false, Values.EMPTYSTRING);
@@ -319,7 +299,7 @@ public class SearchCodeLib {
         double best = 0;
         String owner = "Unknown";
 
-        for(CodeOwner codeOwner: codeOwners) {
+        for (CodeOwner codeOwner: codeOwners) {
             double age = (currentUnix - codeOwner.getMostRecentUnixCommitTimestamp()) / 60 / 60;
             double calc = codeOwner.getNoLines() / Math.pow((age), 1.8);
 
@@ -336,10 +316,12 @@ public class SearchCodeLib {
      * Cleans and formats the code into something that can be indexed by lucene while supporting searches such as
      * i++ matching for(int i=0;i<100;i++;){
      */
-    public String codeCleanPipeline(String contents) {
-        if (contents == null) {
+    public String codeCleanPipeline(String originalContents) {
+        if (originalContents == null) {
             return Values.EMPTYSTRING;
         }
+
+        String modifiedContents = originalContents;
 
         StringBuilder indexContents = new StringBuilder();
 
@@ -347,40 +329,49 @@ public class SearchCodeLib {
         // Modify the contents to match strings correctly
         char[] firstReplacements = {'<', '>', ')', '(', '[', ']', '|', '=', ',', ':'};
         for (char c : firstReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] otherReplacements = {'.'};
         for (char c : otherReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] secondReplacements = {';', '{', '}', '/'};
         for (char c : secondReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] forthReplacements = {'"', '\''};
         for (char c : forthReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         // Now do it for other characters
         char[] replacements = {'\'', '"', '.', ';', '=', '(', ')', '[', ']', '_', ';', '@', '#'};
         for (char c : replacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
 
         char[] thirdReplacements = {'-'};
         for (char c : thirdReplacements) {
-            contents = contents.replace(c, ' ');
+            modifiedContents = modifiedContents.replace(c, ' ');
         }
-        indexContents.append(" ").append(contents);
+        indexContents.append(" ").append(modifiedContents);
+
+        // Issue 188 Fixes
+        modifiedContents = originalContents;
+        char[] replacements188 = {'(', ')', '<', '>'};
+        for (char c : replacements188) {
+            modifiedContents = modifiedContents.replace(c, ' ');
+        }
+        indexContents.append(" ").append(modifiedContents);
+
 
         return indexContents.toString();
     }

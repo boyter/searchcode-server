@@ -5,11 +5,10 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.jobs.repository;
-
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.searchcode.app.config.Values;
@@ -244,7 +243,7 @@ public abstract class IndexBaseRepoJob implements Job {
         Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
         this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, existingRepo);
 
-        // Write file indicating that the index was sucessful
+        // Write file indicating that the index was successful
         Singleton.getLogger().info("Successfully processed writing index success for " + repoResult.getName());
     }
 
@@ -440,7 +439,6 @@ public abstract class IndexBaseRepoJob implements Job {
 
         return false;
     }
-
 
     /*
      * The below are shared among all extending classes

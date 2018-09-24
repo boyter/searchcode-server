@@ -22,22 +22,67 @@ public class ValidatorServiceTest extends TestCase {
 
     public void testRepoResultValidReponame() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some_thing", "something", "url", "", "", "source", "branch", "{}"), false);
+        ValidatorResult validate = validatorService.validate(new RepoResult()
+                .setRowId(0)
+                .setName("some_thing")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), false);
         assertThat(validate.isValid).isTrue();
     }
 
     public void testRepoResultValidSlashesEtcReponame() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "some/thing", "something", "url", "", "", "source", "branch", "{}"), false);
+        ValidatorResult validate = validatorService.validate(new RepoResult()
+                .setRowId(0)
+                .setName("some/thing")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), false);
         assertThat(validate.isValid).isTrue();
 
-        validate = validatorService.validate(new RepoResult(0, "some/thing", "something", "url", "", "", "source", "branch", "{}"), false);
+        validate = validatorService.validate(new RepoResult()
+                .setRowId(0)
+                .setName("some/thing")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), false);
         assertThat(validate.isValid).isTrue();
 
-        validate = validatorService.validate(new RepoResult(0, "some\\thing", "something", "url", "", "", "source", "branch", "{}"), false);
+        validate = validatorService.validate(new RepoResult()
+                .setRowId(0)
+                .setName("some\\thing")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), false);
         assertThat(validate.isValid).isTrue();
 
-        validate = validatorService.validate(new RepoResult(0, "some\\thing@!#&^%!@&*@)(&!@(#&^@!#", "something", "url", "", "", "source", "branch", "{}"), false);
+        validate = validatorService.validate(new RepoResult()
+                .setRowId(0)
+                .setName("some\\thing@!#&^%!@&*@)(&!@(#&^@!#")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), false);
         assertThat(validate.isValid).isTrue();
     }
 
@@ -47,8 +92,16 @@ public class ValidatorServiceTest extends TestCase {
         ValidatorService validatorService = new ValidatorService(mockRepo, new Helpers());
 
         when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
-
-        RepoResult repoResult = new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}");
+        RepoResult repoResult = new RepoResult()
+                .setRowId(0)
+                .setName("exists")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
         ValidatorResult validate = validatorService.validate(repoResult, false);
         assertThat(validate.isValid).isFalse();
     }
@@ -59,15 +112,32 @@ public class ValidatorServiceTest extends TestCase {
         ValidatorService validatorService = new ValidatorService(mockRepo, new Helpers());
 
         when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
-
-        RepoResult repoResult = new RepoResult(0, "exists", "something", "url", "", "", "source", "branch", "{}");
+        RepoResult repoResult = new RepoResult()
+                .setRowId(0)
+                .setName("exists")
+                .setScm("something")
+                .setUrl("url")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}");
         ValidatorResult validate = validatorService.validate(repoResult, true);
         assertThat(validate.isValid).isTrue();
     }
 
     public void testRepoResultInValidUrl() {
         ValidatorService validatorService = new ValidatorService();
-        ValidatorResult validate = validatorService.validate(new RepoResult(0, "something", "", "", "", "", "source", "branch", "{}"), false);
+        ValidatorResult validate = validatorService.validate(new RepoResult()
+                .setRowId(0)
+                .setName("something")
+                .setScm("")
+                .setUrl("")
+                .setUsername("")
+                .setPassword("")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), false);
         assertThat(validate.isValid).isFalse();
     }
 }

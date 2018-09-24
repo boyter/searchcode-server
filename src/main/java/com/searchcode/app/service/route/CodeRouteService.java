@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.service.route;
@@ -201,7 +201,7 @@ public class CodeRouteService {
         map.put("fileName", codeResult.fileName);
 
         map.put("codePath", codeResult.getDisplayLocation());
-        map.put("codeLength", codeResult.codeLines);
+        map.put("codeLength", codeResult.lines);
 
         map.put("linenos", lineNos.toString());
 

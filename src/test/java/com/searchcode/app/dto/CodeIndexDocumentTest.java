@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.dto;
@@ -34,5 +34,14 @@ public class CodeIndexDocumentTest extends TestCase {
 
         cd.setRepoLocationRepoNameLocationFilename(".//this/");
         assertThat(cd.getRepoLocationRepoNameLocationFilename()).isEqualTo("./this/");
+    }
+
+    public void testTesty() {
+        CodeIndexDocument cd = new CodeIndexDocument()
+                                    .setContents("something")
+                                    .setRepoRemoteLocation("something");
+
+        assertThat(cd.getContents()).isEqualTo("something");
+        assertThat(cd.getRepoRemoteLocation()).isEqualTo("something");
     }
 }

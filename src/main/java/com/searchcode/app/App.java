@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app;
@@ -26,8 +26,8 @@ import static com.searchcode.app.ServerRoutes.RegisterServerRoutes;
  */
 public class App {
 
-    public static final boolean ISCOMMUNITY = false;
-    public static final String VERSION = "1.3.14";
+    public static final boolean ISCOMMUNITY = true;
+    public static final String VERSION = "1.3.15";
 
     public static void main(String[] args) {
         // Database migrations happen before we start

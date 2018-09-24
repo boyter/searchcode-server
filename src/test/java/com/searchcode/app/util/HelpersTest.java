@@ -162,7 +162,16 @@ public class HelpersTest extends TestCase {
     public void testFilterRunningAndDeletedRepoJobs() {
         assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<>()).size()).isEqualTo(0);
         assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<RepoResult>() {{
-            add(new RepoResult(0, "reallyreallyuniquename", "", "", "", "", "", "", ""));
+            add(new RepoResult()
+                    .setRowId(0)
+                    .setName("reallyuniquenameihope")
+                    .setScm("something")
+                    .setUrl("url")
+                    .setUsername("")
+                    .setPassword("")
+                    .setSource("source")
+                    .setBranch("branch")
+                    .setData("{}"));
         }}).size()).isEqualTo(1);
     }
 }

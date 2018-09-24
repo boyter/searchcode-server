@@ -1,6 +1,7 @@
 package com.searchcode.app;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.api.VersionResponse;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
@@ -52,10 +53,6 @@ public class ServerRoutes {
     }
 
     public static void RegisterServerRoutes() {
-        ////////////////////////////////////////////////////
-        //          Search/Code Routes Below
-        ////////////////////////////////////////////////////
-
         get("/", (request, response) -> {
             response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
@@ -118,6 +115,19 @@ public class ServerRoutes {
         ////////////////////////////////////////////////////
 
         path("/api", () -> {
+            // All new API endpoints should go in here to allow public exposure and versioning
+            path("/v1", () -> {
+                get("/version/", (request, response) -> {
+                    addJsonHeaders(response);
+                    return new JsonTransformer().render(new VersionResponse().setVersion(App.VERSION));
+                });
+
+                get("/health-check/", (request, response) -> {
+                    addJsonHeaders(response);
+                    return new JsonTransformer().render(new VersionResponse().setVersion(App.VERSION));
+                });
+            });
+
             get("/codesearch/", (request, response) -> {
                 addJsonHeaders(response);
                 SearchRouteService searchRouteService = new SearchRouteService();

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.dao;
@@ -73,7 +73,16 @@ public class Repo {
                 String repoBranch = resultSet.getString("branch");
                 String repoData = resultSet.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
+                repoResults.add(new RepoResult()
+                    .setRowId(rowId)
+                    .setName(repoName)
+                    .setScm(repoScm)
+                    .setUrl(repoUrl)
+                    .setUsername(repoUsername)
+                    .setPassword(repoPassword)
+                    .setSource(repoSource)
+                    .setBranch(repoBranch)
+                    .setData(repoData));
             }
         }
         catch (SQLException ex) {
@@ -139,7 +148,16 @@ public class Repo {
                 String repoBranch = rs.getString("branch");
                 String repoData = rs.getString("data");
 
-                repoResults.add(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
+                repoResults.add(new RepoResult()
+                        .setRowId(rowId)
+                        .setName(repoName)
+                        .setScm(repoScm)
+                        .setUrl(repoUrl)
+                        .setUsername(repoUsername)
+                        .setPassword(repoPassword)
+                        .setSource(repoSource)
+                        .setBranch(repoBranch)
+                        .setData(repoData));
             }
         }
         catch (SQLException ex) {
@@ -210,7 +228,18 @@ public class Repo {
                 String repoBranch = resultSet.getString("branch");
                 String repoData = resultSet.getString("data");
 
-                result = Optional.of(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
+                RepoResult repoResult = new RepoResult()
+                        .setRowId(rowId)
+                        .setName(repoName)
+                        .setScm(repoScm)
+                        .setUrl(repoUrl)
+                        .setUsername(repoUsername)
+                        .setPassword(repoPassword)
+                        .setSource(repoSource)
+                        .setBranch(repoBranch)
+                        .setData(repoData);
+
+                result = Optional.of(repoResult);
             }
         }
         catch (SQLException ex) {
@@ -254,7 +283,18 @@ public class Repo {
                 String repoBranch = resultSet.getString("branch");
                 String repoData = resultSet.getString("data");
 
-                result = Optional.of(new RepoResult(rowId, repoName, repoScm, repoUrl, repoUsername, repoPassword, repoSource, repoBranch, repoData));
+                RepoResult repoResult = new RepoResult()
+                        .setRowId(rowId)
+                        .setName(repoName)
+                        .setScm(repoScm)
+                        .setUrl(repoUrl)
+                        .setUsername(repoUsername)
+                        .setPassword(repoPassword)
+                        .setSource(repoSource)
+                        .setBranch(repoBranch)
+                        .setData(repoData);
+
+                result = Optional.of(repoResult);
             }
         }
         catch (SQLException ex) {

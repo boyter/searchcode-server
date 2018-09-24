@@ -30,7 +30,18 @@ public class EndToEndITCase extends TestCase{
 
         // Index created files
 
-        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
+        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()),
+                new RepoResult()
+                        .setRowId(0)
+                        .setName("ENDTOENDTEST")
+                        .setScm("scm")
+                        .setUrl("url")
+                        .setUsername("username")
+                        .setPassword("password")
+                        .setSource("source")
+                        .setBranch("branch")
+                        .setData("{}"),
+                "", directoryWithFiles.toString(), false);
         SearchResult searchResult = indexService.search("endtoendtestfile", null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
 
@@ -55,7 +66,16 @@ public class EndToEndITCase extends TestCase{
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
-        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
+        indexFileRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), "", directoryWithFiles.toString(), true);
         searchResult = indexService.search("endtoendtestfile", null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -65,7 +85,16 @@ public class EndToEndITCase extends TestCase{
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
         // Delete everything
-        indexService.deleteByRepo(new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "" ,"", "{}"));
+        indexService.deleteByRepo(new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"));
         searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
@@ -79,7 +108,16 @@ public class EndToEndITCase extends TestCase{
         result = this.runCommand(directoryWithFiles.toString(), this.GITPATH, "commit", "-m", "\"First commit\"");
 
         IndexGitRepoJob indexGitRepoJob = new IndexGitRepoJob();
-        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
+        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), "", directoryWithFiles.toString(), false);
 
         SearchResult searchResult = indexService.search("endtoendtestfile", null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
@@ -100,7 +138,16 @@ public class EndToEndITCase extends TestCase{
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
-        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
+        indexGitRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), "", directoryWithFiles.toString(), true);
         searchResult = indexService.search("endtoendtestfile", null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -109,7 +156,16 @@ public class EndToEndITCase extends TestCase{
         assertThat(codeResult1.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile1");
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
-        indexService.deleteByRepo(new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "" ,"", "{}"));
+        indexService.deleteByRepo(new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"));
         searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }
@@ -119,7 +175,16 @@ public class EndToEndITCase extends TestCase{
         File directoryWithFiles = TestHelpers.createDirectoryWithFiles("EndToEndSvnTest");
 
         IndexSvnRepoJob indexSvnRepoJob = new IndexSvnRepoJob();
-        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), false);
+        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), "", directoryWithFiles.toString(), false);
 
         SearchResult searchResult = indexService.search("endtoendtestfile", null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(3);
@@ -140,7 +205,16 @@ public class EndToEndITCase extends TestCase{
         // Delete file from disk then index to ensure it is removed from the index
         File toDelete = new File(directoryWithFiles.toString() + "/EndToEndTestFile2.py");
         toDelete.delete();
-        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "", "", "{}"), "", directoryWithFiles.toString(), true);
+        indexSvnRepoJob.indexDocsByPath(Paths.get(directoryWithFiles.toString()), new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"), "", directoryWithFiles.toString(), true);
         searchResult = indexService.search("endtoendtestfile", null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(2);
 
@@ -149,7 +223,16 @@ public class EndToEndITCase extends TestCase{
         assertThat(codeResult1.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile1");
         assertThat(codeResult2.getCode().get(0)).isEqualTo("EndToEndTestFile EndToEndTestFile3");
 
-        indexService.deleteByRepo(new RepoResult(0, "ENDTOENDTEST", "", "", "", "", "" ,"", "{}"));
+        indexService.deleteByRepo(new RepoResult()
+                .setRowId(0)
+                .setName("ENDTOENDTEST")
+                .setScm("scm")
+                .setUrl("url")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("source")
+                .setBranch("branch")
+                .setData("{}"));
         searchResult = indexService.search("endtoendtestfile".toLowerCase(), null, 0, false);
         assertThat(searchResult.getCodeResultList().size()).isEqualTo(0);
     }

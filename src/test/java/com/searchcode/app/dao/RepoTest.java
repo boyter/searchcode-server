@@ -33,7 +33,17 @@ public class RepoTest extends TestCase {
     }
 
     public void testRepoSaveDelete() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("myname")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+
         Optional<RepoResult> repoResult = this.repo.getRepoByName("myname");
         RepoResult result = repoResult.get();
 
@@ -54,7 +64,16 @@ public class RepoTest extends TestCase {
     }
 
     public void testRepoSaveGetCacheBug() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("myname")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
 
         for (int i = 0 ; i < 200; i++) {
             assertThat(repo.getRepoByName("myname")).isNotNull();
@@ -64,21 +83,48 @@ public class RepoTest extends TestCase {
     }
 
     public void testRepoByUrl() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("myname")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
         assertThat(this.repo.getRepoByUrl("myurl").isPresent()).isTrue();
         this.repo.deleteRepoByName("myname");
     }
 
     public void testRepoByUrlMemoryLeak() {
         for (int i = 0; i < 200; i++) {
-            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+            this.repo.saveRepo(new RepoResult()
+                    .setRowId(-1)
+                    .setName("myname")
+                    .setScm("git")
+                    .setUrl("myurl")
+                    .setUsername("username")
+                    .setPassword("password")
+                    .setSource("mysource")
+                    .setBranch("mybranch")
+                    .setData("{}"));
             assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
             this.repo.deleteRepoByName("myname");
         }
     }
 
     public void testDeleteRepoMultipleTimes() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("myname")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
 
         for (int i = 0 ; i < 200; i++) {
             this.repo.deleteRepoByName("myname");
@@ -87,24 +133,87 @@ public class RepoTest extends TestCase {
 
     public void testSaveRepoMultipleTimes() {
         for (int i = 0 ; i < 200; i++) {
-            this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+            this.repo.saveRepo(new RepoResult()
+                    .setRowId(-1)
+                    .setName("myname")
+                    .setScm("git")
+                    .setUrl("myurl")
+                    .setUsername("username")
+                    .setPassword("password")
+                    .setSource("mysource")
+                    .setBranch("mybranch")
+                    .setData("{}"));
         }
 
         this.repo.deleteRepoByName("myname");
     }
 
     public void testGetAllRepo() {
-        this.repo.saveRepo(new RepoResult(-1, "myname", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("myname")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
         assertThat(this.repo.getAllRepo().size()).isGreaterThanOrEqualTo(1);
         this.repo.deleteRepoByName("myname");
     }
 
     public void testGetPagedRepo() {
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo1")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo2")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo3")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo4")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo5")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
 
         assertThat(this.repo.getPagedRepo(0, 2).size()).isEqualTo(2);
         assertThat(this.repo.getPagedRepo(0, 4).size()).isEqualTo(4);
@@ -118,12 +227,56 @@ public class RepoTest extends TestCase {
     }
 
     public void testSearchRepo() {
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo1", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo2", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo3", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo4", "git", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-        this.repo.saveRepo(new RepoResult(-1, "testGetPagedRepo5", "svn", "myurl", "username", "password", "mysource", "mybranch", "{}"));
-
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo1")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo2")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo3")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo4")
+                .setScm("git")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
+        this.repo.saveRepo(new RepoResult()
+                .setRowId(-1)
+                .setName("testGetPagedRepo5")
+                .setScm("svn")
+                .setUrl("myurl")
+                .setUsername("username")
+                .setPassword("password")
+                .setSource("mysource")
+                .setBranch("mybranch")
+                .setData("{}"));
         assertThat(this.repo.searchRepo("PassworD").size()).isEqualTo(5);
         assertThat(this.repo.searchRepo("TESTGetPagedRepo1").size()).isEqualTo(1);
         assertThat(this.repo.searchRepo("svn testGetPagedRepo5").size()).isEqualTo(1);

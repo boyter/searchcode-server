@@ -5,11 +5,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class AppTest extends TestCase
 {
     /**

@@ -5,7 +5,7 @@
  * in the LICENSE.TXT file, but will be eventually open under GNU General Public License Version 3
  * see the README.md for when this clause will take effect
  *
- * Version 1.3.14
+ * Version 1.3.15
  */
 
 package com.searchcode.app.service;
@@ -14,7 +14,6 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
-import com.searchcode.app.util.Helpers;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -134,22 +133,22 @@ public class CodeMatcher {
         }
 
         // Get the adjacent lines
-        List<CodeMatchResult> adajacentLines = new LinkedList<>();
+        List<CodeMatchResult> adjacentLines = new LinkedList<>();
         for (CodeMatchResult cmr: resultLines) {
             int linenumber = cmr.getLineNumber();
             int previouslinenumber = linenumber - 1;
             int nextlinenumber = linenumber + 1;
 
             if (previouslinenumber >= 0 && !this.resultExists(resultLines, previouslinenumber)) {
-                adajacentLines.add(new CodeMatchResult(code.get(previouslinenumber), false, false, 0, previouslinenumber));
+                adjacentLines.add(new CodeMatchResult(code.get(previouslinenumber), false, false, 0, previouslinenumber));
             }
 
             if (nextlinenumber < codesize && !this.resultExists(resultLines, nextlinenumber)) {
-                adajacentLines.add(new CodeMatchResult(code.get(nextlinenumber), false, false, 0, nextlinenumber));
+                adjacentLines.add(new CodeMatchResult(code.get(nextlinenumber), false, false, 0, nextlinenumber));
             }
         }
 
-        resultLines.addAll(adajacentLines);
+        resultLines.addAll(adjacentLines);
 
         // If not matching we probably matched on the filename or past 10000
         if (resultLines.size() == 0) {
@@ -257,7 +256,7 @@ public class CodeMatcher {
         List<String> tokens = Arrays.asList(line.split(" "));
         List<String> returnList = new ArrayList<>();
 
-        for(String token: tokens) {
+        for (String token: tokens) {
 
             String longestTerm = "";
 

@@ -29,9 +29,9 @@ public class SourceCodeTest extends TestCase {
         String location = sourceCode.getLocation(new CodeIndexDocument());
         assertThat(location).isEmpty();
 
-        location = sourceCode.getLocation(new CodeIndexDocument(
-            "", "", "fileName", "", "", "", "", 1, "", "", "", "displaylocation/fileName", "source"
-        ));
+        location = sourceCode.getLocation(
+            new CodeIndexDocument().setDisplayLocation("displaylocation/fileName")
+        );
         assertThat(location).isEqualTo("displaylocation/");
     }
 }
