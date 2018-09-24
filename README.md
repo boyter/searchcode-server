@@ -202,7 +202,7 @@ File Classifier Database is licensed under https://creativecommons.org/licenses/
 Change Log
 ==========
 
-XX XXXX XXXX - 1.3.14 https://github.com/boyter/searchcode-server/projects/7
+14 September 2018 - 1.3.14 https://github.com/boyter/searchcode-server/projects/7
  - Move over to scc language definitions for identifying languages https://github.com/boyter/searchcode-server/issues/186
  - Resolve issue with searching for identifiers in C++ namespaces https://github.com/boyter/searchcode-server/issues/188
  - Improved binary file detection https://github.com/boyter/searchcode-server/issues/195
