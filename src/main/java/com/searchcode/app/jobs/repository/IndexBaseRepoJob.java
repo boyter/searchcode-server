@@ -17,7 +17,6 @@ import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
-import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
@@ -48,7 +47,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean FOLLOWLINKS = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.FOLLOW_LINKS, Values.DEFAULT_FOLLOW_LINKS));
     public boolean DELETEREPO = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.DELETE_REPO_AFTER_PROCESS, Values.DEFAULT_DELETE_REPO_AFTER_PROCESS));
     public boolean haveRepoResult = false;
-    public IndexService indexService = Singleton.getIndexService();
+    public IIndexService indexService = Singleton.getIndexService();
 
     public RepositoryChanged updateExistingRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         return null;
@@ -88,8 +87,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
 
     /**
-     * Check the file time against
-     * @return
+     * Check the file time against the last run time with 1 hour offset
      */
     public boolean isUpdated(String fileLocation, Instant lastRunTime) {
         if (this.indexService.getReindexingAll()) {
@@ -203,7 +201,7 @@ public abstract class IndexBaseRepoJob implements Job {
             return false;
         }
 
-        // Check if sucessfully cloned, and if not delete and restart
+        // Check if successfully cloned, and if not delete and restart
         boolean cloneSucess = this.checkCloneUpdateSucess(repoLocations + repoName);
         if (!cloneSucess) {
             // Delete the folder and delete from the index

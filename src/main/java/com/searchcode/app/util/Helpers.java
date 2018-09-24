@@ -95,8 +95,8 @@ public class Helpers {
             fileInputStream = new FileInputStream(new File(filePath));
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fileInputStream);
         } // Both the below should be caught before this point
-        catch(FileNotFoundException ex) {}
-        catch(IOException ex) {}
+        catch (FileNotFoundException ex) {}
+        catch (IOException ex) {}
         finally {
             IOUtils.closeQuietly(fileInputStream);
         }
@@ -114,7 +114,7 @@ public class Helpers {
         try {
             result = Integer.parseInt(toParse);
         }
-        catch (NumberFormatException ex){
+        catch (NumberFormatException ex) {
             result = Integer.parseInt(defaultValue);
         }
 
@@ -131,7 +131,7 @@ public class Helpers {
         try {
             result = Double.parseDouble(toParse);
         }
-        catch (NumberFormatException | NullPointerException ex){
+        catch (NumberFormatException | NullPointerException ex) {
             result = Double.parseDouble(defaultValue);
         }
 
@@ -180,7 +180,7 @@ public class Helpers {
         return strings;
     }
 
-    public Charset guessCharset(File file) throws IOException {
+    private Charset guessCharset(File file) throws IOException {
         return CharsetToolkit.guessEncoding(file, 4096, StandardCharsets.UTF_8);
     }
 
@@ -340,6 +340,11 @@ public class Helpers {
         }
         return true;
     }
+
+    public boolean isLocalInstance() {
+        return Values.DEFAULT_INDEX_SERVICE.equals(Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE));
+    }
+
 
     public void closeQuietly(ResultSet resultSet) {
         try {

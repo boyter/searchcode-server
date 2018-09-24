@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 @DisallowConcurrentExecution
 public class EnqueueRepositoryJob implements Job {
 
-    private final IndexService indexService;
+    private final IIndexService indexService;
     private final LoggerWrapper logger;
     private final Repo repo;
     private final Helpers helpers;

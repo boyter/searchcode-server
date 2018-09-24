@@ -12,9 +12,8 @@ package com.searchcode.app.service;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.SQLiteDatabaseConfig;
-import com.searchcode.app.dao.Api;
-import com.searchcode.app.dao.Data;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.*;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.service.route.TimeSearchRouteService;
@@ -48,6 +47,8 @@ public final class Singleton {
     private static Repo repo = null;
     private static Data data = null;
     private static Api api = null;
+    private static SourceCode sourceCode = null;
+    private static LanguageType languageType = null;
     private static ApiService apiService = null;
     private static DataService dataService = null;
     private static TimeSearchRouteService timeSearchRouteService = null;
@@ -56,7 +57,8 @@ public final class Singleton {
     private static IDatabaseConfig databaseConfig = null;
     private static Helpers helpers = null;
     private static ValidatorService validatorService = null;
-    private static IndexService indexService = null;
+
+    private static IIndexService indexService = null;
     private static CodeMatcher codematcher = null;
     private static SlocCounter slocCounter = null;
 
@@ -120,9 +122,19 @@ public final class Singleton {
         return uniqueSvnRepoQueue;
     }
 
-    public static synchronized IndexService getIndexService() {
+    public static synchronized IIndexService getIndexService() {
         if (indexService == null) {
-            indexService = new IndexService();
+            String index = Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE);
+
+            switch (index) {
+                case "sphinx":
+                    indexService = new SphinxIndexService();
+                    break;
+                case "internal":
+                default:
+                    indexService = new IndexService();
+                    break;
+            }
         }
 
         return indexService;
@@ -281,6 +293,22 @@ public final class Singleton {
 
     public static synchronized void setApi(Api api) {
         Singleton.api = api;
+    }
+
+    public static synchronized LanguageType getLanguageType() {
+        if (languageType == null) {
+            languageType = new LanguageType();
+        }
+
+        return languageType;
+    }
+
+    public static synchronized SourceCode getSourceCode() {
+        if (sourceCode == null) {
+            sourceCode = new SourceCode();
+        }
+
+        return sourceCode;
     }
 
     public static synchronized ApiService getApiService() {

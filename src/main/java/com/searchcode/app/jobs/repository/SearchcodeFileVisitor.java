@@ -7,6 +7,7 @@ import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.SlocCounter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.omg.CORBA.Environment;
 
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -136,6 +137,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             if (this.indexBaseRepoJob.LOWMEMORY) {
                 Singleton.getIndexService().indexDocument(codeIndexDocument);
             } else {
+
                 Singleton.getIndexService().incrementCodeIndexLinesCount(slocCount.linesCount);
                 Singleton.getCodeIndexQueue().add(codeIndexDocument);
             }

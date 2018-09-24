@@ -43,7 +43,7 @@ public class AdminRouteService {
     private final Data data;
     private final JobService jobService;
     private final DataService dataService;
-    private final IndexService indexService;
+    private final IIndexService indexService;
     private final StatsService statsService;
     private final ValidatorService validatorService;
     private final RepositorySource repositorySource;
@@ -61,7 +61,8 @@ public class AdminRouteService {
              Singleton.getLogger());
     }
 
-    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource, LoggerWrapper loggerWrapper) {
+
+    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IIndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource, LoggerWrapper loggerWrapper) {
         this.repo = repo;
         this.data = data;
         this.jobService = jobService;
@@ -574,11 +575,11 @@ public class AdminRouteService {
             case "adderpaused":
                 return this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER) ? Values.PAUSED : Values.RUNNING;
             case "indexreadlocation":
-                return this.indexService.getINDEX_READ_LOCATION().toString();
+                return this.indexService.getProperty("index_read_location");
             case "indexwritelocation":
-                return this.indexService.getINDEX_WRITE_LOCATION().toString();
+                return this.indexService.getProperty("index_write_location");
             case "facetwritelocation":
-                return this.indexService.getFACET_WRITE_LOCATION().toString();
+                return this.indexService.getProperty("facet_write_location  ");
             case "codeindexlinescount":
                 return Values.EMPTYSTRING + this.indexService.getCodeIndexLinesCount();
             case "codeindexqueuesize":

@@ -15,12 +15,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.eclipse.jetty.util.ConcurrentArrayQueue;
-import org.mockito.Mockito;
 
-import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 

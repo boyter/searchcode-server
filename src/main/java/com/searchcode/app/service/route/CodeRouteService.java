@@ -18,7 +18,7 @@ import com.searchcode.app.dao.Repo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
-import com.searchcode.app.service.IndexService;
+import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
@@ -37,13 +37,13 @@ import static spark.Spark.halt;
 
 public class CodeRouteService {
 
-    private IndexService indexService;
+    private IIndexService indexService;
 
     public CodeRouteService() {
         this(Singleton.getIndexService());
     }
 
-    public CodeRouteService(IndexService indexService) {
+    public CodeRouteService(IIndexService indexService) {
         this.indexService = indexService;
     }
 
@@ -56,17 +56,8 @@ public class CodeRouteService {
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
             String query = request.queryParams("q").trim();
-            int page = 0;
+            int page = this.getPage(request, 0);
 
-            if (request.queryParams().contains("p")) {
-                try {
-                    page = Integer.parseInt(request.queryParams("p"));
-                    page = page > 19 ? 19 : page;
-                }
-                catch (NumberFormatException ex) {
-                    page = 0;
-                }
-            }
 
             List<String> reposList = new ArrayList<>();
             List<String> langsList = new ArrayList<>();
@@ -326,17 +317,7 @@ public class CodeRouteService {
         if (request.queryParams().contains("q")) {
             String query = request.queryParams("q").trim();
             String altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
-            int page = 0;
-
-            if (request.queryParams().contains("p")) {
-                try {
-                    page = Integer.parseInt(request.queryParams("p"));
-                    page = page > 19 ? 19 : page;
-                }
-                catch (NumberFormatException ex) {
-                    page = 0;
-                }
-            }
+            int page = this.getPage(request, 0);
 
             String[] repos = new String[0];
             String[] langs = new String[0];
@@ -451,5 +432,18 @@ public class CodeRouteService {
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
+    }
+
+    public static int getPage(Request request, int page) {
+        if (request.queryParams().contains("p")) {
+            try {
+                page = Integer.parseInt(request.queryParams("p"));
+                page = page > 19 ? 19 : page;
+            }
+            catch (NumberFormatException ex) {
+                page = 0;
+            }
+        }
+        return page;
     }
 }

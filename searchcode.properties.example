@@ -45,6 +45,13 @@ follow_links=false
 deep_guess_files=false
 host_name=localhost:8080
 index_all_fields=content,filename,filenamereverse,path,interesting
+# Mostly used for changing over to distributed searchcode.com index
+# delete_repo_after_process=true
+# index_service=sphinx
+# sphinx_servers_shards=localhost:1,2,3,4;localhost:5,6,7,8
+# The below will probably be moved into the settings page at some point in the
+# future.
+=======
 # The below will probably be moved into the settings page at some point in the future
 password=Adm1n234
 encryption_key=39dc5f2168e412be3a9faf9d08482114

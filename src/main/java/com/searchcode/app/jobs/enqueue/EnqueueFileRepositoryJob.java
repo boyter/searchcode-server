@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @DisallowConcurrentExecution
 public class EnqueueFileRepositoryJob implements Job {
 
-    private final IndexService indexService;
+    private final IIndexService indexService;
     private final LoggerWrapper logger;
     private final Repo repo;
     private final Helpers helpers;

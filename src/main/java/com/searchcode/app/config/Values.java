@@ -109,8 +109,14 @@ public class Values {
     public static final String DEFAULT_DEEP_GUESS_FILES = "false";
     public static final String HOST_NAME = "host_name";
     public static final String DEFAULT_HOST_NAME = "localhost:8080";
+
+    // Mostly used for changing over to distributed searchcode.com index
     public static final String DELETE_REPO_AFTER_PROCESS = "delete_repo_after_process";
     public static final String DEFAULT_DELETE_REPO_AFTER_PROCESS = "false";
+    public static final String INDEX_SERVICE = "index_service";
+    public static final String DEFAULT_INDEX_SERVICE = "internal";
+    public static final String SPHINX_SERVERS_SHARDS = "sphinx_servers_shards";
+    public static final String DEFAULT_SPHINX_SERVERS_SHARDS = "localhost:1";
     public static final String INDEX_ALL_FIELDS = "index_all_fields";
     public static final String DEFAULT_INDEX_ALL_FIELDS = "content,filename,filenamereverse,path,interesting";
 
@@ -153,6 +159,7 @@ public class Values {
     // Random
     public static final String USERSESSIONID = "admin_user";
     public static final String EMPTYSTRING = "";
+    public static final String SINGLE_SPACE = " ";
     public static final String GIT = "git";
     public static final String SVN = "svn";
     public static final String FILE = "file";
@@ -202,4 +209,5 @@ public class Values {
 
     public static final String CHARSET_UTF8 = "UTF8";
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+    public static final String ALL_NEWLINE = "\\r?\\n";
 }

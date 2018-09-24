@@ -10,13 +10,15 @@
 
 package com.searchcode.app.dto;
 
+import com.searchcode.app.config.Values;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchResult {
     private int totalHits = 0;
     private int page = 0;
-    private String query = "";
+    private String query = Values.EMPTYSTRING;
     private List<String> altQuery = new ArrayList<>();
     private List<CodeResult> codeResultList = new ArrayList<>();
     private List<Integer> pages = new ArrayList<>();
