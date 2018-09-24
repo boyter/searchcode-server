@@ -33,14 +33,14 @@ public class App {
         // Database migrations happen before we start
         preStart();
 
-        Singleton.getLogger().info("Starting searchcode server on port " + getServerPort());
+        Singleton.getLogger().info("Starting searchcode server on port " + Singleton.getHelpers().getServerPort());
 
-        if (getOnlyLocalhost()) {
+        if (Singleton.getHelpers().getOnlyLocalhost()) {
             Singleton.getLogger().info("Only listening on 127.0.0.1");
             Spark.ipAddress("127.0.0.1");
         }
 
-        Spark.port(getServerPort());
+        Spark.port(Singleton.getHelpers().getServerPort());
         Spark.staticFileLocation("/public");
 
         Singleton.getJobService().initialJobs();
@@ -68,13 +68,5 @@ public class App {
         repo.addSourceToTable();
         repo.addBranchToTable();
         repo.addDataToTable();
-    }
-
-    private static int getServerPort() {
-        return Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.SERVER_PORT, Values.DEFAULT_SERVER_PORT), Values.DEFAULT_SERVER_PORT);
-    }
-
-    private static boolean getOnlyLocalhost() {
-        return Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
     }
 }

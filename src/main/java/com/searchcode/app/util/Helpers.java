@@ -341,10 +341,21 @@ public class Helpers {
         return true;
     }
 
+    /**
+     * Determine if this instance of searchcode is a local one which means it maintains its own
+     * lucene index and the like. If configured to be searchcode.com it would use sphinx
+     */
     public boolean isLocalInstance() {
         return Values.DEFAULT_INDEX_SERVICE.equals(Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE));
     }
 
+    public int getServerPort() {
+        return Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.SERVER_PORT, Values.DEFAULT_SERVER_PORT), Values.DEFAULT_SERVER_PORT);
+    }
+
+    public boolean getOnlyLocalhost() {
+        return Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
+    }
 
     public void closeQuietly(ResultSet resultSet) {
         try {
