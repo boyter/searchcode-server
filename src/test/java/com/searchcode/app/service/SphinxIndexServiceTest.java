@@ -13,6 +13,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class SphinxIndexServiceTest extends TestCase {
     public void testSearch() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
         SphinxIndexService sphinxIndexService = new SphinxIndexService();
 
         List<String> someList = new ArrayList<>();
@@ -42,18 +44,24 @@ public class SphinxIndexServiceTest extends TestCase {
 
 
     public void testGetShardCountExpectingZero() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
         SphinxIndexService sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("")).isZero();
         assertThat(sphinxIndexService.getShardCount("localhost:")).isZero();
     }
 
     public void testGetShardCountExpectingTwo() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
         SphinxIndexService sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2")).isEqualTo(2);
         assertThat(sphinxIndexService.getShardCount("localhost:1;localhost:2")).isEqualTo(2);
     }
 
     public void testGetShardCountExpectingFour() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
         SphinxIndexService sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2,3,4")).isEqualTo(4);
         assertThat(sphinxIndexService.getShardCount("localhost:1,2;localhost:3,4")).isEqualTo(4);

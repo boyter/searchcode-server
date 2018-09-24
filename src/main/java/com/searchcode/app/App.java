@@ -36,7 +36,7 @@ public class App {
         Singleton.getLogger().info("Starting searchcode server on port " + getServerPort());
 
         if (getOnlyLocalhost()) {
-            Singleton.getLogger().info("Only listening on 127.0.0.1 ");
+            Singleton.getLogger().info("Only listening on 127.0.0.1");
             Spark.ipAddress("127.0.0.1");
         }
 
@@ -45,7 +45,7 @@ public class App {
 
         Singleton.getJobService().initialJobs();
 
-        if (Values.DEFAULT_INDEX_SERVICE.equals(Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE))) {
+        if (Singleton.getHelpers().isLocalInstance()) {
             RegisterServerRoutes();
         } else {
             RegisterSearchcodeRoutes();

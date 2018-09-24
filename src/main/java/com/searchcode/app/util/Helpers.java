@@ -341,6 +341,11 @@ public class Helpers {
         return true;
     }
 
+    public boolean isLocalInstance() {
+        return Values.DEFAULT_INDEX_SERVICE.equals(Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE));
+    }
+
+
     public void closeQuietly(ResultSet resultSet) {
         try {
             resultSet.close();
