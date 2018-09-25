@@ -101,8 +101,8 @@ public class JobService {
 
             scheduler.start();
         }
-        catch(SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        catch (SchedulerException ex) {
+            Singleton.getLogger().severe(String.format("93ef44ae::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -135,8 +135,8 @@ public class JobService {
 
             scheduler.start();
         }
-        catch(SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        catch (SchedulerException ex) {
+            Singleton.getLogger().severe(String.format("c0f207cd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -170,8 +170,8 @@ public class JobService {
 
             scheduler.start();
         }
-        catch(SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+        catch (SchedulerException ex) {
+            Singleton.getLogger().severe(String.format("70845099::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -222,7 +222,7 @@ public class JobService {
             scheduler2.scheduleJob(job2, trigger2);
             scheduler2.start();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(String.format("40f20408::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -251,7 +251,7 @@ public class JobService {
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(String.format("703d6d7f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -280,7 +280,7 @@ public class JobService {
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(String.format("6e131da2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -297,7 +297,7 @@ public class JobService {
             this.startRepositoryJobs();
             this.startEnqueueJob();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(String.format("8c3cd302::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -337,18 +337,13 @@ public class JobService {
         for (int i = 0; i < this.NUMBERFILEPROCESSORS; i++) {
             this.startIndexFileRepoJobs(Values.EMPTYSTRING + i);
         }
-
-
-        if (this.repo.getAllRepo().size() == 0) {
-            Singleton.getLogger().info("///////////////////////////////////////////////////////////////////////////\n      // You have no repositories set to index. Add some using the admin page. //\n      // Browse to the admin page and manually add some repositories to index. //\n      ///////////////////////////////////////////////////////////////////////////");
-        }
     }
 
     private void shutdownScheduler() {
         try {
             Singleton.getScheduler().shutdown();
-        } catch (SchedulerException e) {
-            Singleton.getLogger().warning("ERROR - Unable to stop scheduled tasks.");
+        } catch (SchedulerException ex) {
+            Singleton.getLogger().severe(String.format("12cce757::error in class %s unable to stop scheduled tasks exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 

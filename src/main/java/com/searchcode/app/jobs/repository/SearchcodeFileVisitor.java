@@ -127,7 +127,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 .setCommentLines(slocCount.commentCount)
                 .setLines(slocCount.linesCount)
                 .setComplexity(slocCount.complexity)
-                .setContents(StringUtils.join(codeLinesReturn.getCodeLines(), " "))
+                .setContents(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"))
                 .setRepoRemoteLocation(repoRemoteLocation)
                 .setCodeOwner(codeOwner)
                 .setSchash(Values.EMPTYSTRING)

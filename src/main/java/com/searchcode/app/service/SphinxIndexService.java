@@ -52,7 +52,7 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public void indexDocument(Queue<CodeIndexDocument> documentQueue) throws IOException {
-        // Need to connect to each sphinx config eventually
+        // TODO Need to connect to each sphinx config eventually
         Connection connection = null;
         PreparedStatement stmt = null;
 

@@ -10,12 +10,10 @@
 
 package com.searchcode.app;
 
-import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Properties;
 import spark.Spark;
 
 import static com.searchcode.app.SearchcodeRoutes.RegisterSearchcodeRoutes;
@@ -33,11 +31,13 @@ public class App {
         // Database migrations happen before we start
         preStart();
 
-        Singleton.getLogger().info("Starting searchcode server on port " + Singleton.getHelpers().getServerPort());
+        Singleton.getLogger().info(String.format("c234cbe8::starting searchcode server version %s on port %d", App.VERSION, Singleton.getHelpers().getServerPort()));
 
         if (Singleton.getHelpers().getOnlyLocalhost()) {
-            Singleton.getLogger().info("Only listening on 127.0.0.1");
+            Singleton.getLogger().info(String.format("db9699c3::binding to 127.0.0.1:%d", Singleton.getHelpers().getServerPort()));
             Spark.ipAddress("127.0.0.1");
+        } else {
+            Singleton.getLogger().info(String.format("db9699c3::binding to 0.0.0.0:%d", Singleton.getHelpers().getServerPort()));
         }
 
         Spark.port(Singleton.getHelpers().getServerPort());

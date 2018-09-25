@@ -308,7 +308,7 @@ public class SourceCode {
             stmt.setString(8, codeIndexDocument.getContents());
             stmt.setString(9, codeIndexDocument.getHash());
             stmt.setString(10, "simhash");
-            stmt.setInt(11, codeIndexDocument.getCodeLines());
+            stmt.setInt(11, codeIndexDocument.getLines());
             stmt.setString(12, "{}");
 
             stmt.execute();
