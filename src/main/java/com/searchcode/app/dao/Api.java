@@ -15,6 +15,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,14 +33,16 @@ import java.util.Optional;
 public class Api {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
+    private final LoggerWrapper logger;
 
     public Api(){
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-    public Api(IDatabaseConfig dbConfig, Helpers helpers) {
+    public Api(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.logger = logger;
     }
 
     public synchronized List<ApiResult> getAllApi() {
@@ -65,7 +68,7 @@ public class Api {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("c58e8a00::error in class %s exception %s searchcode was unable to pull the api keys from the database api calls will fail, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -101,7 +104,7 @@ public class Api {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("c81a4390::error in class %s exception %s searchcode was unable to pull the api keys from the database api calls will fail, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -131,7 +134,7 @@ public class Api {
             successful = true;
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("d06c2e67::error in class %s exception %s searchcode was unable to save a new api key to the database, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(preparedStatement);
@@ -153,7 +156,7 @@ public class Api {
             preparedStatement.execute();
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("eab0bb55::error in class %s exception %s searchcode was unable to delete an api key by its public key %s", ex.getClass(), ex.getMessage(), publicKey));
         }
         finally {
             this.helpers.closeQuietly(preparedStatement);
@@ -182,7 +185,7 @@ public class Api {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("5e666e82::error in class %s exception %s searchcode was to create the api key table, so api calls will fail", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);

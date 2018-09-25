@@ -4,6 +4,7 @@ import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -19,7 +20,7 @@ public class ApiTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        this.api = new Api(new SQLiteMemoryDatabaseConfig(), new Helpers());
+        this.api = new Api(new SQLiteMemoryDatabaseConfig(), new Helpers(), new LoggerWrapper());
         this.api.createTableIfMissing();
     }
 

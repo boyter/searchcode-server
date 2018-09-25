@@ -38,7 +38,7 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
             }
         }
         catch (ClassNotFoundException ex) {
-            ex.printStackTrace();
+            Singleton.getLogger().severe(String.format("e5c19b7c::error in class %s exception %s it appears searchcode is unable to connect my mysql as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 
         return connection;

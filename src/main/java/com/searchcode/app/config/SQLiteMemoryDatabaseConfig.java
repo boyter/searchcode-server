@@ -28,7 +28,7 @@ public class SQLiteMemoryDatabaseConfig implements IDatabaseConfig {
             }
         }
         catch (ClassNotFoundException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(String.format("6310e883::error in class %s exception %s it appears searchcode is unable to connect sqlite as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 
         return connection;
