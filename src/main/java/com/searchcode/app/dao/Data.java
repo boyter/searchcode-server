@@ -31,14 +31,16 @@ import java.util.List;
 public class Data {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
+    private final LoggerWrapper logger;
 
     public Data() {
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-    public Data(IDatabaseConfig dbConfig, Helpers helpers) {
+    public Data(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.logger = logger;
         this.createTableIfMissing();
     }
 
@@ -60,7 +62,7 @@ public class Data {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get all data");
+            this.logger.severe(String.format("e897086c::error in class %s exception %s searchcode was unable get all data, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -97,7 +99,7 @@ public class Data {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage() + " while trying to get " + key);
+            this.logger.severe(String.format("52f85254::error in class %s exception %s searchcode was unable get data by name %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), key));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -133,7 +135,7 @@ public class Data {
             preparedStatement.execute();
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("e241d7cd::error in class %s exception %s searchcode was unable save data name %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), key));
         }
         finally {
             this.helpers.closeQuietly(preparedStatement);
@@ -164,6 +166,7 @@ public class Data {
         }
         catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("3deb6433::error in class %s exception %s searchcode was unable create the data table, this is likely to break all sorts of things", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);

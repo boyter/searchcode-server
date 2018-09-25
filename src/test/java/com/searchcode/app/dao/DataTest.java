@@ -3,6 +3,7 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -16,7 +17,7 @@ public class DataTest extends TestCase {
 
     public void setUp() throws Exception {
         super.setUp();
-        this.data = new Data(new SQLiteMemoryDatabaseConfig(), new Helpers());
+        this.data = new Data(new SQLiteMemoryDatabaseConfig(), new Helpers(), new LoggerWrapper());
         this.data.createTableIfMissing();
     }
 

@@ -9,6 +9,7 @@ import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.lucene.document.Document;
@@ -228,7 +229,7 @@ public class IndexServiceTest extends TestCase {
     }
 
     public void testSearchWithFlip() throws IOException {
-        Data data = new Data(new SQLiteMemoryDatabaseConfig(), new Helpers());
+        Data data = new Data(new SQLiteMemoryDatabaseConfig(), new Helpers(), new LoggerWrapper());
 
         this.indexService = new IndexService(data,
                 Singleton.getStatsService(),
