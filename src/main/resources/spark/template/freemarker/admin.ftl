@@ -166,6 +166,7 @@ repository_location=${repository_location}
 trash_location=${trash_location}
 check_repo_chages=${check_repo_chages}
 check_filerepo_changes=${check_filerepo_changes}
+index_time=${index_time}
 spelling_corrector_size=${spelling_corrector_size}
 max_document_queue_size=${max_document_queue_size}
 max_document_queue_line_size=${max_document_queue_line_size}

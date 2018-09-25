@@ -11,6 +11,7 @@ timeindex_location=./index/time/
 timeindex_facets_location=./index/time/facet/
 check_repo_chages=600
 check_filerepo_changes=600
+index_time=5
 only_localhost=false
 low_memory=false
 log_level=SEVERE

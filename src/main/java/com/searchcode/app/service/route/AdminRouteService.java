@@ -146,7 +146,7 @@ public class AdminRouteService {
         map.put(Values.DEEP_GUESS_FILES, Properties.getProperties().getProperty(Values.DEEP_GUESS_FILES, Values.DEFAULT_DEEP_GUESS_FILES));
         map.put(Values.HOST_NAME, Properties.getProperties().getProperty(Values.HOST_NAME, Values.DEFAULT_HOST_NAME));
         map.put(Values.INDEX_ALL_FIELDS, Properties.getProperties().getProperty(Values.INDEX_ALL_FIELDS, Values.DEFAULT_INDEX_ALL_FIELDS));
-
+        map.put(Values.INDEXTIME, Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME));
 
         map.put("repoCount", this.getStat("repoCount"));
         map.put("numDocs", this.getStat("numDocs"));
