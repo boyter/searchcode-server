@@ -51,10 +51,9 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class JobService {
 
     private final Helpers helpers;
-    private final Repo repo;
-    private int UPDATETIME = 600;
-    private int FILEINDEXUPDATETIME = 3600;
-    private int INDEXTIME = 1; // TODO allow this to be configurable
+    private int UPDATETIME;
+    private int FILEINDEXUPDATETIME;
+    private int INDEXTIME;
     private int NUMBERGITPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS), Values.DEFAULT_NUMBER_GIT_PROCESSORS);
     private int NUMBERSVNPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS), Values.DEFAULT_NUMBER_SVN_PROCESSORS);
     private int NUMBERFILEPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);;
@@ -65,10 +64,10 @@ public class JobService {
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
 
     public JobService() {
-        this.repo = Singleton.getRepo();
         this.helpers = Singleton.getHelpers();
         this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
         this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
+        this.INDEXTIME = 1;
     }
 
     /**
@@ -343,13 +342,13 @@ public class JobService {
         try {
             Singleton.getScheduler().shutdown();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("12cce757::error in class %s unable to stop scheduled tasks exception %s", ex.getClass(), ex.getMessage()));
+            Singleton.getLogger().severe(String.format("12cce757::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
     private boolean attemptMoveToTrash(String repoLocation, String indexLocation) {
         boolean successful;
-        Singleton.getLogger().severe("ERROR - Was unable to remove files or folders in the index or repository. They have been moved to trash and must be removed manually.");
+        Singleton.getLogger().severe(String.format("e71a5492::searchcode was unable to remove files or folders in the index %s or repository %s they have been moved to trash and must be removed manually", indexLocation, repoLocation));
         successful = true;
 
         try {
@@ -359,7 +358,7 @@ public class JobService {
         }
         catch (IOException ex){
             successful = false;
-            Singleton.getLogger().severe("SEVERE - Was unable to move the repo locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
+            Singleton.getLogger().severe(String.format("dfd26713::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), repoLocation));
         }
 
         try {
@@ -369,8 +368,9 @@ public class JobService {
         }
         catch (IOException ex){
             successful = false;
-            Singleton.getLogger().severe("SEVERE - Was unable to move the index locations folder to the trash. It is unlikely that searchcode server can recover from this. Please clearAllLogs the folder manually and restart searchcode.");
+            Singleton.getLogger().severe(String.format("fa274f76::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), indexLocation));
         }
+
         return successful;
     }
 
@@ -387,8 +387,7 @@ public class JobService {
         }
 
         List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
-
-        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        Singleton.getLogger().info(String.format("ea4fc311::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
         return true;
@@ -397,8 +396,7 @@ public class JobService {
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
-
-        Singleton.getLogger().info("Adding repositories to be indexed. " + repoResultList.size());
+        Singleton.getLogger().info(String.format("de4d4b59::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
         return repoResultList.size();
@@ -424,21 +422,20 @@ public class JobService {
         UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
         UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
 
+        Singleton.getLogger().info(String.format("e30a1dca::adding %s to %s queue", rr.getName(), rr.getScm()));
+
         switch (rr.getScm().toLowerCase()) {
             case "git":
-                Singleton.getLogger().info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
                 repoGitQueue.add(rr);
                 break;
             case "svn":
-                Singleton.getLogger().info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
                 repoSvnQueue.add(rr);
                 break;
             case "file":
-                Singleton.getLogger().info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
                 repoFileQueue.add(rr);
                 break;
             default:
-                Singleton.getLogger().info("Unknown SCM type " + rr.getName() + " " + rr.getScm());
+                Singleton.getLogger().severe(String.format("e9cc3dd6::unknown scm type for %s type %s queue, this should be removed from the list of repositories", rr.getName(), rr.getScm()));
                 break;
         }
     }

@@ -39,6 +39,8 @@ public class Values {
     public static final String DEFAULTCHECKREPOCHANGES = "600";
     public static final String CHECKFILEREPOCHANGES = "check_filerepo_changes";
     public static final String DEFAULTCHECKFILEREPOCHANGES = "600";
+    public static final String INDEXTIME = "index_time";
+    public static final String DEFAULTINDEXTIME = "5";
     public static final String SPELLINGCORRECTORSIZE = "spelling_corrector_size";
     public static final String DEFAULTSPELLINGCORRECTORSIZE = "10000";
     public static final String ONLYLOCALHOST = "only_localhost";
