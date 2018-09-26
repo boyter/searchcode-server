@@ -10,6 +10,7 @@
 
 package com.searchcode.app.jobs.enqueue;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
@@ -46,7 +47,7 @@ public class EnqueueRepositoryJob implements Job {
         this.helpers = Singleton.getHelpers();
     }
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         if (this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return;
         }
@@ -61,25 +62,25 @@ public class EnqueueRepositoryJob implements Job {
             // Filter out those queued to be deleted
             List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo())
                 .stream()
-                .filter(x -> !x.getScm().equals("file"))
+                .filter(x -> !x.getScm().equals(Values.FILE))
                 .collect(Collectors.toList());
 
-            this.logger.info("Adding repositories to be indexed. " + repoResultList.size());
+            this.logger.info(String.format("d6ed27fe::adding %d file repositories to be indexed", repoResultList.size()));
 
             for (RepoResult rr: repoResultList) {
                 if (Singleton.getEnqueueRepositoryJobFirstRun()) {
                     rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
                     this.repo.saveRepo(rr);
-                    Singleton.getLogger().info("Resetting Job Run Time due to firstRun:" + Singleton.getEnqueueRepositoryJobFirstRun() + " repoName:" + rr.getName());
+                    this.logger.info(String.format("9a76b7f0::resetting job run time due to firstRun %b repoName %s", Singleton.getEnqueueFileRepositoryJobFirstRun(), rr.getName()));
                 }
 
                 switch (rr.getScm().toLowerCase()) {
                     case "git":
-                        this.logger.info("Adding to GIT queue " + rr.getName() + " " + rr.getScm());
+                        this.logger.info(String.format("b4a3314c::adding to git queue reponame %s", rr.getName()));
                         repoGitQueue.add(rr);
                         break;
                     case "svn":
-                        this.logger.info("Adding to SVN queue " + rr.getName() + " " + rr.getScm());
+                        this.logger.info(String.format("129e8cb0::adding to svn queue reponame %s", rr.getName()));
                         repoSvnQueue.add(rr);
                         break;
                     default:
@@ -89,7 +90,8 @@ public class EnqueueRepositoryJob implements Job {
 
             Singleton.setEnqueueRepositoryJobFirstRun(false);
         }
-        catch (Exception ignored) {
+        catch (Exception ex) {
+            this.logger.severe(String.format("5d725d85::error in class %s exception %s", ex.getClass(), ex.getMessage()));
             Singleton.setEnqueueRepositoryJobFirstRun(false);
         }
     }

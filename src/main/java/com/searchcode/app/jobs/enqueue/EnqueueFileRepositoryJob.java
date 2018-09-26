@@ -10,6 +10,7 @@
 
 package com.searchcode.app.jobs.enqueue;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
@@ -45,7 +46,7 @@ public class EnqueueFileRepositoryJob implements Job {
         this.helpers = Singleton.getHelpers();
     }
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         if (this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return;
         }
@@ -58,21 +59,21 @@ public class EnqueueFileRepositoryJob implements Job {
             // Filter out those queued to be deleted and not file repositories
             List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo())
                 .stream()
-                .filter(x -> x.getScm().equals("file"))
+                .filter(x -> x.getScm().equals(Values.FILE))
                 .collect(Collectors.toList());
 
-            this.logger.info("Adding file repositories to be indexed. " + repoResultList.size());
+            this.logger.info(String.format("4f37a297::adding %d file repositories to be indexed", repoResultList.size()));
 
             for (RepoResult rr: repoResultList) {
                 if (Singleton.getEnqueueFileRepositoryJobFirstRun()) {
                     rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
                     this.repo.saveRepo(rr);
-                    Singleton.getLogger().info("Resetting Job Run Time due to firstRun:" + Singleton.getEnqueueFileRepositoryJobFirstRun() + " repoName:" + rr.getName());
+                    this.logger.info(String.format("40cd7595::resetting job run time due to firstRun %b repoName %s", Singleton.getEnqueueFileRepositoryJobFirstRun(), rr.getName()));
                 }
 
                 switch (rr.getScm().toLowerCase()) {
-                    case "file":
-                       this.logger.info("Adding to FILE queue " + rr.getName() + " " + rr.getScm());
+                    case Values.FILE:
+                        this.logger.info(String.format("18310da9::adding to file queue reponame %s", rr.getName()));
                         repoQueue.add(rr);
                         break;
                     default:
@@ -83,6 +84,7 @@ public class EnqueueFileRepositoryJob implements Job {
             Singleton.setEnqueueFileRepositoryJob(false);
         }
         catch (Exception ex) {
+            this.logger.severe(String.format("056c9f75::error in class %s exception %s", ex.getClass(), ex.getMessage()));
             Singleton.setEnqueueFileRepositoryJob(false);
         }
     }
