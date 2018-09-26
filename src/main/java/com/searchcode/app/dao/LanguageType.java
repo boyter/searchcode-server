@@ -5,6 +5,7 @@ import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.dto.LanguageTypeDTO;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -14,14 +15,16 @@ import java.util.Optional;
 public class LanguageType {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
+    private final LoggerWrapper logger;
 
     public LanguageType() {
-        this(new MySQLDatabaseConfig(), Singleton.getHelpers());
+        this(new MySQLDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-    public LanguageType(IDatabaseConfig dbConfig, Helpers helpers) {
+    public LanguageType(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
+        this.logger = logger;
     }
 
     public synchronized List<LanguageTypeDTO> getLanguageNamesByIds(List<String> ids) {
@@ -44,7 +47,7 @@ public class LanguageType {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("39bde74f::error in class %s exception %s searchcode was unable to get language names by ids %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), String.join(", ", ids)));
         }
         finally {
             this.helpers.closeQuietly(rs);
@@ -69,7 +72,6 @@ public class LanguageType {
 
             rs = stmt.executeQuery();
 
-
             while (rs.next()) {
                 int id = rs.getInt("id");
                 type = rs.getString("type");
@@ -77,7 +79,7 @@ public class LanguageType {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("5d3921d2::error in class %s exception %s searchcode was unable to get language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
         }
         finally {
             this.helpers.closeQuietly(rs);
@@ -111,6 +113,7 @@ public class LanguageType {
         }
         catch (SQLException ex) {
             Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("5e49d36c::error in class %s exception %s searchcode was unable to create language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
         }
         finally {
             this.helpers.closeQuietly(stmt);

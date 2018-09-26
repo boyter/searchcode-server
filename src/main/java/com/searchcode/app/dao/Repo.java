@@ -86,7 +86,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("820c9557::error in class %s exception %s searchcode was unable to get the list of all repositories, this is likely nothing will be indexed, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -161,7 +161,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("20c36ec2::error in class %s exception %s searchcode was unable to get the paged list of repositories, this is likely nothing will be indexed, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(rs);
@@ -189,7 +189,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("4e403331::error in class %s exception %s searchcode was unable to get the count of repositories, this is unlikely to affect anything but there are likely to be other issues in the logs", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -243,7 +243,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("359a0566::error in class %s exception %s searchcode was unable to get repository by name %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryName));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -267,9 +267,7 @@ public class Repo {
         try {
             connection = this.dbConfig.getConnection();
             preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
-
             preparedStatement.setString(1, repositoryUrl);
-
             resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
@@ -298,7 +296,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("afd625ce::error in class %s exception %s searchcode was unable to get repository by url %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryUrl));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -316,13 +314,11 @@ public class Repo {
         try {
             connection = this.dbConfig.getConnection();
             preparedStatement = connection.prepareStatement("delete from repo where name=?;");
-
             preparedStatement.setString(1, repositoryName);
-
             preparedStatement.execute();
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("8f05a49c::error in class %s exception %s searchcode was unable to delete repository by name %s, this is unlikely to break anything but there should be other errors in the logs", ex.getClass(), ex.getMessage(), repositoryName));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -330,7 +326,6 @@ public class Repo {
         }
     }
 
-    // TODO add retry logic here as this can fail and as such should just trigger again
     public synchronized boolean saveRepo(RepoResult repoResult) {
         Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
 
@@ -363,7 +358,7 @@ public class Repo {
             preparedStatement.execute();
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("653b7384::error in class %s exception %s searchcode was unable to add repository %s, this is unlikely to break anything but there should be other errors in the logs", ex.getClass(), ex.getMessage(), repoResult.getName()));
         }
         finally {
             this.helpers.closeQuietly(preparedStatement);
@@ -410,7 +405,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("2b05675f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -456,7 +451,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("41baae9d::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -476,7 +471,7 @@ public class Repo {
             preparedStatement.execute();
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("5ec972ce::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
@@ -512,7 +507,7 @@ public class Repo {
             }
         }
         catch (SQLException ex) {
-            Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("f26a7acd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);
