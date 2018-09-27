@@ -72,8 +72,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         File f = new File(this.GIT_BINARY_PATH);
         if (this.USE_SYSTEM_GIT && !f.exists()) {
-            Singleton.getLogger().warning("\n///////////////////////////////////////////////////////////////////////////\n// Property git_binary_path in properties file appears to be incorrect.  //\n// Please check the path. Falling back to internal git implementation.   //\n///////////////////////////////////////////////////////////////////////////");
-
+            this.logger.severe(String.format("309560e3::property %s for git_binary_path in properties file appears to be incorrect, falling back to internal git implementation", this.GIT_BINARY_PATH));
             this.USE_SYSTEM_GIT = false;
         }
 
@@ -98,7 +97,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     @Override
     public String getCodeOwner(List<String> codeLines, String fileName, String repoDirectory, String fileRepoLocations, SearchCodeLib scl) {
         List<CodeOwner> owners;
-        Timer timer = Singleton.getNewTimer();
 
         if (this.USE_SYSTEM_GIT) {
             owners = this.getBlameInfoExternal(codeLines.size(), repoDirectory, fileRepoLocations, fileName);
@@ -153,6 +151,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
             while ((line = bufferedReader.readLine()) != null) {
                 Singleton.getLogger().info("Blame line " + repoName + fileName + ": " + line);
+                this.logger.info(String.format("c7448564::blame line reponame %s filename %s", repoName, fileName));
                 String[] split = line.split("\t");
 
                 if (split.length > 2 && split[1].length() != 0) {
@@ -163,7 +162,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                         commitTime = (int) (df.parse(split[2]).getTime() / 1000);
                     }
                     catch (ParseException ex) {
-                        Singleton.getLogger().info("time parse exception for " + repoName + fileName);
+                        this.logger.severe(String.format("05aa777b::error in class %s exception %s for time parse", ex.getClass(), ex.getMessage()));
                     }
 
                     if (owners.containsKey(author)) {
@@ -195,9 +194,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             }
 
         } catch (IOException | StringIndexOutOfBoundsException ex) {
-            Singleton.getLogger().info("getBlameInfoExternal repoloc: " + repoLocations + "/" + repoName);
-            Singleton.getLogger().info("getBlameInfoExternal fileName: " + fileName);
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getBlameInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("4cf371a5::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -209,7 +206,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
     /**
      * Uses the inbuilt git
-     * TODO this method appears to leak memory like crazy... need to investigate
      * TODO lots of hairy bits in here need tests to capture issues
      */
     public List<CodeOwner> getBlameInfo(int codeLinesSize, String repoName, String repoLocations, String fileName) {
@@ -225,7 +221,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             ObjectId commitID = localRepository.resolve("HEAD");
 
             if (commitID == null) {
-                Singleton.getLogger().info("getBlameInfo commitID is null for " + repoLoc + " " + fileName);
+                this.logger.severe(String.format("caca9ca8::getblameinfo commitId is null for repository %s filename %s", repoLoc, fileName));
                 return codeOwners;
             }
 
@@ -255,7 +251,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             }
 
             if (blame == null) {
-                Singleton.getLogger().info("getBlameInfo blame is null for " + repoLoc + " " + fileName);
+                this.logger.info(String.format("273e0a9e::getblameinfo is null for repository %s filename %s", repoLoc, fileName));
             }
 
             if (blame != null) {
@@ -284,20 +280,19 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                         }
                     }
                 }
-                catch(IndexOutOfBoundsException ex) {
-                    // Ignore this as its not really a problem or is it?
-                    Singleton.getLogger().info("IndexOutOfBoundsException when trying to get blame for " + repoName + " " + fileName);
+                catch (IndexOutOfBoundsException ex) {
+                    this.logger.severe(String.format("4cf371a5::error in class %s exception %s for repository %s index out of bounds", ex.getClass(), ex.getMessage(), repoName));
                 }
 
                 codeOwners = new ArrayList<>(owners.values());
             }
 
         } catch (IOException ex) {
-            Singleton.getLogger().info("IOException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+            this.logger.severe(String.format("85cd8d0c::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         } catch (GitAPIException ex) {
-            Singleton.getLogger().info("GitAPIException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+            this.logger.severe(String.format("91029067::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         } catch (IllegalArgumentException ex) {
-            Singleton.getLogger().info("IllegalArgumentException getBlameInfo when trying to get blame for " + repoName + " " + fileName + " " + ex.toString());
+            this.logger.severe(String.format("8b6da512::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         }
 
         return codeOwners;

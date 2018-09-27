@@ -49,13 +49,13 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
      * The main method used for finding jobs to index and actually doing the work
      */
     @Override
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         if (!isEnabled()) {
             return;
         }
 
         if (this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
-            Singleton.getLogger().info("Pausing parser.");
+            this.logger.info("8fe60701::pausing parser");
             return;
         }
 
@@ -68,7 +68,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
 
         if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
 
-            Singleton.getLogger().info("File Indexer Indexing " + repoResult.getName());
+            this.logger.info(String.format("7aec9dd0::file indexer indexing repository %s", repoResult.getName()));
             repoResult.getData().indexStatus = "indexing";
             Singleton.getRepo().saveRepo(repoResult);
 
@@ -95,7 +95,7 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 Singleton.getRepo().saveRepo(repoResult);
             }
             catch (Exception ex) {
-                Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in IndexFileRepoJob.execute with message: " + ex.getMessage());
+                this.logger.severe(String.format("05aa777b::error in class %s exception %s repository %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
             }
             finally {
                 // Clean up the job

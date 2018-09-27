@@ -66,7 +66,7 @@ public class IndexDocumentsJob implements Job {
                 Thread.sleep(this.INDEXTIME);
             }
         } catch (Exception ex) {
-            this.logger.severe(String.format("aebb3b30::error in class %s exception %s file %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("aebb3b30::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 }
