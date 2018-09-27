@@ -3,6 +3,7 @@ package com.searchcode.app.jobs;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.FilenameUtils;
 import org.quartz.*;
@@ -19,10 +20,10 @@ public class PopulateSpellingCorrectorJob implements Job {
 
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         Path path = Paths.get(Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION));
-        Singleton.getLogger().info("Starting PopulateSpellingCorrectorJob in path " + path.toString());
+        Singleton.getLogger().info(String.format("4f5b6cb6::starting populatespellingcorrector in path %s", path.toString()));
 
         try {
             Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
@@ -59,7 +60,7 @@ public class PopulateSpellingCorrectorJob implements Job {
 
                     Singleton.getSearchCodeLib().addToSpellingCorrector(String.join(" ", codeLines));
                 } catch (Exception ex) {
-                    Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " PopulateSpellingCorrectorJob\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path);
+                    Singleton.getLogger().severe(String.format("a173f0e6::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
 
                 // Continue at all costs
@@ -67,7 +68,7 @@ public class PopulateSpellingCorrectorJob implements Job {
                 }
             });
         } catch (IOException ex) {
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " PopulateSpellingCorrectorJob\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe(String.format("55d4cf9a::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 }
