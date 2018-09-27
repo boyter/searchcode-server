@@ -393,7 +393,7 @@ public abstract class IndexBaseRepoJob implements Job {
             codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
         } catch (IOException ex) {
             error = true;
-            this.logger.severe(String.format("fb3bfafb::error in class %s exception %s file %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("fb3bfafb::error in class %s exception %s", ex.getClass(), ex.getMessage()));
 
             if (this.LOGINDEXED) {
                 reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
