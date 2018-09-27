@@ -60,6 +60,18 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.commentCount).isEqualTo(3);
     }
 
+    public void testUnknownLanguage() {
+        String language = "This Is Nothing";
+        String contents = "/*\n" +
+                "*\n" +
+                "*/";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(3);
+        assertThat(slocCount.codeCount).isEqualTo(0);
+        assertThat(slocCount.commentCount).isEqualTo(0);
+    }
+
     public void testRegression() {
         String language = "C++";
         String contents = "/**/\n" +

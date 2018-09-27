@@ -115,6 +115,10 @@ public class SlocCounter {
 
         FileClassifierResult fileClassifierResult = this.database.get(languageName);
 
+        if (fileClassifierResult == null) {
+            return new SlocCount(contents.split("\n").length, 0, 0, 0, 0);
+        }
+
         State currentState = State.S_BLANK;
 
         int endPoint = contents.length() - 1;

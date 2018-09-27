@@ -194,7 +194,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             }
 
         } catch (IOException | StringIndexOutOfBoundsException ex) {
-            this.logger.severe(String.format("4cf371a5::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
+            this.logger.severe(String.format("1cf371a5::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -281,7 +281,9 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                     }
                 }
                 catch (IndexOutOfBoundsException ex) {
-                    this.logger.severe(String.format("4cf371a5::error in class %s exception %s for repository %s index out of bounds", ex.getClass(), ex.getMessage(), repoName));
+                    // blame.getSourceCommit(i) will throw this exception and there is no way I can see to correctly
+                    // identify when it will occur. Its not something that is severe so we log it under info
+                    this.logger.info(String.format("4cf371a5::error in class %s exception %s for repository %s index out of bounds, this can safely be ignored but is something to fix in the future", ex.getClass(), ex.getMessage(), repoName));
                 }
 
                 codeOwners = new ArrayList<>(owners.values());

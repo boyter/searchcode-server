@@ -151,7 +151,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
         }
         catch (Exception ex) {
-            this.logger.severe(String.format("d6358799::error in class %s exception %s for repository %s file %s", ex.getClass(), ex.getMessage(), repoResult.getName(), file.toString()));
+            this.logger.severe(String.format("e43cdddb::error in class %s exception %s for repository %s file %s", ex.getClass(), ex.getMessage(), repoResult.getName(), file.toString()));
         }
 
         // Continue at all costs

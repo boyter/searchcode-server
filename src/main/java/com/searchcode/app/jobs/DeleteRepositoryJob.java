@@ -11,8 +11,13 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.DataService;
+import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
@@ -34,6 +39,21 @@ import java.util.Optional;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
+
+    private final LoggerWrapper logger;
+    private final DataService dataService;
+    private final IIndexService indexService;
+    private final Repo repo;
+    private final Helpers helpers;
+
+    public DeleteRepositoryJob() {
+        this.dataService = Singleton.getDataService();
+        this.indexService = Singleton.getIndexService();
+        this.repo = Singleton.getRepo();
+        this.helpers = Singleton.getHelpers();
+        this.logger = Singleton.getLogger();
+    }
+
     public void execute(JobExecutionContext context) {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
@@ -42,23 +62,23 @@ public class DeleteRepositoryJob implements Job {
             String newLocation = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
             FileUtils.deleteDirectory(Paths.get(newLocation).toFile());
         } catch (IOException ex) {
-            Singleton.getLogger().severe(String.format("fb813e4f::error in class %s exception %s when trying to clean trash directory", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("fb813e4f::error in class %s exception %s when trying to clean trash directory", ex.getClass(), ex.getMessage()));
         }
 
         // TODO make this loop able to be set in properties file
         for (int i = 0; i < 10; i++) {
-            List<String> persistentDelete = Singleton.getDataService().getPersistentDelete();
+            List<String> persistentDelete = this.dataService.getPersistentDelete();
             if (persistentDelete.isEmpty()) {
                 return;
             }
 
-            if (Singleton.getIndexService().getReindexingAll()) {
+            if (this.indexService.getReindexingAll()) {
                 return;
             }
 
-            Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(persistentDelete.get(0));
+            Optional<RepoResult> repoResult = this.repo.getRepoByName(persistentDelete.get(0));
             if (!repoResult.isPresent()) {
-                Singleton.getDataService().removeFromPersistentDelete(persistentDelete.get(0));
+                this.dataService.removeFromPersistentDelete(persistentDelete.get(0));
                 return;
             }
 
@@ -70,19 +90,19 @@ public class DeleteRepositoryJob implements Job {
 
             repoResult.ifPresent(x -> {
                 try {
-                    Singleton.getLogger().info(String.format("050ac264::deleting repository %s", x.getName()));
-                    Singleton.getIndexService().deleteByRepo(x);
+                    this.logger.info(String.format("050ac264::deleting repository %s", x.getName()));
+                    this.indexService.deleteByRepo(x);
                     String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
                     // remove the directory
-                    Singleton.getHelpers().tryDelete(repoLocations + x.getDirectoryName() + "/");
+                    this.helpers.tryDelete(repoLocations + x.getDirectoryName() + "/");
 
                     // Remove from the database
-                    Singleton.getRepo().deleteRepoByName(x.getName());
+                    this.repo.deleteRepoByName(x.getName());
                     // Remove from the persistent queue
-                    Singleton.getDataService().removeFromPersistentDelete(x.getName());
+                    this.dataService.removeFromPersistentDelete(x.getName());
                 } catch (IOException ex) {
-                    Singleton.getLogger().severe(String.format("52998af6::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), x.getName()));
+                    this.logger.severe(String.format("52998af6::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), x.getName()));
                 }
             });
         }
