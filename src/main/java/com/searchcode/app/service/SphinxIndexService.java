@@ -109,7 +109,7 @@ public class SphinxIndexService implements IIndexService {
 
                     stmt.execute();
                 } catch (SQLException ex) {
-                    Singleton.getLogger().warning(ex.toString());
+                    Singleton.getLogger().severe(ex.toString());
                 }
             }
         }

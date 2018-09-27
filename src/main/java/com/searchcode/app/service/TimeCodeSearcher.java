@@ -95,7 +95,7 @@ public class TimeCodeSearcher {
             reader.close();
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return searchResult;
@@ -181,7 +181,7 @@ public class TimeCodeSearcher {
                 code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
             }
             catch(Exception ex) {
-                LOGGER.warning("Indexed file appears to binary: " + filepath);
+//                LOGGER.warning("Indexed file appears to binary: " + filepath);
             }
 
             codeResult = new CodeResult(code, null);
@@ -198,7 +198,7 @@ public class TimeCodeSearcher {
             reader.close();
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeResult;
@@ -286,13 +286,13 @@ public class TimeCodeSearcher {
                     cr.setCode(Arrays.asList(gitService.fetchFileRevision(repoLoc, cr.getRevision(), cr.getCodePath()).split("\\r?\\n")));
                 }
                 catch(Exception ex) {
-                    LOGGER.warning("Indexed file appears to binary or missing: " + filepath);
+//                    LOGGER.warning("Indexed file appears to binary or missing: " + filepath);
                 }
 
 
                 codeResults.add(cr);
             } else {
-                LOGGER.warning((i + 1) + ". " + "No path for this document");
+//                LOGGER.warning((i + 1) + ". " + "No path for this document");
             }
         }
 
@@ -342,10 +342,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return deletedFacets;
@@ -377,10 +377,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return revisionFacets;
@@ -412,10 +412,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetYear;
@@ -447,10 +447,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetYearMonth;
@@ -482,10 +482,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetYearMonthDay;
@@ -517,10 +517,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetLanguages;
@@ -552,10 +552,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetRepo;
@@ -587,10 +587,10 @@ public class TimeCodeSearcher {
             }
         }
         catch(IOException ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         catch(Exception ex) {
-            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+//            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         return codeFacetRepo;

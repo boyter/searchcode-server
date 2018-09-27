@@ -305,7 +305,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         boolean changed = false;
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
-        Singleton.getLogger().info("Attempting to pull latest from " + repoLocations + " for " + repoResult.getName());
+        this.logger.info(String.format("6cffea0f::attempting to pull latest from %s for %s", repoLocations, repoResult.getName()));
 
         Repository localRepository = null;
         Git git = null;
@@ -363,8 +363,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException | GitAPIException | InvalidPathException ex) {
             changed = false;
-            String error = "ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " updateGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage();
-            Singleton.getLogger().warning(error);
+            String error = String.format("c6646806::error in class %s exception %s repository %s", ex.getClass(), ex.getMessage(), repoResult.getName());
+            this.logger.severe(error);
             repoResult.getData().indexError = error;
             Singleton.getRepo().saveRepo(repoResult);
         }
@@ -380,8 +380,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
      * Clones the repository from scratch
      */
     public RepositoryChanged cloneGitRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
-        boolean successful = false;
-        Singleton.getLogger().info("Attempting to clone " + repoResult.getUrl());
+        boolean successful;
+        this.logger.info(String.format("664f20c7::attempting to clone %s", repoResult.getUrl()));
 
         Git call = null;
 
@@ -400,8 +400,8 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             successful = true;
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
-            String error = ("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " cloneGitRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
-            Singleton.getLogger().warning(error);
+            String error = String.format("6e56fa26::error in class %s exception %s repository %s", ex.getClass(), ex.getMessage(), repoResult.getName());
+            Singleton.getLogger().severe(error);
             repoResult.getData().indexError = error;
             Singleton.getRepo().saveRepo(repoResult);
         }

@@ -354,7 +354,7 @@ public class IndexService implements IIndexService {
             query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
         } catch (ParseException | NoSuchFileException ex) {
-            this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
         this.helpers.closeQuietly(writer);
@@ -412,8 +412,8 @@ public class IndexService implements IIndexService {
             FileUtils.deleteDirectory(this.INDEX_WRITE_LOCATION.toFile());
             FileUtils.deleteDirectory(this.FACET_WRITE_LOCATION.toFile());
         } catch (IOException ex) {
-            this.logger.warning("Unable to delete index locations: " + this.INDEX_WRITE_LOCATION.toString());
-            this.logger.warning("Unable to delete index locations: " + this.FACET_WRITE_LOCATION.toString());
+            this.logger.severe("Unable to delete index locations: " + this.INDEX_WRITE_LOCATION.toString());
+            this.logger.severe("Unable to delete index locations: " + this.FACET_WRITE_LOCATION.toString());
         }
 
         // queue all repos to be parsed
@@ -597,7 +597,7 @@ public class IndexService implements IIndexService {
             }
         }
         catch (Exception ex) {
-            this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -637,7 +637,7 @@ public class IndexService implements IIndexService {
             reader.close();
         }
         catch (Exception ex) {
-            this.logger.warning("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
+            this.logger.severe("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
         }
 
         return fileLocations;
@@ -698,7 +698,7 @@ public class IndexService implements IIndexService {
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
         }
         catch (Exception ex) {
-            this.logger.warning("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -745,7 +745,7 @@ public class IndexService implements IIndexService {
             }
         }
         catch (Exception ex) {
-            this.logger.warning("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -791,7 +791,7 @@ public class IndexService implements IIndexService {
             searchResult = this.doPagingSearch(reader, searcher, query, page);
         }
         catch (Exception ex) {
-            this.logger.warning("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -926,20 +926,20 @@ public class IndexService implements IIndexService {
 
             if (filePath != null) {
                 // This line is occasionally useful for debugging ranking
-                this.logger.fine("doc=" + hits[i].doc + " score=" + hits[i].score);
+                //this.logger.info("doc=" + hits[i].doc + " score=" + hits[i].score);
 
                 List<String> code = new ArrayList<>();
                 try {
                     code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch (Exception ex) {
-                    this.logger.warning("Indexed file appears to binary or missing: " + filePath);
+                    this.logger.severe("Indexed file appears to binary or missing: " + filePath);
                 }
 
                 CodeResult codeResult = this.createCodeResult(code, Values.EMPTYSTRING, doc, hits[i].doc);
                 codeResults.add(codeResult);
             } else {
-                this.logger.warning((i + 1) + ". " + "No path for this document");
+                this.logger.severe((i + 1) + ". " + "No path for this document");
             }
         }
 

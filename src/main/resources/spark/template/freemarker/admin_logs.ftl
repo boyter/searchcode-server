@@ -21,7 +21,7 @@
     <div class="col-md-10">
         <h3 style="border-bottom: 1px solid #eee; padding-bottom: 14px; margin-top:0px;">Logs <small>(displaying the last 1000 entries from logs)</small></h3>
         <p>
-        <a href="?level=all">All</a> | <a href="?level=info">Info</a> | <a href="?level=warning">Warning</a> | <a href="?level=severe">Severe</a> | <a href="?level=SEARCH">Search Queries</a> | <a href="?level=API">API</a>
+        <a href="?level=all">All</a> | <a href="?level=info">Info</a> | <a href="?level=severe">Severe</a> | <a href="?level=SEARCH">Search Queries</a> | <a href="?level=API">API</a>
         </p>
         <p>Displaying <strong>${level}</strong> logs</p>
 

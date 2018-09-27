@@ -101,12 +101,11 @@ public class AdminRouteServiceTest extends TestCase {
         AdminRouteService adminRouteService = new AdminRouteService();
 
         Singleton.getLogger().apiLog("test");
-        Singleton.getLogger().warning("test");
         Singleton.getLogger().searchLog("test");
         Singleton.getLogger().severe("ignore this severe message");
         Singleton.getLogger().info("test");
 
-        List<String> statValue = Arrays.asList("alllogs", "infologs", "warninglogs", "severelogs", "searchlogs", "apilogs");
+        List<String> statValue = Arrays.asList("alllogs", "infologs", "severelogs", "searchlogs", "apilogs");
         for (String stat: statValue) {
             Request mockRequest = Mockito.mock(Request.class);
 

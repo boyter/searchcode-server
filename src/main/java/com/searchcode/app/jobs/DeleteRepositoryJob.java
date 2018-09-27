@@ -42,7 +42,7 @@ public class DeleteRepositoryJob implements Job {
             String newLocation = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
             FileUtils.deleteDirectory(Paths.get(newLocation).toFile());
         } catch (IOException ex) {
-            Singleton.getLogger().warning("Error when trying to clean trash " + ex);
+            Singleton.getLogger().severe("Error when trying to clean trash " + ex);
         }
 
         // TODO make this loop able to be set in properties file
@@ -82,7 +82,7 @@ public class DeleteRepositoryJob implements Job {
                     // Remove from the persistent queue
                     Singleton.getDataService().removeFromPersistentDelete(x.getName());
                 } catch (IOException ex) {
-                    Singleton.getLogger().warning("Error when trying to remove repository with exception " + ex);
+                    Singleton.getLogger().severe("Error when trying to remove repository with exception " + ex);
                 }
             });
         }

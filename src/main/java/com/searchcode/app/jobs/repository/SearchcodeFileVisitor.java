@@ -148,7 +148,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
         }
         catch (Exception ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + file + " in repo " + this.repoResult.getName());
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + file + " in repo " + this.repoResult.getName());
         }
 
         // Continue at all costs

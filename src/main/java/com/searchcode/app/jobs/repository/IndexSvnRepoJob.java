@@ -54,7 +54,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         File f = new File(this.SVN_BINARY_PATH);
         if (!f.exists()) {
             this.ENABLED = false;
-            Singleton.getLogger().severe("\n///////////////////////////////////////////////////////////////////////////\n// Property svn_binary_path in properties file appears to be incorrect.  //\n// will not be able to index any SVN repository until this is resolved.  //\n///////////////////////////////////////////////////////////////////////////");
+            this.logger.severe(String.format("1db5fc95::property %s in svn_binary_path in properties file appears to be incorrect, searchcode will not be able to index any SVN repository until this is resolved.", this.SVN_BINARY_PATH));
         }
     }
 
@@ -96,10 +96,9 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         String repoSvnLocation = repoLocations + repoResult.getName();
         Path docDir = Paths.get(repoSvnLocation);
 
-        Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
+        this.logger.info(String.format("8183aa1c::doing full index for %s", repoResult.getName()));
         this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, existingRepo);
-
-        Singleton.getLogger().info("Sucessfully processed writing index success for " + repoResult.getName());
+        this.logger.info(String.format("159e166c::successfully processed writing index success for %s", repoResult.getName()));
     }
 
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
@@ -146,7 +145,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
 
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getInfoExternal for " + repoName + " " + fileName + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("85cd8d0c::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -198,7 +197,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
         } catch (IOException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -266,7 +265,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
         }
         catch(IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -316,7 +315,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
                 }
             }
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -370,7 +369,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             successful = true;
 
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);

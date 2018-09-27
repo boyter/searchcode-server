@@ -33,7 +33,6 @@ public class LoggerWrapper {
     private Logger logger = null;
     private EvictingQueue allCache = null;
     private EvictingQueue infoRecentCache = null;
-    private EvictingQueue warningRecentCache = null;
     private EvictingQueue severeRecentCache = null;
     private EvictingQueue searchLog = null;
     private EvictingQueue apiLog = null;
@@ -59,12 +58,6 @@ public class LoggerWrapper {
         switch (this.LOGLEVEL.toUpperCase()) {
             case "INFO":
                 this.LOGLEVELENUM = Level.INFO;
-                break;
-            case "FINE":
-                this.LOGLEVELENUM = Level.FINE;
-                break;
-            case "WARNING":
-                this.LOGLEVELENUM = Level.WARNING;
                 break;
             case "SEVERE":
             default:
@@ -94,14 +87,6 @@ public class LoggerWrapper {
                         handler.setLevel(Level.INFO);
                         this.logger.setLevel(Level.INFO);
                         break;
-                    case "FINE":
-                        handler.setLevel(Level.FINE);
-                        this.logger.setLevel(Level.FINE);
-                        break;
-                    case "WARNING":
-                        handler.setLevel(Level.WARNING);
-                        this.logger.setLevel(Level.WARNING);
-                        break;
                     case "SEVERE":
                     default:
                         handler.setLevel(Level.SEVERE);
@@ -122,7 +107,6 @@ public class LoggerWrapper {
 
         this.allCache = EvictingQueue.create(1000);
         this.infoRecentCache = EvictingQueue.create(1000);
-        this.warningRecentCache = EvictingQueue.create(1000);
         this.severeRecentCache = EvictingQueue.create(1000);
         this.searchLog = EvictingQueue.create(1000);
         this.apiLog = EvictingQueue.create(1000);
@@ -132,7 +116,6 @@ public class LoggerWrapper {
     public synchronized void clearAllLogs() {
         this.allCache.clear();
         this.infoRecentCache.clear();
-        this.warningRecentCache.clear();
         this.severeRecentCache.clear();
         this.searchLog.clear();
         this.apiLog.clear();
@@ -150,32 +133,6 @@ public class LoggerWrapper {
             }
 
             if (this.LOGSTDOUT && this.isLoggable(Level.INFO)) {
-                System.out.println(message);
-            }
-        }
-        catch (NoSuchElementException ignored) {}
-    }
-
-    public synchronized void fine(String toLog) {
-        String message = "FINE: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
-        try {
-            this.fineRecentCache.add(message);
-        }
-        catch (NoSuchElementException ignored) {}
-    }
-
-    public synchronized void warning(String toLog) {
-
-        String message = "WARNING: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
-
-        try {
-            this.allCache.add(message);
-            this.warningRecentCache.add(message);
-            if (this.LOGSENABLED) {
-                this.logger.warning(toLog);
-            }
-
-            if (this.LOGSTDOUT && this.isLoggable(Level.WARNING)) {
                 System.out.println(message);
             }
         }
@@ -232,28 +189,6 @@ public class LoggerWrapper {
         List<String> values = new ArrayList<>();
         try {
             values = new ArrayList(this.infoRecentCache);
-            values = Lists.reverse(values);
-        }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
-
-        return values;
-    }
-
-    public synchronized List<String> getFineLogs() {
-        List<String> values = new ArrayList<>();
-        try {
-            values = new ArrayList(this.fineRecentCache);
-            values = Lists.reverse(values);
-        }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
-
-        return values;
-    }
-
-    public synchronized List<String> getWarningLogs() {
-        List<String> values = new ArrayList<>();
-        try {
-            values = new ArrayList(this.warningRecentCache);
             values = Lists.reverse(values);
         }
         catch (ArrayIndexOutOfBoundsException ignored) {}

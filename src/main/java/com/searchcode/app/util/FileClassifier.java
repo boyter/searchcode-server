@@ -107,7 +107,7 @@ public class FileClassifier {
             database = gson.fromJson(new FileReader(this.DATABASEPATH),  type);
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            Singleton.getLogger().warning("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
+            Singleton.getLogger().severe("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
         }
 
         return database;

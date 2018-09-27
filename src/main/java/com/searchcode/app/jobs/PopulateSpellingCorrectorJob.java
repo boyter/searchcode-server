@@ -59,7 +59,7 @@ public class PopulateSpellingCorrectorJob implements Job {
 
                     Singleton.getSearchCodeLib().addToSpellingCorrector(String.join(" ", codeLines));
                 } catch (Exception ex) {
-                    Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " PopulateSpellingCorrectorJob\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path);
+                    Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " PopulateSpellingCorrectorJob\n with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + path);
                 }
 
                 // Continue at all costs
@@ -67,7 +67,7 @@ public class PopulateSpellingCorrectorJob implements Job {
                 }
             });
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " PopulateSpellingCorrectorJob\n with message: " + ex.getMessage());
+            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " PopulateSpellingCorrectorJob\n with message: " + ex.getMessage());
         }
     }
 }

@@ -556,10 +556,6 @@ public class AdminRouteService {
                 return StringUtils.join(this.loggerWrapper.getAllLogs(), System.lineSeparator());
             case "infologs":
                 return StringUtils.join(this.loggerWrapper.getInfoLogs(), System.lineSeparator());
-            case "warninglogs":
-                return StringUtils.join(this.loggerWrapper.getWarningLogs(), System.lineSeparator());
-            case "finelogs":
-                return StringUtils.join(this.loggerWrapper.getFineLogs(), System.lineSeparator());
             case "severelogs":
                 return StringUtils.join(this.loggerWrapper.getSevereLogs(), System.lineSeparator());
             case "searchlogs":

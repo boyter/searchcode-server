@@ -17,13 +17,6 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getInfoLogs()).hasSize(1);
     }
 
-    public void testLoggerWrapperWarningAdd() {
-        LoggerWrapper logger = new LoggerWrapper();
-        assertThat(logger.getWarningLogs()).isEmpty();
-        logger.warning("test");
-        assertThat(logger.getWarningLogs()).hasSize(1);
-    }
-
     public void testLoggerWrapperSevereAdd() {
         LoggerWrapper logger = new LoggerWrapper();
         assertThat(logger.getSevereLogs()).isEmpty();
@@ -59,8 +52,7 @@ public class LoggerWrapperTest extends TestCase {
         assertThat(logger.getAllLogs()).hasSize(1);
 
         logger.info("test");
-        logger.warning("test");
-        assertThat(logger.getAllLogs()).hasSize(3);
+        assertThat(logger.getAllLogs()).hasSize(2);
     }
 
     public void testWrapperProperties() {
@@ -112,15 +104,12 @@ public class LoggerWrapperTest extends TestCase {
         for (int i = 0; i < 2100; i++) {
             logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-            logger.fine(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
         }
 
         assertThat(logger.getInfoLogs().size()).isEqualTo(1000);
         assertThat(logger.getSevereLogs().size()).isEqualTo(0);
-        assertThat(logger.getWarningLogs().size()).isEqualTo(0);
         assertThat(logger.getAllLogs().size()).isEqualTo(1000);
         assertThat(logger.getSearchLogs().size()).isEqualTo(1000);
-        assertThat(logger.getFineLogs().size()).isEqualTo(1000);
     }
 
     public void testLoggerWrapperGetLogReversed() {
@@ -130,8 +119,6 @@ public class LoggerWrapperTest extends TestCase {
         logger.severe("ignore this severe message two");
         logger.info("one");
         logger.info("two");
-        logger.warning("one");
-        logger.warning("two");
         logger.searchLog("one");
         logger.searchLog("two");
 
@@ -140,9 +127,6 @@ public class LoggerWrapperTest extends TestCase {
 
         assertThat(logger.getSevereLogs().get(0)).contains("ignore this severe message two");
         assertThat(logger.getSevereLogs().get(1)).contains("ignore this severe message one");
-
-        assertThat(logger.getWarningLogs().get(0)).contains("two");
-        assertThat(logger.getWarningLogs().get(1)).contains("one");
 
         assertThat(logger.getSearchLogs().get(0)).contains("two");
         assertThat(logger.getSearchLogs().get(1)).contains("one");
@@ -160,7 +144,6 @@ public class LoggerWrapperTest extends TestCase {
                 int count = 1000;
                 while (count > 0) {
                     loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-                    loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
                     loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
                     count--;
                 }
@@ -170,13 +153,11 @@ public class LoggerWrapperTest extends TestCase {
         int count = 1000;
         while (count > 0) {
             loggerWrapper.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
-            loggerWrapper.warning(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             loggerWrapper.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             count--;
         }
 
         assertThat(loggerWrapper.getInfoLogs().size()).isEqualTo(1000);
-        assertThat(loggerWrapper.getWarningLogs().size()).isEqualTo(1000);
         assertThat(loggerWrapper.getAllLogs().size()).isEqualTo(1000);
         assertThat(loggerWrapper.getSearchLogs().size()).isEqualTo(1000);
     }
