@@ -10,12 +10,14 @@
 
 package com.searchcode.app.jobs.repository;
 
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.LoggerWrapper;
+import com.searchcode.app.util.Properties;
 import org.quartz.*;
 
 import java.util.Queue;
@@ -29,6 +31,7 @@ import java.util.Queue;
 @DisallowConcurrentExecution
 public class IndexDocumentsJob implements Job {
 
+    private final int INDEXTIME;
     private final IIndexService indexService;
     private final LoggerWrapper logger;
     private final StatsService statsService;
@@ -43,10 +46,11 @@ public class IndexDocumentsJob implements Job {
         this.statsService = statsService;
         this.indexQueue = indexQueue;
         this.logger = logger;
+        this.INDEXTIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME), Values.DEFAULTINDEXTIME);
     }
 
-    public void execute(JobExecutionContext context) throws JobExecutionException {
-        this.logger.info("Starting IndexDocumentsJob");
+    public void execute(JobExecutionContext context) {
+        this.logger.info("2091e574::starting indexdocumentsjob");
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
         // This should run forever, and only restart if it has a hard crash
@@ -55,16 +59,14 @@ public class IndexDocumentsJob implements Job {
                 int codeIndexQueueSize = this.indexQueue.size();
 
                 if (codeIndexQueueSize != 0) {
-                    this.logger.info("Documents to index: " + codeIndexQueueSize);
-                    this.logger.info("Lines to index: " + this.indexService.getCodeIndexLinesCount());
-                    this.logger.info("Memory Usage: " + this.statsService.getMemoryUsage(", "));
+                    this.logger.info(String.format("19494c98::documents to index %d lines to index %d", codeIndexQueueSize, this.indexService.getCodeIndexLinesCount()));
                     this.indexService.indexDocument(this.indexQueue);
                 }
 
-                Thread.sleep(100);
+                Thread.sleep(this.INDEXTIME);
             }
         } catch (Exception ex) {
-            this.logger.severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("aebb3b30::error in class %s exception %s file %s", ex.getClass(), ex.getMessage()));
         }
     }
 }
