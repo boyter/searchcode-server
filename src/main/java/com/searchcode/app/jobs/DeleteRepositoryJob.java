@@ -34,7 +34,7 @@ import java.util.Optional;
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class DeleteRepositoryJob implements Job {
-    public void execute(JobExecutionContext context) throws JobExecutionException {
+    public void execute(JobExecutionContext context) {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
         // Always attempt to clean the trash directory
@@ -42,7 +42,7 @@ public class DeleteRepositoryJob implements Job {
             String newLocation = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
             FileUtils.deleteDirectory(Paths.get(newLocation).toFile());
         } catch (IOException ex) {
-            Singleton.getLogger().severe("Error when trying to clean trash " + ex);
+            Singleton.getLogger().severe(String.format("fb813e4f::error in class %s exception %s when trying to clean trash directory", ex.getClass(), ex.getMessage()));
         }
 
         // TODO make this loop able to be set in properties file
@@ -70,7 +70,7 @@ public class DeleteRepositoryJob implements Job {
 
             repoResult.ifPresent(x -> {
                 try {
-                    Singleton.getLogger().info("Deleting repository. " + x.getName());
+                    Singleton.getLogger().info(String.format("050ac264::deleting repository %s", x.getName()));
                     Singleton.getIndexService().deleteByRepo(x);
                     String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
@@ -82,7 +82,7 @@ public class DeleteRepositoryJob implements Job {
                     // Remove from the persistent queue
                     Singleton.getDataService().removeFromPersistentDelete(x.getName());
                 } catch (IOException ex) {
-                    Singleton.getLogger().severe("Error when trying to remove repository with exception " + ex);
+                    Singleton.getLogger().severe(String.format("52998af6::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), x.getName()));
                 }
             });
         }

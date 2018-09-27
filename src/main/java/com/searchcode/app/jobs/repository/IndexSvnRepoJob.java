@@ -159,8 +159,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         boolean changed = false;
         List<String> changedFiles = new ArrayList<>();
         List<String> deletedFiles = new ArrayList<>();
-        Singleton.getLogger().info("SVN: attempting to pull latest from " + repoResult.getUrl() + " for " + repoResult.getName());
-
+        this.logger.info(String.format("c2b6148d::svn attempting to update from %s for %s", repoResult.getUrl(), repoResult.getName()));
 
         ProcessBuilder processBuilder;
         if (useCredentials) {
@@ -176,7 +175,6 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         try {
             String previousRevision = this.getCurrentRevision(repoLocations, repoResult.getDirectoryName());
-            Singleton.getLogger().info("SVN: update previous revision " + previousRevision);
 
             process = processBuilder.start();
 
@@ -186,18 +184,17 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
-                Singleton.getLogger().info("svn update: " + line);
+                this.logger.info(String.format("3cb192f1::svn update %s", line));
             }
 
             String currentRevision = this.getCurrentRevision(repoLocations, repoResult.getDirectoryName());
-            Singleton.getLogger().info("SVN: update current revision " + currentRevision);
 
             if (!previousRevision.equals(currentRevision)) {
                 return this.getDiffBetweenRevisions(repoLocations, repoResult.getDirectoryName(), previousRevision);
             }
         } catch (IOException | InvalidPathException ex) {
             changed = false;
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " updateSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("73302dc4::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -229,11 +226,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             StringBuilder sb = new StringBuilder();
 
             while ((line = bufferedReader.readLine()) != null) {
-                Singleton.getLogger().info("svn diff: " + line);
                 sb.append(Singleton.getHelpers().removeUTF8BOM(line));
             }
-
-            Singleton.getLogger().info("Before XML parsing: " + sb.toString());
 
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -264,8 +258,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
                 }
             }
         }
-        catch(IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " getDiffBetweenRevisions for " + repoName + "\n with message: " + ex.getMessage());
+        catch (IOException | ParserConfigurationException | SAXException ex) {
+            this.logger.severe(String.format("fad38cce::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -299,8 +293,6 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 
-            Singleton.getLogger().info("getCurrentRevision: " + repoName + " " + sb.toString());
-
             Document doc = dBuilder.parse(new ByteArrayInputStream(sb.toString().getBytes()));
             doc.getDocumentElement().normalize();
 
@@ -315,7 +307,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
                 }
             }
         } catch (IOException | ParserConfigurationException | SAXException ex) {
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " getCurrentRevision for " + repoName + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("53dbf42e::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);
@@ -369,7 +361,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             successful = true;
 
         } catch (IOException ex) {
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " checkoutSvnRepository for " + repoResult.getName() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("b20daaf6::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
         }
         finally {
             Singleton.getHelpers().closeQuietly(process);

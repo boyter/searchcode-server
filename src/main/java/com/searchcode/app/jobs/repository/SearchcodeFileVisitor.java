@@ -4,6 +4,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.SlocCounter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
     private final RepoResult repoResult;
     private final String fileRepoLocations;
     private final String repoRemoteLocation;
+    private final LoggerWrapper logger;
 
     // Used to hold the reports of what was indexed and what needs to be removed
     public List<String[]> reportList = new ArrayList<>();
@@ -36,6 +38,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
         this.repoResult = repoResult;
         this.fileRepoLocations = fileRepoLocations;
         this.repoRemoteLocation = repoRemoteLocation;
+        this.logger = indexBaseRepoJob.logger;
     }
 
     @Override
@@ -148,7 +151,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
         }
         catch (Exception ex) {
-            Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath walkFileTree with message: " + ex.getMessage() + " for file " + file.toString() + " in path " + file + " in repo " + this.repoResult.getName());
+            this.logger.severe(String.format("d6358799::error in class %s exception %s for repository %s file %s", ex.getClass(), ex.getMessage(), repoResult.getName(), file.toString()));
         }
 
         // Continue at all costs
