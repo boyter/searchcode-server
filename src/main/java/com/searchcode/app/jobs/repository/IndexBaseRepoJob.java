@@ -18,6 +18,7 @@ import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;
@@ -48,6 +49,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean DELETEREPO = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.DELETE_REPO_AFTER_PROCESS, Values.DEFAULT_DELETE_REPO_AFTER_PROCESS));
     public boolean haveRepoResult = false;
     public IIndexService indexService = Singleton.getIndexService();
+    public LoggerWrapper logger = Singleton.getLogger();
 
     public RepositoryChanged updateExistingRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         return null;
@@ -125,7 +127,7 @@ public abstract class IndexBaseRepoJob implements Job {
         String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
 
         if (!isEnabled() || this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
-            Singleton.getLogger().info("Pausing parser.");
+            this.logger.info("080364f1::pausing parser as requested");
             return;
         }
 
@@ -134,7 +136,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             this.haveRepoResult = true;
-            Singleton.getLogger().info("Indexing " + repoResult.getName());
+            this.logger.info(String.format("1d980f51::indexing repository %s", repoResult.getName()));
             repoResult.getData().indexStatus = "indexing";
             repoResult.getData().indexError = Values.EMPTYSTRING;
             Singleton.getRepo().saveRepo(repoResult);
@@ -167,7 +169,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 }
             }
             catch (Exception ex) {
-                Singleton.getLogger().severe("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + ".execute with message: " + ex.getMessage());
+                this.logger.severe(String.format("f8026b97::error in class %s exception %s", ex.getClass(), ex.getMessage()));
             }
             finally {
                 // Clean up the job
@@ -181,7 +183,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
     public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
         Instant jobStartTime = Instant.now();
-        Singleton.getLogger().info("Update found indexing " + repoRemoteLocation);
+        this.logger.info(String.format("821f26c2::update found indexing %s", repoRemoteLocation));
         this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
         int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
@@ -197,7 +199,7 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public boolean checkCloneSuccess(String repoName, String repoLocations) {
         if (Singleton.getHelpers().isNullEmptyOrWhitespace(repoName) && Singleton.getHelpers().isNullEmptyOrWhitespace(repoLocations)) {
-            Singleton.getLogger().warning("Repository Location is set to nothing, this can cause searchcode to modify the root file system!");
+            this.logger.severe(String.format("59a886a2::repository name %s remote location is set to nothing which can cause searccode to modify the root file system, this repository will not be indexed", repoName));
             return false;
         }
 
@@ -217,12 +219,12 @@ public abstract class IndexBaseRepoJob implements Job {
                     try {
                         this.indexService.deleteByRepo(x);
                     } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+                        this.logger.severe(String.format("45d475f4::error in class %s exception %s searchcode was unable to delete repository by name %s", ex.getClass(), ex.getMessage(), repoName));
                     }
                 });
 
             } catch (IOException ex) {
-                Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + "\n with message: " + ex.getMessage());
+                this.logger.severe(String.format("4fd3f39e::error in class %s exception %s repository by name %s", ex.getClass(), ex.getMessage(), repoName));
             }
         }
         // TODO is this correct?!
@@ -240,11 +242,11 @@ public abstract class IndexBaseRepoJob implements Job {
         String repoGitLocation = repoLocations + "/" + repoResult.getDirectoryName();
         Path docDir = Paths.get(repoGitLocation);
 
-        Singleton.getLogger().info("Doing full index of files for " + repoResult.getName());
+        this.logger.info(String.format("09989306::doing full index of files for repository %s", repoResult.getName()));
         this.indexDocsByPath(docDir, repoResult, repoLocations, repoRemoteLocation, existingRepo);
 
         // Write file indicating that the index was successful
-        Singleton.getLogger().info("Successfully processed writing index success for " + repoResult.getName());
+        this.logger.info(String.format("07422ca0::successfully processed writing index success for %s", repoResult.getName()));
     }
 
     /**
@@ -266,7 +268,7 @@ public abstract class IndexBaseRepoJob implements Job {
             }
 
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  " indexDocsByPath walkFileTree\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("4ee4d191::error in class %s exception %s repository by name %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
         }
 
         if (this.LOGINDEXED) {
@@ -287,7 +289,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         while (doClean) {
             List<String> indexLocations = this.indexService.getRepoDocuments(repoName, page);
-            Singleton.getLogger().info("cleanMissingPathFiles doClean " + page + " " + indexLocations.size());
+            this.logger.info(String.format("3c4757c1::cleaning file paths page %d size %d", page, indexLocations.size()));
 
             if (indexLocations.isEmpty()) {
                 doClean = false;
@@ -296,14 +298,14 @@ public abstract class IndexBaseRepoJob implements Job {
             for (String file: indexLocations) {
                 if (!fileLocations.containsKey(file)) {
                     Singleton.getLogger().info("Missing from disk, removing from index " + file);
+                    this.logger.info(String.format("dac4ad57::missing from disk removing from index %s", file));
                     try {
                         this.indexService.deleteByCodeId(DigestUtils.sha1Hex(file));
                     } catch (IOException ex) {
-                        Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " indexDocsByPath deleteByFileLocationFilename for " + repoName + " " + file + "\n with message: " + ex.getMessage());
+                        this.logger.severe(String.format("1cdb4041::error in class %s exception %s file %s", ex.getClass(), ex.getMessage(), file));
                     }
                 }
             }
-
             page++;
         }
     }
@@ -334,7 +336,7 @@ public abstract class IndexBaseRepoJob implements Job {
             fis = new FileInputStream(new File(fileName));
             md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
         } catch (IOException ex) {
-            Singleton.getLogger().warning("Unable to generate MD5 for " + fileName);
+            this.logger.severe(String.format("3157d2f8::error in class %s exception %s file %s", ex.getClass(), ex.getMessage(), fileName));
         }
         finally {
             IOUtils.closeQuietly(fis);
@@ -375,7 +377,7 @@ public abstract class IndexBaseRepoJob implements Job {
             Path source = Paths.get(Singleton.getHelpers().getLogPath() + repoName + ".csv.tmp");
             Files.move(source, source.resolveSibling(repoName + ".csv"), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() + " logIndexed for " + repoName + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("d98feda7::error in class %s exception %s file %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -391,7 +393,8 @@ public abstract class IndexBaseRepoJob implements Job {
             codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(changedFile, this.MAXFILELINEDEPTH);
         } catch (IOException ex) {
             error = true;
-            Singleton.getLogger().warning("ERROR - caught a " + ex.getClass() + " in " + this.getClass() +  "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("fb3bfafb::error in class %s exception %s file %s", ex.getClass(), ex.getMessage()));
+
             if (this.LOGINDEXED) {
                 reportList.add(new String[]{changedFile, "excluded", "unable to guess guess file encoding"});
             }
@@ -405,7 +408,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
         if (Singleton.getSearchCodeLib().isMinified(codeLines, fileName)) {
             isMinified = true;
-            Singleton.getLogger().info("Appears to be minified will not index  " + fileName);
+            this.logger.info(String.format("a0564091::%s appears to minified will not index", fileName));
             if (this.LOGINDEXED) {
                 reportList.add(new String[]{fileName, "excluded", "appears to be minified"});
             }
@@ -418,7 +421,7 @@ public abstract class IndexBaseRepoJob implements Job {
         BinaryFinding binaryFinding = Singleton.getSearchCodeLib().isBinary(codeLines, fileName);
 
         if (binaryFinding.isBinary()) {
-            Singleton.getLogger().info("Appears to be binary will not index " + binaryFinding.getReason() + " " + fileLocation);
+            this.logger.info(String.format("aa658efd::%s appears to binary will not index %s", fileLocation, binaryFinding.getReason()));
             if (this.LOGINDEXED) {
                 reportList.add(new String[]{fileLocation, "excluded", binaryFinding.getReason()});
             }
@@ -430,7 +433,7 @@ public abstract class IndexBaseRepoJob implements Job {
 
     public boolean checkIfEmpty(List<String> codeLines, String filename, List<String[]> reportList) {
         if (codeLines.isEmpty()) {
-            Singleton.getLogger().info("Unable to guess encoding type or file is empty " + filename);
+            this.logger.info(String.format("03802c9b::%s unable to get encoding type or file is empty", filename));
             if (this.LOGINDEXED) {
                 reportList.add(new String[]{filename, "excluded", "empty file"});
             }
@@ -452,16 +455,16 @@ public abstract class IndexBaseRepoJob implements Job {
 
         try {
             this.createFile(repoLocation, "cloneupdate");
-        } catch (IOException e) {
-            Singleton.getLogger().warning("Unable to write clone success file. This will cause this repository to re-indexed fresh every time.");
+        } catch (IOException ex) {
+            this.logger.severe(String.format("bf204689::error in class %s exception %s searchcode was unable to write clone success file, this will cause this repository %s to re-indexed", ex.getClass(), ex.getMessage(), repoLocation));
         }
     }
 
     public void deleteCloneUpdateSuccess(String repoLocation) {
         try {
             this.deleteFile(repoLocation, "cloneupdate");
-        } catch (IOException e) {
-            Singleton.getLogger().warning("Unable to delete clone update sucess file.");
+        } catch (IOException ex) {
+            this.logger.severe(String.format("09a7a2a1::error in class %s exception %s searchcode was unable to delete clone update success file for repository ", ex.getClass(), ex.getMessage(), repoLocation));
         }
     }
 
@@ -472,16 +475,16 @@ public abstract class IndexBaseRepoJob implements Job {
     public void createIndexSuccess(String repoLocation) {
         try {
             this.createFile(repoLocation, "index");
-        } catch (IOException e) {
-            Singleton.getLogger().warning("Unable to create index success file.");
+        } catch (IOException ex) {
+            this.logger.severe(String.format("7626837e::error in class %s exception %s location %s", ex.getClass(), ex.getMessage(), repoLocation));
         }
     }
 
     public void deleteIndexSuccess(String repoLocation) {
         try {
             this.deleteFile(repoLocation, "index");
-        } catch (IOException e) {
-            Singleton.getLogger().warning("Unable to delete index success file.");
+        } catch (IOException ex) {
+            this.logger.severe(String.format("720de46f::error in class %s exception %s location %s", ex.getClass(), ex.getMessage(), repoLocation));
         }
     }
 
