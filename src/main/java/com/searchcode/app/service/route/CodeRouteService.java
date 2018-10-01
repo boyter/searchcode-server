@@ -309,7 +309,7 @@ public class CodeRouteService {
         Data data = Singleton.getData();
 
         SearchCodeLib scl = Singleton.getSearchcodeLib();
-        CodeMatcher cm = new CodeMatcher(data);
+        CodeMatcher cm = new CodeMatcher(data, Singleton.getLogger());
         Map<String, Object> map = new HashMap<>();
 
         map.put("repoCount", repo.getRepoCount());

@@ -14,6 +14,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.CodeMatchResult;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.util.LoggerWrapper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,16 +28,18 @@ import java.util.stream.Collectors;
  */
 public class CodeMatcher {
 
+    private final LoggerWrapper logger;
     public int MATCHLINES = Integer.parseInt(Values.DEFAULTMATCHLINES);
     public int MAXLINEDEPTH = Integer.parseInt(Values.DEFAULTMAXLINEDEPTH);
 
     public CodeMatcher()  {
-        this(Singleton.getData());
+        this(Singleton.getData(), Singleton.getLogger());
     }
 
-    public CodeMatcher(Data data) {
+    public CodeMatcher(Data data, LoggerWrapper logger) {
         this.MATCHLINES = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MATCHLINES, Values.DEFAULTMATCHLINES), Values.DEFAULTMATCHLINES);
         this.MAXLINEDEPTH = Singleton.getHelpers().tryParseInt(data.getDataByName(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH), Values.DEFAULTMAXLINEDEPTH);
+        this.logger = logger;
     }
 
     /**
@@ -167,8 +170,8 @@ public class CodeMatcher {
                     try {
                         line = this.highlightLine(cmr.getLine(), matchTerms);
                     }
-                    catch(StringIndexOutOfBoundsException ex) {
-                        Singleton.getLogger().severe("Unable to highlightLine " + cmr.getLine() + " using terms " + String.join(",", matchTerms) +  " "+ ex.toString());
+                    catch (StringIndexOutOfBoundsException ex) {
+                        this.logger.severe(String.format("3d15e6ed::error in class %s exception %s unable to highlight line %s with terms %s", ex.getClass(), ex.getMessage(), cmr.getLine(), String.join(",", matchTerms)));
                     }
                     cmr.setLine( line );
                 } else {

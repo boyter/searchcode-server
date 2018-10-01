@@ -40,7 +40,7 @@ public class TimeSearchRouteService {
 
         SearchCodeLib scl = Singleton.getSearchcodeLib();
         TimeCodeSearcher cs = new TimeCodeSearcher();
-        CodeMatcher cm = new CodeMatcher(data);
+        CodeMatcher cm = new CodeMatcher(data, Singleton.getLogger());
 
         response.header("Content-Encoding", "gzip");
 
