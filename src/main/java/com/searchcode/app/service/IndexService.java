@@ -222,7 +222,7 @@ public class IndexService implements IIndexService {
         try {
             codeIndexDocumentList.parallelStream()
                     .forEach(x -> {
-                        this.logger.info("Indexing file " + x.getRepoLocationRepoNameLocationFilename());
+                        this.logger.info("843fb34b::indexing file " + x.getRepoLocationRepoNameLocationFilename());
                         this.decrementCodeIndexLinesCount(x.getLines());
 
                         FacetsConfig facetsConfig = new FacetsConfig();
@@ -241,7 +241,7 @@ public class IndexService implements IIndexService {
         finally {
             this.helpers.closeQuietly(writer);
             this.helpers.closeQuietly(taxonomyWriter);
-            this.logger.info("Closing writers");
+            this.logger.info("f32cef3e::closing writers");
         }
     }
     
@@ -354,7 +354,7 @@ public class IndexService implements IIndexService {
             query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
             writer.deleteDocuments(query);
         } catch (ParseException | NoSuchFileException ex) {
-            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("e9a71f33::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
         this.helpers.closeQuietly(writer);
@@ -412,8 +412,7 @@ public class IndexService implements IIndexService {
             FileUtils.deleteDirectory(this.INDEX_WRITE_LOCATION.toFile());
             FileUtils.deleteDirectory(this.FACET_WRITE_LOCATION.toFile());
         } catch (IOException ex) {
-            this.logger.severe("Unable to delete index locations: " + this.INDEX_WRITE_LOCATION.toString());
-            this.logger.severe("Unable to delete index locations: " + this.FACET_WRITE_LOCATION.toString());
+            this.logger.severe(String.format("c61dc3e1::error in class %s exception %s unable to delete index locations", ex.getClass(), ex.getMessage()));
         }
 
         // queue all repos to be parsed
@@ -423,7 +422,7 @@ public class IndexService implements IIndexService {
         if (this.repoJobsCount == 0) {
             this.reindexingAll = false;
             this.flipReadIndex();
-            this.logger.info("Finished reindex flipping index");
+            this.logger.info("7ffde6b6::finished reindex flipping index");
         }
     }
 
@@ -488,7 +487,7 @@ public class IndexService implements IIndexService {
         if (this.repoJobsCount == 0 && this.reindexingAll) {
             this.reindexingAll = false;
             this.flipReadIndex();
-            this.logger.info("Finished reindex flipping index");
+            this.logger.info("bad3f10d::finished reindex flipping index");
         }
     }
 
@@ -555,7 +554,7 @@ public class IndexService implements IIndexService {
             numDocs = reader.numDocs();
         }
         catch (Exception ex) {
-            this.logger.info("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("f02f5a23::error in class %s exception %s unable to delete index locations", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -576,7 +575,7 @@ public class IndexService implements IIndexService {
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
 
             Query query = parser.parse(Values.CODEID + ":" + QueryParser.escape(codeId));
-            logger.info("Query to get by " + Values.CODEID + ":" + QueryParser.escape(codeId));
+            logger.info("5de62868::query to get by " + Values.CODEID + ":" + QueryParser.escape(codeId));
 
             TopDocs results = searcher.search(query, 1);
             ScoreDoc[] hits = results.scoreDocs;
@@ -590,14 +589,14 @@ public class IndexService implements IIndexService {
                 try {
                     code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 } catch (Exception ex) {
-                    logger.info("Indexed file appears to binary: " + filePath);
+                    this.logger.info(String.format("4e5f00d0::error in class %s exception %s file appears to be binary, this message should be safe to ignore", ex.getClass(), ex.getMessage()));
                 }
 
                 codeResult = this.createCodeResult(code, filePath, doc, hits[0].doc);
             }
         }
         catch (Exception ex) {
-            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("4e5f00d0::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -637,7 +636,7 @@ public class IndexService implements IIndexService {
             reader.close();
         }
         catch (Exception ex) {
-            this.logger.severe("IndexService getRepoDocuments caught a " + ex.getClass() + " on page " + page + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("44df9064::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
         return fileLocations;
@@ -698,7 +697,7 @@ public class IndexService implements IIndexService {
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
         }
         catch (Exception ex) {
-            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("61b491eb::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -745,7 +744,7 @@ public class IndexService implements IIndexService {
             }
         }
         catch (Exception ex) {
-            this.logger.severe("IndexSearch getProjectStats caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("1c90b7f9::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -785,13 +784,13 @@ public class IndexService implements IIndexService {
             QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
             Query query = parser.parse(queryString);
 
-            this.logger.info("Searching for: " + query.toString(Values.CONTENTS));
+            this.logger.info("14d57e05::searching for: " + query.toString(Values.CONTENTS));
             this.logger.searchLog(query.toString(Values.CONTENTS) + " " + page);
 
             searchResult = this.doPagingSearch(reader, searcher, query, page);
         }
         catch (Exception ex) {
-            this.logger.severe("ERROR - caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
+            this.logger.severe(String.format("bc93074f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(reader);
@@ -892,7 +891,7 @@ public class IndexService implements IIndexService {
         }
 
         if (loadAverage >= loadValue) {
-            this.logger.info("Load Average higher than set value. Pausing indexing.");
+            this.logger.info("738fddaa::load average higher than set value, pausing indexing");
             return true;
         }
 
@@ -933,13 +932,13 @@ public class IndexService implements IIndexService {
                     code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
                 }
                 catch (Exception ex) {
-                    this.logger.severe("Indexed file appears to binary or missing: " + filePath);
+                    this.logger.severe(String.format("cbd1868a::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
 
                 CodeResult codeResult = this.createCodeResult(code, Values.EMPTYSTRING, doc, hits[i].doc);
                 codeResults.add(codeResult);
             } else {
-                this.logger.severe((i + 1) + ". " + "No path for this document");
+                this.logger.severe("1dbcc0d6::" + (i + 1) + ". " + "No path for this document");
             }
         }
 
@@ -1135,12 +1134,12 @@ public class IndexService implements IIndexService {
         int indexQueueSize = this.codeIndexDocumentQueue.size();
 
         if (indexQueueSize > MAX_INDEX_SIZE) {
-            this.logger.info("indexQueueSize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
+            this.logger.info("08d6e23a::indexqueuesize " + indexQueueSize + " larger than " + MAX_INDEX_SIZE);
             return true;
         }
 
         if (this.codeIndexLinesCount > MAX_LINES_INDEX_SIZE) {
-            this.logger.info("codeIndexLinesCount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
+            this.logger.info("87d3dfa7::codeindexlinescount " + codeIndexLinesCount + " larger than " + MAX_LINES_INDEX_SIZE);
             return true;
         }
 
