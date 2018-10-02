@@ -37,7 +37,7 @@ public class App {
             Singleton.getLogger().info(String.format("db9699c3::binding to 127.0.0.1:%d", Singleton.getHelpers().getServerPort()));
             Spark.ipAddress("127.0.0.1");
         } else {
-            Singleton.getLogger().info(String.format("db9699c3::binding to 0.0.0.0:%d", Singleton.getHelpers().getServerPort()));
+            Singleton.getLogger().info(String.format("3711ea12::binding to 0.0.0.0:%d", Singleton.getHelpers().getServerPort()));
         }
 
         Spark.port(Singleton.getHelpers().getServerPort());
