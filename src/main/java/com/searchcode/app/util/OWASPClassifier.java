@@ -98,7 +98,7 @@ public class OWASPClassifier {
             database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            Singleton.getLogger().severe("Unable to load OWASP Database from disk " + ex);
+            Singleton.getLogger().severe(String.format("5be6cc58::error in class %s exception %s unable to load owasp database", ex.getClass(), ex.getMessage()));
         }
 
         return database;

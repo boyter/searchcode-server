@@ -22,15 +22,18 @@ import java.util.Optional;
  */
 public class FileClassifier {
 
+    private final LoggerWrapper logger;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.CLASSIFIER_DATABASE_LOCATION, Values.DEFAULT_CLASSIFIER_DATABASE_LOCATION);
     private HashMap<String, FileClassifierResult> database;
 
     public FileClassifier() {
         this.database = this.loadDatabase();
+        this.logger = Singleton.getLogger();
     }
 
     public FileClassifier(HashMap<String, FileClassifierResult> database) {
         this.database = database;
+        this.logger = Singleton.getLogger();
     }
 
     public HashMap<String, FileClassifierResult> getDatabase() {
@@ -107,7 +110,7 @@ public class FileClassifier {
             database = gson.fromJson(new FileReader(this.DATABASEPATH),  type);
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            Singleton.getLogger().severe("Unable to load '" + DATABASEPATH+ "' file. File classification will not work. " + ex.toString());
+            this.logger.severe(String.format("62bfa6c9::error in class %s exception %s unable to load file classifier, languages will not be recognised", ex.getClass(), ex.getMessage()));
         }
 
         return database;

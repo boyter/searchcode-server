@@ -7,6 +7,7 @@ import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
@@ -32,6 +33,7 @@ public class SphinxIndexService implements IIndexService {
     private final int NO_PAGES_LIMIT;
     private final String SPHINX_SERVERS_SHARDS;
     private final int SHARD_COUNT;
+    private final LoggerWrapper logger;
 
     public SphinxIndexService() {
         this.helpers = Singleton.getHelpers();
@@ -39,6 +41,7 @@ public class SphinxIndexService implements IIndexService {
         this.sourceCode = Singleton.getSourceCode();
         this.languageType = Singleton.getLanguageType();
         this.searchcodeLib = Singleton.getSearchCodeLib();
+        this.logger = Singleton.getLogger();
 
         this.PAGE_LIMIT = 20;
         this.NO_PAGES_LIMIT = 20;
@@ -59,8 +62,8 @@ public class SphinxIndexService implements IIndexService {
         try {
             Optional<Connection> connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
             connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
-        } catch (SQLException ignored) {
-            System.out.println(ignored);
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("90cf00ef::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
 
@@ -109,7 +112,7 @@ public class SphinxIndexService implements IIndexService {
 
                     stmt.execute();
                 } catch (SQLException ex) {
-                    Singleton.getLogger().severe(ex.toString());
+                    this.logger.severe(String.format("893321b2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
             }
         }
@@ -320,6 +323,7 @@ public class SphinxIndexService implements IIndexService {
 
         } catch (SQLException ex) {
             //return results;
+            this.logger.severe(String.format("c0ed0920::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);

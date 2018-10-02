@@ -32,9 +32,9 @@ public class Properties {
             try {
                 fileInputStream = new FileInputStream(Values.PROPERTIES_FILE_NAME);
                 properties.load(fileInputStream);
-            } catch (IOException e) {
-                // TODO Use second 'stdout' logger here, because ctor LoggerWrapper call this method
-                Singleton.getLogger().severe("Unable to load 'searchcode.properties' file. Will resort to defaults for all values.");
+            } catch (IOException ex) {
+                Singleton.getLogger().severe(String.format("deb3c728::error in class %s exception %s unable to load searchcode.properties file will use defaults for all values", ex.getClass(), ex.getMessage()));
+
             }
             finally {
                 IOUtils.closeQuietly(fileInputStream);
