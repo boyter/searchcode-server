@@ -31,7 +31,6 @@ import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.*;
@@ -47,7 +46,7 @@ public class AdminRouteService {
     private final StatsService statsService;
     private final ValidatorService validatorService;
     private final RepositorySource repositorySource;
-    private final LoggerWrapper loggerWrapper;
+    private final LoggerWrapper logger;
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
@@ -71,7 +70,7 @@ public class AdminRouteService {
         this.statsService = statsService;
         this.validatorService = validatorService;
         this.repositorySource = repositorySource;
-        this.loggerWrapper = loggerWrapper;
+        this.logger = loggerWrapper;
     }
 
     public String getStat(Request request, Response response) {
@@ -497,7 +496,8 @@ public class AdminRouteService {
 
         repoResult.ifPresent(x ->  {
             x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
-            this.loggerWrapper.info("Resetting Job Run Time due to reindex request repoName:" + x.getName());
+
+            this.logger.info("392be2e4::resetting Job Run Time due to reindex request for repository " + x.getName());
             this.repo.saveRepo(x);
             this.jobService.forceEnqueue(x);
         });
@@ -553,15 +553,15 @@ public class AdminRouteService {
             case "deletionqueue":
                 return Values.EMPTYSTRING + Singleton.getDataService().getPersistentDelete().size();
             case "alllogs":
-                return StringUtils.join(this.loggerWrapper.getAllLogs(), System.lineSeparator());
+                return StringUtils.join(this.logger.getAllLogs(), System.lineSeparator());
             case "infologs":
-                return StringUtils.join(this.loggerWrapper.getInfoLogs(), System.lineSeparator());
+                return StringUtils.join(this.logger.getInfoLogs(), System.lineSeparator());
             case "severelogs":
-                return StringUtils.join(this.loggerWrapper.getSevereLogs(), System.lineSeparator());
+                return StringUtils.join(this.logger.getSevereLogs(), System.lineSeparator());
             case "searchlogs":
-                return StringUtils.join(this.loggerWrapper.getSearchLogs(), System.lineSeparator());
+                return StringUtils.join(this.logger.getSearchLogs(), System.lineSeparator());
             case "apilogs":
-                return StringUtils.join(this.loggerWrapper.getApiLogs(), System.lineSeparator());
+                return StringUtils.join(this.logger.getApiLogs(), System.lineSeparator());
             case "threads":
                 return Values.EMPTYSTRING + java.lang.Thread.activeCount();
             case "repoqueuesize":

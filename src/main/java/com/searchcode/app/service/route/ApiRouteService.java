@@ -20,6 +20,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import spark.Request;
 import spark.Response;
@@ -37,15 +38,16 @@ public class ApiRouteService {
     private final ValidatorService validatorService;
     private final IIndexService indexService;
     private final Helpers helpers;
+    private final LoggerWrapper logger;
 
     public boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
     public boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
     public ApiRouteService() {
-        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService(), Singleton.getHelpers());
+        this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-    public ApiRouteService(ApiService apiService, JobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IIndexService indexService, Helpers helpers) {
+    public ApiRouteService(ApiService apiService, JobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IIndexService indexService, Helpers helpers, LoggerWrapper logger) {
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
@@ -53,6 +55,7 @@ public class ApiRouteService {
         this.validatorService = validatorService;
         this.indexService = indexService;
         this.helpers = helpers;
+        this.logger = logger;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {
@@ -81,13 +84,13 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
-                Singleton.getLogger().apiLog("Invalid signed repositoryReindex API call using publicKey=" + publicKey);
+                this.logger.apiLog("d1f6d934::invalid signed repositoryreindex call using publicKey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
 
         this.indexService.reindexAll();
-        Singleton.getLogger().apiLog("Valid signed repositoryReindex API call using publicKey=" + publicKey);
+        this.logger.apiLog("832d24e8::valid signed repositoryreindex call using publicKey=" + publicKey);
         return new ApiResponse(true, "reindex forced");
     }
 
@@ -189,14 +192,14 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
-                Singleton.getLogger().apiLog("Invalid signed repoList API call using publicKey=" + publicKey);
+                this.logger.apiLog("ca5183a1::invalid signed repolist call using publickey=" + publicKey);
                 return new RepoResultApiResponse(false, "invalid signed url", null);
             }
         }
 
         List<RepoResult> repoResultList = repo.getAllRepo();
 
-        Singleton.getLogger().apiLog("Valid signed repoList API call using publicKey=" + publicKey);
+        this.logger.apiLog("48112c1b::valid signed repoList API call using publicKey=" + publicKey );
         return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
     }
 
@@ -232,7 +235,7 @@ public class ApiRouteService {
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
 
             if (!validRequest) {
-                Singleton.getLogger().apiLog("Invalid signed repoDelete API call using publicKey=" + publicKey);
+                this.logger.apiLog("09353e0e::invalid signed repodelete call using publickey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
@@ -244,7 +247,7 @@ public class ApiRouteService {
 
         repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
 
-        Singleton.getLogger().apiLog("Valid signed repoDelete API call using publicKey=" + publicKey);
+        this.logger.apiLog("bafbae4f::valid signed repodelete call using publickey=" + publicKey);
         return new ApiResponse(true, "repository queued for deletion");
     }
 
@@ -339,7 +342,7 @@ public class ApiRouteService {
             }
 
             if (!validRequest) {
-                Singleton.getLogger().apiLog("Invalid signed repoAdd API call using publicKey=" + publicKey);
+                this.logger.apiLog("b754bbe9::invalid signed repoadd call using publickey=" + publicKey);
                 return new ApiResponse(false, "invalid signed url");
             }
         }
@@ -384,7 +387,7 @@ public class ApiRouteService {
 
         this.repo.saveRepo(newRepoResult);
 
-        Singleton.getLogger().apiLog("Valid signed repoAdd API call using publicKey=" + publicKey);
+        this.logger.apiLog("ff031c29::valid signed repoadd call using publickey=" + publicKey);
         return new ApiResponse(true, "added repository successfully");
     }
 
