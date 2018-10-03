@@ -42,6 +42,7 @@ public class CodeResult {
     public String codeId = Values.EMPTYSTRING;
     public String displayLocation = Values.EMPTYSTRING;
     public String source = Values.EMPTYSTRING;
+    public float score = 0;
 
     public CodeResult(){}
 
@@ -261,4 +262,12 @@ public class CodeResult {
         this.source = source;
         return this;
     }
+
+    public float getScore() { return score; }
+
+    public CodeResult setScore(float score) {
+        this.score = score;
+        return this;
+    }
+
 }

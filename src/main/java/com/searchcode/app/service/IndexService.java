@@ -592,7 +592,7 @@ public class IndexService implements IIndexService {
                     this.logger.info(String.format("4e5f00d0::error in class %s exception %s file appears to be binary, this message should be safe to ignore", ex.getClass(), ex.getMessage()));
                 }
 
-                codeResult = this.createCodeResult(code, filePath, doc, hits[0].doc);
+                codeResult = this.createCodeResult(code, filePath, doc, hits[0].doc, hits[0].score);
             }
         }
         catch (Exception ex) {
@@ -735,7 +735,7 @@ public class IndexService implements IIndexService {
             for (int i = 0; i < results.totalHits; i++) {
                 Document doc = searcher.doc(hits[i].doc);
 
-                CodeResult codeResult = this.createCodeResult(null, Values.EMPTYSTRING, doc, hits[i].doc);
+                CodeResult codeResult = this.createCodeResult(null, Values.EMPTYSTRING, doc, hits[i].doc, hits[i].score);
                 codeResults.add(codeResult);
 
                 if (i == 1000) {
@@ -924,9 +924,6 @@ public class IndexService implements IIndexService {
             String filePath = doc.get(Values.PATH);
 
             if (filePath != null) {
-                // This line is occasionally useful for debugging ranking
-                //this.logger.info("doc=" + hits[i].doc + " score=" + hits[i].score);
-
                 List<String> code = new ArrayList<>();
                 try {
                     code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
@@ -935,7 +932,7 @@ public class IndexService implements IIndexService {
                     this.logger.severe(String.format("cbd1868a::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
 
-                CodeResult codeResult = this.createCodeResult(code, Values.EMPTYSTRING, doc, hits[i].doc);
+                CodeResult codeResult = this.createCodeResult(code, Values.EMPTYSTRING, doc, hits[i].doc, hits[i].score);
                 codeResults.add(codeResult);
             } else {
                 this.logger.severe("1dbcc0d6::" + (i + 1) + ". " + "No path for this document");
@@ -950,7 +947,7 @@ public class IndexService implements IIndexService {
         return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner, repoFacetSource);
     }
 
-    private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId) {
+    private CodeResult createCodeResult(List<String> code, String filePath, Document doc, int docId, float score) {
         CodeResult codeResult = new CodeResult()
                 .setCode(code)
                 .setMatchingResults(null)
@@ -970,7 +967,8 @@ public class IndexService implements IIndexService {
                 .setCodeOwner(doc.get(Values.CODEOWNER))
                 .setCodeId(doc.get(Values.CODEID))
                 .setDisplayLocation(doc.get(Values.DISPLAY_LOCATION))
-                .setSource(doc.get(Values.SOURCE));
+                .setSource(doc.get(Values.SOURCE))
+                .setScore(score);
 
         return codeResult;
     }
