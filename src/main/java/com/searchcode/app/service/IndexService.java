@@ -785,7 +785,7 @@ public class IndexService implements IIndexService {
             Query query = parser.parse(queryString);
 
             this.logger.info("14d57e05::searching for: " + query.toString(Values.CONTENTS));
-            this.logger.searchLog(query.toString(Values.CONTENTS) + " " + page);
+            this.logger.searchLog("a8895274::query " + query.toString(Values.CONTENTS) + " page " + page);
 
             searchResult = this.doPagingSearch(reader, searcher, query, page);
         }

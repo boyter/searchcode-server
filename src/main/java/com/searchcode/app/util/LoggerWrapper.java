@@ -16,6 +16,8 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -123,7 +125,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void info(String toLog) {
-        String message = "INFO: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+        String message = "INFO: " + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
         try {
             this.allCache.add(message);
             this.infoRecentCache.add(message);
@@ -140,7 +142,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void severe(String toLog) {
-        String message = "SEVERE: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+        String message = "SEVERE: " + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.allCache.add(message);
@@ -157,7 +159,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void searchLog(String toLog) {
-        String message = "SEARCH: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+        String message = "SEARCH: " + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.searchLog.add(message);
@@ -166,7 +168,7 @@ public class LoggerWrapper {
     }
 
     public synchronized void apiLog(String toLog) {
-        String message = "API: " + new Date().toString() + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
+        String message = "API: " + LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME) + ": " + Thread.currentThread().getName() + " " + Thread.currentThread().getId() + ": " + toLog;
 
         try {
             this.apiLog.add(message);
