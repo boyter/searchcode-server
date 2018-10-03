@@ -47,6 +47,7 @@ public class Repo {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = loggerWrapper;
+        this.createTableIfMissing();
     }
 
     public synchronized List<RepoResult> getAllRepo() {
@@ -367,147 +368,28 @@ public class Repo {
         return isNew;
     }
 
-
-    // Schema Migrations below
-    public void addSourceToTable() {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("PRAGMA table_info(repo);");
-
-            boolean shouldAlter = true;
-
-            resultSet = preparedStatement.executeQuery();
-            String value;
-
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
-
-                if ("source".equals(value)) {
-                    shouldAlter = false;
-                }
-            }
-
-            if (shouldAlter) {
-                List<String> commands = Arrays.asList(
-                        "ALTER TABLE \"repo\" RENAME TO \"oXHFcGcd04oXHFcGcd04_repo\"",
-                        "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\" VARCHAR)",
-                        "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\" FROM \"main\".\"oXHFcGcd04oXHFcGcd04_repo\"",
-                        "DROP TABLE \"oXHFcGcd04oXHFcGcd04_repo\"");
-
-                for (String command: commands) {
-                    preparedStatement = connection.prepareStatement(command);
-                    preparedStatement.execute();
-                }
-            }
-        }
-        catch (SQLException ex) {
-            this.logger.severe(String.format("2b05675f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
-        }
-    }
-
-    public void addBranchToTable() {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("PRAGMA table_info(repo);");
-
-            boolean shouldAlter = true;
-
-            resultSet = preparedStatement.executeQuery();
-            String value;
-
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
-
-                if ("branch".equals(value)) {
-                    shouldAlter = false;
-                }
-            }
-
-            // Python to generate random table name
-            // ''.join(random.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase) for _ in range(20))
-            if (shouldAlter) {
-                List<String> commands = Arrays.asList(
-                        "ALTER TABLE \"repo\" RENAME TO \"y6L0VN5j9eQSg65hWtJJ_repo\"",
-                        "CREATE TABLE \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR)",
-                        "INSERT INTO \"repo\" SELECT \"name\",\"scm\",\"url\",\"username\",\"password\", \"\", \"master\" FROM \"main\".\"y6L0VN5j9eQSg65hWtJJ_repo\"",
-                        "DROP TABLE \"y6L0VN5j9eQSg65hWtJJ_repo\"");
-
-                for (String command: commands) {
-                    preparedStatement = connection.prepareStatement(command);
-                    preparedStatement.execute();
-                }
-            }
-        }
-        catch (SQLException ex) {
-            this.logger.severe(String.format("41baae9d::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
-        }
-    }
-
     public synchronized void createTableIfMissing() {
-
         Connection connection;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         try {
             connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
-            preparedStatement.execute();
-        }
-        catch (SQLException ex) {
-            this.logger.severe(String.format("5ec972ce::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
-        }
-    }
-
-    public void addDataToTable() {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
-        try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("PRAGMA table_info(repo);");
-
-            boolean shouldAlter = true;
+            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
 
             resultSet = preparedStatement.executeQuery();
-            String value;
-
+            String value = Values.EMPTYSTRING;
             while (resultSet.next()) {
                 value = resultSet.getString("name");
-
-                if ("data".equals(value)) {
-                    shouldAlter = false;
-                }
             }
 
-            if (shouldAlter) {
-                preparedStatement = connection.prepareStatement("ALTER TABLE repo ADD COLUMN data text;");
+            if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
+                preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
                 preparedStatement.execute();
             }
         }
         catch (SQLException ex) {
-            this.logger.severe(String.format("f26a7acd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("5ec972ce::error in class %s exception %s searchcode was to create the api key table, so api calls will fail", ex.getClass(), ex.getMessage()));
         }
         finally {
             this.helpers.closeQuietly(resultSet);

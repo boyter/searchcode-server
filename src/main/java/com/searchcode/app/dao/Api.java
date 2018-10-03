@@ -43,6 +43,7 @@ public class Api {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = logger;
+        this.createTableIfMissing();
     }
 
     public synchronized List<ApiResult> getAllApi() {
@@ -163,7 +164,6 @@ public class Api {
         }
     }
 
-    // Avoid migrations by creating if its missing
     public synchronized void createTableIfMissing() {
         Connection connection;
         PreparedStatement preparedStatement = null;

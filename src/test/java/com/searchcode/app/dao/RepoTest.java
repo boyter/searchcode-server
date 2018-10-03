@@ -19,17 +19,6 @@ public class RepoTest extends TestCase {
         super.setUp();
         this.repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
         this.repo.createTableIfMissing();
-        this.repo.addBranchToTable();
-        this.repo.addSourceToTable();
-        this.repo.addDataToTable();
-    }
-
-    public void testMigrationCode() {
-        for (int i = 0; i < 100; i++) {
-            this.repo.addBranchToTable();
-            this.repo.addSourceToTable();
-            this.repo.addDataToTable();
-        }
     }
 
     public void testRepoSaveDelete() {

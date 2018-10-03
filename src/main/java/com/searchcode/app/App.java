@@ -10,9 +10,6 @@
 
 package com.searchcode.app;
 
-import com.searchcode.app.dao.Api;
-import com.searchcode.app.dao.Data;
-import com.searchcode.app.dao.Repo;
 import com.searchcode.app.service.Singleton;
 import spark.Spark;
 
@@ -47,23 +44,5 @@ public class App {
         } else {
             RegisterSearchcodeRoutes();
         }
-    }
-
-    /**
-     * Called on startup to run all the DAO object table creation/migration logic. Slight overhead using this technique.
-     * TODO Do the migrations inside the sqlite database so the application does not need to
-     */
-    public static void preStart() {
-        // Database migrations
-        Data data = Singleton.getData();
-        Repo repo = Singleton.getRepo();
-        Api api = Singleton.getApi();
-
-        data.createTableIfMissing();
-        api.createTableIfMissing();
-        repo.createTableIfMissing();
-        repo.addSourceToTable();
-        repo.addBranchToTable();
-        repo.addDataToTable();
     }
 }
