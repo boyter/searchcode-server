@@ -34,7 +34,6 @@ public class Properties {
                 properties.load(fileInputStream);
             } catch (IOException ex) {
                 Singleton.getLogger().severe(String.format("deb3c728::error in class %s exception %s unable to load searchcode.properties file will use defaults for all values", ex.getClass(), ex.getMessage()));
-
             }
             finally {
                 IOUtils.closeQuietly(fileInputStream);

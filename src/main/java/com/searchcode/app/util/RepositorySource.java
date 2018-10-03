@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.Source;
+import com.searchcode.app.service.Singleton;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -15,11 +16,13 @@ import java.util.Optional;
 
 public class RepositorySource {
 
+    private final LoggerWrapper logger;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.SOURCE_DATABASE_LOCATION, Values.DEFAULT_SOURCE_DATABASE_LOCATION);
-    private ArrayList<Source> database = new ArrayList<>();
+    private ArrayList<Source> database;
 
     public RepositorySource() {
         this.database = this.loadDatabase();
+        this.logger = Singleton.getLogger();
     }
 
     public ArrayList<Source> getDatabase() {
@@ -66,7 +69,7 @@ public class RepositorySource {
             database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            System.out.println(ex);
+            this.logger.severe(String.format("5f78543c::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
         return database;
