@@ -369,64 +369,6 @@ public class SearchcodeLibTest extends TestCase {
         assertThat(actual).isEqualTo("");
     }
 
-
-    public void testCountFilteredLinesSingleLine() {
-        SearchCodeLib scl = new SearchCodeLib();
-
-        ArrayList<String> lst = new ArrayList<>();
-        lst.add("one");
-        lst.add("");
-
-        assertThat(scl.countFilteredLines(lst)).isEqualTo(1);
-    }
-
-    public void testCountFilteredLinesCommentLines() {
-        SearchCodeLib scl = new SearchCodeLib();
-
-        ArrayList<String> lst = new ArrayList<>();
-        lst.add("// one");
-        lst.add("    // one");
-        lst.add("# comment");
-        lst.add("    # comment");
-        lst.add("");
-
-        assertThat(scl.countFilteredLines(lst)).isEqualTo(0);
-    }
-
-    public void testCountFilteredLinesMixCommentLines() {
-        SearchCodeLib scl = new SearchCodeLib();
-
-        ArrayList<String> lst = new ArrayList<>();
-        lst.add("// one");
-        lst.add("    // one");
-        lst.add("not a comment");
-        lst.add("# comment");
-        lst.add("    # comment");
-        lst.add("");
-        lst.add("Also not a comment but has one // comment");
-
-        assertThat(scl.countFilteredLines(lst)).isEqualTo(2);
-    }
-
-    public void testCountFilteredCommentTypes() {
-        SearchCodeLib scl = new SearchCodeLib();
-
-        ArrayList<String> lst = new ArrayList<>();
-        lst.add("// comment");
-        lst.add("# comment");
-        lst.add("<!-- comment ");
-        lst.add("!* comment");
-        lst.add("-- comment");
-        lst.add("% comment");
-        lst.add("; comment");
-        lst.add("/* comment");
-        lst.add("* comment");
-        lst.add("* comment");
-        lst.add("* comment");
-
-        assertThat(scl.countFilteredLines(lst)).isEqualTo(0);
-    }
-
     public void testLanguageCostIgnore() {
         SearchCodeLib scl = new SearchCodeLib();
         assertThat(scl.languageCostIgnore("Text")).isTrue();

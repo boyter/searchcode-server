@@ -216,7 +216,7 @@ public class CodeRouteService {
         map.put("codeOwner", codeResult.getCodeOwner());
         map.put("owaspResults", owaspResults);
 
-        double estimatedEffort = coco.estimateEffort(scl.countFilteredLines(codeResult.getCode()));
+        double estimatedEffort = coco.estimateEffort(Singleton.getHelpers().tryParseDouble(codeResult.getCodeLines(), "0"));
         int estimatedCost = (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
         if (estimatedCost != 0 && !scl.languageCostIgnore(codeResult.getLanguageName())) {
             map.put("estimatedCost", estimatedCost);

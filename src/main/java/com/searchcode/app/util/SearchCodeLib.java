@@ -166,25 +166,6 @@ public class SearchCodeLib {
     }
 
     /**
-     * Tries to guess the true amount of lines in a code file ignoring those that are blank or comments
-     * fairly crude however without resorting to parsing which is slow its good enough for our purposes
-     */
-    public int countFilteredLines(List<String> codeLines) {
-        return codeLines.stream().map(String::trim).filter(x -> {
-            return !(x.startsWith("//") ||
-                    x.startsWith("#") ||
-                    x.length() == 0 ||
-                    x.startsWith("<!--") ||
-                    x.startsWith("!*") ||
-                    x.startsWith("--") ||
-                    x.startsWith("%") ||
-                    x.startsWith(";") ||
-                    x.startsWith("*") ||
-                    x.startsWith("/*"));
-        }).toArray().length;
-    }
-
-    /**
      * Adds a string into the spelling corrector.
      * TODO move this into the spelling corrector class itself
      */
