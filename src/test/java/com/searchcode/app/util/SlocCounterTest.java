@@ -72,6 +72,18 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.commentCount).isEqualTo(0);
     }
 
+    public void testNuspecRegressions() {
+        String language = "nuspec";
+        String contents = "this\n" +
+                "is\n" +
+                "nuspec";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(3);
+        assertThat(slocCount.codeCount).isEqualTo(3);
+        assertThat(slocCount.commentCount).isEqualTo(0);
+    }
+
     public void testRegression() {
         String language = "C++";
         String contents = "/**/\n" +

@@ -36,6 +36,10 @@ public class SlocCounter {
     }
 
     public boolean checkForMatch(char currentByte, int index, int endPoint, String[] matches, String content) {
+        if (matches == null) {
+            return false;
+        }
+
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i].charAt(0)) { // If the first character matches
                 boolean potentialMatch = true;
@@ -56,6 +60,10 @@ public class SlocCounter {
     }
 
     public boolean checkForMatchSingle(char currentByte, int index, int endPoint, String match, String content) {
+        if (match == null) {
+            return false;
+        }
+
         if (match.length() != 0 && currentByte == match.charAt(0)) { // If the first character matches
             boolean potentialMatch = true;
 
@@ -75,6 +83,10 @@ public class SlocCounter {
 
 
     public String checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
+        if (matches == null) {
+            return null;
+        }
+
         for (int i = 0; i < matches.length; i++) { // For each match
             if (currentByte == matches[i][0].charAt(0)) { // If the first character matches
                 boolean potentialMatch = true;
