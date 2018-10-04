@@ -18,12 +18,17 @@ import java.util.List;
 @DisallowConcurrentExecution
 public class PopulateSpellingCorrectorJob implements Job {
 
+    private final LoggerWrapper logger;
     public int MAXFILELINEDEPTH = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH);
+
+    public PopulateSpellingCorrectorJob() {
+        this.logger = Singleton.getLogger();
+    }
 
     public void execute(JobExecutionContext context) {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
         Path path = Paths.get(Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION));
-        Singleton.getLogger().info(String.format("4f5b6cb6::starting populatespellingcorrector in path %s", path.toString()));
+        this.logger.info(String.format("4f5b6cb6::starting populatespellingcorrector in path %s", path.toString()));
 
         try {
             Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
@@ -68,7 +73,7 @@ public class PopulateSpellingCorrectorJob implements Job {
                 }
             });
         } catch (IOException ex) {
-            Singleton.getLogger().severe(String.format("55d4cf9a::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("55d4cf9a::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 }

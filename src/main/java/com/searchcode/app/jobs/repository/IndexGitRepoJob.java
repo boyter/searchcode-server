@@ -150,7 +150,6 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             boolean foundSomething = false;
 
             while ((line = bufferedReader.readLine()) != null) {
-                Singleton.getLogger().info("Blame line " + repoName + fileName + ": " + line);
                 this.logger.info(String.format("c7448564::blame line reponame %s filename %s", repoName, fileName));
                 String[] split = line.split("\t");
 
@@ -403,7 +402,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         } catch (GitAPIException | InvalidPathException ex) {
             successful = false;
             String error = String.format("6e56fa26::error in class %s exception %s repository %s", ex.getClass(), ex.getMessage(), repoResult.getName());
-            Singleton.getLogger().severe(error);
+            this.logger.severe(error);
             repoResult.getData().indexError = error;
             Singleton.getRepo().saveRepo(repoResult);
         }

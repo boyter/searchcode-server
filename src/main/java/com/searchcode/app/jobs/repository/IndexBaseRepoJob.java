@@ -297,7 +297,6 @@ public abstract class IndexBaseRepoJob implements Job {
 
             for (String file: indexLocations) {
                 if (!fileLocations.containsKey(file)) {
-                    Singleton.getLogger().info("Missing from disk, removing from index " + file);
                     this.logger.info(String.format("dac4ad57::missing from disk removing from index %s", file));
                     try {
                         this.indexService.deleteByCodeId(DigestUtils.sha1Hex(file));
@@ -355,7 +354,7 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         while (this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
-            Singleton.getLogger().info("Pausing parser.");
+            this.logger.info("9bfd7baf:pausing parser");
             try {
                 Thread.sleep(SLEEPTIME);
             } catch (InterruptedException ignored) {}
