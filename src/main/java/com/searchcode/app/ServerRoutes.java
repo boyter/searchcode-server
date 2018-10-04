@@ -35,12 +35,10 @@ public class ServerRoutes {
     }
 
     private static void addJsonHeaders(Response response) {
-        response.header("Content-Encoding", "gzip");
         response.header("Content-Type", "application/json");
     }
 
     private static void addXmlHeaders(Response response) {
-        response.header("Content-Encoding", "gzip");
         response.header("Content-Type", "application/rss+xml; charset=UTF-8");
     }
 
