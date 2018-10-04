@@ -54,36 +54,30 @@ public class ServerRoutes {
 
     public static void RegisterServerRoutes() {
         get("/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(codeRouteService.root(request, response));
         });
 
         get("/healthcheck/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             return new JsonTransformer().render(true);
         });
 
         get("/html/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(codeRouteService.html(request, response));
         });
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl"));
         });
 
         get("/repository/overview/:reponame/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getProject(request, response), "repository_overview.ftl"));
         });
 
         get("/repository/list/", (request, response) -> {
-            response.header("Content-Encoding", "gzip");
             CodeRouteService codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getRepositoryList(request, response), "repository_list.ftl"));
         });
