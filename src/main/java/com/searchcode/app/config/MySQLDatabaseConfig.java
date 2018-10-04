@@ -12,6 +12,7 @@ package com.searchcode.app.config;
 
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 
 import java.sql.*;
@@ -19,10 +20,12 @@ import java.sql.*;
 public class MySQLDatabaseConfig implements IDatabaseConfig {
 
     private final Helpers helpers;
+    private final LoggerWrapper logger;
     private Connection connection = null;
 
     public MySQLDatabaseConfig() {
         this.helpers = Singleton.getHelpers();
+        this.logger = Singleton.getLogger();
     }
 
     @Override
@@ -38,7 +41,7 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
             }
         }
         catch (ClassNotFoundException ex) {
-            Singleton.getLogger().severe(String.format("e5c19b7c::error in class %s exception %s it appears searchcode is unable to connect my mysql as the driver is missing", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("e5c19b7c::error in class %s exception %s it appears searchcode is unable to connect my mysql as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 
         return connection;

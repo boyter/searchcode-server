@@ -11,13 +11,19 @@
 package com.searchcode.app.config;
 
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SQLiteMemoryDatabaseConfig implements IDatabaseConfig {
+    private final LoggerWrapper logger;
     private Connection connection = null;
+
+    public SQLiteMemoryDatabaseConfig() {
+        this.logger = Singleton.getLogger();
+    }
 
     public synchronized Connection getConnection() throws SQLException {
         try {
@@ -28,7 +34,7 @@ public class SQLiteMemoryDatabaseConfig implements IDatabaseConfig {
             }
         }
         catch (ClassNotFoundException ex) {
-            Singleton.getLogger().severe(String.format("6310e883::error in class %s exception %s it appears searchcode is unable to connect sqlite as the driver is missing", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("6310e883::error in class %s exception %s it appears searchcode is unable to connect sqlite as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 
         return connection;

@@ -13,6 +13,7 @@ package com.searchcode.app.config;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.SphinxIndexService;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 
 import java.sql.Connection;
@@ -27,9 +28,11 @@ public class SphinxSearchConfig {
 
     private final Helpers helpers;
     private final HashMap<String, Connection> connectionList = new HashMap<>();
+    private final LoggerWrapper logger;
 
     public SphinxSearchConfig() {
         this.helpers = Singleton.getHelpers();
+        this.logger = Singleton.getLogger();
     }
 
     public synchronized Optional<Connection> getConnection(String server) throws SQLException {
@@ -50,7 +53,7 @@ public class SphinxSearchConfig {
             }
         }
         catch (ClassNotFoundException ex) {
-            Singleton.getLogger().severe(String.format("f9e4283d::error in class %s exception %s it appears searchcode is unable to connect sphinx using mysql connection as the driver is missing", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("f9e4283d::error in class %s exception %s it appears searchcode is unable to connect sphinx using mysql connection as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 
         return Optional.ofNullable(connection);
