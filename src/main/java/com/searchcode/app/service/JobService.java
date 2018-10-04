@@ -22,6 +22,7 @@ import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
@@ -51,6 +52,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public class JobService {
 
     private final Helpers helpers;
+    private final LoggerWrapper logger;
     private int UPDATETIME;
     private int FILEINDEXUPDATETIME;
     private int INDEXTIME;
@@ -68,6 +70,7 @@ public class JobService {
         this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
         this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
         this.INDEXTIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME), Values.DEFAULTINDEXTIME);
+        this.logger = Singleton.getLogger();
     }
 
     /**
@@ -101,7 +104,7 @@ public class JobService {
             scheduler.start();
         }
         catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("93ef44ae::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("93ef44ae::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -135,7 +138,7 @@ public class JobService {
             scheduler.start();
         }
         catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("c0f207cd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("c0f207cd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -170,7 +173,7 @@ public class JobService {
             scheduler.start();
         }
         catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("70845099::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("70845099::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -221,7 +224,7 @@ public class JobService {
             scheduler2.scheduleJob(job2, trigger2);
             scheduler2.start();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("40f20408::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("40f20408::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -250,7 +253,7 @@ public class JobService {
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("703d6d7f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("703d6d7f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -279,7 +282,7 @@ public class JobService {
             scheduler.scheduleJob(job, trigger);
             scheduler.start();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("6e131da2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("6e131da2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -296,7 +299,7 @@ public class JobService {
             this.startRepositoryJobs();
             this.startEnqueueJob();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("8c3cd302::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("8c3cd302::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
@@ -342,13 +345,13 @@ public class JobService {
         try {
             Singleton.getScheduler().shutdown();
         } catch (SchedulerException ex) {
-            Singleton.getLogger().severe(String.format("12cce757::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("12cce757::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
     private boolean attemptMoveToTrash(String repoLocation, String indexLocation) {
         boolean successful;
-        Singleton.getLogger().severe(String.format("e71a5492::searchcode was unable to remove files or folders in the index %s or repository %s they have been moved to trash and must be removed manually", indexLocation, repoLocation));
+        this.logger.severe(String.format("e71a5492::searchcode was unable to remove files or folders in the index %s or repository %s they have been moved to trash and must be removed manually", indexLocation, repoLocation));
         successful = true;
 
         try {
@@ -358,7 +361,7 @@ public class JobService {
         }
         catch (IOException ex){
             successful = false;
-            Singleton.getLogger().severe(String.format("dfd26713::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), repoLocation));
+            this.logger.severe(String.format("dfd26713::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), repoLocation));
         }
 
         try {
@@ -368,7 +371,7 @@ public class JobService {
         }
         catch (IOException ex){
             successful = false;
-            Singleton.getLogger().severe(String.format("fa274f76::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), indexLocation));
+            this.logger.severe(String.format("fa274f76::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), indexLocation));
         }
 
         return successful;
@@ -387,7 +390,7 @@ public class JobService {
         }
 
         List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
-        Singleton.getLogger().info(String.format("ea4fc311::adding %d repositories to be indexed", repoResultList.size()));
+        this.logger.info(String.format("ea4fc311::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
         return true;
@@ -396,7 +399,7 @@ public class JobService {
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
         List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
-        Singleton.getLogger().info(String.format("de4d4b59::adding %d repositories to be indexed", repoResultList.size()));
+        this.logger.info(String.format("de4d4b59::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
         return repoResultList.size();
@@ -422,7 +425,7 @@ public class JobService {
         UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
         UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
 
-        Singleton.getLogger().info(String.format("e30a1dca::adding %s to %s queue", rr.getName(), rr.getScm()));
+        this.logger.info(String.format("e30a1dca::adding %s to %s queue", rr.getName(), rr.getScm()));
 
         switch (rr.getScm().toLowerCase()) {
             case "git":
@@ -435,7 +438,7 @@ public class JobService {
                 repoFileQueue.add(rr);
                 break;
             default:
-                Singleton.getLogger().severe(String.format("e9cc3dd6::unknown scm type for %s type %s queue, this should be removed from the list of repositories", rr.getName(), rr.getScm()));
+                this.logger.severe(String.format("e9cc3dd6::unknown scm type for %s type %s queue, this should be removed from the list of repositories", rr.getName(), rr.getScm()));
                 break;
         }
     }
