@@ -14,9 +14,7 @@ public class SearchcodeRoutes {
             return new FreeMarkerEngine().render(codeRouteService.html(request, response));
         });
 
-        get("/healthcheck/", (request, response) -> {
-            return new JsonTransformer().render(true);
-        });
+        get("/healthcheck/", (request, response) -> new JsonTransformer().render(true));
 
         get("/file/:codeid/*", (request, response) -> {
             CodeRouteService codeRouteService = new CodeRouteService();
