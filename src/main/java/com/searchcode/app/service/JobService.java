@@ -11,7 +11,6 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
 import com.searchcode.app.jobs.DeleteRepositoryJob;
 import com.searchcode.app.jobs.PopulateSpellingCorrectorJob;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;

@@ -29,7 +29,7 @@ public class OWASPClassifier {
 
     private final LoggerWrapper logger;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION);
-    private ArrayList<OWASPResult> database = new ArrayList<>();
+    private ArrayList<OWASPResult> database;
 
     public OWASPClassifier() {
         this.database = this.loadDatabase();

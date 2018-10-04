@@ -2,11 +2,13 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import org.apache.commons.io.FilenameUtils;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.PersistJobDataAfterExecution;
 
 import java.io.IOException;
 import java.nio.file.*;
