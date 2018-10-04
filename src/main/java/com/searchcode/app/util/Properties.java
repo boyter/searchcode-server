@@ -33,6 +33,7 @@ public class Properties {
                 fileInputStream = new FileInputStream(Values.PROPERTIES_FILE_NAME);
                 properties.load(fileInputStream);
             } catch (IOException ex) {
+                // As this is a static method the use of singleton here is fine
                 Singleton.getLogger().severe(String.format("deb3c728::error in class %s exception %s unable to load searchcode.properties file will use defaults for all values", ex.getClass(), ex.getMessage()));
             }
             finally {

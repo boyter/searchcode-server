@@ -320,7 +320,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
     public RepositoryChanged checkoutSvnRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         boolean successful = false;
-        Singleton.getLogger().info("Attempting to checkout " + repoResult.getUrl());
+        this.logger.info("50552307::attempting to checkout " + repoResult.getUrl());
 
         ProcessBuilder processBuilder;
 
@@ -355,7 +355,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
-                Singleton.getLogger().info(line);
+                this.logger.info("b9143c4f::" + line);
             }
 
             successful = true;

@@ -27,11 +27,13 @@ import java.util.stream.Collectors;
 
 public class OWASPClassifier {
 
+    private final LoggerWrapper logger;
     private String DATABASEPATH = Properties.getProperties().getProperty(Values.OWASPDATABASELOCATION, Values.DEFAULTOWASPDATABASELOCATION);
     private ArrayList<OWASPResult> database = new ArrayList<>();
 
     public OWASPClassifier() {
         this.database = this.loadDatabase();
+        this.logger = Singleton.getLogger();
     }
 
     /**
@@ -98,7 +100,7 @@ public class OWASPClassifier {
             database = new ArrayList<>(Arrays.asList(myArray));
         }
         catch (FileNotFoundException | JsonSyntaxException ex) {
-            Singleton.getLogger().severe(String.format("5be6cc58::error in class %s exception %s unable to load owasp database", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("5be6cc58::error in class %s exception %s unable to load owasp database", ex.getClass(), ex.getMessage()));
         }
 
         return database;
