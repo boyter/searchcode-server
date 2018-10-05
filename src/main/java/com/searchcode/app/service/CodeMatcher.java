@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 public class CodeMatcher {
 
     private final LoggerWrapper logger;
-    public int MATCHLINES = Integer.parseInt(Values.DEFAULTMATCHLINES);
-    public int MAXLINEDEPTH = Integer.parseInt(Values.DEFAULTMAXLINEDEPTH);
+    public int MATCHLINES;
+    public int MAXLINEDEPTH;
 
     public CodeMatcher()  {
         this(Singleton.getData(), Singleton.getLogger());

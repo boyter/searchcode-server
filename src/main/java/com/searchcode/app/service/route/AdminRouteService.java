@@ -47,6 +47,7 @@ public class AdminRouteService {
     private final ValidatorService validatorService;
     private final RepositorySource repositorySource;
     private final LoggerWrapper logger;
+    private final Gson gson;
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
@@ -71,6 +72,7 @@ public class AdminRouteService {
         this.validatorService = validatorService;
         this.repositorySource = repositorySource;
         this.logger = loggerWrapper;
+        this.gson = new Gson();
     }
 
     public String getStat(Request request, Response response) {
@@ -86,14 +88,14 @@ public class AdminRouteService {
         if (request.queryParams().contains("reponame")) {
             String reponame = request.queryParams("reponame");
 
-            Optional<RepoResult> repoResult = Singleton.getRepo().getRepoByName(reponame);
+            Optional<RepoResult> repoResult = this.repo.getRepoByName(reponame);
             String indexStatus = repoResult.map(x -> x.getData().indexStatus).orElse(Values.EMPTYSTRING);
 
             if ("success".equals(indexStatus)) {
                 return "Indexed ✓";
             }
 
-            if (Singleton.getDataService().getPersistentDelete().contains(reponame)) {
+            if (this.dataService.getPersistentDelete().contains(reponame)) {
                 return "Pending Delete";
             }
 
@@ -165,12 +167,12 @@ public class AdminRouteService {
         map.put("sysArch", this.statsService.getArch());
         map.put("sysVersion", this.statsService.getOsVersion());
         map.put("processorCount", this.statsService.getProcessorCount());
-        map.put("deletionQueue", Singleton.getDataService().getPersistentDelete().size());
+        map.put("deletionQueue", this.dataService.getPersistentDelete().size());
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put("index_paused", this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused" : "running");
-        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
@@ -178,9 +180,7 @@ public class AdminRouteService {
     public Map<String, Object> adminRepo(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
-        Repo repo = Singleton.getRepo();
-
-        int repoCount = repo.getRepoCount();
+        int repoCount = this.repo.getRepoCount();
         String offSet = request.queryParams("offset");
         String searchQuery = request.queryParams("q");
         int indexOffset = 0;
@@ -198,10 +198,10 @@ public class AdminRouteService {
         }
 
         if (searchQuery != null) {
-            map.put("repoResults", repo.searchRepo(searchQuery));
+            map.put("repoResults", this.repo.searchRepo(searchQuery));
         }
         else {
-            map.put("repoResults", repo.getPagedRepo(indexOffset, 100));
+            map.put("repoResults", this.repo.getPagedRepo(indexOffset, 100));
         }
 
         map.put("searchQuery", searchQuery);
@@ -213,7 +213,7 @@ public class AdminRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         map.put("repositorySource", this.repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
 
@@ -223,13 +223,13 @@ public class AdminRouteService {
     public Map<String, Object> adminGetRepo(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
         String repoName = request.params(":reponame");
-        Optional<RepoResult> repository = Singleton.getRepo().getRepoByName(repoName);
+        Optional<RepoResult> repository = this.repo.getRepoByName(repoName);
 
         repository.ifPresent(x -> map.put("repoResult", x));
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
         map.put("repoCount", this.getStat("repoCount"));
-        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         map.put("repositorySource", this.repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
 
         return map;
@@ -248,7 +248,7 @@ public class AdminRouteService {
         map.put("apiAuthentication", apiEnabled && apiAuth);
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         map.put("repoCount", this.getStat("repoCount"));
 
         return map;
@@ -314,75 +314,72 @@ public class AdminRouteService {
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.ISCOMMUNITY);
-        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         map.put("repoCount", this.getStat("repoCount"));
 
         return map;
     }
 
     public void postSettings(Request request, Response response) {
-        Data data = Singleton.getData();
-
         String logo = request.queryParams("logo").trim();
         String syntaxHighlighter = request.queryParams("syntaxhighligher");
         String embed = request.queryParams("embed").trim();
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("averagesalary"));
-            data.saveData(Values.AVERAGESALARY, "" + (int)averageSalary);
+            this.data.saveData(Values.AVERAGESALARY, "" + (int)averageSalary);
         }
-        catch(NumberFormatException ex) {
-            data.saveData(Values.AVERAGESALARY, Values.DEFAULTAVERAGESALARY);
+        catch (NumberFormatException ex) {
+            this.data.saveData(Values.AVERAGESALARY, Values.DEFAULTAVERAGESALARY);
         }
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("matchlines"));
-            data.saveData(Values.MATCHLINES, "" + (int)averageSalary);
+            this.data.saveData(Values.MATCHLINES, "" + (int)averageSalary);
         }
-        catch(NumberFormatException ex) {
-            data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
+        catch (NumberFormatException ex) {
+            this.data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
         }
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("maxlinedepth"));
-            data.saveData(Values.MAXLINEDEPTH, "" + (int)averageSalary);
+            this.data.saveData(Values.MAXLINEDEPTH, "" + (int)averageSalary);
         }
-        catch(NumberFormatException ex) {
-            data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
+        catch (NumberFormatException ex) {
+            this.data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
         }
 
         try {
             double minifiedlength = Double.parseDouble(request.queryParams("minifiedlength"));
-            data.saveData(Values.MINIFIEDLENGTH, "" + (int)minifiedlength);
+            this.data.saveData(Values.MINIFIEDLENGTH, "" + (int)minifiedlength);
         }
-        catch(NumberFormatException ex) {
-            data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
+        catch (NumberFormatException ex) {
+            this.data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
         }
 
         try {
             double backoffValue = Double.parseDouble(request.queryParams("backoffValue"));
-            data.saveData(Values.BACKOFFVALUE, "" + backoffValue);
+            this.data.saveData(Values.BACKOFFVALUE, "" + backoffValue);
         }
-        catch(NumberFormatException ex) {
-            data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
+        catch (NumberFormatException ex) {
+            this.data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
         }
 
         boolean owaspadvisories = Boolean.parseBoolean(request.queryParams("owaspadvisories"));
-        data.saveData(Values.OWASPENABLED, "" + owaspadvisories);
+        this.data.saveData(Values.OWASPENABLED, "" + owaspadvisories);
 
-        data.saveData(Values.LOGO, logo);
-        data.saveData(Values.SYNTAXHIGHLIGHTER, syntaxHighlighter);
-        data.saveData(Values.EMBED, embed);
+        this.data.saveData(Values.LOGO, logo);
+        this.data.saveData(Values.SYNTAXHIGHLIGHTER, syntaxHighlighter);
+        this.data.saveData(Values.EMBED, embed);
     }
 
     public List<ValidatorResult> postBulk(Request request, Response response) {
         String repos = request.queryParams("repos");
         String repolines[] = repos.split("\\r?\\n");
-        Repo repo = Singleton.getRepo();
 
         List<ValidatorResult> validatorResults = new ArrayList<>();
 
-        for(String line: repolines) {
+        for (String line: repolines) {
             String[] repoparams = line.split(",", -1);
 
             if (repoparams.length == 7) {
@@ -410,7 +407,7 @@ public class AdminRouteService {
                 ValidatorResult validate = this.validatorService.validate(repoResult, false);
 
                 if (validate.isValid) {
-                    repo.saveRepo(repoResult);
+                    this.repo.saveRepo(repoResult);
                     this.jobService.forceEnqueue(repoResult);
                 }
                 else {
@@ -446,7 +443,7 @@ public class AdminRouteService {
 
         ValidatorResult validate = new ValidatorResult(true, Values.EMPTYSTRING);
 
-        for(int i = 0; i < reponames.length; i++) {
+        for (int i = 0; i < reponames.length; i++) {
 
             String branch = repobranch[i].trim();
             if (branch.equals(Values.EMPTYSTRING)) {
@@ -486,7 +483,6 @@ public class AdminRouteService {
     public void deleteRepo(Request request, Response response) {
         String repoName = request.queryParams("repoName");
         Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
-
         repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
     }
 
@@ -506,11 +502,10 @@ public class AdminRouteService {
     public String checkVersion() {
         Version version;
         try {
-            Gson gson = new Gson();
             String downloaded = IOUtils.toString(new URL("https://searchcodeserver.com/version.json"));
-            version = gson.fromJson(downloaded, Version.class);
+            version = this.gson.fromJson(downloaded, Version.class);
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             return "Unable to determine if running the latest version. Check https://searchcodeserver.com/pricing.html for the latest release.";
         }
 
