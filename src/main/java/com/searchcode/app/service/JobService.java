@@ -11,6 +11,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Repo;
 import com.searchcode.app.jobs.DeleteRepositoryJob;
 import com.searchcode.app.jobs.PopulateSpellingCorrectorJob;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
@@ -52,6 +53,10 @@ public class JobService {
 
     private final Helpers helpers;
     private final LoggerWrapper logger;
+    private final Scheduler scheduler;
+    private final IIndexService indexservice;
+    private final Repo repo;
+    private final DataService dataservice;
     private int UPDATETIME;
     private int FILEINDEXUPDATETIME;
     private int INDEXTIME;
@@ -65,7 +70,11 @@ public class JobService {
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
 
     public JobService() {
+        this.scheduler = Singleton.getScheduler();
         this.helpers = Singleton.getHelpers();
+        this.indexservice = Singleton.getIndexService();
+        this.repo = Singleton.getRepo();
+        this.dataservice = Singleton.getDataService();
         this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
         this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
         this.INDEXTIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME), Values.DEFAULTINDEXTIME);
@@ -78,9 +87,6 @@ public class JobService {
      */
     public void startIndexGitRepoJobs(String uniquename) {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
-
             JobDetail job = newJob(IndexGitRepoJob.class)
                     .withIdentity("updateindex-git-" + uniquename)
                     .build();
@@ -98,9 +104,8 @@ public class JobService {
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
             job.getJobDataMap().put("LOWMEMORY", this.LOWMEMORY);
 
-            scheduler.scheduleJob(job, trigger);
-
-            scheduler.start();
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
         }
         catch (SchedulerException ex) {
             this.logger.severe(String.format("93ef44ae::error in class %s exception %s", ex.getClass(), ex.getMessage()));
@@ -112,9 +117,6 @@ public class JobService {
      */
     public void startIndexFileRepoJobs(String uniquename) {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
-
             JobDetail job = newJob(IndexFileRepoJob.class)
                     .withIdentity("updateindex-file-" + uniquename)
                     .build();
@@ -132,9 +134,8 @@ public class JobService {
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
             job.getJobDataMap().put("LOWMEMORY", this.LOWMEMORY);
 
-            scheduler.scheduleJob(job, trigger);
-
-            scheduler.start();
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
         }
         catch (SchedulerException ex) {
             this.logger.severe(String.format("c0f207cd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
@@ -147,9 +148,6 @@ public class JobService {
      */
     public void startIndexSvnRepoJobs(String uniquename) {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
-
             JobDetail job = newJob(IndexSvnRepoJob.class)
                     .withIdentity("updateindex-svn-" + uniquename)
                     .build();
@@ -167,9 +165,8 @@ public class JobService {
             job.getJobDataMap().put("REPOLOCATIONS", this.REPOLOCATION);
             job.getJobDataMap().put("LOWMEMORY", this.LOWMEMORY);
 
-            scheduler.scheduleJob(job, trigger);
-
-            scheduler.start();
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
         }
         catch (SchedulerException ex) {
             this.logger.severe(String.format("70845099::error in class %s exception %s", ex.getClass(), ex.getMessage()));
@@ -182,8 +179,6 @@ public class JobService {
      */
     private void startEnqueueJob() {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
             // Setup the indexer which runs forever adding documents to be indexed
             JobDetail job = newJob(EnqueueRepositoryJob.class)
                     .withIdentity("enqueuejob")
@@ -199,11 +194,8 @@ public class JobService {
                     .withPriority(2)
                     .build();
 
-            scheduler.scheduleJob(job, trigger);
-            scheduler.start();
-
-
-            Scheduler scheduler2 = Singleton.getScheduler();
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
 
             // Setup the indexer which runs forever adding documents to be indexed
             JobDetail job2 = newJob(EnqueueFileRepositoryJob.class)
@@ -220,8 +212,8 @@ public class JobService {
                     .withPriority(2)
                     .build();
 
-            scheduler2.scheduleJob(job2, trigger2);
-            scheduler2.start();
+            this.scheduler.scheduleJob(job2, trigger2);
+            this.scheduler.start();
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("40f20408::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
@@ -232,8 +224,6 @@ public class JobService {
      */
     private void startDeleteJob() {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
             // Setup the indexer which runs forever adding documents to be indexed
             JobDetail job = newJob(DeleteRepositoryJob.class)
                     .withIdentity("deletejob")
@@ -249,8 +239,8 @@ public class JobService {
                     .withPriority(2)
                     .build();
 
-            scheduler.scheduleJob(job, trigger);
-            scheduler.start();
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("703d6d7f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
@@ -261,8 +251,6 @@ public class JobService {
      */
     private void startSpellingJob() {
         try {
-            Scheduler scheduler = Singleton.getScheduler();
-
             // Setup the indexer which runs forever adding documents to be indexed
             JobDetail job = newJob(PopulateSpellingCorrectorJob.class)
                     .withIdentity("spellingjob")
@@ -278,8 +266,8 @@ public class JobService {
                     .withPriority(1)
                     .build();
 
-            scheduler.scheduleJob(job, trigger);
-            scheduler.start();
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("6e131da2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
@@ -303,7 +291,6 @@ public class JobService {
     }
 
     private void startIndexerJob() throws SchedulerException {
-        Scheduler scheduler = Singleton.getScheduler();
         // Setup the indexer which runs forever indexing
         JobDetail job = newJob(IndexDocumentsJob.class)
                 .withIdentity("indexerjob")
@@ -319,8 +306,8 @@ public class JobService {
                 .withPriority(15)
                 .build();
 
-        scheduler.scheduleJob(job, trigger);
-        scheduler.start();
+        this.scheduler.scheduleJob(job, trigger);
+        this.scheduler.start();
     }
 
     private void startRepositoryJobs() {
@@ -342,7 +329,7 @@ public class JobService {
 
     private void shutdownScheduler() {
         try {
-            Singleton.getScheduler().shutdown();
+            this.scheduler.shutdown();
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("12cce757::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
@@ -384,11 +371,11 @@ public class JobService {
     }
 
     public boolean forceEnqueue() {
-        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
+        if (this.indexservice.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
-        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
+        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo());
         this.logger.info(String.format("ea4fc311::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
@@ -397,7 +384,7 @@ public class JobService {
 
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
-        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo());
+        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo());
         this.logger.info(String.format("de4d4b59::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
@@ -405,11 +392,11 @@ public class JobService {
     }
     
     public boolean forceEnqueue(RepoResult repoResult) {
-        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
+        if (this.indexservice.shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
-        if (Singleton.getDataService().getPersistentDelete().contains(repoResult.getName()) ||
+        if (this.dataservice.getPersistentDelete().contains(repoResult.getName()) ||
                 Singleton.getRunningIndexRepoJobs().keySet().contains(repoResult.getName())) {
             return false;
         }
