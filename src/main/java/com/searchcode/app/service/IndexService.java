@@ -676,7 +676,7 @@ public class IndexService implements IIndexService {
                 Document doc = searcher.doc(hits[i].doc);
 
                 String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
-                int lines = Singleton.getHelpers().tryParseInt(doc.get(Values.LINES), "0");
+                int lines = this.helpers.tryParseInt(doc.get(Values.LINES), "0");
                 totalCodeLines += lines;
 
                 if (linesCount.containsKey(languageName)) {
@@ -810,7 +810,7 @@ public class IndexService implements IIndexService {
             switch (key) {
                 case "repo":
                     List<String> reposList = Arrays.stream(facets.get(key))
-                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     if (!reposList.isEmpty()) {
@@ -819,7 +819,7 @@ public class IndexService implements IIndexService {
                     break;
                 case "lan":
                     List<String> langsList = Arrays.stream(facets.get(key))
-                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     if (!langsList.isEmpty()) {
@@ -828,7 +828,7 @@ public class IndexService implements IIndexService {
                     break;
                 case "own":
                     List<String> ownersList = Arrays.stream(facets.get(key))
-                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     if (!ownersList.isEmpty()) {
@@ -840,7 +840,7 @@ public class IndexService implements IIndexService {
                     break;
                 case "src":
                     List<String> srcList = Arrays.stream(facets.get(key))
-                            .map((s) -> Values.SOURCE + ":" + QueryParser.escape(Singleton.getHelpers().replaceForIndex(s)))
+                            .map((s) -> Values.SOURCE + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     if (!srcList.isEmpty()) {
