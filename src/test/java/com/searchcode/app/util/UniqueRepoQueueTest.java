@@ -3,19 +3,20 @@ package com.searchcode.app.util;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
-import org.eclipse.jetty.util.ConcurrentArrayQueue;
+
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class UniqueRepoQueueTest extends TestCase {
     public void testEnqueNull() {
-        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
+        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         queue.add(null);
     }
 
     public void testEnqueueMultipleTimes() {
-        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
+        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         RepoResult rr = new RepoResult()
                 .setRowId(1)
@@ -35,7 +36,7 @@ public class UniqueRepoQueueTest extends TestCase {
     }
 
     public void testEnqueueSameRepoMultipleTimes() {
-        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
+        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         RepoResult rr1 = new RepoResult()
                 .setRowId(1)
@@ -65,7 +66,7 @@ public class UniqueRepoQueueTest extends TestCase {
     }
 
     public void testEnqueueDifferent() {
-        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
+        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         RepoResult rr1 = new RepoResult()
                 .setRowId(1)
@@ -95,7 +96,7 @@ public class UniqueRepoQueueTest extends TestCase {
     }
 
     public void testOrderAndPoll() {
-        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentArrayQueue<>());
+        UniqueRepoQueue queue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
         RepoResult rr1 = new RepoResult()
                 .setRowId(1)

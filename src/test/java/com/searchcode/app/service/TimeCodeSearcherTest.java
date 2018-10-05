@@ -10,13 +10,7 @@
 
 package com.searchcode.app.service;
 
-import com.searchcode.app.dto.*;
 import junit.framework.TestCase;
-import org.eclipse.jetty.util.ConcurrentArrayQueue;
-
-import java.util.Queue;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 public class TimeCodeSearcherTest extends TestCase {
 

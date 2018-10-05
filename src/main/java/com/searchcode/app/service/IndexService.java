@@ -37,13 +37,13 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.eclipse.jetty.util.ArrayQueue;
 
 import java.io.IOException;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
@@ -188,7 +188,7 @@ public class IndexService implements IIndexService {
 
     @Override
     public synchronized void indexDocument(CodeIndexDocument codeIndexDocument) throws IOException {
-        Queue<CodeIndexDocument> queue = new ArrayQueue<>();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
         queue.add(codeIndexDocument);
         this.indexDocument(queue);
     }

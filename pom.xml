@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <jdk.version>1.8</jdk.version>
-        <spark.version>2.5.5</spark.version>
+        <spark.version>2.7.2</spark.version>
         <spark.freemarker.version>2.0.0</spark.freemarker.version>
         <freemarker.version>2.3.23</freemarker.version>
         <dbcp.version>2.1.1</dbcp.version>
@@ -134,22 +134,22 @@
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-core</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-analyzers-common</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-queryparser</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-facet</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.5</version>
         </dependency>
         <!-- Unit testing-->
         <dependency>

@@ -15,7 +15,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexableField;
 import org.assertj.core.api.AssertionsForClassTypes;
-import org.eclipse.jetty.util.ConcurrentArrayQueue;
 
 import java.io.IOException;
 import java.util.*;
@@ -317,7 +316,7 @@ public class IndexServiceTest extends TestCase {
     }
 
     public void testShouldRepoParserJobPauseWhenIndexQueueSizeLarge() {
-        Queue<CodeIndexDocument> queue = new ConcurrentArrayQueue<>();
+        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
 
         for (int i=0; i<10000; i++) {
             queue.add(new CodeIndexDocument());
@@ -366,7 +365,7 @@ public class IndexServiceTest extends TestCase {
         when(statsServiceMock.getLoadAverage()).thenReturn("0.0");
         when(dataMock.getDataByName(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE)).thenReturn("1");
 
-        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), new ConcurrentArrayQueue<>(), null);
+        this.indexService = new IndexService(dataMock, statsServiceMock, null, Singleton.getLogger(), Singleton.getHelpers(), new ConcurrentLinkedQueue<>(), null);
 
         assertThat(this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)).isFalse();
     }
