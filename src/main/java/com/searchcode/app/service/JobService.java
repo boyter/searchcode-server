@@ -54,7 +54,6 @@ public class JobService {
     private final Helpers helpers;
     private final LoggerWrapper logger;
     private final Scheduler scheduler;
-    private final IIndexService indexservice;
     private final Repo repo;
     private final DataService dataservice;
     private int UPDATETIME;
@@ -72,7 +71,6 @@ public class JobService {
     public JobService() {
         this.scheduler = Singleton.getScheduler();
         this.helpers = Singleton.getHelpers();
-        this.indexservice = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
         this.dataservice = Singleton.getDataService();
         this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
@@ -371,7 +369,8 @@ public class JobService {
     }
 
     public boolean forceEnqueue() {
-        if (this.indexservice.shouldPause(IIndexService.JobType.REPO_ADDER)) {
+        // TODO refactor this dependency, because we have circular dependencies
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
@@ -392,7 +391,8 @@ public class JobService {
     }
     
     public boolean forceEnqueue(RepoResult repoResult) {
-        if (this.indexservice.shouldPause(IIndexService.JobType.REPO_ADDER)) {
+        // TODO refactor this dependency, because we have circular dependencies
+        if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {
             return false;
         }
 
