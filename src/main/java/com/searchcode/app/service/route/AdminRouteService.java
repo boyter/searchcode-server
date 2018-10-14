@@ -570,7 +570,7 @@ public class AdminRouteService {
             case "indexwritelocation":
                 return this.indexService.getProperty("index_write_location");
             case "facetwritelocation":
-                return this.indexService.getProperty("facet_write_location  ");
+                return this.indexService.getProperty("facet_write_location");
             case "codeindexlinescount":
                 return Values.EMPTYSTRING + this.indexService.getCodeIndexLinesCount();
             case "codeindexqueuesize":
