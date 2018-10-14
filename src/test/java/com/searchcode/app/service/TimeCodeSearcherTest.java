@@ -44,7 +44,7 @@ public class TimeCodeSearcherTest extends TestCase {
 //            assertThat(cs.search("this", 0).getRepoFacetYearMonth().get(0).getYearMonth()).isEqualTo("201601");
 //            assertThat(cs.search("this", 0).getRepoFacetYearMonthDay().get(0).getYearMonthDay()).isEqualTo("20160101");
 //        }
-//        catch(Exception ex) {
+//        catch (Exception ex) {
 //            assertTrue(false);
 //        }
 //    }
@@ -58,7 +58,7 @@ public class TimeCodeSearcherTest extends TestCase {
 //
 //            assertThat(searchResult.getTotalHits()).isNotZero();
 //        }
-//        catch(Exception ex) {
+//        catch (Exception ex) {
 //            assertTrue(false);
 //        }
 //    }

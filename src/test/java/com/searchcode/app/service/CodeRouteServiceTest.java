@@ -131,7 +131,7 @@ public class CodeRouteServiceTest extends TestCase {
         try {
             codeRouteService.getCode(request, response);
         }
-        catch(HaltException ex) {}
+        catch (HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
     }
@@ -146,7 +146,7 @@ public class CodeRouteServiceTest extends TestCase {
         try {
             codeRouteService.getCode(request, response);
         }
-        catch(HaltException ex) {}
+        catch (HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
     }
@@ -196,7 +196,7 @@ public class CodeRouteServiceTest extends TestCase {
         try {
             codeRouteService.getProject(request, response);
         }
-        catch(HaltException ex) {}
+        catch (HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
     }

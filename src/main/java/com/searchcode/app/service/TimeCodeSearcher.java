@@ -66,7 +66,7 @@ public class TimeCodeSearcher {
             numDocs = reader.numDocs();
             reader.close();
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             LOGGER.info(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -94,7 +94,7 @@ public class TimeCodeSearcher {
             searchResult = this.doPagingSearch(reader, searcher, query, page);
             reader.close();
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -154,7 +154,7 @@ public class TimeCodeSearcher {
             reader.close();
 
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -180,7 +180,7 @@ public class TimeCodeSearcher {
             try {
                 code = Files.readAllLines(Paths.get(filepath), StandardCharsets.UTF_8);
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
 //                LOGGER.warning("Indexed file appears to binary: " + filepath);
             }
 
@@ -197,7 +197,7 @@ public class TimeCodeSearcher {
 
             reader.close();
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -224,7 +224,7 @@ public class TimeCodeSearcher {
 
             reader.close();
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
             LOGGER.severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -285,7 +285,7 @@ public class TimeCodeSearcher {
                     String repoLoc = "./repo/" + cr.getRepoName() + "/.git";
                     cr.setCode(Arrays.asList(gitService.fetchFileRevision(repoLoc, cr.getRevision(), cr.getCodePath()).split("\\r?\\n")));
                 }
-                catch(Exception ex) {
+                catch (Exception ex) {
 //                    LOGGER.warning("Indexed file appears to binary or missing: " + filepath);
                 }
 
@@ -341,10 +341,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -376,10 +376,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -411,10 +411,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -446,10 +446,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -481,10 +481,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -516,10 +516,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -551,10 +551,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 
@@ -586,10 +586,10 @@ public class TimeCodeSearcher {
                 }
             }
         }
-        catch(IOException ex) {
+        catch (IOException ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
-        catch(Exception ex) {
+        catch (Exception ex) {
 //            LOGGER.warning(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
         }
 

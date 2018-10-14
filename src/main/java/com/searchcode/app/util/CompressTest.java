@@ -107,7 +107,7 @@ public class CompressTest {
                     //System.out.println("CompressedDataLength: " + compressedDataLength);
                     totalCompressedLength += compressedDataLength;
                 }
-                catch(Exception ex) {}
+                catch (Exception ex) {}
 
                 return FileVisitResult.CONTINUE;
             }
