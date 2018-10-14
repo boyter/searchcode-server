@@ -45,7 +45,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * Starts all of the quartz jobs which perform background tasks such as cloning/updating from GIT/SVN and
  * the jobs which delete repositories and which add repositories to the queue to be indexed.
- *
+ * <p>
  * TODO implement using below for the stopping and starting of jobs
  * http://stackoverflow.com/questions/7159080/how-to-interrupt-or-stop-currently-running-quartz-job#7159719
  */
@@ -61,7 +61,8 @@ public class JobService {
     private int INDEXTIME;
     private int NUMBERGITPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS), Values.DEFAULT_NUMBER_GIT_PROCESSORS);
     private int NUMBERSVNPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS), Values.DEFAULT_NUMBER_SVN_PROCESSORS);
-    private int NUMBERFILEPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);;
+    private int NUMBERFILEPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);
+    ;
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
     private String TRASHLOCATION = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
@@ -92,9 +93,9 @@ public class JobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-git-" + uniquename)
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(this.INDEXTIME)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(this.INDEXTIME)
+                                    .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -104,8 +105,7 @@ public class JobService {
 
             this.scheduler.scheduleJob(job, trigger);
             this.scheduler.start();
-        }
-        catch (SchedulerException ex) {
+        } catch (SchedulerException ex) {
             this.logger.severe(String.format("93ef44ae::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
@@ -122,9 +122,9 @@ public class JobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-file-" + uniquename)
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(this.INDEXTIME)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(this.INDEXTIME)
+                                    .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -134,8 +134,7 @@ public class JobService {
 
             this.scheduler.scheduleJob(job, trigger);
             this.scheduler.start();
-        }
-        catch (SchedulerException ex) {
+        } catch (SchedulerException ex) {
             this.logger.severe(String.format("c0f207cd::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
@@ -153,9 +152,9 @@ public class JobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("updateindex-svn-" + uniquename)
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(this.INDEXTIME)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(this.INDEXTIME)
+                                    .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -165,8 +164,7 @@ public class JobService {
 
             this.scheduler.scheduleJob(job, trigger);
             this.scheduler.start();
-        }
-        catch (SchedulerException ex) {
+        } catch (SchedulerException ex) {
             this.logger.severe(String.format("70845099::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
@@ -185,9 +183,9 @@ public class JobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("enqueuejob")
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(this.UPDATETIME)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(this.UPDATETIME)
+                                    .repeatForever()
                     )
                     .withPriority(2)
                     .build();
@@ -203,9 +201,9 @@ public class JobService {
             SimpleTrigger trigger2 = newTrigger()
                     .withIdentity("enqueuefilejob")
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(this.FILEINDEXUPDATETIME)
+                                    .repeatForever()
                     )
                     .withPriority(2)
                     .build();
@@ -230,9 +228,9 @@ public class JobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("deletejob")
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(1)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(1)
+                                    .repeatForever()
                     )
                     .withPriority(2)
                     .build();
@@ -257,9 +255,9 @@ public class JobService {
             SimpleTrigger trigger = newTrigger()
                     .withIdentity("spellingjob")
                     .withSchedule(
-                        simpleSchedule()
-                        .withIntervalInSeconds(3600)
-                        .repeatForever()
+                            simpleSchedule()
+                                    .withIntervalInSeconds(3600)
+                                    .repeatForever()
                     )
                     .withPriority(1)
                     .build();
@@ -297,9 +295,9 @@ public class JobService {
         SimpleTrigger trigger = newTrigger()
                 .withIdentity("indexerjob")
                 .withSchedule(
-                    simpleSchedule()
-                    .withIntervalInSeconds(this.INDEXTIME)
-                    .repeatForever()
+                        simpleSchedule()
+                                .withIntervalInSeconds(this.INDEXTIME)
+                                .repeatForever()
                 )
                 .withPriority(15)
                 .build();
@@ -342,8 +340,7 @@ public class JobService {
             if (new File(repoLocation).exists()) {
                 this.moveDirectoryToTrash(repoLocation);
             }
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             successful = false;
             this.logger.severe(String.format("dfd26713::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), repoLocation));
         }
@@ -352,8 +349,7 @@ public class JobService {
             if (new File(repoLocation).exists()) {
                 this.moveDirectoryToTrash(indexLocation);
             }
-        }
-        catch (IOException ex){
+        } catch (IOException ex) {
             successful = false;
             this.logger.severe(String.format("fa274f76::error in class %s exception %s it is unlikely that searchcode can recover from this remove all please remove the folder %s manually and restart searchcode", ex.getClass(), ex.getMessage(), indexLocation));
         }
@@ -389,7 +385,7 @@ public class JobService {
 
         return repoResultList.size();
     }
-    
+
     public boolean forceEnqueue(RepoResult repoResult) {
         // TODO refactor this dependency, because we have circular dependencies
         if (Singleton.getIndexService().shouldPause(IIndexService.JobType.REPO_ADDER)) {

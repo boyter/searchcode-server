@@ -36,42 +36,42 @@ public class PopulateSpellingCorrectorJob implements Job {
             Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                try {
-                    // Convert Path file to unix style that way everything is easier to reason about
-                    String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
-                    String fileToString = FilenameUtils.separatorsToUnix(file.toString());
-                    String fileName = file.getFileName().toString();
-
-                    if (Singleton.getHelpers().ignoreFiles(fileParent)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    List<String> codeLines;
                     try {
-                        codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
-                    } catch (IOException ex) {
-                        return FileVisitResult.CONTINUE;
+                        // Convert Path file to unix style that way everything is easier to reason about
+                        String fileParent = FilenameUtils.separatorsToUnix(file.getParent().toString());
+                        String fileToString = FilenameUtils.separatorsToUnix(file.toString());
+                        String fileName = file.getFileName().toString();
+
+                        if (Singleton.getHelpers().ignoreFiles(fileParent)) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        List<String> codeLines;
+                        try {
+                            codeLines = Singleton.getHelpers().readFileLinesGuessEncoding(fileToString, MAXFILELINEDEPTH);
+                        } catch (IOException ex) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (Singleton.getSearchCodeLib().isMinified(codeLines, fileName)) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (codeLines.isEmpty()) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        if (Singleton.getSearchCodeLib().isBinary(codeLines, fileName).isBinary()) {
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        Singleton.getSearchCodeLib().addToSpellingCorrector(String.join(" ", codeLines));
+                    } catch (Exception ex) {
+                        Singleton.getLogger().severe(String.format("a173f0e6::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                     }
 
-                    if (Singleton.getSearchCodeLib().isMinified(codeLines, fileName)) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (codeLines.isEmpty()) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    if (Singleton.getSearchCodeLib().isBinary(codeLines, fileName).isBinary()) {
-                        return FileVisitResult.CONTINUE;
-                    }
-
-                    Singleton.getSearchCodeLib().addToSpellingCorrector(String.join(" ", codeLines));
-                } catch (Exception ex) {
-                    Singleton.getLogger().severe(String.format("a173f0e6::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-                }
-
-                // Continue at all costs
-                return FileVisitResult.CONTINUE;
+                    // Continue at all costs
+                    return FileVisitResult.CONTINUE;
                 }
             });
         } catch (IOException ex) {

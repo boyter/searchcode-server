@@ -150,7 +150,7 @@ public class CommonRouteService {
 
         return highlighter;
     }
-    
+
     public static int getPhotoId(int seed) {
         Random random = new Random(seed);
         return random.nextInt(42) + 1;

@@ -31,7 +31,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
         try {
             if (connection == null || connection.isClosed()) {
                 Singleton.getHelpers().closeQuietly(connection);
-                String sqliteFile = (String)Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
+                String sqliteFile = (String) Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
 
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);
@@ -40,8 +40,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
                 // PreparedStatement stmt = connection.prepareStatement("PRAGMA journal_mode=WAL;");
                 // stmt.execute();
             }
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             this.logger.severe(String.format("0c59f5f2::error in class %s exception %s it appears searchcode is unable to connect sqlite as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 

@@ -75,7 +75,7 @@ public class SearchCodeLib {
             contents = contents.substring(0, MAX_SPLIT_LENGTH) + "AAA";
         }
 
-        for (String splitContents: contents.split(" ")) {
+        for (String splitContents : contents.split(" ")) {
             if (splitContents.length() >= 7) {
                 Matcher m = MULTIPLE_UPPERCASE.matcher(splitContents);
 
@@ -132,7 +132,7 @@ public class SearchCodeLib {
         String replaced = contents.replaceAll("\\w", "");
 
         StringBuilder stringBuilder = new StringBuilder();
-        for (char c: replaced.toCharArray()) {
+        for (char c : replaced.toCharArray()) {
             stringBuilder.append(c).append(" ");
         }
 
@@ -186,7 +186,7 @@ public class SearchCodeLib {
             splitString = splitString.subList(0, 10000);
         }
 
-        for (String s: splitString) {
+        for (String s : splitString) {
             if (s.length() >= 3) {
                 this.spellingCorrector.putWord(s);
             }
@@ -201,7 +201,7 @@ public class SearchCodeLib {
 
         String lowerFileName = fileName.toLowerCase();
 
-        for (String extension: this.WHITE_LIST) {
+        for (String extension : this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return false;
             }
@@ -226,14 +226,14 @@ public class SearchCodeLib {
 
         String lowerFileName = fileName.toLowerCase();
         // Check against user set whitelist
-        for (String extension: this.WHITE_LIST) {
+        for (String extension : this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
 
         // Check against user set blacklist
-        for (String extension: this.BLACK_LIST) {
+        for (String extension : this.BLACK_LIST) {
             if (lowerFileName.endsWith("." + extension) || lowerFileName.equals(extension)) {
                 return new BinaryFinding(true, "appears in extension blacklist");
             }
@@ -241,9 +241,9 @@ public class SearchCodeLib {
 
         // Check if whitelisted extention IE what we know about
         HashMap<String, FileClassifierResult> database = fileClassifier.getDatabase();
-        for (String key: database.keySet()) {
+        for (String key : database.keySet()) {
             FileClassifierResult fileClassifierResult = database.get(key);
-            for (String extention: fileClassifierResult.extensions) {
+            for (String extention : fileClassifierResult.extensions) {
                 if (lowerFileName.endsWith("." + extention)) {
                     return new BinaryFinding(false, "appears in internal extension whitelist");
                 }
@@ -280,7 +280,7 @@ public class SearchCodeLib {
         double best = 0;
         String owner = "Unknown";
 
-        for (CodeOwner codeOwner: codeOwners) {
+        for (CodeOwner codeOwner : codeOwners) {
             double age = (currentUnix - codeOwner.getMostRecentUnixCommitTimestamp()) / 60 / 60;
             double calc = codeOwner.getNoLines() / Math.pow((age), 1.8);
 
@@ -377,7 +377,7 @@ public class SearchCodeLib {
         String or = " OR ";
         String not = " NOT ";
 
-        for (String term: split) {
+        for (String term : split) {
             switch (term) {
                 case "AND":
                     if (Iterables.getLast(stringList, null) != null && !Iterables.getLast(stringList).equals(and)) {
@@ -400,8 +400,7 @@ public class SearchCodeLib {
                             Iterables.getLast(stringList).equals(or) ||
                             Iterables.getLast(stringList).equals(not)) {
                         stringList.add(" " + QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*") + " ");
-                    }
-                    else {
+                    } else {
                         stringList.add(and + QueryParser.escape(term.toLowerCase()).replace("\\(", "(").replace("\\)", ")").replace("\\*", "*") + " ");
                     }
                     break;
@@ -420,7 +419,7 @@ public class SearchCodeLib {
         String or = " OR ";
         String not = " NOT ";
 
-        for(String term: split) {
+        for (String term : split) {
             switch (term) {
                 case "AND":
                     sb.append(and);
@@ -461,7 +460,7 @@ public class SearchCodeLib {
         }
 
         StringBuilder stringBuilder = new StringBuilder();
-        for (String word: query.replaceAll(" +", " ").split(" ")) {
+        for (String word : query.replaceAll(" +", " ").split(" ")) {
             if (!word.trim().equals("AND") && !word.trim().equals("OR") && !word.trim().equals("NOT")) {
                 stringBuilder.append(" ").append(this.spellingCorrector.correct(word));
             }
@@ -498,15 +497,13 @@ public class SearchCodeLib {
 
         if (projectStats.getRepoFacetOwner().size() == 1) {
             stringBuilder.append(" committer has contributed to ");
-        }
-        else {
+        } else {
             stringBuilder.append(" committers have contributed to ");
         }
 
         if (projectStats.getTotalFiles() == 1) {
             stringBuilder.append(projectStats.getTotalFiles()).append(" file. ");
-        }
-        else {
+        } else {
             stringBuilder.append(projectStats.getTotalFiles()).append(" files. ");
         }
 
@@ -514,8 +511,7 @@ public class SearchCodeLib {
 
         if (codeFacetLanguages.size() == 1) {
             stringBuilder.append("The most important language in this repository is ").append(codeFacetLanguages.get(0).getLanguageName()).append(". ");
-        }
-        else {
+        } else {
             stringBuilder.append("The most important languages in this repository are ");
 
             if (!codeFacetLanguages.isEmpty()) {
@@ -542,8 +538,8 @@ public class SearchCodeLib {
 
         List<String> highKnowledge = new ArrayList<>();
         double sumAverageFilesWorked = 0;
-        for (CodeFacetOwner codeFacetOwner: projectStats.getRepoFacetOwner()) {
-            double currentAverage = (double)codeFacetOwner.getCount() / (double)projectStats.getTotalFiles();
+        for (CodeFacetOwner codeFacetOwner : projectStats.getRepoFacetOwner()) {
+            double currentAverage = (double) codeFacetOwner.getCount() / (double) projectStats.getTotalFiles();
             sumAverageFilesWorked += currentAverage;
 
             if (currentAverage > 0.1) {
@@ -551,7 +547,7 @@ public class SearchCodeLib {
             }
         }
 
-        int averageFilesWorked = (int)(sumAverageFilesWorked / projectStats.getRepoFacetOwner().size() * 100);
+        int averageFilesWorked = (int) (sumAverageFilesWorked / projectStats.getRepoFacetOwner().size() * 100);
 
         stringBuilder.append("The average person who commits this project has ownership of ");
         stringBuilder.append(averageFilesWorked).append("% of files. ");

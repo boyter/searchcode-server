@@ -30,7 +30,7 @@ public class RepositorySource {
     }
 
     public Optional<Source> getSourceByName(String name) {
-        for (Source source: this.database) {
+        for (Source source : this.database) {
             if (source.getName().equals(name)) {
                 return Optional.of(source);
             }
@@ -50,7 +50,7 @@ public class RepositorySource {
 
         link = sourceByName.map(Source::getLink).orElse(Values.EMPTYSTRING);
 
-        for (String key: replacements.keySet()) {
+        for (String key : replacements.keySet()) {
             link = link.replace(String.format("{%s}", key), replacements.get(key));
         }
 
@@ -67,8 +67,7 @@ public class RepositorySource {
             Gson gson = new GsonBuilder().create();
             Source[] myArray = gson.fromJson(new FileReader(this.DATABASEPATH), Source[].class);
             database = new ArrayList<>(Arrays.asList(myArray));
-        }
-        catch (FileNotFoundException | JsonSyntaxException ex) {
+        } catch (FileNotFoundException | JsonSyntaxException ex) {
             this.logger.severe(String.format("5f78543c::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 

@@ -166,8 +166,8 @@ public class CodeRouteService {
         for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
             padStr.append(" ");
         }
-        for (int i=1, d=10, len=codeLines.size(); i<=len; i++) {
-            if (i/d > 0) {
+        for (int i = 1, d = 10, len = codeLines.size(); i <= len; i++) {
+            if (i / d > 0) {
                 d *= 10;
                 padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
             }
@@ -225,7 +225,7 @@ public class CodeRouteService {
         map.put("owaspResults", owaspResults);
 
         double estimatedEffort = coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0"));
-        int estimatedCost = (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
+        int estimatedCost = (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
         map.put("estimatedCost", estimatedCost);
 
         map.put("logoImage", CommonRouteService.getLogo());
@@ -249,7 +249,7 @@ public class CodeRouteService {
         }
 
         ProjectStats projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
-                                              .orElseGet(() -> this.indexService.getProjectStats(Values.EMPTYSTRING));
+                .orElseGet(() -> this.indexService.getProjectStats(Values.EMPTYSTRING));
 
         map.put("busBlurb", this.searchCodeLib.generateBusBlurb(projectStats));
         repository.ifPresent(x -> map.put("repoLocation", x.getUrl()));
@@ -263,7 +263,7 @@ public class CodeRouteService {
 
         double estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
         map.put("estimatedEffort", estimatedEffort);
-        map.put("estimatedCost", (int)coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary()));
+        map.put("estimatedCost", (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary()));
 
         map.put("totalOwners", projectStats.getRepoFacetOwner().size());
         map.put("totalLanguages", projectStats.getCodeFacetLanguages().size());
@@ -389,19 +389,19 @@ public class CodeRouteService {
             SearchResult searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
 
-            for (CodeFacetRepo f: searchResult.getRepoFacetResults()) {
+            for (CodeFacetRepo f : searchResult.getRepoFacetResults()) {
                 if (Arrays.asList(repos).contains(f.getRepoName())) {
                     f.setSelected(true);
                 }
             }
 
-            for (CodeFacetLanguage f: searchResult.getLanguageFacetResults()) {
+            for (CodeFacetLanguage f : searchResult.getLanguageFacetResults()) {
                 if (Arrays.asList(langs).contains(f.getLanguageName())) {
                     f.setSelected(true);
                 }
             }
 
-            for (CodeFacetOwner f: searchResult.getOwnerFacetResults()) {
+            for (CodeFacetOwner f : searchResult.getOwnerFacetResults()) {
                 if (Arrays.asList(owners).contains(f.getOwner())) {
                     f.setSelected(true);
                 }
@@ -438,8 +438,7 @@ public class CodeRouteService {
             try {
                 page = Integer.parseInt(request.queryParams("p"));
                 page = page > 19 ? 19 : page;
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 page = 0;
             }
         }

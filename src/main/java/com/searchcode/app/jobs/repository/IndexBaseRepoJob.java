@@ -100,7 +100,7 @@ public abstract class IndexBaseRepoJob implements Job {
         long lastModified = file.lastModified();
         long truncatedNow = lastRunTime.minusSeconds(3600).toEpochMilli();
 
-        if (lastModified <= truncatedNow ) {
+        if (lastModified <= truncatedNow) {
             // Skip the file because we in theory already indexed it
             return false;
         }
@@ -167,11 +167,9 @@ public abstract class IndexBaseRepoJob implements Job {
                 if (this.DELETEREPO) {
                     Singleton.getHelpers().tryDelete(repoLocations + "/" + repoResult.getDirectoryName());
                 }
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 this.logger.severe(String.format("f8026b97::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-            }
-            finally {
+            } finally {
                 // Clean up the job
                 // Mark that this job is finished
                 // TODO ensure that this line is covered by tests
@@ -262,8 +260,7 @@ public abstract class IndexBaseRepoJob implements Job {
         try {
             if (this.FOLLOWLINKS) {
                 Files.walkFileTree(path, EnumSet.of(FileVisitOption.FOLLOW_LINKS), Integer.MAX_VALUE, searchcodeFileVisitor);
-            }
-            else {
+            } else {
                 Files.walkFileTree(path, searchcodeFileVisitor);
             }
 
@@ -295,7 +292,7 @@ public abstract class IndexBaseRepoJob implements Job {
                 doClean = false;
             }
 
-            for (String file: indexLocations) {
+            for (String file : indexLocations) {
                 if (!fileLocations.containsKey(file)) {
                     this.logger.info(String.format("dac4ad57::missing from disk removing from index %s", file));
                     try {
@@ -336,8 +333,7 @@ public abstract class IndexBaseRepoJob implements Job {
             md5Hash = org.apache.commons.codec.digest.DigestUtils.md5Hex(fis);
         } catch (IOException ex) {
             this.logger.severe(String.format("3157d2f8::error in class %s exception %s file %s", ex.getClass(), ex.getMessage(), fileName));
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(fis);
         }
 
@@ -357,7 +353,8 @@ public abstract class IndexBaseRepoJob implements Job {
             this.logger.info("9bfd7baf:pausing parser");
             try {
                 Thread.sleep(SLEEPTIME);
-            } catch (InterruptedException ignored) {}
+            } catch (InterruptedException ignored) {
+            }
         }
 
         return false;

@@ -142,7 +142,7 @@ public class SlocCounter {
         int commentCount = 0;
         int complexity = 0;
 
-        for (int index=0; index < contents.length(); index++) {
+        for (int index = 0; index < contents.length(); index++) {
 
             if (!isWhitespace(contents.charAt(index))) {
                 switch (currentState) {
@@ -188,9 +188,9 @@ public class SlocCounter {
                             }
                         }
 
-                        if (this.checkForMatchSingle(contents.charAt(index), index, endPoint, endComments.get(endComments.size()-1), contents)) {
-                            index += endComments.get(endComments.size()-1).length() - 1;
-                            endComments.remove(endComments.size()-1);
+                        if (this.checkForMatchSingle(contents.charAt(index), index, endPoint, endComments.get(endComments.size() - 1), contents)) {
+                            index += endComments.get(endComments.size() - 1).length() - 1;
+                            endComments.remove(endComments.size() - 1);
 
                             if (endComments.size() == 0) {
                                 if (currentState == State.S_MULTICOMMENT_CODE) {
@@ -275,7 +275,8 @@ public class SlocCounter {
         public int commentCount = 0;
         public int complexity = 0;
 
-        public SlocCount() {}
+        public SlocCount() {
+        }
 
         public SlocCount(int linesCount, int blankCount, int codeCount, int commentCount, int complexity) {
             this.linesCount = linesCount;

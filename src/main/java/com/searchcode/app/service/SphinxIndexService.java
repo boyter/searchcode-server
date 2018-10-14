@@ -78,7 +78,7 @@ public class SphinxIndexService implements IIndexService {
         try {
 
             // TODO should batch these
-            for (CodeIndexDocument codeResult: codeIndexDocumentList) {
+            for (CodeIndexDocument codeResult : codeIndexDocumentList) {
                 try {
                     // Check if language in database
                     // Upsert value into database
@@ -115,8 +115,7 @@ public class SphinxIndexService implements IIndexService {
                     this.logger.severe(String.format("893321b2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
             }
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(stmt);
 //            this.helpers.closeQuietly(connection);
         }
@@ -133,19 +132,29 @@ public class SphinxIndexService implements IIndexService {
     }
 
     @Override
-    public void deleteAll() throws IOException { throw new NotImplementedException(); }
+    public void deleteAll() throws IOException {
+        throw new NotImplementedException();
+    }
 
     @Override
-    public void reindexAll() { throw new NotImplementedException(); }
+    public void reindexAll() {
+        throw new NotImplementedException();
+    }
 
     @Override
-    public void flipIndex() { throw new NotImplementedException(); }
+    public void flipIndex() {
+        throw new NotImplementedException();
+    }
 
     @Override
-    public void flipReadIndex()  { throw new NotImplementedException(); }
+    public void flipReadIndex() {
+        throw new NotImplementedException();
+    }
 
     @Override
-    public void flipWriteIndex()  { throw new NotImplementedException(); }
+    public void flipWriteIndex() {
+        throw new NotImplementedException();
+    }
 
     @Override
     public boolean getRepoAdderPause() {
@@ -253,21 +262,21 @@ public class SphinxIndexService implements IIndexService {
         int numTotalHits = 0;
 
         int start = this.PAGE_LIMIT * page;
-        
+
         try {
             Optional<Connection> connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
             // TODO handle this better
             connection = connectionOptional.get();
 
             String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?)" +
-                                 this.getLanguageFacets(facets) +
-                                 " LIMIT ?, 20" +
-                                 " FACET repoid ORDER BY COUNT(*) DESC" +
-                                 " FACET languageid ORDER BY COUNT(*) DESC;" +
+                    this.getLanguageFacets(facets) +
+                    " LIMIT ?, 20" +
+                    " FACET repoid ORDER BY COUNT(*) DESC" +
+                    " FACET languageid ORDER BY COUNT(*) DESC;" +
 //                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
 //                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
 //                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
-                                 "SHOW META;";
+                    "SHOW META;";
 
             // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
             stmt = connection.prepareStatement(searchQuery);
@@ -324,8 +333,7 @@ public class SphinxIndexService implements IIndexService {
         } catch (SQLException ex) {
             //return results;
             this.logger.severe(String.format("c0ed0920::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(stmt);
         }
@@ -343,7 +351,7 @@ public class SphinxIndexService implements IIndexService {
 
         List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList()));
 
-        for (CodeFacetLanguage codeFacetLanguage: codeFacetLanguages) {
+        for (CodeFacetLanguage codeFacetLanguage : codeFacetLanguages) {
             languageNamesByIds.stream()
                     .filter(languageType -> (Integer.toString(languageType.getId())).equals(codeFacetLanguage.languageName))
                     .findFirst()
@@ -402,7 +410,7 @@ public class SphinxIndexService implements IIndexService {
         int count = 0;
         String[] serverShards = sphinxShards.split(";");
 
-        for (String shard: serverShards) {
+        for (String shard : serverShards) {
             String[] servers = shard.split(":");
 
             if (servers.length == 2) {

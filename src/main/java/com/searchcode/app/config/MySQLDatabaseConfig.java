@@ -34,13 +34,12 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
             if (connection == null || connection.isClosed() || !connection.isValid(1)) {
                 this.helpers.closeQuietly(connection);
                 Class.forName("com.mysql.jdbc.Driver");
-                String connectionString = (String)Properties.getProperties().getOrDefault("searchcode_connection_string", "jdbc:mysql://localhost:3306/searchcode?serverTimezone=UTC");
-                String user = (String)Properties.getProperties().getOrDefault("searchcode_connection_user", "root");
-                String pass = (String)Properties.getProperties().getOrDefault("searchcode_connection_password", "root");
+                String connectionString = (String) Properties.getProperties().getOrDefault("searchcode_connection_string", "jdbc:mysql://localhost:3306/searchcode?serverTimezone=UTC");
+                String user = (String) Properties.getProperties().getOrDefault("searchcode_connection_user", "root");
+                String pass = (String) Properties.getProperties().getOrDefault("searchcode_connection_password", "root");
                 connection = DriverManager.getConnection(connectionString, user, pass);
             }
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             this.logger.severe(String.format("e5c19b7c::error in class %s exception %s it appears searchcode is unable to connect my mysql as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 

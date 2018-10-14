@@ -121,7 +121,7 @@ public class TimeSearchRouteService {
         this.getAltQueries(scl, query, searchResult);
 
         // Null out code as it isn't required and there is no point in bloating our ajax requests
-        for(CodeResult codeSearchResult: searchResult.getCodeResultList()) {
+        for (CodeResult codeSearchResult : searchResult.getCodeResultList()) {
             codeSearchResult.setCode(null);
         }
 
@@ -136,7 +136,7 @@ public class TimeSearchRouteService {
     }
 
     private void getAltQueries(SearchCodeLib scl, String query, SearchResult searchResult) {
-        for(String altQuery: scl.generateAltQueries(query)) {
+        for (String altQuery : scl.generateAltQueries(query)) {
             searchResult.addAltQuery(altQuery);
         }
     }

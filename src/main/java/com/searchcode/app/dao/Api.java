@@ -35,7 +35,7 @@ public class Api {
     private final IDatabaseConfig dbConfig;
     private final LoggerWrapper logger;
 
-    public Api(){
+    public Api() {
         this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
@@ -67,11 +67,9 @@ public class Api {
 
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("c58e8a00::error in class %s exception %s searchcode was unable to pull the api keys from the database api calls will fail, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -103,11 +101,9 @@ public class Api {
 
                 result = Optional.of(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("c81a4390::error in class %s exception %s searchcode was unable to pull the api keys from the database api calls will fail, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -133,11 +129,9 @@ public class Api {
             preparedStatement.execute();
 
             successful = true;
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("d06c2e67::error in class %s exception %s searchcode was unable to save a new api key to the database, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(preparedStatement);
         }
 
@@ -155,11 +149,9 @@ public class Api {
             preparedStatement.setString(1, publicKey);
 
             preparedStatement.execute();
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("eab0bb55::error in class %s exception %s searchcode was unable to delete an api key by its public key %s", ex.getClass(), ex.getMessage(), publicKey));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(preparedStatement);
         }
     }
@@ -183,11 +175,9 @@ public class Api {
                 preparedStatement = connection.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
                 preparedStatement.execute();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("5e666e82::error in class %s exception %s searchcode was to create the api key table, so api calls will fail", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }

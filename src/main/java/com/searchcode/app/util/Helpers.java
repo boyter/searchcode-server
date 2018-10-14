@@ -95,9 +95,9 @@ public class Helpers {
             fileInputStream = new FileInputStream(new File(filePath));
             md5 = org.apache.commons.codec.digest.DigestUtils.md5Hex(fileInputStream);
         } // Both the below should be caught before this point
-        catch (FileNotFoundException ex) {}
-        catch (IOException ex) {}
-        finally {
+        catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
+        } finally {
             IOUtils.closeQuietly(fileInputStream);
         }
 
@@ -113,8 +113,7 @@ public class Helpers {
 
         try {
             result = Integer.parseInt(toParse);
-        }
-        catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             result = Integer.parseInt(defaultValue);
         }
 
@@ -130,8 +129,7 @@ public class Helpers {
 
         try {
             result = Double.parseDouble(toParse);
-        }
-        catch (NumberFormatException | NullPointerException ex) {
+        } catch (NumberFormatException | NullPointerException ex) {
             result = Double.parseDouble(defaultValue);
         }
 
@@ -159,12 +157,11 @@ public class Helpers {
 
             int i = 0;
             int count = 0;
-            while((i = bufferedReader.read()) != -1 && count < MAX_FILE_LENGTH_READ) {
-                stringBuilder.append((char)i);
+            while ((i = bufferedReader.read()) != -1 && count < MAX_FILE_LENGTH_READ) {
+                stringBuilder.append((char) i);
                 count++;
             }
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(bufferedReader);
         }
 
@@ -203,10 +200,10 @@ public class Helpers {
             return true;
         }
 
-        if (!this.isNullEmptyOrWhitespace((String)this.properties.get(Values.DIRECTORY_BLACK_LIST))) {
+        if (!this.isNullEmptyOrWhitespace((String) this.properties.get(Values.DIRECTORY_BLACK_LIST))) {
             String[] toIgnoreArray = ((String) this.properties.get(Values.DIRECTORY_BLACK_LIST)).split(",");
 
-            for (String toIgnore: toIgnoreArray) {
+            for (String toIgnore : toIgnoreArray) {
                 if (fileParent.endsWith("/" + toIgnore) || fileParent.endsWith("/" + toIgnore + "/")) {
                     return true;
                 }
@@ -235,43 +232,37 @@ public class Helpers {
             } else {
                 return seconds + " seconds ago";
             }
-        }
-        else if (minutes <= 60) {
+        } else if (minutes <= 60) {
             if (minutes == 1) {
                 return "one minute ago";
             } else {
                 return minutes + " minutes ago";
             }
-        }
-        else if (hours <= 24) {
+        } else if (hours <= 24) {
             if (hours == 1) {
                 return "an hour ago";
             } else {
                 return hours + " hrs ago";
             }
-        }
-        else if (days <= 7) {
+        } else if (days <= 7) {
             if (days == 1) {
                 return "yesterday";
             } else {
                 return days + " days ago";
             }
-        }
-        else if (weeks <= 4.3) {
+        } else if (weeks <= 4.3) {
             if (weeks == 1) {
                 return "a week ago";
             } else {
                 return weeks + " weeks ago";
             }
-        }
-        else if (months <= 12) {
+        } else if (months <= 12) {
             if (months == 1) {
                 return "a month ago";
             } else {
                 return months + " months ago";
             }
-        }
-        else {
+        } else {
             if (years == 1) {
                 return "one year ago";
             } else {
@@ -285,6 +276,7 @@ public class Helpers {
      * http://stackoverflow.com/questions/4569123/content-is-not-allowed-in-prolog-saxparserexception
      */
     private final String UTF8_BOM = "\uFEFF";
+
     public String removeUTF8BOM(String s) {
         if (s.startsWith(this.UTF8_BOM)) {
             s = s.substring(1);
@@ -296,11 +288,11 @@ public class Helpers {
      * Sorts a map by value taken from
      * http://stackoverflow.com/questions/109383/sort-a-mapkey-value-by-values-java
      */
-    public <K, V extends Comparable<? super V>> Map<K, V> sortByValue( Map<K, V> map ) {
+    public <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
         Map<K, V> result = new LinkedHashMap<>();
         Stream<Map.Entry<K, V>> st = map.entrySet().stream();
 
-        st.sorted( Map.Entry.comparingByValue() ).forEachOrdered( e -> result.put(e.getKey(), e.getValue()) );
+        st.sorted(Map.Entry.comparingByValue()).forEachOrdered(e -> result.put(e.getKey(), e.getValue()));
 
         return result;
     }
@@ -333,8 +325,8 @@ public class Helpers {
 
     public boolean allUnique(List<String> strings) {
         HashSet<String> set = new HashSet<>();
-        for (String s: strings) {
-            if (! set.add(s)) {
+        for (String s : strings) {
+            if (!set.add(s)) {
                 return false;
             }
         }
@@ -360,70 +352,70 @@ public class Helpers {
     public void closeQuietly(ResultSet resultSet) {
         try {
             resultSet.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(IndexReader reader) {
         try {
             reader.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(IndexWriter writer) {
         try {
             writer.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(TaxonomyWriter writer) {
         try {
             writer.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(PreparedStatement preparedStatement) {
         try {
             preparedStatement.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Connection connection) {
         try {
             connection.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Process process) {
         try {
             process.destroy();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(BufferedReader bufferedReader) {
         try {
             bufferedReader.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Repository repository) {
         try {
-           repository.close();
+            repository.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 
     public void closeQuietly(Git git) {
         try {
             git.close();
+        } catch (Exception ignored) {
         }
-        catch (Exception ignored) {}
     }
 }

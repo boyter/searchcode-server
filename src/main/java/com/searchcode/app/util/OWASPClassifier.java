@@ -47,7 +47,7 @@ public class OWASPClassifier {
             return matching;
         }
 
-        for (OWASPResult result: this.database.stream().filter(x -> x.lang.equalsIgnoreCase(languageName) || x.lang.isEmpty()).collect(Collectors.toList())) {
+        for (OWASPResult result : this.database.stream().filter(x -> x.lang.equalsIgnoreCase(languageName) || x.lang.isEmpty()).collect(Collectors.toList())) {
             for (int i = 0; i < codeLines.size(); i++) {
                 if (codeLines.get(i).contains(result.name)) {
 
@@ -56,8 +56,7 @@ public class OWASPClassifier {
 
                     if (matchingResult != null) {
                         matchingResult.addMatchingLine(i + 1);
-                    }
-                    else {
+                    } else {
                         matching.add(new OWASPMatchingResult(result.name, result.desc, result.type, i + 1));
                     }
                 }
@@ -79,7 +78,7 @@ public class OWASPClassifier {
     }
 
     private OWASPMatchingResult getMatchingResult(ArrayList<OWASPMatchingResult> results, String name) {
-        for (OWASPMatchingResult result: results) {
+        for (OWASPMatchingResult result : results) {
             if (result.getName().equals(name)) {
                 return result;
             }
@@ -98,8 +97,7 @@ public class OWASPClassifier {
             Gson gson = new GsonBuilder().create();
             OWASPResult[] myArray = gson.fromJson(new FileReader(this.DATABASEPATH), OWASPResult[].class);
             database = new ArrayList<>(Arrays.asList(myArray));
-        }
-        catch (FileNotFoundException | JsonSyntaxException ex) {
+        } catch (FileNotFoundException | JsonSyntaxException ex) {
             this.logger.severe(String.format("5be6cc58::error in class %s exception %s unable to load owasp database", ex.getClass(), ex.getMessage()));
         }
 

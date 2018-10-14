@@ -93,11 +93,9 @@ public class IndexFileRepoJob extends IndexBaseRepoJob {
                 repoResult.getData().indexStatus = "success";
                 repoResult.getData().jobRunTime = Instant.now();
                 Singleton.getRepo().saveRepo(repoResult);
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 this.logger.severe(String.format("05aa777b::error in class %s exception %s repository %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
-            }
-            finally {
+            } finally {
                 // Clean up the job
                 // Mark that this job is finished
                 // TODO ensure that this line is covered by tests

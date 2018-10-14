@@ -90,9 +90,10 @@ final class LengthFilter extends FilteringTokenFilter {
      * Create a new LengthFilter. This will filter out tokens whose
      * CharTermAttribute is either too short
      * (< min) or too long (> max).
-     * @param in      the TokenStream to consume
-     * @param min     the minimum length
-     * @param max     the maximum length
+     *
+     * @param in  the TokenStream to consume
+     * @param min the minimum length
+     * @param max the maximum length
      */
     public LengthFilter(TokenStream in, int min, int max) {
         super(in);

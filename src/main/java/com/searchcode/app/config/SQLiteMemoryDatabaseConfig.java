@@ -32,8 +32,7 @@ public class SQLiteMemoryDatabaseConfig implements IDatabaseConfig {
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite::memory:");
             }
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             this.logger.severe(String.format("6310e883::error in class %s exception %s it appears searchcode is unable to connect sqlite as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 

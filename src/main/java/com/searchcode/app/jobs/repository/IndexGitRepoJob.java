@@ -50,7 +50,7 @@ import java.util.List;
 
 /**
  * This job is responsible for pulling and indexing git repositories
- *
+ * <p>
  * TODO add more tests as they are lacking
  */
 @PersistJobDataAfterExecution
@@ -83,7 +83,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
     }
 
     @Override
-    public RepositoryChanged getNewRepository(RepoResult repoResult,String repoLocations, boolean useCredentials) {
+    public RepositoryChanged getNewRepository(RepoResult repoResult, String repoLocations, boolean useCredentials) {
         return this.cloneGitRepository(repoResult, repoLocations, useCredentials);
     }
 
@@ -157,8 +157,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                     int commitTime = (int) (System.currentTimeMillis() / 1000);
                     try {
                         commitTime = (int) (df.parse(split[2]).getTime() / 1000);
-                    }
-                    catch (ParseException ex) {
+                    } catch (ParseException ex) {
                         this.logger.severe(String.format("05aa777b::error in class %s exception %s for time parse", ex.getClass(), ex.getMessage()));
                     }
 
@@ -182,7 +181,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 // External call for CentOS issue
                 String[] split = fileName.split("/");
 
-                if ( split.length != 1) {
+                if (split.length != 1) {
                     codeOwners = this.getBlameInfoExternal(codeLinesSize, repoName, repoLocations, String.join("/", Arrays.asList(split).subList(1, split.length)));
                 }
 
@@ -192,8 +191,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException | StringIndexOutOfBoundsException ex) {
             this.logger.severe(String.format("1cf371a5::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(process);
             Singleton.getHelpers().closeQuietly(bufferedReader);
         }
@@ -233,7 +231,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             if (blame == null) { // This one appears to solve the issue so don't remove it
                 String[] split = fileName.split("/");
                 blamer.setStartCommit(commitID);
-                if ( split.length != 1) {
+                if (split.length != 1) {
                     blamer.setFilePath(String.join("/", Arrays.asList(split).subList(1, split.length)));
                 }
                 blame = blamer.call();
@@ -241,7 +239,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             if (blame == null) {
                 String[] split = fileName.split("/");
                 blamer.setStartCommit(commitID);
-                if ( split.length != 1) {
+                if (split.length != 1) {
                     blamer.setFilePath("/" + String.join("/", Arrays.asList(split).subList(1, split.length)));
                 }
                 blame = blamer.call();
@@ -276,8 +274,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                             owners.put(authorIdent.getName(), new CodeOwner(authorIdent.getName(), 1, commit.getCommitTime()));
                         }
                     }
-                }
-                catch (IndexOutOfBoundsException ex) {
+                } catch (IndexOutOfBoundsException ex) {
                     // blame.getSourceCommit(i) will throw this exception and there is no way I can see to correctly
                     // identify when it will occur. Its not something that is severe so we log it under info
                     this.logger.info(String.format("4cf371a5::error in class %s exception %s for repository %s index out of bounds, this can safely be ignored but is something to fix in the future", ex.getClass(), ex.getMessage(), repoName));
@@ -350,11 +347,10 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                         .call();
 
 
-                for( DiffEntry entry : entries ) {
+                for (DiffEntry entry : entries) {
                     if ("DELETE".equals(entry.getChangeType().name())) {
                         deletedFiles.add(FilenameUtils.separatorsToUnix(entry.getOldPath()));
-                    }
-                    else {
+                    } else {
                         changedFiles.add(FilenameUtils.separatorsToUnix(entry.getNewPath()));
                     }
                 }
@@ -366,8 +362,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             this.logger.severe(error);
             repoResult.getData().indexError = error;
             Singleton.getRepo().saveRepo(repoResult);
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(localRepository);
             Singleton.getHelpers().closeQuietly(git);
         }
@@ -403,8 +398,7 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             this.logger.severe(error);
             repoResult.getData().indexError = error;
             Singleton.getRepo().saveRepo(repoResult);
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(call);
         }
 

@@ -56,10 +56,10 @@ public class FileClassifier {
             case 1:
                 return fileName;
             case 2:
-                return split[split.length-1];
+                return split[split.length - 1];
         }
 
-        return split[split.length-2] + "." + split[split.length-1];
+        return split[split.length - 2] + "." + split[split.length - 1];
     }
 
     /**
@@ -85,10 +85,10 @@ public class FileClassifier {
     }
 
     private Optional<String> checkIfExtentionExists(String extension) {
-        for (String key: database.keySet()) {
+        for (String key : database.keySet()) {
             FileClassifierResult fileClassifierResult = database.get(key);
 
-            for (String ext: fileClassifierResult.extensions) {
+            for (String ext : fileClassifierResult.extensions) {
                 if (extension.equals(ext)) {
                     return Optional.of(key);
                 }
@@ -106,10 +106,10 @@ public class FileClassifier {
 
         try {
             Gson gson = new GsonBuilder().create();
-            Type type = new TypeToken<HashMap<String, FileClassifierResult>>(){}.getType();
-            database = gson.fromJson(new FileReader(this.DATABASEPATH),  type);
-        }
-        catch (FileNotFoundException | JsonSyntaxException ex) {
+            Type type = new TypeToken<HashMap<String, FileClassifierResult>>() {
+            }.getType();
+            database = gson.fromJson(new FileReader(this.DATABASEPATH), type);
+        } catch (FileNotFoundException | JsonSyntaxException ex) {
             this.logger.severe(String.format("62bfa6c9::error in class %s exception %s unable to load file classifier, languages will not be recognised", ex.getClass(), ex.getMessage()));
         }
 

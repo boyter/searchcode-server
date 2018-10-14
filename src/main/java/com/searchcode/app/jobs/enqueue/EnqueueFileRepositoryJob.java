@@ -58,13 +58,13 @@ public class EnqueueFileRepositoryJob implements Job {
 
             // Filter out those queued to be deleted and not file repositories
             List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo())
-                .stream()
-                .filter(x -> x.getScm().equals(Values.FILE))
-                .collect(Collectors.toList());
+                    .stream()
+                    .filter(x -> x.getScm().equals(Values.FILE))
+                    .collect(Collectors.toList());
 
             this.logger.info(String.format("4f37a297::adding %d file repositories to be indexed", repoResultList.size()));
 
-            for (RepoResult rr: repoResultList) {
+            for (RepoResult rr : repoResultList) {
                 if (Singleton.getEnqueueFileRepositoryJobFirstRun()) {
                     rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
                     this.repo.saveRepo(rr);
@@ -82,8 +82,7 @@ public class EnqueueFileRepositoryJob implements Job {
             }
 
             Singleton.setEnqueueFileRepositoryJob(false);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("056c9f75::error in class %s exception %s", ex.getClass(), ex.getMessage()));
             Singleton.setEnqueueFileRepositoryJob(false);
         }

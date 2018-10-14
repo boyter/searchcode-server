@@ -36,7 +36,7 @@ import java.util.*;
 
 /**
  * This job is responsible for pulling and indexing svn repositories
- *
+ * <p>
  * TODO add more tests as they are lacking
  * TODO use inheritance/template methods to combine the common stuff between this and git job then subclass
  */
@@ -102,7 +102,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
     }
 
     private CodeOwner getInfoExternal(int codeLinesSize, String repoName, String repoLocations, String fileName) {
-        CodeOwner owner = new CodeOwner("Unknown", codeLinesSize, (int)(System.currentTimeMillis() / 1000));
+        CodeOwner owner = new CodeOwner("Unknown", codeLinesSize, (int) (System.currentTimeMillis() / 1000));
 
         ProcessBuilder processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "info", "--xml", fileName);
         processBuilder.directory(new File(repoLocations + repoName));
@@ -146,8 +146,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             this.logger.severe(String.format("85cd8d0c::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(process);
             Singleton.getHelpers().closeQuietly(bufferedReader);
         }
@@ -164,8 +163,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         ProcessBuilder processBuilder;
         if (useCredentials) {
             processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update");
-        }
-        else {
+        } else {
             processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "update", "--username", repoResult.getUsername(), "--password", repoResult.getPassword());
         }
 
@@ -195,8 +193,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         } catch (IOException | InvalidPathException ex) {
             changed = false;
             this.logger.severe(String.format("73302dc4::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(process);
             Singleton.getHelpers().closeQuietly(bufferedReader);
         }
@@ -234,8 +231,8 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             Document doc = dBuilder.parse(new ByteArrayInputStream(sb.toString().getBytes()));
             doc.getDocumentElement().normalize();
 
-            Element node = (Element)doc.getElementsByTagName("diff").item(0);
-            node = (Element)node.getElementsByTagName("paths").item(0);
+            Element node = (Element) doc.getElementsByTagName("diff").item(0);
+            node = (Element) node.getElementsByTagName("paths").item(0);
 
             NodeList nList = node.getElementsByTagName("path");
 
@@ -250,18 +247,15 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
                     if ("modified".equals(type) || "added".equals(type)) {
                         changedFiles.add(path);
-                    }
-                    else {
+                    } else {
                         deletedFiles.add(path);
                     }
 
                 }
             }
-        }
-        catch (IOException | ParserConfigurationException | SAXException ex) {
+        } catch (IOException | ParserConfigurationException | SAXException ex) {
             this.logger.severe(String.format("fad38cce::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(process);
             Singleton.getHelpers().closeQuietly(bufferedReader);
         }
@@ -308,8 +302,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
             }
         } catch (IOException | ParserConfigurationException | SAXException ex) {
             this.logger.severe(String.format("53dbf42e::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoName));
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(process);
             Singleton.getHelpers().closeQuietly(bufferedReader);
         }
@@ -328,8 +321,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
         // http://stackoverflow.com/questions/34687/subversion-ignoring-password-and-username-options#38386
         if (useCredentials == false) {
             processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", repoResult.getUrl(), repoResult.getDirectoryName());
-        }
-        else {
+        } else {
             processBuilder = new ProcessBuilder(this.SVN_BINARY_PATH, "checkout", "--no-auth-cache", "--non-interactive", "--username", repoResult.getUsername(), "--password", repoResult.getPassword(), repoResult.getUrl(), repoResult.getDirectoryName());
         }
 
@@ -362,8 +354,7 @@ public class IndexSvnRepoJob extends IndexBaseRepoJob {
 
         } catch (IOException ex) {
             this.logger.severe(String.format("b20daaf6::error in class %s exception %s for repository %s", ex.getClass(), ex.getMessage(), repoResult.getName()));
-        }
-        finally {
+        } finally {
             Singleton.getHelpers().closeQuietly(process);
             Singleton.getHelpers().closeQuietly(bufferedReader);
         }

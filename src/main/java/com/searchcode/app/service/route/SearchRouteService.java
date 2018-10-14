@@ -41,20 +41,32 @@ public class SearchRouteService {
 
         HashMap<String, String[]> facets = new HashMap<>();
 
-        if (request.queryParams().contains("repo")) { facets.put("repo", request.queryParamsValues("repo")); }
-        if (request.queryParams().contains("lan")) { facets.put("lan", request.queryParamsValues("lan")); }
-        if (request.queryParams().contains("own")) { facets.put("own", request.queryParamsValues("own")); }
-        if (request.queryParams().contains("fl")) { facets.put("fl", new String[] { request.queryParams("fl") }); }
-        if (request.queryParams().contains("src")) { facets.put("src", request.queryParamsValues("src")); }
+        if (request.queryParams().contains("repo")) {
+            facets.put("repo", request.queryParamsValues("repo"));
+        }
+        if (request.queryParams().contains("lan")) {
+            facets.put("lan", request.queryParamsValues("lan"));
+        }
+        if (request.queryParams().contains("own")) {
+            facets.put("own", request.queryParamsValues("own"));
+        }
+        if (request.queryParams().contains("fl")) {
+            facets.put("fl", new String[]{request.queryParams("fl")});
+        }
+        if (request.queryParams().contains("src")) {
+            facets.put("src", request.queryParamsValues("src"));
+        }
 
-        if (query.trim().startsWith("/") && query.trim().endsWith("/")) { isLiteral = true; }
+        if (query.trim().startsWith("/") && query.trim().endsWith("/")) {
+            isLiteral = true;
+        }
 
         SearchResult searchResult = Singleton.getIndexService().search(query, facets, page, isLiteral);
 
         searchResult.setCodeResultList(Singleton.getCodeMatcher().formatResults(searchResult.getCodeResultList(), query, true));
         searchResult.setQuery(query);
 
-        for (String altQuery: Singleton.getSearchcodeLib().generateAltQueries(query)) {
+        for (String altQuery : Singleton.getSearchcodeLib().generateAltQueries(query)) {
             searchResult.addAltQuery(altQuery);
         }
 

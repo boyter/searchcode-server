@@ -51,8 +51,7 @@ public class SphinxSearchConfig {
 
                 connectionList.put(server, connection);
             }
-        }
-        catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             this.logger.severe(String.format("f9e4283d::error in class %s exception %s it appears searchcode is unable to connect sphinx using mysql connection as the driver is missing", ex.getClass(), ex.getMessage()));
         }
 

@@ -48,9 +48,9 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFile(Object file, BasicFileAttributes attrs) throws IOException {
-        
+
         try {
-            java.nio.file.Path filePath = (java.nio.file.Path)file;
+            java.nio.file.Path filePath = (java.nio.file.Path) file;
 
             // If pause or terminate has been triggered than exit at first opportunity
             if (this.indexBaseRepoJob.shouldJobPauseOrTerminate()) {
@@ -118,24 +118,24 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
             CodeIndexDocument codeIndexDocument = new CodeIndexDocument()
-                .setRepoLocationRepoNameLocationFilename(fileToString)
-                .setRepoName(this.repoResult.getName())
-                .setFileName(fileName)
-                .setFileLocation(fileLocation)
-                .setFileLocationFilename(fileLocationFilename)
-                .setMd5hash(md5Hash)
-                .setLanguageName(languageName)
-                .setCodeLines(slocCount.codeCount)
-                .setBlankLines(slocCount.blankCount)
-                .setCommentLines(slocCount.commentCount)
-                .setLines(slocCount.linesCount)
-                .setComplexity(slocCount.complexity)
-                .setContents(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"))
-                .setRepoRemoteLocation(repoRemoteLocation)
-                .setCodeOwner(codeOwner)
-                .setSchash(Values.EMPTYSTRING)
-                .setDisplayLocation(displayLocation)
-                .setSource(this.repoResult.getData().source);
+                    .setRepoLocationRepoNameLocationFilename(fileToString)
+                    .setRepoName(this.repoResult.getName())
+                    .setFileName(fileName)
+                    .setFileLocation(fileLocation)
+                    .setFileLocationFilename(fileLocationFilename)
+                    .setMd5hash(md5Hash)
+                    .setLanguageName(languageName)
+                    .setCodeLines(slocCount.codeCount)
+                    .setBlankLines(slocCount.blankCount)
+                    .setCommentLines(slocCount.commentCount)
+                    .setLines(slocCount.linesCount)
+                    .setComplexity(slocCount.complexity)
+                    .setContents(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"))
+                    .setRepoRemoteLocation(repoRemoteLocation)
+                    .setCodeOwner(codeOwner)
+                    .setSchash(Values.EMPTYSTRING)
+                    .setDisplayLocation(displayLocation)
+                    .setSource(this.repoResult.getData().source);
 
             if (this.indexBaseRepoJob.LOWMEMORY) {
                 Singleton.getIndexService().indexDocument(codeIndexDocument);
@@ -149,8 +149,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 reportList.add(new String[]{fileToString, "included", Values.EMPTYSTRING});
             }
 
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("e43cdddb::error in class %s exception %s for repository %s file %s", ex.getClass(), ex.getMessage(), repoResult.getName(), file.toString()));
         }
 
@@ -160,7 +159,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
 
     @Override
     public FileVisitResult visitFileFailed(Object file, IOException ex) throws IOException {
-        java.nio.file.Path filePath = (java.nio.file.Path)file;
+        java.nio.file.Path filePath = (java.nio.file.Path) file;
         reportList.add(new String[]{filePath.toString(), "excluded", ex.toString()});
         return FileVisitResult.CONTINUE;
     }

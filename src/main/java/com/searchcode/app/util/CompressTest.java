@@ -27,7 +27,7 @@ public class CompressTest {
     public static int totalUncompressedLength = 0;
     public static int totalCompressedLength = 0;
     public static String DICTIONARY = "";
-    
+
     public static void main(String[] args) throws Exception {
 
         CompressTest ct = new CompressTest();
@@ -106,8 +106,8 @@ public class CompressTest {
 
                     //System.out.println("CompressedDataLength: " + compressedDataLength);
                     totalCompressedLength += compressedDataLength;
+                } catch (Exception ex) {
                 }
-                catch (Exception ex) {}
 
                 return FileVisitResult.CONTINUE;
             }

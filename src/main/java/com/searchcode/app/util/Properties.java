@@ -35,8 +35,7 @@ public class Properties {
             } catch (IOException ex) {
                 // As this is a static method the use of singleton here is fine
                 Singleton.getLogger().severe(String.format("deb3c728::error in class %s exception %s unable to load searchcode.properties file will use defaults for all values", ex.getClass(), ex.getMessage()));
-            }
-            finally {
+            } finally {
                 IOUtils.closeQuietly(fileInputStream);
             }
         }

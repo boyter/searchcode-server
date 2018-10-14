@@ -75,21 +75,19 @@ public class Repo {
                 String repoData = resultSet.getString("data");
 
                 repoResults.add(new RepoResult()
-                    .setRowId(rowId)
-                    .setName(repoName)
-                    .setScm(repoScm)
-                    .setUrl(repoUrl)
-                    .setUsername(repoUsername)
-                    .setPassword(repoPassword)
-                    .setSource(repoSource)
-                    .setBranch(repoBranch)
-                    .setData(repoData));
+                        .setRowId(rowId)
+                        .setName(repoName)
+                        .setScm(repoScm)
+                        .setUrl(repoUrl)
+                        .setUsername(repoUsername)
+                        .setPassword(repoPassword)
+                        .setSource(repoSource)
+                        .setBranch(repoBranch)
+                        .setData(repoData));
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("820c9557::error in class %s exception %s searchcode was unable to get the list of all repositories, this is likely nothing will be indexed, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -103,10 +101,10 @@ public class Repo {
 
         String[] split = searchTerms.toLowerCase().split(" ");
 
-        for(RepoResult rr: repoResults) {
+        for (RepoResult rr : repoResults) {
             boolean isMatch = false;
 
-            for (String term: split) {
+            for (String term : split) {
                 isMatch = rr.toString().toLowerCase().contains(term);
             }
 
@@ -160,11 +158,9 @@ public class Repo {
                         .setBranch(repoBranch)
                         .setData(repoData));
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("20c36ec2::error in class %s exception %s searchcode was unable to get the paged list of repositories, this is likely nothing will be indexed, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(rs);
             this.helpers.closeQuietly(stmt);
         }
@@ -188,11 +184,9 @@ public class Repo {
             while (resultSet.next()) {
                 totalCount = resultSet.getInt("totalcount");
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("4e403331::error in class %s exception %s searchcode was unable to get the count of repositories, this is unlikely to affect anything but there are likely to be other issues in the logs", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -242,11 +236,9 @@ public class Repo {
 
                 result = Optional.of(repoResult);
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("359a0566::error in class %s exception %s searchcode was unable to get repository by name %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryName));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -295,11 +287,9 @@ public class Repo {
 
                 result = Optional.of(repoResult);
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("afd625ce::error in class %s exception %s searchcode was unable to get repository by url %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryUrl));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -317,11 +307,9 @@ public class Repo {
             preparedStatement = connection.prepareStatement("delete from repo where name=?;");
             preparedStatement.setString(1, repositoryName);
             preparedStatement.execute();
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("8f05a49c::error in class %s exception %s searchcode was unable to delete repository by name %s, this is unlikely to break anything but there should be other errors in the logs", ex.getClass(), ex.getMessage(), repositoryName));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -341,8 +329,7 @@ public class Repo {
             if (existing.isPresent()) {
                 preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
                 preparedStatement.setString(9, repoResult.getName());
-            }
-            else {
+            } else {
                 isNew = true;
                 preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"data\") VALUES (?,?,?,?,?,?,?,?)");
             }
@@ -357,11 +344,9 @@ public class Repo {
             preparedStatement.setString(8, repoResult.getDataAsJson());
 
             preparedStatement.execute();
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("653b7384::error in class %s exception %s searchcode was unable to add repository %s, this is unlikely to break anything but there should be other errors in the logs", ex.getClass(), ex.getMessage(), repoResult.getName()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(preparedStatement);
         }
 
@@ -387,11 +372,9 @@ public class Repo {
                 preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
                 preparedStatement.execute();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("5ec972ce::error in class %s exception %s searchcode was to create the api key table, so api calls will fail", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }

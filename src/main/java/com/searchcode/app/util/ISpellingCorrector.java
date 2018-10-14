@@ -15,9 +15,14 @@ import java.util.List;
 
 public interface ISpellingCorrector {
     int getWordCount();
+
     void putWord(String word);
+
     String correct(String word);
+
     boolean containsWord(String word);
+
     boolean reset();
+
     List<String> getSampleWords(int count);
 }

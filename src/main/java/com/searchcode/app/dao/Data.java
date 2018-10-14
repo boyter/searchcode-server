@@ -60,11 +60,9 @@ public class Data {
             while (resultSet.next()) {
                 values.add(new DataData(resultSet.getString("key"), resultSet.getString("value")));
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("e897086c::error in class %s exception %s searchcode was unable get all data, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -97,11 +95,9 @@ public class Data {
             while (resultSet.next()) {
                 value = resultSet.getString("value");
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("52f85254::error in class %s exception %s searchcode was unable get data by name %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), key));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }
@@ -124,8 +120,7 @@ public class Data {
                 preparedStatement.setString(1, key);
                 preparedStatement.setString(2, value);
                 preparedStatement.setString(3, key);
-            }
-            else {
+            } else {
                 isNew = true;
                 preparedStatement = connection.prepareStatement("INSERT INTO data(\"key\",\"value\") VALUES (?,?)");
                 preparedStatement.setString(1, key);
@@ -133,11 +128,9 @@ public class Data {
             }
 
             preparedStatement.execute();
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("e241d7cd::error in class %s exception %s searchcode was unable save data name %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), key));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(preparedStatement);
         }
 
@@ -163,11 +156,9 @@ public class Data {
                 preparedStatement = connection.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR)");
                 preparedStatement.execute();
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("3deb6433::error in class %s exception %s searchcode was unable create the data table, this is likely to break all sorts of things", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(resultSet);
             this.helpers.closeQuietly(preparedStatement);
         }

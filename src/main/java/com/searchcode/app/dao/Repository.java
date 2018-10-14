@@ -17,6 +17,4 @@ public class Repository {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
     }
-
-    
 }

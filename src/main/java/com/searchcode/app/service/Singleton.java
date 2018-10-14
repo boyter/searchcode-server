@@ -211,7 +211,8 @@ public final class Singleton {
                     Singleton.getLogger().severe(" caught a " + ex.getClass() + "\n with message: " + ex.getMessage());
                 }
             }
-        } catch (SchedulerException e) {}
+        } catch (SchedulerException e) {
+        }
 
         return scheduler;
     }

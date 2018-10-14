@@ -26,7 +26,7 @@ import java.util.Optional;
  */
 public class ApiService {
 
-    public enum HmacType { SHA1, SHA512};
+    public enum HmacType {SHA1, SHA512}
 
     private final Api api;
     private final Helpers helpers;
@@ -47,7 +47,6 @@ public class ApiService {
      * http://stackoverflow.com/questions/11830338/web-api-creating-api-keys
      * http://stackoverflow.com/questions/6312544/hmac-sha1-how-to-do-it-properly-in-java
      * http://stackoverflow.com/questions/3208160/how-to-generate-an-hmac-in-java-equivalent-to-a-python-example?rq=1
-     *
      */
     public boolean validateRequest(String publicKey, String hmac, String query, HmacType hmacType) {
         Optional<ApiResult> apiResult = this.api.getApiByPublicKey(publicKey);

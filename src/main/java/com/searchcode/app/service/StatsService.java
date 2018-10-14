@@ -115,7 +115,7 @@ public class StatsService {
     public String getUpTime() {
         RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
 
-        int upTime = (int)(runtimeBean.getUptime() / 1000);
+        int upTime = (int) (runtimeBean.getUptime() / 1000);
         int minutes = upTime / 60;
         int hours = minutes / 60;
 

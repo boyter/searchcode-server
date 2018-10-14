@@ -199,7 +199,7 @@ public class ApiRouteService {
 
         List<RepoResult> repoResultList = repo.getAllRepo();
 
-        this.logger.apiLog("48112c1b::valid signed repoList API call using publicKey=" + publicKey );
+        this.logger.apiLog("48112c1b::valid signed repoList API call using publicKey=" + publicKey);
         return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);
     }
 
@@ -257,20 +257,20 @@ public class ApiRouteService {
         }
 
         Optional<String> publicKey = Optional.ofNullable(request.queryParams(Values.PUB));
-        Optional<String> signedKey =  Optional.ofNullable(request.queryParams(Values.SIG));
-        Optional<String> reponames =  Optional.ofNullable(request.queryParams(Values.REPONAME));
-        Optional<String> repourls =  Optional.ofNullable(request.queryParams("repourl"));
-        Optional<String> repotype =  Optional.ofNullable(request.queryParams("repotype"));
-        Optional<String> repousername =  Optional.ofNullable(request.queryParams("repousername"));
-        Optional<String> repopassword =  Optional.ofNullable(request.queryParams("repopassword"));
-        Optional<String> reposource =  Optional.ofNullable(request.queryParams("reposource"));
-        Optional<String> repobranch =  Optional.ofNullable(request.queryParams("repobranch"));
-        Optional<String> hmacTypeString =  Optional.ofNullable(request.queryParams(Values.HMAC));
+        Optional<String> signedKey = Optional.ofNullable(request.queryParams(Values.SIG));
+        Optional<String> reponames = Optional.ofNullable(request.queryParams(Values.REPONAME));
+        Optional<String> repourls = Optional.ofNullable(request.queryParams("repourl"));
+        Optional<String> repotype = Optional.ofNullable(request.queryParams("repotype"));
+        Optional<String> repousername = Optional.ofNullable(request.queryParams("repousername"));
+        Optional<String> repopassword = Optional.ofNullable(request.queryParams("repopassword"));
+        Optional<String> reposource = Optional.ofNullable(request.queryParams("reposource"));
+        Optional<String> repobranch = Optional.ofNullable(request.queryParams("repobranch"));
+        Optional<String> hmacTypeString = Optional.ofNullable(request.queryParams(Values.HMAC));
 
         // Optional
-        Optional<String> source =  Optional.ofNullable(request.queryParams("source"));
-        Optional<String> sourceuser =  Optional.ofNullable(request.queryParams("sourceuser"));
-        Optional<String> sourceproject =  Optional.ofNullable(request.queryParams("sourceproject"));
+        Optional<String> source = Optional.ofNullable(request.queryParams("source"));
+        Optional<String> sourceuser = Optional.ofNullable(request.queryParams("sourceuser"));
+        Optional<String> sourceproject = Optional.ofNullable(request.queryParams("sourceproject"));
 
 
         if (this.helpers.isNullEmptyOrWhitespace(reponames.orElse(Values.EMPTYSTRING))) {

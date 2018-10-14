@@ -49,8 +49,8 @@ public class LoggerWrapper {
     private boolean LOGSTDOUT = false;
 
     public LoggerWrapper() {
-        this.LOGCOUNT = Singleton.getHelpers().tryParseInt((String)Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
-        this.LOGLEVEL = (String)Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
+        this.LOGCOUNT = Singleton.getHelpers().tryParseInt((String) Properties.getProperties().getOrDefault(Values.LOG_COUNT, Values.DEFAULT_LOG_COUNT), Values.DEFAULT_LOG_COUNT);
+        this.LOGLEVEL = (String) Properties.getProperties().getOrDefault(Values.LOG_LEVEL, Values.DEFAULT_LOG_LEVEL);
         this.LOGPATH = Singleton.getHelpers().getLogPath();
 
         if (this.LOGLEVEL.equals("OFF")) {
@@ -137,8 +137,8 @@ public class LoggerWrapper {
             if (this.LOGSTDOUT && this.isLoggable(Level.INFO)) {
                 System.out.println(message);
             }
+        } catch (NoSuchElementException ignored) {
         }
-        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void severe(String toLog) {
@@ -154,8 +154,8 @@ public class LoggerWrapper {
             if (this.LOGSTDOUT && this.isLoggable(Level.SEVERE)) {
                 System.out.println(message);
             }
+        } catch (NoSuchElementException ignored) {
         }
-        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void searchLog(String toLog) {
@@ -163,8 +163,8 @@ public class LoggerWrapper {
 
         try {
             this.searchLog.add(message);
+        } catch (NoSuchElementException ignored) {
         }
-        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized void apiLog(String toLog) {
@@ -172,8 +172,8 @@ public class LoggerWrapper {
 
         try {
             this.apiLog.add(message);
+        } catch (NoSuchElementException ignored) {
         }
-        catch (NoSuchElementException ignored) {}
     }
 
     public synchronized List<String> getAllLogs() {
@@ -181,8 +181,8 @@ public class LoggerWrapper {
         try {
             values = new ArrayList(this.allCache);
             values = Lists.reverse(values);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -192,8 +192,8 @@ public class LoggerWrapper {
         try {
             values = new ArrayList(this.infoRecentCache);
             values = Lists.reverse(values);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -203,8 +203,8 @@ public class LoggerWrapper {
         try {
             values = new ArrayList(this.severeRecentCache);
             values = Lists.reverse(values);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -214,8 +214,8 @@ public class LoggerWrapper {
         try {
             values = new ArrayList(this.searchLog);
             values = Lists.reverse(values);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }
@@ -225,8 +225,8 @@ public class LoggerWrapper {
         try {
             values = new ArrayList(this.apiLog);
             values = Lists.reverse(values);
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
-        catch (ArrayIndexOutOfBoundsException ignored) {}
 
         return values;
     }

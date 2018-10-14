@@ -51,14 +51,14 @@ public class AdminRouteService {
 
     public AdminRouteService() {
         this(Singleton.getRepo(),
-             Singleton.getData(),
-             Singleton.getJobService(),
-             Singleton.getDataService(),
-             Singleton.getIndexService(),
-             Singleton.getStatsService(),
-             Singleton.getValidatorService(),
-             Singleton.getRepositorySource(),
-             Singleton.getLogger());
+                Singleton.getData(),
+                Singleton.getJobService(),
+                Singleton.getDataService(),
+                Singleton.getIndexService(),
+                Singleton.getStatsService(),
+                Singleton.getValidatorService(),
+                Singleton.getRepositorySource(),
+                Singleton.getLogger());
     }
 
 
@@ -191,16 +191,14 @@ public class AdminRouteService {
                 if (indexOffset > repoCount || indexOffset < 0) {
                     indexOffset = 0;
                 }
-            }
-            catch (NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 indexOffset = 0;
             }
         }
 
         if (searchQuery != null) {
             map.put("repoResults", this.repo.searchRepo(searchQuery));
-        }
-        else {
+        } else {
             map.put("repoResults", this.repo.getPagedRepo(indexOffset, 100));
         }
 
@@ -327,41 +325,36 @@ public class AdminRouteService {
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("averagesalary"));
-            this.data.saveData(Values.AVERAGESALARY, "" + (int)averageSalary);
-        }
-        catch (NumberFormatException ex) {
+            this.data.saveData(Values.AVERAGESALARY, "" + (int) averageSalary);
+        } catch (NumberFormatException ex) {
             this.data.saveData(Values.AVERAGESALARY, Values.DEFAULTAVERAGESALARY);
         }
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("matchlines"));
-            this.data.saveData(Values.MATCHLINES, "" + (int)averageSalary);
-        }
-        catch (NumberFormatException ex) {
+            this.data.saveData(Values.MATCHLINES, "" + (int) averageSalary);
+        } catch (NumberFormatException ex) {
             this.data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
         }
 
         try {
             double averageSalary = Double.parseDouble(request.queryParams("maxlinedepth"));
-            this.data.saveData(Values.MAXLINEDEPTH, "" + (int)averageSalary);
-        }
-        catch (NumberFormatException ex) {
+            this.data.saveData(Values.MAXLINEDEPTH, "" + (int) averageSalary);
+        } catch (NumberFormatException ex) {
             this.data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
         }
 
         try {
             double minifiedlength = Double.parseDouble(request.queryParams("minifiedlength"));
-            this.data.saveData(Values.MINIFIEDLENGTH, "" + (int)minifiedlength);
-        }
-        catch (NumberFormatException ex) {
+            this.data.saveData(Values.MINIFIEDLENGTH, "" + (int) minifiedlength);
+        } catch (NumberFormatException ex) {
             this.data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
         }
 
         try {
             double backoffValue = Double.parseDouble(request.queryParams("backoffValue"));
             this.data.saveData(Values.BACKOFFVALUE, "" + backoffValue);
-        }
-        catch (NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             this.data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
         }
 
@@ -379,7 +372,7 @@ public class AdminRouteService {
 
         List<ValidatorResult> validatorResults = new ArrayList<>();
 
-        for (String line: repolines) {
+        for (String line : repolines) {
             String[] repoparams = line.split(",", -1);
 
             if (repoparams.length == 7) {
@@ -409,13 +402,11 @@ public class AdminRouteService {
                 if (validate.isValid) {
                     this.repo.saveRepo(repoResult);
                     this.jobService.forceEnqueue(repoResult);
-                }
-                else {
+                } else {
                     validate.setLine(line);
                     validatorResults.add(validate);
                 }
-            }
-            else {
+            } else {
                 ValidatorResult validate = new ValidatorResult(false, "Incorrect number of elements: " + line);
                 validate.setLine(line);
                 validatorResults.add(validate);
@@ -490,7 +481,7 @@ public class AdminRouteService {
         String repoName = request.queryParams("repoName");
         Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
 
-        repoResult.ifPresent(x ->  {
+        repoResult.ifPresent(x -> {
             x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
 
             this.logger.info("392be2e4::resetting Job Run Time due to reindex request for repository " + x.getName());
@@ -504,15 +495,13 @@ public class AdminRouteService {
         try {
             String downloaded = IOUtils.toString(new URL("https://searchcodeserver.com/version.json"));
             version = this.gson.fromJson(downloaded, Version.class);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             return "Unable to determine if running the latest version. Check https://searchcodeserver.com/pricing.html for the latest release.";
         }
 
         if (App.VERSION.equals(version.getVersion())) {
             return "Your searchcode server version " + App.VERSION + " is the latest.";
-        }
-        else {
+        } else {
             return "Your searchcode server version " + App.VERSION + " instance is out of date. The latest version is " + version.getVersion() + ".";
         }
     }
