@@ -171,7 +171,7 @@
         GIT owners are determined by counting the number of lines edited by each user. This is then weighted
         against the last commit time. For example, Bob added a file of 100 lines in length 1 year ago.
         Mary modified 30 lines of the file last week. In this situation Mary would be marked as the owner as she has modified
-        enough of the file and recently enough to be more familiar with it then Bob would be. If she has only modified a single
+        enough of the file and recently enough to be more familiar with it than Bob would be. If she has only modified a single
         line however Bob would still be marked as the owner.
         </p>
         <p>
@@ -195,7 +195,7 @@
         <h3 id="estimatedcost">Estimated Cost</h3>
         <p>The estimated cost for any file or project is created using the <a target="_blank" href="https://en.wikipedia.org/wiki/COCOMO">Basic COCOMO</a>
         algorithmic software cost estimation model. The cost reflected includes design, coding, testing, documentation for both
-        developers and users, equipment, buildings etc... which can result in a higher estimate then would be expected. Generally
+        developers and users, equipment, buildings etc... which can result in a higher estimate than would be expected. Generally
         consider this the cost of developing the code, and not what it is "worth".
         It is based on an average salary of $56,000 per year but this value can be changed by the system administrator if
         the values appear to be too out of expectation.</p>
