@@ -13,6 +13,7 @@ package com.searchcode.app.util;
 
 import com.glaforge.i18n.io.CharsetToolkit;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.FileUtils;
@@ -347,6 +348,12 @@ public class Helpers {
 
     public boolean getOnlyLocalhost() {
         return Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
+    }
+
+    public void closeQuietly(ConnStmtRs connStmtRs) {
+        this.closeQuietly(connStmtRs.conn);
+        this.closeQuietly(connStmtRs.rs);
+        this.closeQuietly(connStmtRs.stmt);
     }
 
     public void closeQuietly(ResultSet resultSet) {

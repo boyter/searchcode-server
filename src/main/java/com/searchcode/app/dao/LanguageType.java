@@ -2,6 +2,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
+import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.LanguageTypeDTO;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -29,28 +30,23 @@ public class LanguageType {
 
     public synchronized List<LanguageTypeDTO> getLanguageNamesByIds(List<String> ids) {
         List<LanguageTypeDTO> languageTypeList = new ArrayList<>();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement(String.format("SELECT id, type FROM languagetype WHERE id IN (%s);", String.join(",", ids)));
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement(String.format("SELECT id, type FROM languagetype WHERE id IN (%s);", String.join(",", ids)));
 
-            rs = stmt.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String type = rs.getString("type");
+            while (connStmtRs.rs.next()) {
+                int id = connStmtRs.rs.getInt("id");
+                String type = connStmtRs.rs.getString("type");
                 languageTypeList.add(new LanguageTypeDTO(id, type));
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("39bde74f::error in class %s exception %s searchcode was unable to get language names by ids %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), String.join(", ", ids)));
         } finally {
-            this.helpers.closeQuietly(rs);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs);
         }
 
         return languageTypeList;
@@ -58,59 +54,51 @@ public class LanguageType {
 
     public synchronized Optional<LanguageTypeDTO> getByType(String type) {
         Optional<LanguageTypeDTO> languageTypeDTO = Optional.empty();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("SELECT id, type FROM languagetype WHERE type = ? LIMIT 1;");
-            stmt.setString(1, type);
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT id, type FROM languagetype WHERE type = ? LIMIT 1;");
+            connStmtRs.stmt.setString(1, type);
 
-            rs = stmt.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                type = rs.getString("type");
+            while (connStmtRs.rs.next()) {
+                int id = connStmtRs.rs.getInt("id");
+                type = connStmtRs.rs.getString("type");
                 languageTypeDTO = Optional.of(new LanguageTypeDTO(id, type));
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("5d3921d2::error in class %s exception %s searchcode was unable to get language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
         } finally {
-            this.helpers.closeQuietly(rs);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs);
         }
 
         return languageTypeDTO;
     }
 
     public synchronized Optional<LanguageTypeDTO> createLanguageType(String type) {
-
         Optional<LanguageTypeDTO> byType = this.getByType(type);
         if (byType.isPresent()) {
             return byType;
         }
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("INSERT INTO `languagetype` (`type`) VALUES (?);", Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, type);
-            stmt.execute();
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO `languagetype` (`type`) VALUES (?);", Statement.RETURN_GENERATED_KEYS);
+            connStmtRs.stmt.setString(1, type);
+            connStmtRs.stmt.execute();
 
-            ResultSet tableKeys = stmt.getGeneratedKeys();
+            ResultSet tableKeys = connStmtRs.stmt.getGeneratedKeys();
             tableKeys.next();
             int autoGeneratedID = tableKeys.getInt(1);
             byType = Optional.of(new LanguageTypeDTO(autoGeneratedID, type));
         } catch (SQLException ex) {
             this.logger.severe(String.format("5e49d36c::error in class %s exception %s searchcode was unable to create language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
         } finally {
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs);
         }
 
         return byType;
