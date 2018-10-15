@@ -71,7 +71,6 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         tempDir.mkdir();
         String tempDirString = tempDir.toString();
 
-
         assertFalse(gitRepoJob.checkCloneUpdateSucess(tempDirString));
         gitRepoJob.createCloneUpdateSuccess(tempDirString);
         assertTrue(gitRepoJob.checkCloneUpdateSucess(tempDirString));
@@ -91,7 +90,7 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         tempDir.mkdir();
         String tempDirString = tempDir.toString();
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
             gitRepoJob.deleteIndexSuccess(tempDirString);
             gitRepoJob.deleteCloneUpdateSuccess(tempDirString);
         }
