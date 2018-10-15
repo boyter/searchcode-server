@@ -4,6 +4,7 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.LanguageTypeDTO;
 import com.searchcode.app.dto.SourceCodeDTO;
 import com.searchcode.app.model.CodeResult;
@@ -38,25 +39,20 @@ public class SourceCode {
 
     public synchronized int getMaxId() {
         int maxId = 0;
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select id from code order by id desc limit 1;");
-            rs = stmt.executeQuery();
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select id from code order by id desc limit 1;");
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (rs.next()) {
-                maxId = rs.getInt(1);
+            while (connStmtRs.rs.next()) {
+                maxId = connStmtRs.rs.getInt(1);
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("d6941483::error in class %s exception %s searchcode unable to get the maxid, this is not likely to affect anything other than the display", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(rs);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return maxId;
@@ -64,10 +60,7 @@ public class SourceCode {
 
     public synchronized List<CodeResult> getByIds(List<Integer> codeIds) {
         List<CodeResult> codeResultList = new ArrayList<>();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         StringBuffer stringBuffer = new StringBuffer();
         for (Integer codeId : codeIds) {
@@ -76,8 +69,8 @@ public class SourceCode {
         String codeIdsString = StringUtils.substring(stringBuffer.toString(), 0, -1);
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select c.id,c.filename,c.location," +
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select c.id,c.filename,c.location," +
                     "substring(uncompress(c.content),1,500000) as content," +
                     "c.hash, r.name as reponame, c.simhash, c.linescount," +
                     "lt.type as languagetype," +
@@ -92,7 +85,7 @@ public class SourceCode {
                     codeIdsString +
                     ");");
 
-            rs = stmt.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
 //            while (rs.next()) {
 //                codeResultList.add(new SearchcodeSearchResult(
@@ -116,25 +109,19 @@ public class SourceCode {
         } catch (SQLException ex) {
             this.logger.severe(String.format("1eb33289::error in class %s exception %s searchcode unable to get code by ids %s", ex.getClass(), ex.getMessage(), String.join(", ", codeIds.stream().map(x -> x.toString()).collect(Collectors.toList()))));
         } finally {
-            this.helpers.closeQuietly(rs);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return codeResultList;
     }
 
     public synchronized List<SearchcodeCodeResult> getCodeBetween(int start, int end) {
-
         List<SearchcodeCodeResult> codeResultList = new ArrayList<>(end - start);
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("SELECT c.id, c.repoid, c.filetypeid, c.languagename, r.sourceid, " +
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT c.id, c.repoid, c.filetypeid, c.languagename, r.sourceid, " +
                     "UNCOMPRESS(c.content) AS content, " +
                     "c.filename, " +
                     "c.linescount " +
@@ -142,29 +129,27 @@ public class SourceCode {
                     "JOIN repo r ON r.id = c.repoid " +
                     "WHERE c.id >= ? AND c.id <= ? AND c.deleted = 0 " +
                     "AND c.languagename not in (select id from languagetype where type in ('text', 'Unknown', 'xml', 'xaml', 'css', 'MSBuild scripts'))");
-            stmt.setInt(1, start);
-            stmt.setInt(2, end);
+            connStmtRs.stmt.setInt(1, start);
+            connStmtRs.stmt.setInt(2, end);
 
-            rs = stmt.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (rs.next()) {
+            while (connStmtRs.rs.next()) {
                 codeResultList.add(new SearchcodeCodeResult(
-                        rs.getInt("id"),
-                        rs.getInt("repoid"),
-                        rs.getInt("filetypeid"),
-                        rs.getInt("languagename"),
-                        rs.getInt("sourceid"),
-                        rs.getString("content"),
-                        rs.getString("filename"),
-                        rs.getInt("linescount")
+                        connStmtRs.rs.getInt("id"),
+                        connStmtRs.rs.getInt("repoid"),
+                        connStmtRs.rs.getInt("filetypeid"),
+                        connStmtRs.rs.getInt("languagename"),
+                        connStmtRs.rs.getInt("sourceid"),
+                        connStmtRs.rs.getString("content"),
+                        connStmtRs.rs.getString("filename"),
+                        connStmtRs.rs.getInt("linescount")
                 ));
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("e3492faa::error in class %s exception %s searchcode unable to get code between ids %d - %d", ex.getClass(), ex.getMessage(), start, end));
         } finally {
-            this.helpers.closeQuietly(rs);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return codeResultList;
@@ -172,13 +157,10 @@ public class SourceCode {
 
     public Optional<SourceCodeDTO> getByCodeIndexDocument(CodeIndexDocument codeIndexDocument) {
         Optional<SourceCodeDTO> result = Optional.empty();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
+            connStmtRs.conn = this.dbConfig.getConnection();
 
             String query = "SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type as languagename" +
                     " FROM sourcecode" +
@@ -186,36 +168,34 @@ public class SourceCode {
                     //"repoid=? AND location=? AND filename=?";
                     " WHERE location=? AND filename=? LIMIT 1;";
 
-            stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setString(1, this.getLocation(codeIndexDocument));
-            stmt.setString(2, codeIndexDocument.getFileName());
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            connStmtRs.stmt.setString(1, this.getLocation(codeIndexDocument));
+            connStmtRs.stmt.setString(2, codeIndexDocument.getFileName());
 
-            resultSet = stmt.executeQuery();
-            while (resultSet.next()) {
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+            while (connStmtRs.rs.next()) {
                 result = Optional.of(new SourceCodeDTO(
-                        resultSet.getInt("id"),
-                        resultSet.getInt("repoid"),
-                        resultSet.getInt("languageid"),
-                        resultSet.getString("languagename"),
-                        resultSet.getInt("sourceid"),
-                        resultSet.getInt("ownerid"),
-                        resultSet.getInt("licenseid"),
-                        resultSet.getString("location"),
-                        resultSet.getString("filename"),
-                        resultSet.getString("content"),
-                        resultSet.getString("hash"),
-                        resultSet.getString("simhash"),
-                        resultSet.getInt("linescount"),
-                        resultSet.getString("data")
+                        connStmtRs.rs.getInt("id"),
+                        connStmtRs.rs.getInt("repoid"),
+                        connStmtRs.rs.getInt("languageid"),
+                        connStmtRs.rs.getString("languagename"),
+                        connStmtRs.rs.getInt("sourceid"),
+                        connStmtRs.rs.getInt("ownerid"),
+                        connStmtRs.rs.getInt("licenseid"),
+                        connStmtRs.rs.getString("location"),
+                        connStmtRs.rs.getString("filename"),
+                        connStmtRs.rs.getString("content"),
+                        connStmtRs.rs.getString("hash"),
+                        connStmtRs.rs.getString("simhash"),
+                        connStmtRs.rs.getInt("linescount"),
+                        connStmtRs.rs.getString("data")
                 ));
             }
 
         } catch (SQLException ex) {
             this.logger.severe(String.format("f176335f::error in class %s exception %s searchcode unable to get code by index document location %s filename %s", ex.getClass(), ex.getMessage(), this.getLocation(codeIndexDocument), codeIndexDocument.getFileName()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return result;
@@ -223,62 +203,54 @@ public class SourceCode {
 
     public Optional<SourceCodeDTO> getById(int id) {
         Optional<SourceCodeDTO> result = Optional.empty();
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
+            connStmtRs.conn = this.dbConfig.getConnection();
 
             String query = "SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type as languagename" +
                     " FROM sourcecode" +
                     " INNER JOIN languagetype ON languagetype.id = sourcecode.languageid" +
                     " WHERE sourcecode.id=? LIMIT 1;";
 
-            stmt = conn.prepareStatement(query);
-            stmt.setInt(1, id);
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement(query);
+            connStmtRs.stmt.setInt(1, id);
 
-            resultSet = stmt.executeQuery();
-            while (resultSet.next()) {
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+            while (connStmtRs.rs.next()) {
                 result = Optional.of(new SourceCodeDTO(
-                        resultSet.getInt("id"),
-                        resultSet.getInt("repoid"),
-                        resultSet.getInt("languageid"),
-                        resultSet.getString("languagename"),
-                        resultSet.getInt("sourceid"),
-                        resultSet.getInt("ownerid"),
-                        resultSet.getInt("licenseid"),
-                        resultSet.getString("location"),
-                        resultSet.getString("filename"),
-                        resultSet.getString("content"),
-                        resultSet.getString("hash"),
-                        resultSet.getString("simhash"),
-                        resultSet.getInt("linescount"),
-                        resultSet.getString("data")
+                        connStmtRs.rs.getInt("id"),
+                        connStmtRs.rs.getInt("repoid"),
+                        connStmtRs.rs.getInt("languageid"),
+                        connStmtRs.rs.getString("languagename"),
+                        connStmtRs.rs.getInt("sourceid"),
+                        connStmtRs.rs.getInt("ownerid"),
+                        connStmtRs.rs.getInt("licenseid"),
+                        connStmtRs.rs.getString("location"),
+                        connStmtRs.rs.getString("filename"),
+                        connStmtRs.rs.getString("content"),
+                        connStmtRs.rs.getString("hash"),
+                        connStmtRs.rs.getString("simhash"),
+                        connStmtRs.rs.getInt("linescount"),
+                        connStmtRs.rs.getString("data")
                 ));
             }
 
         } catch (SQLException ex) {
             this.logger.severe(String.format("a8ea57fb::error in class %s exception %s searchcode unable to get code by id %d", ex.getClass(), ex.getMessage(), id));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return result;
     }
 
     public SourceCodeDTO saveCode(CodeIndexDocument codeIndexDocument) {
-
         Optional<SourceCodeDTO> existing = this.getByCodeIndexDocument(codeIndexDocument);
-
-        Connection conn = null;
-        PreparedStatement stmt = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
+            connStmtRs.conn = this.dbConfig.getConnection();
 
             // If the language does not exist then create it
             Optional<LanguageTypeDTO> languageType = this.languageType.createLanguageType(codeIndexDocument.getLanguageName());
@@ -291,30 +263,29 @@ public class SourceCode {
                 return existing.get();
             }
 
-            stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, 31337);
-            stmt.setInt(2, languageType.get().getId());
-            stmt.setInt(3, 31337);
-            stmt.setInt(4, 31337);
-            stmt.setInt(5, 31337);
-            stmt.setString(6, this.getLocation(codeIndexDocument));
-            stmt.setString(7, codeIndexDocument.getFileName());
-            stmt.setString(8, codeIndexDocument.getContents());
-            stmt.setString(9, codeIndexDocument.getHash());
-            stmt.setString(10, "simhash");
-            stmt.setInt(11, codeIndexDocument.getLines());
-            stmt.setString(12, "{}");
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            connStmtRs.stmt.setInt(1, 31337);
+            connStmtRs.stmt.setInt(2, languageType.get().getId());
+            connStmtRs.stmt.setInt(3, 31337);
+            connStmtRs.stmt.setInt(4, 31337);
+            connStmtRs.stmt.setInt(5, 31337);
+            connStmtRs.stmt.setString(6, this.getLocation(codeIndexDocument));
+            connStmtRs.stmt.setString(7, codeIndexDocument.getFileName());
+            connStmtRs.stmt.setString(8, codeIndexDocument.getContents());
+            connStmtRs.stmt.setString(9, codeIndexDocument.getHash());
+            connStmtRs.stmt.setString(10, "simhash");
+            connStmtRs.stmt.setInt(11, codeIndexDocument.getLines());
+            connStmtRs.stmt.setString(12, "{}");
 
-            stmt.execute();
-            ResultSet tableKeys = stmt.getGeneratedKeys();
+            connStmtRs.stmt.execute();
+            ResultSet tableKeys = connStmtRs.stmt.getGeneratedKeys();
             tableKeys.next();
             int autoGeneratedID = tableKeys.getInt(1);
             return this.getById(autoGeneratedID).get();
         } catch (SQLException ex) {
             this.logger.severe(String.format("4a1aa86d::error in class %s exception %s searchcode save code with name %s", ex.getClass(), ex.getMessage(), codeIndexDocument.getFileName()));
         } finally {
-            this.helpers.closeQuietly(stmt);
-            // this.helpers.closeQuietly(conn);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return null;
