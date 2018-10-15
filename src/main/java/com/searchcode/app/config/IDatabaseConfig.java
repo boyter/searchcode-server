@@ -15,4 +15,5 @@ import java.sql.SQLException;
 
 public interface IDatabaseConfig {
     Connection getConnection() throws SQLException;
+    boolean closeConnection();
 }

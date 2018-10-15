@@ -38,4 +38,9 @@ public class SQLiteMemoryDatabaseConfig implements IDatabaseConfig {
 
         return connection;
     }
+
+    @Override
+    public boolean closeConnection() {
+        return false;
+    }
 }

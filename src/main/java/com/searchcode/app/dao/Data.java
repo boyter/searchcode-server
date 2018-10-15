@@ -12,6 +12,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.DataData;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -46,25 +47,20 @@ public class Data {
 
     public synchronized List<DataData> getAllData() {
         List<DataData> values = new ArrayList<>();
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select key,value from \"data\";");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select key,value from \"data\";");
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                values.add(new DataData(resultSet.getString("key"), resultSet.getString("value")));
+            while (connStmtRs.rs.next()) {
+                values.add(new DataData(connStmtRs.rs.getString("key"), connStmtRs.rs.getString("value")));
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("e897086c::error in class %s exception %s searchcode was unable get all data, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return values;
@@ -80,26 +76,22 @@ public class Data {
 
     public synchronized String getDataByName(String key) {
         String value = null;
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select key,value from \"data\" where key = ?;");
-            preparedStatement.setString(1, key);
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select key,value from \"data\" where key = ?;");
+            connStmtRs.stmt.setString(1, key);
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                value = resultSet.getString("value");
+            while (connStmtRs.rs.next()) {
+                value = connStmtRs.rs.getString("value");
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("52f85254::error in class %s exception %s searchcode was unable get data by name %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), key));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return value;
@@ -108,59 +100,54 @@ public class Data {
     public synchronized boolean saveData(String key, String value) {
         String existing = this.getDataByName(key);
         boolean isNew = false;
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
+            connStmtRs.conn = this.dbConfig.getConnection();
 
             if (existing != null) {
-                preparedStatement = connection.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
-                preparedStatement.setString(1, key);
-                preparedStatement.setString(2, value);
-                preparedStatement.setString(3, key);
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
+                connStmtRs.stmt.setString(1, key);
+                connStmtRs.stmt.setString(2, value);
+                connStmtRs.stmt.setString(3, key);
             } else {
                 isNew = true;
-                preparedStatement = connection.prepareStatement("INSERT INTO data(\"key\",\"value\") VALUES (?,?)");
-                preparedStatement.setString(1, key);
-                preparedStatement.setString(2, value);
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO data(\"key\",\"value\") VALUES (?,?)");
+                connStmtRs.stmt.setString(1, key);
+                connStmtRs.stmt.setString(2, value);
             }
 
-            preparedStatement.execute();
+            connStmtRs.stmt.execute();
         } catch (SQLException ex) {
             this.logger.severe(String.format("e241d7cd::error in class %s exception %s searchcode was unable save data name %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), key));
         } finally {
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return isNew;
     }
 
     public synchronized void createTableIfMissing() {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='data';");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='data';");
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
             String value = "";
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
+            while (connStmtRs.rs.next()) {
+                value = connStmtRs.rs.getString("name");
             }
 
             if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
-                preparedStatement = connection.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR)");
-                preparedStatement.execute();
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR)");
+                connStmtRs.stmt.execute();
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("3deb6433::error in class %s exception %s searchcode was unable create the data table, this is likely to break all sorts of things", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
     }
 }

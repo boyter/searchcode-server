@@ -45,4 +45,9 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
 
         return connection;
     }
+
+    @Override
+    public boolean closeConnection() {
+        return true;
+    }
 }

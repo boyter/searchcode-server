@@ -12,6 +12,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -52,27 +53,24 @@ public class Repo {
 
     public synchronized List<RepoResult> getAllRepo() {
         List<RepoResult> repoResults = new ArrayList<>();
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc;");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc;");
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                int rowId = resultSet.getInt("rowid");
-                String repoName = resultSet.getString("name");
-                String repoScm = resultSet.getString("scm");
-                String repoUrl = resultSet.getString("url");
-                String repoUsername = resultSet.getString("username");
-                String repoPassword = resultSet.getString("password");
-                String repoSource = resultSet.getString("source");
-                String repoBranch = resultSet.getString("branch");
-                String repoData = resultSet.getString("data");
+            while (connStmtRs.rs.next()) {
+                int rowId = connStmtRs.rs.getInt("rowid");
+                String repoName = connStmtRs.rs.getString("name");
+                String repoScm = connStmtRs.rs.getString("scm");
+                String repoUrl = connStmtRs.rs.getString("url");
+                String repoUsername = connStmtRs.rs.getString("username");
+                String repoPassword = connStmtRs.rs.getString("password");
+                String repoSource = connStmtRs.rs.getString("source");
+                String repoBranch = connStmtRs.rs.getString("branch");
+                String repoData = connStmtRs.rs.getString("data");
 
                 repoResults.add(new RepoResult()
                         .setRowId(rowId)
@@ -88,8 +86,7 @@ public class Repo {
         } catch (SQLException ex) {
             this.logger.severe(String.format("820c9557::error in class %s exception %s searchcode was unable to get the list of all repositories, this is likely nothing will be indexed, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return repoResults;
@@ -122,30 +119,27 @@ public class Repo {
 
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
-
-        Connection conn;
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            conn = this.dbConfig.getConnection();
-            stmt = conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc limit ?, ?;");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo order by rowid desc limit ?, ?;");
 
-            stmt.setInt(1, offset);
-            stmt.setInt(2, pageSize);
+            connStmtRs.stmt.setInt(1, offset);
+            connStmtRs.stmt.setInt(2, pageSize);
 
-            rs = stmt.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (rs.next()) {
-                int rowId = rs.getInt("rowid");
-                String repoName = rs.getString("name");
-                String repoScm = rs.getString("scm");
-                String repoUrl = rs.getString("url");
-                String repoUsername = rs.getString("username");
-                String repoPassword = rs.getString("password");
-                String repoSource = rs.getString("source");
-                String repoBranch = rs.getString("branch");
-                String repoData = rs.getString("data");
+            while (connStmtRs.rs.next()) {
+                int rowId = connStmtRs.rs.getInt("rowid");
+                String repoName = connStmtRs.rs.getString("name");
+                String repoScm = connStmtRs.rs.getString("scm");
+                String repoUrl = connStmtRs.rs.getString("url");
+                String repoUsername = connStmtRs.rs.getString("username");
+                String repoPassword = connStmtRs.rs.getString("password");
+                String repoSource = connStmtRs.rs.getString("source");
+                String repoBranch = connStmtRs.rs.getString("branch");
+                String repoData = connStmtRs.rs.getString("data");
 
                 repoResults.add(new RepoResult()
                         .setRowId(rowId)
@@ -161,8 +155,7 @@ public class Repo {
         } catch (SQLException ex) {
             this.logger.severe(String.format("20c36ec2::error in class %s exception %s searchcode was unable to get the paged list of repositories, this is likely nothing will be indexed, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(rs);
-            this.helpers.closeQuietly(stmt);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return repoResults;
@@ -170,25 +163,21 @@ public class Repo {
 
     public synchronized int getRepoCount() {
         int totalCount = 0;
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select count(rowid) as totalcount from repo;");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select count(rowid) as totalcount from repo;");
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                totalCount = resultSet.getInt("totalcount");
+            while (connStmtRs.rs.next()) {
+                totalCount = connStmtRs.rs.getInt("totalcount");
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("4e403331::error in class %s exception %s searchcode was unable to get the count of repositories, this is unlikely to affect anything but there are likely to be other issues in the logs", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return totalCount;
@@ -200,28 +189,25 @@ public class Repo {
         }
 
         Optional<RepoResult> result = Optional.empty();
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where name=?;");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where name=?;");
 
-            preparedStatement.setString(1, repositoryName);
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.stmt.setString(1, repositoryName);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                int rowId = resultSet.getInt("rowid");
-                String repoName = resultSet.getString("name");
-                String repoScm = resultSet.getString("scm");
-                String repoUrl = resultSet.getString("url");
-                String repoUsername = resultSet.getString("username");
-                String repoPassword = resultSet.getString("password");
-                String repoSource = resultSet.getString("source");
-                String repoBranch = resultSet.getString("branch");
-                String repoData = resultSet.getString("data");
+            while (connStmtRs.rs.next()) {
+                int rowId = connStmtRs.rs.getInt("rowid");
+                String repoName = connStmtRs.rs.getString("name");
+                String repoScm = connStmtRs.rs.getString("scm");
+                String repoUrl = connStmtRs.rs.getString("url");
+                String repoUsername = connStmtRs.rs.getString("username");
+                String repoPassword = connStmtRs.rs.getString("password");
+                String repoSource = connStmtRs.rs.getString("source");
+                String repoBranch = connStmtRs.rs.getString("branch");
+                String repoData = connStmtRs.rs.getString("data");
 
                 RepoResult repoResult = new RepoResult()
                         .setRowId(rowId)
@@ -239,8 +225,7 @@ public class Repo {
         } catch (SQLException ex) {
             this.logger.severe(String.format("359a0566::error in class %s exception %s searchcode was unable to get repository by name %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryName));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return result;
@@ -251,28 +236,25 @@ public class Repo {
             return Optional.empty();
         }
 
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
-
         Optional<RepoResult> result = Optional.empty();
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
-            preparedStatement.setString(1, repositoryUrl);
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
+            connStmtRs.stmt.setString(1, repositoryUrl);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                int rowId = resultSet.getInt("rowid");
-                String repoName = resultSet.getString("name");
-                String repoScm = resultSet.getString("scm");
-                String repoUrl = resultSet.getString("url");
-                String repoUsername = resultSet.getString("username");
-                String repoPassword = resultSet.getString("password");
-                String repoSource = resultSet.getString("source");
-                String repoBranch = resultSet.getString("branch");
-                String repoData = resultSet.getString("data");
+            while (connStmtRs.rs.next()) {
+                int rowId = connStmtRs.rs.getInt("rowid");
+                String repoName = connStmtRs.rs.getString("name");
+                String repoScm = connStmtRs.rs.getString("scm");
+                String repoUrl = connStmtRs.rs.getString("url");
+                String repoUsername = connStmtRs.rs.getString("username");
+                String repoPassword = connStmtRs.rs.getString("password");
+                String repoSource = connStmtRs.rs.getString("source");
+                String repoBranch = connStmtRs.rs.getString("branch");
+                String repoData = connStmtRs.rs.getString("data");
 
                 RepoResult repoResult = new RepoResult()
                         .setRowId(rowId)
@@ -290,93 +272,83 @@ public class Repo {
         } catch (SQLException ex) {
             this.logger.severe(String.format("afd625ce::error in class %s exception %s searchcode was unable to get repository by url %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryUrl));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return result;
     }
 
     public synchronized void deleteRepoByName(String repositoryName) {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("delete from repo where name=?;");
-            preparedStatement.setString(1, repositoryName);
-            preparedStatement.execute();
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("delete from repo where name=?;");
+            connStmtRs.stmt.setString(1, repositoryName);
+            connStmtRs.stmt.execute();
         } catch (SQLException ex) {
             this.logger.severe(String.format("8f05a49c::error in class %s exception %s searchcode was unable to delete repository by name %s, this is unlikely to break anything but there should be other errors in the logs", ex.getClass(), ex.getMessage(), repositoryName));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
     }
 
     public synchronized boolean saveRepo(RepoResult repoResult) {
         Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
-
+        ConnStmtRs connStmtRs = new ConnStmtRs();
         boolean isNew = false;
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
 
         // Update with new details
         try {
-            connection = this.dbConfig.getConnection();
+            connStmtRs.conn = this.dbConfig.getConnection();
             if (existing.isPresent()) {
-                preparedStatement = connection.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
-                preparedStatement.setString(9, repoResult.getName());
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
+                connStmtRs.stmt.setString(9, repoResult.getName());
             } else {
                 isNew = true;
-                preparedStatement = connection.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"data\") VALUES (?,?,?,?,?,?,?,?)");
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO repo(\"name\",\"scm\",\"url\", \"username\", \"password\",\"source\",\"branch\",\"data\") VALUES (?,?,?,?,?,?,?,?)");
             }
 
-            preparedStatement.setString(1, repoResult.getName());
-            preparedStatement.setString(2, repoResult.getScm());
-            preparedStatement.setString(3, repoResult.getUrl());
-            preparedStatement.setString(4, repoResult.getUsername());
-            preparedStatement.setString(5, repoResult.getPassword());
-            preparedStatement.setString(6, repoResult.getSource());
-            preparedStatement.setString(7, repoResult.getBranch());
-            preparedStatement.setString(8, repoResult.getDataAsJson());
+            connStmtRs.stmt.setString(1, repoResult.getName());
+            connStmtRs.stmt.setString(2, repoResult.getScm());
+            connStmtRs.stmt.setString(3, repoResult.getUrl());
+            connStmtRs.stmt.setString(4, repoResult.getUsername());
+            connStmtRs.stmt.setString(5, repoResult.getPassword());
+            connStmtRs.stmt.setString(6, repoResult.getSource());
+            connStmtRs.stmt.setString(7, repoResult.getBranch());
+            connStmtRs.stmt.setString(8, repoResult.getDataAsJson());
 
-            preparedStatement.execute();
+            connStmtRs.stmt.execute();
         } catch (SQLException ex) {
             this.logger.severe(String.format("653b7384::error in class %s exception %s searchcode was unable to add repository %s, this is unlikely to break anything but there should be other errors in the logs", ex.getClass(), ex.getMessage(), repoResult.getName()));
         } finally {
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return isNew;
     }
 
     public synchronized void createTableIfMissing() {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='repo';");
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
             String value = Values.EMPTYSTRING;
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
+            while (connStmtRs.rs.next()) {
+                value = connStmtRs.rs.getString("name");
             }
 
             if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
-                preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
-                preparedStatement.execute();
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("CREATE TABLE IF NOT EXISTS \"repo\" (\"name\" VARCHAR PRIMARY KEY  NOT NULL ,\"scm\" VARCHAR,\"url\" VARCHAR,\"username\" VARCHAR,\"password\" VARCHAR, \"source\", \"branch\" VARCHAR, data text);");
+                connStmtRs.stmt.execute();
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("5ec972ce::error in class %s exception %s searchcode was to create the api key table, so api calls will fail", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
     }
 }

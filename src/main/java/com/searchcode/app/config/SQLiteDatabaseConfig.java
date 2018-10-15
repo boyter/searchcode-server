@@ -46,4 +46,9 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
 
         return connection;
     }
+
+    @Override
+    public boolean closeConnection() {
+        return true;
+    }
 }

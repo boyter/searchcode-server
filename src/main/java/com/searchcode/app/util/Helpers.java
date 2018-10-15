@@ -350,8 +350,11 @@ public class Helpers {
         return Boolean.parseBoolean(Properties.getProperties().getProperty("only_localhost", "false"));
     }
 
-    public void closeQuietly(ConnStmtRs connStmtRs) {
-        this.closeQuietly(connStmtRs.conn);
+    public void closeQuietly(ConnStmtRs connStmtRs, boolean closeConnection) {
+        if (closeConnection) {
+            this.closeQuietly(connStmtRs.conn);
+        }
+
         this.closeQuietly(connStmtRs.rs);
         this.closeQuietly(connStmtRs.stmt);
     }

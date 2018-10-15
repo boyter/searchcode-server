@@ -12,6 +12,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -48,30 +49,26 @@ public class Api {
 
     public synchronized List<ApiResult> getAllApi() {
         List<ApiResult> apiResults = new ArrayList<>();
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,publickey,privatekey,lastused,data from api;");
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api;");
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                int rowId = resultSet.getInt("rowid");
-                String d_publicKey = resultSet.getString("publickey");
-                String privateKey = resultSet.getString("privatekey");
-                String lastUsed = resultSet.getString("lastused");
-                String data = resultSet.getString("data");
+            while (connStmtRs.rs.next()) {
+                int rowId = connStmtRs.rs.getInt("rowid");
+                String d_publicKey = connStmtRs.rs.getString("publickey");
+                String privateKey = connStmtRs.rs.getString("privatekey");
+                String lastUsed = connStmtRs.rs.getString("lastused");
+                String data = connStmtRs.rs.getString("data");
 
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("c58e8a00::error in class %s exception %s searchcode was unable to pull the api keys from the database api calls will fail, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return apiResults;
@@ -79,33 +76,29 @@ public class Api {
 
     public synchronized Optional<ApiResult> getApiByPublicKey(String publicKey) {
         Optional<ApiResult> result = Optional.empty();
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("select rowid,publickey,privatekey,lastused,data from api where publickey=?;");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,publickey,privatekey,lastused,data from api where publickey=?;");
 
-            preparedStatement.setString(1, publicKey);
+            connStmtRs.stmt.setString(1, publicKey);
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
-            while (resultSet.next()) {
-                int rowId = resultSet.getInt("rowid");
-                String d_publicKey = resultSet.getString("publickey");
-                String privateKey = resultSet.getString("privatekey");
-                String lastUsed = resultSet.getString("lastused");
-                String data = resultSet.getString("data");
+            while (connStmtRs.rs.next()) {
+                int rowId = connStmtRs.rs.getInt("rowid");
+                String d_publicKey = connStmtRs.rs.getString("publickey");
+                String privateKey = connStmtRs.rs.getString("privatekey");
+                String lastUsed = connStmtRs.rs.getString("lastused");
+                String data = connStmtRs.rs.getString("data");
 
                 result = Optional.of(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("c81a4390::error in class %s exception %s searchcode was unable to pull the api keys from the database api calls will fail, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return result;
@@ -113,73 +106,65 @@ public class Api {
 
     public synchronized boolean saveApi(ApiResult apiResult) {
         boolean successful = false;
-
-        Connection connection;
-        PreparedStatement preparedStatement = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("INSERT INTO \"api\" (\"publickey\",\"privatekey\",\"lastused\",\"data\") VALUES (?,?,?,?)");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO \"api\" (\"publickey\",\"privatekey\",\"lastused\",\"data\") VALUES (?,?,?,?)");
 
-            preparedStatement.setString(1, apiResult.getPublicKey());
-            preparedStatement.setString(2, apiResult.getPrivateKey());
-            preparedStatement.setString(3, apiResult.getLastUsed());
-            preparedStatement.setString(4, apiResult.getData());
+            connStmtRs.stmt.setString(1, apiResult.getPublicKey());
+            connStmtRs.stmt.setString(2, apiResult.getPrivateKey());
+            connStmtRs.stmt.setString(3, apiResult.getLastUsed());
+            connStmtRs.stmt.setString(4, apiResult.getData());
 
-            preparedStatement.execute();
+            connStmtRs.stmt.execute();
 
             successful = true;
         } catch (SQLException ex) {
             this.logger.severe(String.format("d06c2e67::error in class %s exception %s searchcode was unable to save a new api key to the database, most likely the table has changed or is missing", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return successful;
     }
 
     public synchronized void deleteApiByPublicKey(String publicKey) {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("delete from api where publickey=?;");
-
-            preparedStatement.setString(1, publicKey);
-
-            preparedStatement.execute();
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("delete from api where publickey=?;");
+            connStmtRs.stmt.setString(1, publicKey);
+            connStmtRs.stmt.execute();
         } catch (SQLException ex) {
             this.logger.severe(String.format("eab0bb55::error in class %s exception %s searchcode was unable to delete an api key by its public key %s", ex.getClass(), ex.getMessage(), publicKey));
         } finally {
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
     }
 
     public synchronized void createTableIfMissing() {
-        Connection connection;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        ConnStmtRs connStmtRs = new ConnStmtRs();
 
         try {
-            connection = this.dbConfig.getConnection();
-            preparedStatement = connection.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
 
-            resultSet = preparedStatement.executeQuery();
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
             String value = Values.EMPTYSTRING;
-            while (resultSet.next()) {
-                value = resultSet.getString("name");
+            while (connStmtRs.rs.next()) {
+                value = connStmtRs.rs.getString("name");
             }
 
             if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
-                preparedStatement = connection.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
-                preparedStatement.execute();
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("CREATE  TABLE \"main\".\"api\" (\"publickey\" VARCHAR PRIMARY KEY  NOT NULL , \"privatekey\" VARCHAR NOT NULL , \"lastused\" VARCHAR, \"data\" VARCHAR);");
+                connStmtRs.stmt.execute();
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("5e666e82::error in class %s exception %s searchcode was to create the api key table, so api calls will fail", ex.getClass(), ex.getMessage()));
         } finally {
-            this.helpers.closeQuietly(resultSet);
-            this.helpers.closeQuietly(preparedStatement);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
     }
 }

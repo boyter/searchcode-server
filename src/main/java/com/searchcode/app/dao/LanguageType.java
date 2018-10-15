@@ -46,7 +46,7 @@ public class LanguageType {
         } catch (SQLException ex) {
             this.logger.severe(String.format("39bde74f::error in class %s exception %s searchcode was unable to get language names by ids %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), String.join(", ", ids)));
         } finally {
-            this.helpers.closeQuietly(connStmtRs);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return languageTypeList;
@@ -71,7 +71,7 @@ public class LanguageType {
         } catch (SQLException ex) {
             this.logger.severe(String.format("5d3921d2::error in class %s exception %s searchcode was unable to get language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
         } finally {
-            this.helpers.closeQuietly(connStmtRs);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return languageTypeDTO;
@@ -98,7 +98,7 @@ public class LanguageType {
         } catch (SQLException ex) {
             this.logger.severe(String.format("5e49d36c::error in class %s exception %s searchcode was unable to create language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
         } finally {
-            this.helpers.closeQuietly(connStmtRs);
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
         return byType;
