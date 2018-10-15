@@ -38,8 +38,8 @@ public class CodeIndexDocumentTest extends TestCase {
 
     public void testTesty() {
         CodeIndexDocument cd = new CodeIndexDocument()
-                                    .setContents("something")
-                                    .setRepoRemoteLocation("something");
+                .setContents("something")
+                .setRepoRemoteLocation("something");
 
         assertThat(cd.getContents()).isEqualTo("something");
         assertThat(cd.getRepoRemoteLocation()).isEqualTo("something");

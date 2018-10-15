@@ -37,14 +37,14 @@ public class CodeRouteServiceTest extends TestCase {
 
         ModelAndView modelAndView = codeRouteService.root(request, null);
 
-        Map<String, Object> model = (Map<String, Object>)modelAndView.getModel();
+        Map<String, Object> model = (Map<String, Object>) modelAndView.getModel();
         String viewName = modelAndView.getViewName();
 
         assertThat(model.get("photoId")).isInstanceOf(Integer.class);
-        assertThat((int)model.get("photoId")).isGreaterThanOrEqualTo(0);
-        assertThat((int)model.get("photoId")).isLessThanOrEqualTo(42);
+        assertThat((int) model.get("photoId")).isGreaterThanOrEqualTo(0);
+        assertThat((int) model.get("photoId")).isLessThanOrEqualTo(42);
         assertThat(model.get("numDocs")).isInstanceOf(Integer.class);
-        assertThat((int)model.get("numDocs")).isGreaterThanOrEqualTo(0);
+        assertThat((int) model.get("numDocs")).isGreaterThanOrEqualTo(0);
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
 
@@ -63,7 +63,7 @@ public class CodeRouteServiceTest extends TestCase {
 
         ModelAndView modelAndView = codeRouteService.root(request, null);
 
-        Map<String, Object> model = (Map<String, Object>)modelAndView.getModel();
+        Map<String, Object> model = (Map<String, Object>) modelAndView.getModel();
         String viewName = modelAndView.getViewName();
 
         assertThat(model.get("searchValue")).isEqualTo("test");
@@ -80,14 +80,14 @@ public class CodeRouteServiceTest extends TestCase {
         Request request = Mockito.mock(Request.class);
         ModelAndView modelAndView = codeRouteService.html(request, null);
 
-        Map<String, Object> model = (Map<String, Object>)modelAndView.getModel();
+        Map<String, Object> model = (Map<String, Object>) modelAndView.getModel();
         String viewName = modelAndView.getViewName();
 
         assertThat(model.get("photoId")).isInstanceOf(Integer.class);
-        assertThat((int)model.get("photoId")).isGreaterThanOrEqualTo(0);
-        assertThat((int)model.get("photoId")).isLessThanOrEqualTo(42);
+        assertThat((int) model.get("photoId")).isGreaterThanOrEqualTo(0);
+        assertThat((int) model.get("photoId")).isLessThanOrEqualTo(42);
         assertThat(model.get("numDocs")).isInstanceOf(Integer.class);
-        assertThat((int)model.get("numDocs")).isGreaterThanOrEqualTo(0);
+        assertThat((int) model.get("numDocs")).isGreaterThanOrEqualTo(0);
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
 
@@ -106,7 +106,7 @@ public class CodeRouteServiceTest extends TestCase {
 
         ModelAndView modelAndView = codeRouteService.html(request, null);
 
-        Map<String, Object> model = (Map<String, Object>)modelAndView.getModel();
+        Map<String, Object> model = (Map<String, Object>) modelAndView.getModel();
         String viewName = modelAndView.getViewName();
 
         assertThat(model.get("searchValue")).isEqualTo("test");
@@ -115,8 +115,8 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("langsQueryString")).isNotNull();
         assertThat(model.get("ownsQueryString")).isNotNull();
         assertThat(model.get("altQuery")).isNotNull();
-        assertThat((int)model.get("totalPages")).isGreaterThanOrEqualTo(0);
-        assertThat((boolean)model.get("isHtml")).isTrue();
+        assertThat((int) model.get("totalPages")).isGreaterThanOrEqualTo(0);
+        assertThat((boolean) model.get("isHtml")).isTrue();
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
 
@@ -130,8 +130,8 @@ public class CodeRouteServiceTest extends TestCase {
 
         try {
             codeRouteService.getCode(request, response);
+        } catch (HaltException ex) {
         }
-        catch (HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
     }
@@ -145,8 +145,8 @@ public class CodeRouteServiceTest extends TestCase {
 
         try {
             codeRouteService.getCode(request, response);
+        } catch (HaltException ex) {
         }
-        catch (HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
     }
@@ -195,8 +195,8 @@ public class CodeRouteServiceTest extends TestCase {
 
         try {
             codeRouteService.getProject(request, response);
+        } catch (HaltException ex) {
         }
-        catch (HaltException ex) {}
 
         verify(response, times(1)).redirect("/404/");
     }

@@ -54,7 +54,7 @@ public class ApiTest extends TestCase {
 
         this.api.saveApi(new ApiResult(0, randomApiString, "privateKey", "", ""));
 
-        for(int i=0; i < 500; i++) {
+        for (int i = 0; i < 500; i++) {
             Optional<ApiResult> apiByPublicKey = this.api.getApiByPublicKey(randomApiString);
 
             assertThat(apiByPublicKey.get().getPublicKey()).isEqualTo(randomApiString);

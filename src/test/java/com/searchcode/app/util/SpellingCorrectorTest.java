@@ -114,7 +114,7 @@ public class SpellingCorrectorTest extends TestCase {
         Random rand = new Random();
         ISpellingCorrector sc = getSpellingCorrector();
 
-        for (int j=0; j < 1000; j++) {
+        for (int j = 0; j < 1000; j++) {
             sc.putWord(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1));
         }
 

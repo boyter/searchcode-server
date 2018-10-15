@@ -14,7 +14,8 @@ import junit.framework.TestCase;
 
 public class TimeCodeSearcherTest extends TestCase {
 
-    public void testTest() {}
+    public void testTest() {
+    }
 
 
 //    public void testTimeIndexIndexCreationAndSearch() {

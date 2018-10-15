@@ -443,22 +443,22 @@ public class ApiRouteServiceTest extends TestCase {
 
         when(mockRequest.queryParams("reponame")).thenReturn("somename");
         when(mockRequest.queryParams()).thenReturn(
-            (new HashMap<String, String>() {{
-                put("reponame", "reponame");
-            }}).keySet()
+                (new HashMap<String, String>() {{
+                    put("reponame", "reponame");
+                }}).keySet()
         );
 
         when(repoMock.getRepoByName("somename")).thenReturn(
-            Optional.of(new RepoResult()
-                    .setRowId(0)
-                    .setName("name")
-                    .setScm("scm")
-                    .setUrl("url")
-                    .setUsername("username")
-                    .setPassword("password")
-                    .setSource("source")
-                    .setBranch("branch")
-                    .setData("{\"averageIndexTimeSeconds\":1}"))
+                Optional.of(new RepoResult()
+                        .setRowId(0)
+                        .setName("name")
+                        .setScm("scm")
+                        .setUrl("url")
+                        .setUsername("username")
+                        .setPassword("password")
+                        .setSource("source")
+                        .setBranch("branch")
+                        .setData("{\"averageIndexTimeSeconds\":1}"))
         );
 
         ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null, new Helpers(), new LoggerWrapper());

@@ -29,14 +29,14 @@ public class OWASPFileClassifierResultTest extends TestCase {
     public void testClassifyCodeNullReturnsEmpty() {
         OWASPClassifier oc = new OWASPClassifier();
         assertThat(oc.classifyCode(null, "")).isNotNull()
-                                             .isEmpty();
+                .isEmpty();
     }
 
     public void testClassifyCodeEmptyReturnsEmpty() {
         OWASPClassifier oc = new OWASPClassifier();
         List<String> codeLines = new ArrayList<>();
         assertThat(oc.classifyCode(codeLines, "")).isNotNull()
-                                                  .isEmpty();
+                .isEmpty();
     }
 
     public void testClassifyCodeNoMatch() {

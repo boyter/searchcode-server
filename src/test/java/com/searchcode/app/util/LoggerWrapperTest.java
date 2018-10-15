@@ -139,7 +139,7 @@ public class LoggerWrapperTest extends TestCase {
         LoggerWrapper loggerWrapper = new LoggerWrapper();
         Random rand = new Random();
 
-        for(int i = 0; i < 100; i++) {
+        for (int i = 0; i < 100; i++) {
             new Thread(() -> {
                 int count = 1000;
                 while (count > 0) {

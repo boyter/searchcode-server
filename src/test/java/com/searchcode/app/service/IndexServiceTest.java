@@ -125,23 +125,23 @@ public class IndexServiceTest extends TestCase {
     public void testBuildDocument() {
         this.indexService = new IndexService();
         Document indexFields = this.indexService.buildDocument(new CodeIndexDocument()
-            .setRepoLocationRepoNameLocationFilename("repoLocationRepoNameLocationFilename")
-            .setRepoName("repo Name")
-            .setFileName("fileName")
-            .setFileLocation("fileLocation")
-            .setFileLocationFilename("fileLocationFilename")
-            .setMd5hash("md5hash")
-            .setLanguageName("language Name")
-            .setLines(10)
-            .setCodeLines(10)
-            .setBlankLines(5)
-            .setCommentLines(5)
-            .setComplexity(20)
-            .setContents("contents")
-            .setRepoRemoteLocation("repoRemoteLocation")
-            .setCodeOwner("code Owner")
-            .setDisplayLocation("displayLocation")
-            .setSource("code source"));
+                .setRepoLocationRepoNameLocationFilename("repoLocationRepoNameLocationFilename")
+                .setRepoName("repo Name")
+                .setFileName("fileName")
+                .setFileLocation("fileLocation")
+                .setFileLocationFilename("fileLocationFilename")
+                .setMd5hash("md5hash")
+                .setLanguageName("language Name")
+                .setLines(10)
+                .setCodeLines(10)
+                .setBlankLines(5)
+                .setCommentLines(5)
+                .setComplexity(20)
+                .setContents("contents")
+                .setRepoRemoteLocation("repoRemoteLocation")
+                .setCodeOwner("code Owner")
+                .setDisplayLocation("displayLocation")
+                .setSource("code source"));
 
         AssertionsForClassTypes.assertThat(indexFields.getFields().size()).isEqualTo(29);
 
@@ -318,7 +318,7 @@ public class IndexServiceTest extends TestCase {
     public void testShouldRepoParserJobPauseWhenIndexQueueSizeLarge() {
         Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
 
-        for (int i=0; i<10000; i++) {
+        for (int i = 0; i < 10000; i++) {
             queue.add(new CodeIndexDocument());
         }
 
@@ -454,44 +454,44 @@ public class IndexServiceTest extends TestCase {
     public void testBuildFacets() {
         this.indexService = new IndexService();
         assertThat(this.indexService.buildFacets(null)).isEmpty();
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("nomatch", new String[0]);
         }})).isEmpty();
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("lan", new String[0]);
         }})).isEmpty();
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("repo", new String[0]);
         }})).isEmpty();
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("own", new String[0]);
         }})).isEmpty();
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("lan", new String[]{"java"});
         }})).isEqualTo(" && (ln:java)");
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("lan", new String[]{"java", "python"});
         }})).isEqualTo(" && (ln:java || ln:python)");
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("lan", new String[]{"java", "python", "c++"});
         }})).isEqualTo(" && (ln:java || ln:python || ln:c__)");
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("repo", new String[]{"java", "python", "c++"});
         }})).isEqualTo(" && (rn:java || rn:python || rn:c__)");
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("own", new String[]{"java", "python", "c++"});
         }})).isEqualTo(" && (on:java || on:python || on:c__)");
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("fl", new String[]{"temp/something", "another", "thing"});
         }})).isEqualTo(" && (fl:temp_something*)");
 
-        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>(){{
+        assertThat(this.indexService.buildFacets(new HashMap<String, String[]>() {{
             put("src", new String[]{"something"});
         }})).isEqualTo(" && (source:something)");
     }
@@ -499,18 +499,18 @@ public class IndexServiceTest extends TestCase {
     public void testIndexContentPipeline() {
         this.indexService = new IndexService();
         String result = this.indexService.indexContentPipeline(new CodeIndexDocument()
-            .setRepoName(this.repoName)
-            .setFileName("fileName")
-            .setFileLocation("fileLocation")
-            .setFileLocationFilename("fileLocationFilename")
-            .setMd5hash("md5hash")
-            .setLanguageName(this.languageName)
-            .setCodeLines(199)
-            .setContents("PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);")
-            .setRepoRemoteLocation("repoRemoteLocation")
-            .setCodeOwner(this.codeOwner)
-            .setDisplayLocation("mydisplaylocation")
-            .setSource("source"));
+                .setRepoName(this.repoName)
+                .setFileName("fileName")
+                .setFileLocation("fileLocation")
+                .setFileLocationFilename("fileLocationFilename")
+                .setMd5hash("md5hash")
+                .setLanguageName(this.languageName)
+                .setCodeLines(199)
+                .setContents("PhysicsServer::get_singleton()->area_set_monitorable(get_rid(), monitorable);")
+                .setRepoRemoteLocation("repoRemoteLocation")
+                .setCodeOwner(this.codeOwner)
+                .setDisplayLocation("mydisplaylocation")
+                .setSource("source"));
 
         assertThat(result).isNotEmpty();
     }
@@ -615,7 +615,7 @@ public class IndexServiceTest extends TestCase {
         for (int i = 0; i < 100; i++) {
             Thread thread = new Thread(() -> {
                 Collections.shuffle(methodList);
-                for (MethodRunner runner: methodList) {
+                for (MethodRunner runner : methodList) {
                     runner.run(new Object());
                 }
             });
@@ -623,7 +623,7 @@ public class IndexServiceTest extends TestCase {
             threadList.add(thread);
         }
 
-        for (Thread thread: threadList) {
+        for (Thread thread : threadList) {
             thread.join();
         }
         int codeIndexLinesCount = this.indexService.getCodeIndexLinesCount();
@@ -637,7 +637,13 @@ public class IndexServiceTest extends TestCase {
         this.indexService = new IndexService();
 
         List<MethodRunner> methodList = new ArrayList<>();
-        methodList.add(arg -> { try { this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)); } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> {
+            try {
+                this.indexService.deleteByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
+            } catch (IOException e) {
+                assertThat(true).isFalse();
+            }
+        });
         methodList.add(arg -> this.indexService.setCodeIndexLinesCount(rand.nextInt(2000)));
         methodList.add(arg -> this.indexService.incrementCodeIndexLinesCount(rand.nextInt(2000)));
         methodList.add(arg -> this.indexService.decrementCodeIndexLinesCount(rand.nextInt(2000)));
@@ -658,19 +664,35 @@ public class IndexServiceTest extends TestCase {
                 assertThat(true).isFalse();
             }
         });
-        methodList.add(arg -> { try { this.indexService.deleteAll(); } catch (IOException e) { assertThat(true).isFalse(); }});
+        methodList.add(arg -> {
+            try {
+                this.indexService.deleteAll();
+            } catch (IOException e) {
+                assertThat(true).isFalse();
+            }
+        });
         methodList.add(arg -> this.indexService.flipIndex());
         methodList.add(arg -> this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
         methodList.add(arg -> this.indexService.getIndexedDocumentCount());
         methodList.add(arg -> this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
-        methodList.add(arg -> { try {
-            Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-            for (int j = 0; j < rand.nextInt(100) + 1; j++) {
-                queue.add(this.codeIndexDocument);
+        methodList.add(arg -> {
+            try {
+                Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+                for (int j = 0; j < rand.nextInt(100) + 1; j++) {
+                    queue.add(this.codeIndexDocument);
+                }
+                this.indexService.indexDocument(queue);
+            } catch (IOException e) {
+                assertThat(true).isFalse();
             }
-            this.indexService.indexDocument(queue);
-        } catch (IOException e) { assertThat(true).isFalse(); }});
-        methodList.add(arg -> { try { this.indexService.indexDocument(this.codeIndexDocument); } catch (IOException e) { assertThat(true).isFalse(); }});
+        });
+        methodList.add(arg -> {
+            try {
+                this.indexService.indexDocument(this.codeIndexDocument);
+            } catch (IOException e) {
+                assertThat(true).isFalse();
+            }
+        });
         methodList.add(arg -> this.indexService.reindexAll());
         methodList.add(arg -> this.indexService.search(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), null, rand.nextInt(40), false));
         methodList.add(arg -> this.indexService.shouldPause(IIndexService.JobType.REPO_ADDER));
@@ -688,15 +710,15 @@ public class IndexServiceTest extends TestCase {
         for (int i = 0; i < 5; i++) {
             Thread thread = new Thread(() -> {
                 Collections.shuffle(methodList);
-                for (MethodRunner runner: methodList) {
+                for (MethodRunner runner : methodList) {
                     runner.run(new Object());
                 }
             });
             thread.start();
-           threadList.add(thread);
+            threadList.add(thread);
         }
 
-        for (Thread thread: threadList) {
+        for (Thread thread : threadList) {
             thread.join();
         }
     }

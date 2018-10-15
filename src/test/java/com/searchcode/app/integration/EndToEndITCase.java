@@ -19,7 +19,7 @@ import java.nio.file.Paths;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class EndToEndITCase extends TestCase{
+public class EndToEndITCase extends TestCase {
 
     public String GITPATH = Properties.getProperties().getProperty(Values.GITBINARYPATH, Values.DEFAULTGITBINARYPATH);
 

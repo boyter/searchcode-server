@@ -51,7 +51,7 @@ public class IndexSvnRepoJobTest extends TestCase {
 
             NodeList nList = doc.getElementsByTagName("entry");
 
-            for  (int temp = 0; temp < nList.getLength(); temp++) {
+            for (int temp = 0; temp < nList.getLength(); temp++) {
                 Node nNode = nList.item(temp);
 
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -134,8 +134,8 @@ public class IndexSvnRepoJobTest extends TestCase {
             Document doc = dBuilder.parse(new ByteArrayInputStream(test.getBytes()));
             doc.getDocumentElement().normalize();
 
-            Element node = (Element)doc.getElementsByTagName("diff").item(0);
-            node = (Element)node.getElementsByTagName("paths").item(0);
+            Element node = (Element) doc.getElementsByTagName("diff").item(0);
+            node = (Element) node.getElementsByTagName("paths").item(0);
 
             NodeList nList = node.getElementsByTagName("path");
 
@@ -145,7 +145,7 @@ public class IndexSvnRepoJobTest extends TestCase {
                 if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
 
-                    String something = eElement.getAttribute("item") + " " +eElement.getTextContent();
+                    String something = eElement.getAttribute("item") + " " + eElement.getTextContent();
 
                 }
             }

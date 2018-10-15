@@ -33,7 +33,7 @@ public class DataTest extends TestCase {
 
     public void testGetWithoutSave() {
         String actual = data.getDataByName("testSingleSaveManyGet");
-        for(int i = 0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             assertThat(actual).as("Get without save").isEqualTo(data.getDataByName("testSingleSaveManyGet"));
             assertThat(actual).as("Get without save").isEqualTo(data.getDataByName("testSingleSaveManyGet", actual));
         }
@@ -42,7 +42,7 @@ public class DataTest extends TestCase {
     public void testGetWithRandomValuesExpectingNull() {
         Random random = new Random();
 
-        for(int i = 0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             String actual = data.getDataByName(RandomStringUtils.randomAscii(random.nextInt(20) + 20));
             assertThat(actual).isNull();
         }
@@ -51,7 +51,7 @@ public class DataTest extends TestCase {
     public void testSaveWithRandomValuesAndGet() {
         Random random = new Random();
 
-        for(int i = 0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             String randomString = RandomStringUtils.randomAscii(random.nextInt(5) + 1);
             data.saveData(randomString, randomString);
             String actual = data.getDataByName(randomString);
@@ -64,7 +64,7 @@ public class DataTest extends TestCase {
         String expected = "" + System.currentTimeMillis();
         data.saveData("testSingleSaveManyGet", expected);
 
-        for(int i = 0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             assertThat(expected).as("Get with no default").isEqualTo(data.getDataByName("testSingleSaveManyGet"));
             assertThat(expected).as("Get with default").isEqualTo(data.getDataByName("testSingleSaveManyGet", "default"));
         }
@@ -74,7 +74,7 @@ public class DataTest extends TestCase {
      * Stress test the saving to check if we are closing connections properly
      */
     public void testManySaveAndGet() {
-        for(int i=0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             String expected = "" + System.currentTimeMillis();
             data.saveData("testManySaveAndGet", expected);
 
@@ -91,7 +91,7 @@ public class DataTest extends TestCase {
     public void testGetAll() {
         assertThat(data.getAllData().size()).isZero();
 
-        for(int i = 0; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             String randomString = "" + i;
             data.saveData(randomString, randomString);
         }

@@ -98,7 +98,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
@@ -111,7 +111,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             minified.append("你");
         }
         char nul = 0;
@@ -133,9 +133,9 @@ public class SearchcodeLibTest extends TestCase {
 
         HashMap<String, FileClassifierResult> database = fileClassifier.getDatabase();
 
-        for (String key: database.keySet()) {
+        for (String key : database.keySet()) {
             FileClassifierResult fileClassifierResult = database.get(key);
-            for (String extension: fileClassifierResult.extensions) {
+            for (String extension : fileClassifierResult.extensions) {
                 BinaryFinding isBinary = sl.isBinary(codeLines, "myfile." + extension);
                 assertThat(isBinary.isBinary()).isFalse();
             }
@@ -192,7 +192,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
@@ -210,7 +210,7 @@ public class SearchcodeLibTest extends TestCase {
         sl.WHITE_LIST = whiteList.toArray(new String[whiteList.size()]);
 
         StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 500; i++) {
+        for (int i = 0; i < 500; i++) {
             minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
@@ -223,7 +223,7 @@ public class SearchcodeLibTest extends TestCase {
         SearchCodeLib sl = new SearchCodeLib();
 
         StringBuilder minified = new StringBuilder();
-        for (int i=0; i < 255; i++) {
+        for (int i = 0; i < 255; i++) {
             minified.append("a");
         }
         ArrayList<String> codeLines = new ArrayList<>();
@@ -252,8 +252,8 @@ public class SearchcodeLibTest extends TestCase {
         long currentUnix = System.currentTimeMillis() / 1000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
-        codeOwners.add(new CodeOwner("Ben", 250, ((int) currentUnix - (daySeconds * 22 ))));
-        codeOwners.add(new CodeOwner("Steve", 5, ((int) currentUnix - (daySeconds * 50 ))));
+        codeOwners.add(new CodeOwner("Ben", 250, ((int) currentUnix - (daySeconds * 22))));
+        codeOwners.add(new CodeOwner("Steve", 5, ((int) currentUnix - (daySeconds * 50))));
         codeOwners.add(new CodeOwner("Tim", 1, (int) currentUnix - (daySeconds * 1)));
 
         String result = sl.codeOwner(codeOwners);
@@ -269,11 +269,11 @@ public class SearchcodeLibTest extends TestCase {
         long currentUnix = System.currentTimeMillis() / 1000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
-        codeOwners.add(new CodeOwner("Ben", 250,  (int)currentUnix - (daySeconds * 22 )));
-        codeOwners.add(new CodeOwner("Steve", 5,  (int)currentUnix - (daySeconds * 50 )));
-        codeOwners.add(new CodeOwner("Tim",   1,  (int)currentUnix - (daySeconds * 1  )));
-        codeOwners.add(new CodeOwner("Terry", 1,  (int)currentUnix - (daySeconds * 1  )));
-        codeOwners.add(new CodeOwner("Zhang", 1,  (int)currentUnix - (daySeconds * 1  )));
+        codeOwners.add(new CodeOwner("Ben", 250, (int) currentUnix - (daySeconds * 22)));
+        codeOwners.add(new CodeOwner("Steve", 5, (int) currentUnix - (daySeconds * 50)));
+        codeOwners.add(new CodeOwner("Tim", 1, (int) currentUnix - (daySeconds * 1)));
+        codeOwners.add(new CodeOwner("Terry", 1, (int) currentUnix - (daySeconds * 1)));
+        codeOwners.add(new CodeOwner("Zhang", 1, (int) currentUnix - (daySeconds * 1)));
 
         String result = sl.codeOwner(codeOwners);
         assertThat(result).isEqualTo("Tim");
@@ -288,11 +288,11 @@ public class SearchcodeLibTest extends TestCase {
         long currentUnix = System.currentTimeMillis() / 1000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
-        codeOwners.add(new CodeOwner("Ben",  40,  (int)currentUnix - (daySeconds * 365 )));
-        codeOwners.add(new CodeOwner("Steve", 5,  (int)currentUnix - (daySeconds * 50  )));
-        codeOwners.add(new CodeOwner("Tim",   1,  (int)currentUnix - (daySeconds * 1   )));
-        codeOwners.add(new CodeOwner("Terry", 1,  (int)currentUnix - (daySeconds * 1   )));
-        codeOwners.add(new CodeOwner("Zhang", 8,  (int)currentUnix - (daySeconds * 1   )));
+        codeOwners.add(new CodeOwner("Ben", 40, (int) currentUnix - (daySeconds * 365)));
+        codeOwners.add(new CodeOwner("Steve", 5, (int) currentUnix - (daySeconds * 50)));
+        codeOwners.add(new CodeOwner("Tim", 1, (int) currentUnix - (daySeconds * 1)));
+        codeOwners.add(new CodeOwner("Terry", 1, (int) currentUnix - (daySeconds * 1)));
+        codeOwners.add(new CodeOwner("Zhang", 8, (int) currentUnix - (daySeconds * 1)));
 
         String result = sl.codeOwner(codeOwners);
         assertThat(result).isEqualTo("Zhang");
@@ -307,8 +307,8 @@ public class SearchcodeLibTest extends TestCase {
         long currentUnix = System.currentTimeMillis() / 1000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
-        codeOwners.add(new CodeOwner("Ben",  40,  (int)currentUnix - (daySeconds * 365 )));
-        codeOwners.add(new CodeOwner("Steve", 5,  (int)currentUnix - (daySeconds * 300  )));
+        codeOwners.add(new CodeOwner("Ben", 40, (int) currentUnix - (daySeconds * 365)));
+        codeOwners.add(new CodeOwner("Steve", 5, (int) currentUnix - (daySeconds * 300)));
 
         String result = sl.codeOwner(codeOwners);
         assertThat(result).isEqualTo("Ben");
@@ -487,7 +487,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateBusBlurbStress() {
         SearchCodeLib scl = new SearchCodeLib();
 
-        for (int i=0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
 
             List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
             for (int j = 0; j < i; j++) {
@@ -511,21 +511,20 @@ public class SearchcodeLibTest extends TestCase {
         Random rand = new Random();
         SearchCodeLib scl = new SearchCodeLib();
 
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
 
             StringBuilder bf = new StringBuilder();
-            for(int j=0; j < 5; j++) {
+            for (int j = 0; j < 5; j++) {
 
                 if (j % 2 == 0) {
                     bf.append(RandomStringUtils.randomAscii(rand.nextInt(10) + 1) + " ");
-                }
-                else {
+                } else {
                     bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1) + " ");
                 }
 
                 Singleton.getSpellingCorrector().putWord(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1));
 
-                switch(rand.nextInt(5)) {
+                switch (rand.nextInt(5)) {
                     case 1:
                         bf.append(" AND ");
                         break;

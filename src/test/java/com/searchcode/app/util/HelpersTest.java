@@ -37,7 +37,7 @@ public class HelpersTest extends TestCase {
         }
 
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempDir + "/no_newlines"), "utf-8"))) {
-            for (int i=0; i < 100000000; i++) { // About 100 MB
+            for (int i = 0; i < 100000000; i++) { // About 100 MB
                 writer.write("a");
             }
         }
@@ -63,11 +63,11 @@ public class HelpersTest extends TestCase {
     public void testSortByValue() {
         Random random = new Random(System.currentTimeMillis());
         Map<String, Integer> testMap = new HashMap<>(1000);
-        for (int i = 0 ; i < 1000 ; ++i) {
-            testMap.put( "SomeString" + random.nextInt(), random.nextInt());
+        for (int i = 0; i < 1000; ++i) {
+            testMap.put("SomeString" + random.nextInt(), random.nextInt());
         }
 
-        testMap = this.helpers.sortByValue( testMap );
+        testMap = this.helpers.sortByValue(testMap);
         assertEquals(1000, testMap.size());
 
         Integer previous = null;

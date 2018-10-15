@@ -37,7 +37,7 @@ public class AdminRouteServiceTest extends TestCase {
         Singleton.getLogger().clearAllLogs();
         List<String> statValue = Arrays.asList(null, "", "alllogs", "infologs", "warninglogs", "severelogs", "searchlogs");
 
-        for(String stat: statValue) {
+        for (String stat : statValue) {
             Request mockRequest = Mockito.mock(Request.class);
 
             Set<String> returnSet = new HashSet<>();
@@ -83,7 +83,7 @@ public class AdminRouteServiceTest extends TestCase {
         AdminRouteService adminRouteService = new AdminRouteService(repoMock, null, null, null, indexServiceMock, statsServiceMock, null, null, Singleton.getLogger());
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
-        for (String stat: statValue) {
+        for (String stat : statValue) {
             Request mockRequest = Mockito.mock(Request.class);
 
             Set<String> returnSet = new HashSet<>();
@@ -106,7 +106,7 @@ public class AdminRouteServiceTest extends TestCase {
         Singleton.getLogger().info("test");
 
         List<String> statValue = Arrays.asList("alllogs", "infologs", "severelogs", "searchlogs", "apilogs");
-        for (String stat: statValue) {
+        for (String stat : statValue) {
             Request mockRequest = Mockito.mock(Request.class);
 
             Set<String> returnSet = new HashSet<>();

@@ -37,7 +37,7 @@ public class SourceCodeTest extends TestCase {
         assertThat(location).isEmpty();
 
         location = sourceCode.getLocation(
-            new CodeIndexDocument().setDisplayLocation("displaylocation/fileName")
+                new CodeIndexDocument().setDisplayLocation("displaylocation/fileName")
         );
         assertThat(location).isEqualTo("displaylocation/");
     }

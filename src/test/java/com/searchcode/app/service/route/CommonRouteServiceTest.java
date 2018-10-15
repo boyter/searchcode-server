@@ -10,7 +10,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class CommonRouteServiceTest extends TestCase {
     public void testGetPhotoId() {
 
-        int photoId =  CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+        int photoId = CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
         assertThat(photoId).isBetween(1, 42);
 
         for (int i = 0; i < 10000; i++) {

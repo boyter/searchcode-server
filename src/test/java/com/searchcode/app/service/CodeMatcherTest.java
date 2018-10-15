@@ -255,16 +255,16 @@ public class CodeMatcherTest extends TestCase {
         Random rand = new Random();
         CodeMatcher cm = new CodeMatcher();
 
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
 
             List<String> matchTerms = new ArrayList<String>();
 
-            for(int j=0; j < rand.nextInt(10) + 1; j++) {
+            for (int j = 0; j < rand.nextInt(10) + 1; j++) {
                 matchTerms.add(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1) + "*");
             }
 
             StringBuilder bf = new StringBuilder();
-            for(int j=0; j < rand.nextInt(1000) + 1; j++) {
+            for (int j = 0; j < rand.nextInt(1000) + 1; j++) {
                 bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1)).append(" ");
             }
 
@@ -281,7 +281,7 @@ public class CodeMatcherTest extends TestCase {
         CodeMatcher cm = new CodeMatcher();
         List<String> matchTerms;
 
-        for(int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             matchTerms = new ArrayList<String>();
             matchTerms.add(RandomStringUtils.randomAscii(rand.nextInt(1) + 1).replace("*", "A"));
             matchTerms.add(RandomStringUtils.randomAscii(rand.nextInt(2) + 1).replace("*", "A"));
@@ -314,14 +314,14 @@ public class CodeMatcherTest extends TestCase {
         }
 
         StringBuilder bf = new StringBuilder();
-        for(int j=0; j < 1000 + 1; j++) {
+        for (int j = 0; j < 1000 + 1; j++) {
             bf.append(RandomStringUtils.randomAlphabetic(rand.nextInt(20) + 1)).append(" ");
         }
 
         cm.highlightLine(bf.toString(), matchTerms);
 
         bf = new StringBuilder();
-        for(int j=0; j < 1000 + 1; j++) {
+        for (int j = 0; j < 1000 + 1; j++) {
             bf.append(RandomStringUtils.random(rand.nextInt(20) + 1)).append(" ").append("q");
         }
 
@@ -348,7 +348,7 @@ public class CodeMatcherTest extends TestCase {
         for (int i = 0; i < 9999; i++) {
             StringBuilder stringBuilder = new StringBuilder();
 
-            for(int j = 0; j < 5; j++) {
+            for (int j = 0; j < 5; j++) {
                 stringBuilder.append(addString);
             }
 
@@ -426,7 +426,7 @@ public class CodeMatcherTest extends TestCase {
         matchTerms.add("re");
 
         List<String> code = new ArrayList<>();
-        for(int i=0;i<1000;i++) {
+        for (int i = 0; i < 1000; i++) {
             code.add("re");
         }
         code.add("re.compile");
@@ -438,7 +438,7 @@ public class CodeMatcherTest extends TestCase {
         // are also matches
         boolean found = false;
 
-        for (CodeMatchResult line: result) {
+        for (CodeMatchResult line : result) {
             if (line.getLine().contains("re.compile")) {
                 found = true;
             }

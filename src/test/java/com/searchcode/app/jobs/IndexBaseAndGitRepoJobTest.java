@@ -181,8 +181,8 @@ public class IndexBaseAndGitRepoJobTest extends TestCase {
         IndexGitRepoJob gitRepoJob = new IndexGitRepoJob(indexServiceMock);
 
         List<String> repoReturn = new ArrayList<>();
-        for(int i = 0; i < 10; i++) {
-            repoReturn.add("string"+i);
+        for (int i = 0; i < 10; i++) {
+            repoReturn.add("string" + i);
         }
 
         when(indexServiceMock.getRepoDocuments("testRepoName", 0)).thenReturn(repoReturn);

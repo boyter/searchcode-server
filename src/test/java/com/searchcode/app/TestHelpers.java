@@ -14,8 +14,8 @@ public class TestHelpers {
         File tempPath = clearAndCreateTempPath(unique);
 
         createFile(tempPath, "EndToEndTestFile1.php", "EndToEndTestFile EndToEndTestFile1");
-        createFile(tempPath, "EndToEndTestFile2.py",  "EndToEndTestFile EndToEndTestFile2");
-        createFile(tempPath, "EndToEndTestFile3.java",  "EndToEndTestFile EndToEndTestFile3");
+        createFile(tempPath, "EndToEndTestFile2.py", "EndToEndTestFile EndToEndTestFile2");
+        createFile(tempPath, "EndToEndTestFile3.java", "EndToEndTestFile EndToEndTestFile3");
 
         return tempPath;
     }

@@ -64,7 +64,7 @@ public class RepoTest extends TestCase {
                 .setBranch("mybranch")
                 .setData("{}"));
 
-        for (int i = 0 ; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             assertThat(repo.getRepoByName("myname")).isNotNull();
         }
 
@@ -115,13 +115,13 @@ public class RepoTest extends TestCase {
                 .setBranch("mybranch")
                 .setData("{}"));
 
-        for (int i = 0 ; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             this.repo.deleteRepoByName("myname");
         }
     }
 
     public void testSaveRepoMultipleTimes() {
-        for (int i = 0 ; i < 200; i++) {
+        for (int i = 0; i < 200; i++) {
             this.repo.saveRepo(new RepoResult()
                     .setRowId(-1)
                     .setName("myname")
