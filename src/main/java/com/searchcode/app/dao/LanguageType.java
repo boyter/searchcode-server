@@ -13,7 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generally only used when Sphinx is set as the indexing engine and used to store language
+ * name/id in the database
+ */
 public class LanguageType {
+
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
     private final LoggerWrapper logger;

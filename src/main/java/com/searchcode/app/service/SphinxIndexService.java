@@ -290,7 +290,8 @@ public class SphinxIndexService implements IIndexService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(resultSet.getInt("id"));
+                    int id = resultSet.getInt("id");
+                    Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(id);
                     sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
                 }
 
