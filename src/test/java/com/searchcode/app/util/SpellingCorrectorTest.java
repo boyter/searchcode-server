@@ -1,11 +1,8 @@
 package com.searchcode.app.util;
 
-import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.StatsService;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
-import java.util.List;
 import java.util.Random;
 
 public class SpellingCorrectorTest extends TestCase {

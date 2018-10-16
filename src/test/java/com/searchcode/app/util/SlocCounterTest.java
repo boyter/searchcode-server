@@ -172,6 +172,7 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.blankCount).isEqualTo(3);
     }
 
+    // TODO this is still wrong but close enough for multiline comments
     public void testTokeiTest() {
         String language = "Rust";
         String contents = "// 39 lines 32 code 2 comments 5 blanks\n" +
