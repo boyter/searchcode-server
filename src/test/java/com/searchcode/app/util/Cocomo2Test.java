@@ -31,5 +31,4 @@ public class Cocomo2Test extends TestCase {
         assertTrue(estimatedCost >= 2600000);
         assertTrue(estimatedCost <= 2650000);
     }
-
 }
