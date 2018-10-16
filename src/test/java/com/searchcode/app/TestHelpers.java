@@ -1,6 +1,5 @@
 package com.searchcode.app;
 
-
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class TestHelpers {
-
     public static File createDirectoryWithFiles(String unique) throws IOException {
         File tempPath = clearAndCreateTempPath(unique);
 
