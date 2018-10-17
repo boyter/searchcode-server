@@ -21,6 +21,10 @@ import static spark.Spark.*;
 import static spark.Spark.get;
 import static spark.Spark.halt;
 
+/**
+ * This provides all the routes for the single package/deploy instance
+ * of searchcode server
+ */
 public class ServerRoutes {
 
     private static Object getAuthenticatedUser(Request request) {

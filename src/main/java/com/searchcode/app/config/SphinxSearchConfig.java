@@ -31,7 +31,7 @@ public class SphinxSearchConfig {
         this.helpers = Singleton.getHelpers();
         this.logger = Singleton.getLogger();
     }
-    
+
     public synchronized Optional<Connection> getConnection(String server) throws SQLException {
         Connection connection = null;
 

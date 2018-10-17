@@ -7,6 +7,9 @@ import spark.template.freemarker.FreeMarkerEngine;
 
 import static spark.Spark.get;
 
+/**
+ * Provides all the routes for the searchcode.com version of searchcode
+ */
 public class SearchcodeRoutes {
     public static void RegisterSearchcodeRoutes() {
         get("/", (request, response) -> {
