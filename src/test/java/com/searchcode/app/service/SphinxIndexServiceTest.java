@@ -1,19 +1,13 @@
 package com.searchcode.app.service;
 
-import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dto.CodeFacetLanguage;
 import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.dto.LanguageTypeDTO;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;

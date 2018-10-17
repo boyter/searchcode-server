@@ -11,7 +11,6 @@ import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -65,15 +64,15 @@ public class SphinxIndexService implements IIndexService {
         PreparedStatement stmt = null;
 
         try {
-            Optional<Connection> connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
+            var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
             connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
         } catch (SQLException ex) {
             this.logger.severe(String.format("90cf00ef::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
 
-        CodeIndexDocument codeIndexDocument = documentQueue.poll();
-        List<CodeIndexDocument> codeIndexDocumentList = new ArrayList<>();
+        var codeIndexDocument = documentQueue.poll();
+        var codeIndexDocumentList = new ArrayList<CodeIndexDocument>();
 
         while (codeIndexDocument != null) {
             codeIndexDocumentList.add(codeIndexDocument);
@@ -83,20 +82,20 @@ public class SphinxIndexService implements IIndexService {
         try {
 
             // TODO should batch these
-            for (CodeIndexDocument codeResult : codeIndexDocumentList) {
+            for (var codeResult : codeIndexDocumentList) {
                 try {
                     // Check if language in database
                     // Upsert value into database
                     // Upsert the index
 
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
-                    SourceCodeDTO sourceCodeDTO = sourceCode.saveCode(codeResult);
+                    var sourceCodeDTO = sourceCode.saveCode(codeResult);
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
-                    int shard = (sourceCodeDTO.getId() % this.SHARD_COUNT) + 1;
+                    var shard = (sourceCodeDTO.getId() % this.SHARD_COUNT) + 1;
                     stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
-                    String indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + Values.SINGLE_SPACE +
+                    var indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + Values.SINGLE_SPACE +
                             this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + Values.SINGLE_SPACE +
                             sourceCodeDTO.getLocation() + Values.SINGLE_SPACE +
                             this.searchcodeLib.splitKeywords(sourceCodeDTO.getContent(), true) + Values.SINGLE_SPACE +
@@ -136,27 +135,25 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public void deleteAll() throws IOException {
-        throw new NotImplementedException();
     }
 
     @Override
     public void reindexAll() {
-        throw new NotImplementedException();
     }
 
     @Override
     public void flipIndex() {
-        throw new NotImplementedException();
+
     }
 
     @Override
     public void flipReadIndex() {
-        throw new NotImplementedException();
+
     }
 
     @Override
     public void flipWriteIndex() {
-        throw new NotImplementedException();
+
     }
 
     @Override
@@ -249,7 +246,7 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public CodeResult getCodeResultByCodeId(String codeId) {
-        Optional<SourceCodeDTO> byId = this.sourceCode.getById(this.helpers.tryParseInt(codeId, "-1"));
+        var byId = this.sourceCode.getById(this.helpers.tryParseInt(codeId, "-1"));
         return byId.map(x -> new CodeResult(Arrays.asList(x.getContent().split("\n")), null)).orElse(null);
     }
 
@@ -259,19 +256,19 @@ public class SphinxIndexService implements IIndexService {
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
-        List<CodeResult> codeResultList = new ArrayList<>();
-        List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
-        List<CodeFacetRepo> codeFacetRepository = new ArrayList<>();
-        int numTotalHits = 0;
+        var codeResultList = new ArrayList<CodeResult>();
+        var codeFacetLanguages = new ArrayList<CodeFacetLanguage>();
+        var codeFacetRepository = new ArrayList<CodeFacetRepo>();
+        var numTotalHits = 0;
 
-        int start = this.PAGE_LIMIT * page;
+        var start = this.PAGE_LIMIT * page;
 
         try {
-            Optional<Connection> connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
+            var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
             // TODO handle this better
             connection = connectionOptional.get();
 
-            String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
+            var searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
                     this.getLanguageFacets(facets) +
                     " LIMIT ?, 20 " +
                     " FACET repoid ORDER BY COUNT(*) DESC " +
@@ -286,7 +283,7 @@ public class SphinxIndexService implements IIndexService {
             stmt.setString(1, queryString);
             stmt.setInt(2, start);
 
-            boolean isResultSet = stmt.execute();
+            var isResultSet = stmt.execute();
 
             // TODO sourcecode needs to hold the connection till we are done
             if (isResultSet) {
@@ -294,7 +291,7 @@ public class SphinxIndexService implements IIndexService {
 
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
-                    Optional<SourceCodeDTO> sourceCodeDTO = this.sourceCode.getById(id);
+                    var sourceCodeDTO = this.sourceCode.getById(id);
                     sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
                 }
 
@@ -353,14 +350,14 @@ public class SphinxIndexService implements IIndexService {
      * Given the list of language facet id's from Sphinx convert them into a string
      * which matches the name EG 23 -> Ruby
      */
-    public List<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
-        List<CodeFacetLanguage> properCodeFacetLanguages = new ArrayList<>();
+    public ArrayList<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
+        var properCodeFacetLanguages = new ArrayList<CodeFacetLanguage>();
 
-        List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(
+        var languageNamesByIds = this.languageType.getLanguageNamesByIds(
                 codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList())
         );
 
-        for (CodeFacetLanguage codeFacetLanguage : codeFacetLanguages) {
+        for (var codeFacetLanguage : codeFacetLanguages) {
             languageNamesByIds.stream()
                     .filter(languageType -> (Integer.toString(languageType.getId())).equals(codeFacetLanguage.languageName))
                     .findFirst()
@@ -374,7 +371,7 @@ public class SphinxIndexService implements IIndexService {
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
-        CodeResult codeResult = new CodeResult(Arrays.asList(sourceCodeDTO.getContent().split(Values.ALL_NEWLINE)), null);
+        var codeResult = new CodeResult(Arrays.asList(sourceCodeDTO.getContent().split(Values.ALL_NEWLINE)), null);
         codeResult.setFilePath(sourceCodeDTO.getLocation());
 
         codeResult.setCodePath(sourceCodeDTO.getLocation());
@@ -403,14 +400,14 @@ public class SphinxIndexService implements IIndexService {
 
         // TODO replace this with single get query for all because it would be much faster
         // TODO or cache the results in the language type? Probably not a bad idea...
-        List<String> languageFacets = Arrays.stream(facets.getOrDefault("lan", new String[0]))
+        var languageFacets = Arrays.stream(facets.getOrDefault("lan", new String[0]))
                 .map((s) -> this.languageType.getByType(s).orElse(null))
                 .filter(Objects::nonNull)
                 .map(LanguageTypeDTO::getId)
                 .map(x -> Integer.toString(x))
                 .collect(Collectors.toList());
 
-        String languageFacetsString = Values.EMPTYSTRING;
+        var languageFacetsString = Values.EMPTYSTRING;
 
         if (!languageFacets.isEmpty()) {
             languageFacetsString = "AND languageid IN (" + String.join(",", languageFacets) + ")";
@@ -424,14 +421,14 @@ public class SphinxIndexService implements IIndexService {
      * host we need to add documents to
      */
     public int getShardCount(String sphinxShards) {
-        int count = 0;
-        String[] serverShards = sphinxShards.split(";");
+        var count = 0;
+        var serverShards = sphinxShards.split(";");
 
-        for (String shard : serverShards) {
-            String[] servers = shard.split(":");
+        for (var shard : serverShards) {
+            var servers = shard.split(":");
 
             if (servers.length == 2) {
-                String[] shards = servers[1].split(",");
+                var shards = servers[1].split(",");
                 count += shards.length;
             }
         }
@@ -444,7 +441,7 @@ public class SphinxIndexService implements IIndexService {
      * TODO taken from indexservice should be centralised
      */
     private List<Integer> calculatePages(int numTotalHits, int noPages) {
-        List<Integer> pages = new ArrayList<>();
+        var pages = new ArrayList<Integer>();
         if (numTotalHits != 0) {
 
             // Account for off by 1 errors

@@ -7,7 +7,6 @@ import com.google.gson.JsonSyntaxException;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
-import jdk.nashorn.internal.runtime.options.Option;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
