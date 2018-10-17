@@ -11,7 +11,6 @@
 package com.searchcode.app.config;
 
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.SphinxIndexService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
@@ -19,9 +18,7 @@ import com.searchcode.app.util.Properties;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 
 public class SphinxSearchConfig {
