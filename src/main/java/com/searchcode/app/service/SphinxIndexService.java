@@ -36,10 +36,15 @@ public class SphinxIndexService implements IIndexService {
     private final LoggerWrapper logger;
 
     public SphinxIndexService() {
+        this(Singleton.getLanguageType());
+    }
+
+    public SphinxIndexService(LanguageType languageType) {
+        this.languageType = languageType;
+
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
         this.sourceCode = Singleton.getSourceCode();
-        this.languageType = Singleton.getLanguageType();
         this.searchcodeLib = Singleton.getSearchCodeLib();
         this.logger = Singleton.getLogger();
 

@@ -1,7 +1,11 @@
 package com.searchcode.app.service;
 
+import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.LanguageType;
+import com.searchcode.app.dto.CodeFacetLanguage;
 import com.searchcode.app.dto.CodeIndexDocument;
 import junit.framework.TestCase;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,6 +14,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.Mockito.when;
 
 public class SphinxIndexServiceTest extends TestCase {
     public void testSearch() {
@@ -65,6 +70,18 @@ public class SphinxIndexServiceTest extends TestCase {
         SphinxIndexService sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2,3,4")).isEqualTo(4);
         assertThat(sphinxIndexService.getShardCount("localhost:1,2;localhost:3,4")).isEqualTo(4);
+    }
+
+    public void testTransformLanguageTypeEmpty() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
+        LanguageType mock = Mockito.mock(LanguageType.class);
+        SphinxIndexService sphinxIndexService = new SphinxIndexService(mock);
+
+        when(mock.getLanguageNamesByIds(new ArrayList<>())).thenReturn(new ArrayList<>());
+
+        List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
+        assertThat(codeFacetLanguages).hasSize(0);
     }
 
 //    public void testIndexDocumentEndToEnd() throws IOException {
