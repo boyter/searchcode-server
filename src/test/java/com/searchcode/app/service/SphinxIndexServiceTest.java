@@ -4,11 +4,13 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dto.CodeFacetLanguage;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.dto.LanguageTypeDTO;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -83,6 +85,19 @@ public class SphinxIndexServiceTest extends TestCase {
         List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
         assertThat(codeFacetLanguages).hasSize(0);
     }
+
+//    public void testTransformLanguageTypeSingleResult() {
+//        if (Singleton.getHelpers().isLocalInstance()) return;
+//
+//        LanguageType mock = Mockito.mock(LanguageType.class);
+//        SphinxIndexService sphinxIndexService = new SphinxIndexService(mock);
+//
+//        when(mock.getLanguageNamesByIds(new ArrayList<>(Arrays.asList("1"))))
+//                .thenReturn(new ArrayList<>(Arrays.asList(new LanguageTypeDTO(1, "Java"))));
+//
+//        List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>(Arrays.asList(new CodeFacetLanguage("Java", 99)));
+//        assertThat(codeFacetLanguages).hasSize(1);
+//    }
 
 //    public void testIndexDocumentEndToEnd() throws IOException {
 ////        SphinxIndexService sphinxIndexService = new SphinxIndexService();

@@ -122,7 +122,7 @@ public class SphinxIndexService implements IIndexService {
             }
         } finally {
             this.helpers.closeQuietly(stmt);
-//            this.helpers.closeQuietly(connection);
+            // this.helpers.closeQuietly(connection);
         }
     }
 
@@ -271,14 +271,14 @@ public class SphinxIndexService implements IIndexService {
             // TODO handle this better
             connection = connectionOptional.get();
 
-            String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?)" +
+            String searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
                     this.getLanguageFacets(facets) +
-                    " LIMIT ?, 20" +
-                    " FACET repoid ORDER BY COUNT(*) DESC" +
-                    " FACET languageid ORDER BY COUNT(*) DESC;" +
-//                                 "FACET sourceid ORDER BY COUNT(*) DESC " +
-//                                 "FACET ownerid ORDER BY COUNT(*) DESC " +
-//                                 "FACET licenseid ORDER BY COUNT(*) DESC; " +
+                    " LIMIT ?, 20 " +
+                    " FACET repoid ORDER BY COUNT(*) DESC " +
+                    " FACET languageid ORDER BY COUNT(*) DESC; " +
+                    // "FACET sourceid ORDER BY COUNT(*) DESC " +
+                    // "FACET ownerid ORDER BY COUNT(*) DESC " +
+                    // "FACET licenseid ORDER BY COUNT(*) DESC; " +
                     "SHOW META;";
 
             // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
@@ -323,7 +323,7 @@ public class SphinxIndexService implements IIndexService {
                 isResultSet = stmt.getMoreResults();
             }
 
-            // META
+            // Meta results produce all sorts of interesting information about the search but the main one is the total number of results
             if (isResultSet) {
                 resultSet = stmt.getResultSet();
 
@@ -335,7 +335,6 @@ public class SphinxIndexService implements IIndexService {
             }
 
         } catch (SQLException ex) {
-            //return results;
             this.logger.severe(String.format("c0ed0920::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         } finally {
             this.helpers.closeQuietly(resultSet);
@@ -350,10 +349,16 @@ public class SphinxIndexService implements IIndexService {
         return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), new ArrayList<>());
     }
 
+    /**
+     * Given the list of language facet id's from Sphinx convert them into a string
+     * which matches the name EG 23 -> Ruby
+     */
     public List<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
         List<CodeFacetLanguage> properCodeFacetLanguages = new ArrayList<>();
 
-        List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList()));
+        List<LanguageTypeDTO> languageNamesByIds = this.languageType.getLanguageNamesByIds(
+                codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList())
+        );
 
         for (CodeFacetLanguage codeFacetLanguage : codeFacetLanguages) {
             languageNamesByIds.stream()
@@ -387,6 +392,10 @@ public class SphinxIndexService implements IIndexService {
         return codeResult;
     }
 
+    /**
+     * Takes in the facts map which contains types to ids and for languages (lan)
+     * looks up the id that is in the database so that we can tell sphinx which facets to apply
+     */
     public String getLanguageFacets(HashMap<String, String[]> facets) {
         if (facets == null) {
             return Values.EMPTYSTRING;
@@ -410,6 +419,10 @@ public class SphinxIndexService implements IIndexService {
         return languageFacetsString;
     }
 
+    /**
+     * Using sphinxrt index means we need to work out which shards on which
+     * host we need to add documents to
+     */
     public int getShardCount(String sphinxShards) {
         int count = 0;
         String[] serverShards = sphinxShards.split(";");
