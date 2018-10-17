@@ -123,12 +123,10 @@ public class SphinxIndexService implements IIndexService {
 
     @Override
     public void deleteByCodeId(String codeId) throws IOException {
-
     }
 
     @Override
     public void deleteByRepo(RepoResult repo) throws IOException {
-
     }
 
     @Override
