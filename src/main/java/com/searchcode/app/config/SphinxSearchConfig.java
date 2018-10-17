@@ -31,7 +31,7 @@ public class SphinxSearchConfig {
         this.helpers = Singleton.getHelpers();
         this.logger = Singleton.getLogger();
     }
-
+    
     public synchronized Optional<Connection> getConnection(String server) throws SQLException {
         Connection connection = null;
 
@@ -41,7 +41,7 @@ public class SphinxSearchConfig {
             if (connection == null || connection.isClosed() || !connection.isValid(1)) {
                 this.helpers.closeQuietly(connection);
                 Class.forName("com.mysql.jdbc.Driver");
-                String connectionString = (String) Properties.getProperties().getOrDefault("sphinx_connection_string", "jdbc:mysql://%s:9306?characterEncoding=utf8&maxAllowedPacket=1024000");
+                String connectionString = (String) Properties.getProperties().getOrDefault("sphinx_connection_string", "jdbc:mysql://%s:9306?characterEncoding=utf8&maxAllowedPacket=10000000");
 
                 connectionString = String.format(connectionString, server);
                 connection = DriverManager.getConnection(connectionString, Values.EMPTYSTRING, Values.EMPTYSTRING);
