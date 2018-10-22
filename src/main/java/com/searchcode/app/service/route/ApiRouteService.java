@@ -25,6 +25,7 @@ import com.searchcode.app.util.Properties;
 import spark.Request;
 import spark.Response;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +79,13 @@ public class ApiRouteService {
                 return new ApiResponse(false, "sig is a required parameter");
             }
 
-            String toValidate = String.format("pub=%s", URLEncoder.encode(publicKey));
+            String toValidate = null;
+            try {
+                toValidate = String.format("pub=%s", URLEncoder.encode(publicKey, java.nio.charset.StandardCharsets.UTF_8.toString()));
+            } catch (UnsupportedEncodingException ex) {
+                this.logger.severe(String.format("2c990764::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+                return new ApiResponse(false, "invalid signed url");
+            }
 
             ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
@@ -185,8 +192,13 @@ public class ApiRouteService {
                 return new RepoResultApiResponse(false, "sig is a required parameter", null);
             }
 
-            String toValidate = String.format("pub=%s",
-                    URLEncoder.encode(publicKey));
+            String toValidate = null;
+            try {
+                toValidate = String.format("pub=%s", URLEncoder.encode(publicKey, java.nio.charset.StandardCharsets.UTF_8.toString()));
+            } catch (UnsupportedEncodingException ex) {
+                this.logger.severe(String.format("23d9f609::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+                return new RepoResultApiResponse(false, "invalid signed url", null);
+            }
 
             ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
@@ -227,9 +239,15 @@ public class ApiRouteService {
                 return new ApiResponse(false, "sig is a required parameter");
             }
 
-            String toValidate = String.format("pub=%s&reponame=%s",
-                    URLEncoder.encode(publicKey),
-                    URLEncoder.encode(reponames));
+            String toValidate = null;
+            try {
+                toValidate = String.format("pub=%s&reponame=%s",
+                        URLEncoder.encode(publicKey, java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(reponames, java.nio.charset.StandardCharsets.UTF_8.toString()));
+            } catch (UnsupportedEncodingException ex) {
+                this.logger.severe(String.format("940323e9::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+                return new ApiResponse(false, "invalid signed url");
+            }
 
             ApiService.HmacType hmacType = hmacTypeString.toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
             boolean validRequest = apiService.validateRequest(publicKey, signedKey, toValidate, hmacType);
@@ -310,28 +328,41 @@ public class ApiRouteService {
                 return new ApiResponse(false, "sig is a required parameter");
             }
 
-            String toValidate1 = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s",
-                    URLEncoder.encode(publicKey.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(reponames.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repourls.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repotype.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repousername.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repopassword.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(reposource.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repobranch.orElse(Values.EMPTYSTRING)));
 
-            String toValidate2 = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s&source=%s&sourceuser=%s&sourceproject=%s",
-                    URLEncoder.encode(publicKey.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(reponames.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repourls.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repotype.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repousername.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repopassword.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(reposource.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(repobranch.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(source.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(sourceuser.orElse(Values.EMPTYSTRING)),
-                    URLEncoder.encode(sourceproject.orElse(Values.EMPTYSTRING)));
+            String toValidate1 = null;
+            try {
+                toValidate1 = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s",
+                        URLEncoder.encode(publicKey.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(reponames.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repourls.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repotype.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repousername.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repopassword.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(reposource.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repobranch.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()));
+            } catch (UnsupportedEncodingException ex) {
+                this.logger.severe(String.format("fe2464ea::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+                return new ApiResponse(false, "invalid signed url");
+            }
+
+            String toValidate2 = null;
+            try {
+                toValidate2 = String.format("pub=%s&reponame=%s&repourl=%s&repotype=%s&repousername=%s&repopassword=%s&reposource=%s&repobranch=%s&source=%s&sourceuser=%s&sourceproject=%s",
+                        URLEncoder.encode(publicKey.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(reponames.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repourls.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repotype.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repousername.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repopassword.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(reposource.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(repobranch.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(source.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(sourceuser.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()),
+                        URLEncoder.encode(sourceproject.orElse(Values.EMPTYSTRING), java.nio.charset.StandardCharsets.UTF_8.toString()));
+            } catch (UnsupportedEncodingException ex) {
+                this.logger.severe(String.format("f9075339::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+                return new ApiResponse(false, "invalid signed url");
+            }
 
             ApiService.HmacType hmacType = hmacTypeString.orElse(Values.EMPTYSTRING).toLowerCase().equals("sha512") ? ApiService.HmacType.SHA512 : ApiService.HmacType.SHA1;
 

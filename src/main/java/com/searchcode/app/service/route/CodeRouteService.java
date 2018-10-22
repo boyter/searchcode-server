@@ -29,6 +29,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -340,7 +341,14 @@ public class CodeRouteService {
                     reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
 
                     List<String> reposQueryList = Arrays.asList(repos).stream()
-                            .map((s) -> "&repo=" + URLEncoder.encode(s))
+                            .map((s) -> {
+                                try {
+                                    return "&repo=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
+                                } catch (UnsupportedEncodingException ex) {
+                                    // TODO add logging here
+                                    return Values.EMPTYSTRING;
+                                }
+                            })
                             .collect(Collectors.toList());
 
                     reposQueryString = StringUtils.join(reposQueryList, "");
@@ -358,7 +366,14 @@ public class CodeRouteService {
                     langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
 
                     List<String> langsQueryList = Arrays.asList(langs).stream()
-                            .map((s) -> "&lan=" + URLEncoder.encode(s))
+                            .map((s) -> {
+                                try {
+                                    return "&lan=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
+                                } catch (UnsupportedEncodingException e) {
+                                    // TODO log here
+                                    return Values.EMPTYSTRING;
+                                }
+                            })
                             .collect(Collectors.toList());
 
                     langsQueryString = StringUtils.join(langsQueryList, "");
@@ -376,7 +391,14 @@ public class CodeRouteService {
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
 
                     List<String> ownsQueryList = Arrays.asList(owners).stream()
-                            .map((s) -> "&own=" + URLEncoder.encode(s))
+                            .map((s) -> {
+                                try {
+                                    return "&own=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
+                                } catch (UnsupportedEncodingException e) {
+                                    // TODO log here
+                                    return Values.EMPTYSTRING;
+                                }
+                            })
                             .collect(Collectors.toList());
 
                     ownsQueryString = StringUtils.join(ownsQueryList, "");
