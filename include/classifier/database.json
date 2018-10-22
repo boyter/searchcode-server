@@ -1736,6 +1736,39 @@
     ],
     "quotes": []
   },
+  "Fragment Shader File": {
+    "complexitychecks": [
+      "for ",
+      "for(",
+      "if ",
+      "if(",
+      "switch ",
+      "while ",
+      "else ",
+      "|| ",
+      "&& ",
+      "!= ",
+      "== "
+    ],
+    "extensions": [
+      "fsh"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ]
+    ]
+  },
   "Freemarker Template": {
     "complexitychecks": [
       "<#list ",
@@ -1820,6 +1853,41 @@
       "geom",
       "frag",
       "comp"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ]
+    ]
+  },
+  "Game Maker Language": {
+    "complexitychecks": [
+      "for ",
+      "for(",
+      "if ",
+      "if(",
+      "switch ",
+      "while ",
+      "else ",
+      "|| ",
+      "or ",
+      "&& ",
+      "and ",
+      "!= ",
+      "== "
+    ],
+    "extensions": [
+      "gml"
     ],
     "line_comment": [
       "//"
@@ -5259,6 +5327,39 @@
     "line_comment": [],
     "multi_line": [],
     "quotes": []
+  },
+  "Vertex Shader File": {
+    "complexitychecks": [
+      "for ",
+      "for(",
+      "if ",
+      "if(",
+      "switch ",
+      "while ",
+      "else ",
+      "|| ",
+      "&& ",
+      "!= ",
+      "== "
+    ],
+    "extensions": [
+      "vsh"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ]
+    ]
   },
   "Vim Script": {
     "complexitychecks": [
