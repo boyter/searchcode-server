@@ -30,7 +30,7 @@ All tests must pass before any submission will be accepted.
 
 To Build TL/DR;
 ---------------
- - Install Java 8 (Oracle or OpenJDK)
+ - Install Java 11 (Oracle or OpenJDK)
  - Install Maven
  - Install Python and Fabric (optional)
  - Install NPM and run "npm install -g node-qunit-phantomjs" (optional)
@@ -40,7 +40,7 @@ To Build TL/DR;
 To Build
 --------
 
-To build searchcode server you need to have any Windows, Linux or OSX machine with Java 8 installed and
+To build searchcode server you need to have any Windows, Linux or OSX machine with Java 11 installed and
 maven setup. Idealy you want to use a Unix OS with Python and Python Fabric installed.
 
 Note that Fabric tasks (fab) are not currently supported on Windows. You can attempt to use
@@ -112,12 +112,13 @@ https://hub.docker.com/r/searchcode/searchcode-server-community/
 
 and then simply run it. Note that this instance is not production ready, as all configuration and storage is done inside the container, but it is the fastest way to get started.
 
-To run searchcode server locally you will need to have any Windows, Linux or OSX machine with Java 8 installed.
+To run searchcode server locally you will need to have any Windows, Linux or OSX machine with Java 11 installed.
 Testing and packaging was done using the below version.
 
-	java version "1.8.0_65"
-	Java(TM) SE Runtime Environment (build 1.8.0_65-b17)
-	Java HotSpot(TM) 64-Bit Server VM (build 25.65-b01, mixed mode)
+	$ java -version
+	openjdk version "11.0.1" 2018-10-16
+	OpenJDK Runtime Environment (build 11.0.1+13-Debian-2)
+	OpenJDK 64-Bit Server VM (build 11.0.1+13-Debian-2, mixed mode, sharing)
 
 Uncompress the file you have downloaded to a directory where you want to run searchcode server.
 This directory should have more disk space than the size of the repositories you want to index.
