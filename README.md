@@ -204,7 +204,8 @@ Change Log
 ==========
 
 XX XXXXXXXX XXXX - 1.3.15
-
+ - BREAKING CHANGE Migrate to Java 11
+ -
 
 14 September 2018 - 1.3.14 https://github.com/boyter/searchcode-server/projects/7
  - Move over to scc language definitions for identifying languages https://github.com/boyter/searchcode-server/issues/186
