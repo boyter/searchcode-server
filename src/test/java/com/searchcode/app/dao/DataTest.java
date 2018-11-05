@@ -74,7 +74,7 @@ public class DataTest extends TestCase {
      * Stress test the saving to check if we are closing connections properly
      */
     public void testManySaveAndGet() {
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 1000; i++) {
             String expected = "" + System.currentTimeMillis();
             data.saveData("testManySaveAndGet", expected);
 

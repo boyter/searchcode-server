@@ -28,6 +28,16 @@ public class SphinxIndexServiceTest extends TestCase {
                 .forEach(x -> sphinxIndexService.search("test", null, 0, false));
     }
 
+    public void testSearchEnsureConnectionsClose() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
+        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+
+        for (int i = 0; i < 100; i++) {
+            sphinxIndexService.search("test", null, 0, false);
+        }
+    }
+
     private CodeIndexDocument codeIndexDocument = new CodeIndexDocument()
             .setRepoLocationRepoNameLocationFilename("repoLocationRepoNameLocationFilename")
             .setRepoName("this is a repositoryname")
