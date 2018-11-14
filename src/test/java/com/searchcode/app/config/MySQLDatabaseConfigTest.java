@@ -13,14 +13,14 @@ public class MySQLDatabaseConfigTest extends TestCase {
     public void testConnection() throws SQLException {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        MySQLDatabaseConfig mySQLDatabaseConfig = new MySQLDatabaseConfig();
+        var mySQLDatabaseConfig = new MySQLDatabaseConfig();
         mySQLDatabaseConfig.getConnection();
     }
 
     public void testMultipleConnection() throws SQLException {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        MySQLDatabaseConfig mySQLDatabaseConfig = new MySQLDatabaseConfig();
+        var mySQLDatabaseConfig = new MySQLDatabaseConfig();
 
         for (int i = 0; i < 1000; i++) {
             mySQLDatabaseConfig.getConnection();

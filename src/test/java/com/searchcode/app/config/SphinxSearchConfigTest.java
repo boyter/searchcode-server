@@ -12,18 +12,18 @@ public class SphinxSearchConfigTest extends TestCase {
     public void testConnectionSphinx() throws Exception {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxSearchConfig ssc = new SphinxSearchConfig();
-        Optional<Connection> connection = ssc.getConnection("127.0.0.1");
+        var ssc = new SphinxSearchConfig();
+        var connection = ssc.getConnection("127.0.0.1");
         assertThat(connection.get()).isNotNull();
     }
 
     public void testMultipleConnectionSphinx() throws Exception {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxSearchConfig ssc = new SphinxSearchConfig();
+        var ssc = new SphinxSearchConfig();
 
-        for (int i=0; i< 1000; i++) {
-            Optional<Connection> connection = ssc.getConnection("127.0.0.1");
+        for (int i = 0; i< 1000; i++) {
+            var connection = ssc.getConnection("127.0.0.1");
             assertThat(connection.get()).isNotNull();
         }
     }

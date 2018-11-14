@@ -16,13 +16,14 @@ public class SphinxIndexServiceTest extends TestCase {
     public void testSearch() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+        var sphinxIndexService = new SphinxIndexService();
 
-        List<String> someList = new ArrayList<>();
+        var someList = new ArrayList<String>();
 
         for (int i = 0; i < 100; i++) {
             someList.add("" + i);
         }
+        var res = sphinxIndexService.search("test", null, 0, false);
 
         someList.parallelStream()
                 .forEach(x -> sphinxIndexService.search("test", null, 0, false));
@@ -31,7 +32,7 @@ public class SphinxIndexServiceTest extends TestCase {
     public void testSearchEnsureConnectionsClose() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+        var sphinxIndexService = new SphinxIndexService();
 
         for (int i = 0; i < 100; i++) {
             sphinxIndexService.search("test", null, 0, false);
@@ -57,7 +58,7 @@ public class SphinxIndexServiceTest extends TestCase {
     public void testGetShardCountExpectingZero() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+        var sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("")).isZero();
         assertThat(sphinxIndexService.getShardCount("localhost:")).isZero();
     }
@@ -65,7 +66,7 @@ public class SphinxIndexServiceTest extends TestCase {
     public void testGetShardCountExpectingTwo() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+        var sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2")).isEqualTo(2);
         assertThat(sphinxIndexService.getShardCount("localhost:1;localhost:2")).isEqualTo(2);
     }
@@ -73,7 +74,7 @@ public class SphinxIndexServiceTest extends TestCase {
     public void testGetShardCountExpectingFour() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        SphinxIndexService sphinxIndexService = new SphinxIndexService();
+        var sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2,3,4")).isEqualTo(4);
         assertThat(sphinxIndexService.getShardCount("localhost:1,2;localhost:3,4")).isEqualTo(4);
     }
@@ -81,8 +82,8 @@ public class SphinxIndexServiceTest extends TestCase {
     public void testTransformLanguageTypeEmpty() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        LanguageType mock = Mockito.mock(LanguageType.class);
-        SphinxIndexService sphinxIndexService = new SphinxIndexService(mock);
+        var mock = Mockito.mock(LanguageType.class);
+        var sphinxIndexService = new SphinxIndexService(mock);
 
         when(mock.getLanguageNamesByIds(new ArrayList<>())).thenReturn(new ArrayList<>());
 
