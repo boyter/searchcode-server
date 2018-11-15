@@ -42,8 +42,8 @@ public class Data {
     }
 
     public synchronized List<DataData> getAllData() {
-        List<DataData> values = new ArrayList<>();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var values = new ArrayList<DataData>();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -63,7 +63,7 @@ public class Data {
     }
 
     public synchronized String getDataByName(String key, String defaultValue) {
-        String value = this.getDataByName(key);
+        var value = this.getDataByName(key);
         if (value == null) {
             return defaultValue;
         }
@@ -72,7 +72,7 @@ public class Data {
 
     public synchronized String getDataByName(String key) {
         String value = null;
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -94,9 +94,9 @@ public class Data {
     }
 
     public synchronized boolean saveData(String key, String value) {
-        String existing = this.getDataByName(key);
-        boolean isNew = false;
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var existing = this.getDataByName(key);
+        var isNew = false;
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -124,7 +124,7 @@ public class Data {
     }
 
     public synchronized void createTableIfMissing() {
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();

@@ -50,8 +50,8 @@ public class Repo {
     }
 
     public synchronized List<RepoResult> getAllRepo() {
-        List<RepoResult> repoResults = new ArrayList<>();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var repoResults = new ArrayList<RepoResult>();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -60,15 +60,15 @@ public class Repo {
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                int rowId = connStmtRs.rs.getInt("rowid");
-                String repoName = connStmtRs.rs.getString("name");
-                String repoScm = connStmtRs.rs.getString("scm");
-                String repoUrl = connStmtRs.rs.getString("url");
-                String repoUsername = connStmtRs.rs.getString("username");
-                String repoPassword = connStmtRs.rs.getString("password");
-                String repoSource = connStmtRs.rs.getString("source");
-                String repoBranch = connStmtRs.rs.getString("branch");
-                String repoData = connStmtRs.rs.getString("data");
+                var rowId = connStmtRs.rs.getInt("rowid");
+                var repoName = connStmtRs.rs.getString("name");
+                var repoScm = connStmtRs.rs.getString("scm");
+                var repoUrl = connStmtRs.rs.getString("url");
+                var repoUsername = connStmtRs.rs.getString("username");
+                var repoPassword = connStmtRs.rs.getString("password");
+                var repoSource = connStmtRs.rs.getString("source");
+                var repoBranch = connStmtRs.rs.getString("branch");
+                var repoData = connStmtRs.rs.getString("data");
 
                 repoResults.add(new RepoResult()
                         .setRowId(rowId)
@@ -91,13 +91,13 @@ public class Repo {
     }
 
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
-        List<RepoResult> repoResults = this.getAllRepo();
-        List<RepoResult> matchRepoResults = new ArrayList<>();
+        var repoResults = this.getAllRepo();
+        List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
 
         String[] split = searchTerms.toLowerCase().split(" ");
 
         for (RepoResult rr : repoResults) {
-            boolean isMatch = false;
+            var isMatch = false;
 
             for (String term : split) {
                 isMatch = rr.toString().toLowerCase().contains(term);

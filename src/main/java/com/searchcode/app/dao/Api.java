@@ -48,8 +48,8 @@ public class Api {
     }
 
     public synchronized List<ApiResult> getAllApi() {
-        List<ApiResult> apiResults = new ArrayList<>();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var apiResults = new ArrayList<ApiResult>();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -57,11 +57,11 @@ public class Api {
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                int rowId = connStmtRs.rs.getInt("rowid");
-                String d_publicKey = connStmtRs.rs.getString("publickey");
-                String privateKey = connStmtRs.rs.getString("privatekey");
-                String lastUsed = connStmtRs.rs.getString("lastused");
-                String data = connStmtRs.rs.getString("data");
+                var rowId = connStmtRs.rs.getInt("rowid");
+                var d_publicKey = connStmtRs.rs.getString("publickey");
+                var privateKey = connStmtRs.rs.getString("privatekey");
+                var lastUsed = connStmtRs.rs.getString("lastused");
+                var data = connStmtRs.rs.getString("data");
 
                 apiResults.add(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
@@ -76,7 +76,7 @@ public class Api {
 
     public synchronized Optional<ApiResult> getApiByPublicKey(String publicKey) {
         Optional<ApiResult> result = Optional.empty();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -87,11 +87,11 @@ public class Api {
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                int rowId = connStmtRs.rs.getInt("rowid");
-                String d_publicKey = connStmtRs.rs.getString("publickey");
-                String privateKey = connStmtRs.rs.getString("privatekey");
-                String lastUsed = connStmtRs.rs.getString("lastused");
-                String data = connStmtRs.rs.getString("data");
+                var rowId = connStmtRs.rs.getInt("rowid");
+                var d_publicKey = connStmtRs.rs.getString("publickey");
+                var privateKey = connStmtRs.rs.getString("privatekey");
+                var lastUsed = connStmtRs.rs.getString("lastused");
+                var data = connStmtRs.rs.getString("data");
 
                 result = Optional.of(new ApiResult(rowId, d_publicKey, privateKey, lastUsed, data));
             }
@@ -105,8 +105,8 @@ public class Api {
     }
 
     public synchronized boolean saveApi(ApiResult apiResult) {
-        boolean successful = false;
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var successful = false;
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -130,7 +130,7 @@ public class Api {
     }
 
     public synchronized void deleteApiByPublicKey(String publicKey) {
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -145,14 +145,14 @@ public class Api {
     }
 
     public synchronized void createTableIfMissing() {
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
             connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='api';");
 
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
-            String value = Values.EMPTYSTRING;
+            var value = Values.EMPTYSTRING;
             while (connStmtRs.rs.next()) {
                 value = connStmtRs.rs.getString("name");
             }

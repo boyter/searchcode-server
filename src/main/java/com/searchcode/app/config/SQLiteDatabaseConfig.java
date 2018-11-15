@@ -31,7 +31,7 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
         try {
             if (connection == null || connection.isClosed()) {
                 Singleton.getHelpers().closeQuietly(connection);
-                String sqliteFile = (String) Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
+                var sqliteFile = (String) Properties.getProperties().getOrDefault(Values.SQLITE_FILE, Values.DEFAULT_SQLITE_FILE);
 
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite:" + sqliteFile);
