@@ -22,7 +22,7 @@ public class SphinxSearchConfigTest extends TestCase {
 
         var ssc = new SphinxSearchConfig();
 
-        for (int i = 0; i< 1000; i++) {
+        for (int i = 0; i < 1000; i++) {
             var connection = ssc.getConnection("127.0.0.1");
             assertThat(connection.get()).isNotNull();
         }

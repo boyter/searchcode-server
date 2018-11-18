@@ -16,28 +16,28 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CodeIndexDocumentTest extends TestCase {
     public void testMd5CalcA() {
-        CodeIndexDocument cd = new CodeIndexDocument();
+        var cd = new CodeIndexDocument();
         cd.setRepoLocationRepoNameLocationFilename("a");
         String result = cd.getHash();
         assertThat(result).isEqualTo("86f7e437faa5a7fce15d1ddcb9eaeaea377667b8");
     }
 
     public void testMd5CalcB() {
-        CodeIndexDocument cd = new CodeIndexDocument();
+        var cd = new CodeIndexDocument();
         cd.setRepoLocationRepoNameLocationFilename("b");
         String result = cd.getHash();
         assertThat(result).isEqualTo("e9d71f5ee7c92d6dc9e92ffdad17b8bd49418f98");
     }
 
     public void testSetRepoLocationReplacement() {
-        CodeIndexDocument cd = new CodeIndexDocument();
+        var cd = new CodeIndexDocument();
 
         cd.setRepoLocationRepoNameLocationFilename(".//this/");
         assertThat(cd.getRepoLocationRepoNameLocationFilename()).isEqualTo("./this/");
     }
 
     public void testTesty() {
-        CodeIndexDocument cd = new CodeIndexDocument()
+        var cd = new CodeIndexDocument()
                 .setContents("something")
                 .setRepoRemoteLocation("something");
 
