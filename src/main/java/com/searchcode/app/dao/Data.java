@@ -11,6 +11,7 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.DataData;
 import com.searchcode.app.service.Singleton;
@@ -23,6 +24,7 @@ import java.util.List;
 
 /**
  * Provides access to all methods required to get Data details from the database.
+ * Designed to work with both MySQL and SQLite with tests to ensure this is the case.
  */
 public class Data {
 
@@ -126,6 +128,10 @@ public class Data {
         return isNew;
     }
 
+    /**
+     * This method is specific to SQLite and will fail if run against MySQL
+     * TODO implement this for MySQL
+     */
     public synchronized void createTableIfMissing() {
         var connStmtRs = new ConnStmtRs();
 
@@ -134,12 +140,12 @@ public class Data {
             connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT name FROM sqlite_master WHERE type='table' AND name='data';");
 
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
-            String value = "";
+            var value = Values.EMPTYSTRING;
             while (connStmtRs.rs.next()) {
                 value = connStmtRs.rs.getString("name");
             }
 
-            if (Singleton.getHelpers().isNullEmptyOrWhitespace(value)) {
+            if (this.helpers.isNullEmptyOrWhitespace(value)) {
                 connStmtRs.stmt = connStmtRs.conn.prepareStatement("CREATE TABLE \"data\" (\"key\" VARCHAR PRIMARY KEY  NOT NULL , \"value\" VARCHAR)");
                 connStmtRs.stmt.execute();
             }
