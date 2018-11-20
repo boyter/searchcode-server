@@ -93,4 +93,13 @@ public class MySQLDataTest extends TestCase {
         var actual = Double.parseDouble(data.getDataByName("THISSHOULDNEVEREXISTIHOPE", "0"));
         assertThat(actual).isEqualTo(0);
     }
+
+    public void testGetAllData() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
+        data.saveData("testAllData", "anything");
+
+        var actual = data.getAllData();
+        assertThat(actual.size()).isGreaterThanOrEqualTo(1);
+    }
 }

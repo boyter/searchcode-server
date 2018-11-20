@@ -50,7 +50,7 @@ public class Data {
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
-            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select key,value from \"data\";");
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select `key`, `value` from `data`;");
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
