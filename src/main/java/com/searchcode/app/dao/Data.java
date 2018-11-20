@@ -76,7 +76,7 @@ public class Data {
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
-            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select key,value from \"data\" where key = ?;");
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select `key`, `value` from `data` where `key` = ?;");
             connStmtRs.stmt.setString(1, key);
 
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
@@ -102,13 +102,13 @@ public class Data {
             connStmtRs.conn = this.dbConfig.getConnection();
 
             if (existing != null) {
-                connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE \"data\" SET \"key\" = ?, \"value\" = ? WHERE  \"key\" = ?");
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE `data` SET `key` = ?, `value` = ? WHERE `key` = ?");
                 connStmtRs.stmt.setString(1, key);
                 connStmtRs.stmt.setString(2, value);
                 connStmtRs.stmt.setString(3, key);
             } else {
                 isNew = true;
-                connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO data(\"key\",\"value\") VALUES (?,?)");
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO data(`key`, `value`) VALUES (?,?)");
                 connStmtRs.stmt.setString(1, key);
                 connStmtRs.stmt.setString(2, value);
             }

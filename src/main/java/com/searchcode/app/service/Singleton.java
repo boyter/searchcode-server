@@ -11,6 +11,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.config.SQLiteDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.*;
@@ -350,7 +351,17 @@ public final class Singleton {
 
     public static synchronized IDatabaseConfig getDatabaseConfig() {
         if (databaseConfig == null) {
-            databaseConfig = new SQLiteDatabaseConfig();
+            String index = Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE);
+
+            switch (index) {
+                case "sphinx":
+                    databaseConfig = new MySQLDatabaseConfig();
+                    break;
+                case "internal":
+                default:
+                    databaseConfig = new SQLiteDatabaseConfig();
+                    break;
+            }
         }
 
         return databaseConfig;
