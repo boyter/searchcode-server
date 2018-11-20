@@ -38,7 +38,10 @@ public class Data {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = logger;
-        this.createTableIfMissing();
+
+        if (Singleton.getHelpers().isLocalInstance()) {
+            this.createTableIfMissing();
+        }
     }
 
     public synchronized List<DataData> getAllData() {

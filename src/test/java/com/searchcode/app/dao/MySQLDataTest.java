@@ -13,6 +13,11 @@ import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+/**
+ * Tests the Data DAO when running against MySQL as an integration test
+ * as it requires that MySQL be running and connections work.
+ * This is used as part of the searchcode.com test suite.
+ */
 public class MySQLDataTest extends TestCase {
 
     private Data data;

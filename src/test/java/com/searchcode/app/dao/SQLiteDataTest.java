@@ -11,6 +11,9 @@ import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+/**
+ * Tests the Data DAO when using SQLite
+ */
 public class SQLiteDataTest extends TestCase {
 
     private Data data;
