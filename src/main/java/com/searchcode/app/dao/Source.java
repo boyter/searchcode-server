@@ -38,15 +38,7 @@ public class Source {
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                var id = connStmtRs.rs.getInt("id");
-                var name = connStmtRs.rs.getString("name");
-
-
-                var sourceResult = new SourceResult()
-                        .setId(id)
-                        .setName(name);
-
-                result = Optional.of(sourceResult);
+                result = getSourceResult(connStmtRs);
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("8c537eed::error in class %s exception %s", ex.getClass(), ex.getMessage()));
@@ -69,15 +61,7 @@ public class Source {
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                var id = connStmtRs.rs.getInt("id");
-                var name = connStmtRs.rs.getString("name");
-
-
-                var sourceResult = new SourceResult()
-                        .setId(id)
-                        .setName(name);
-
-                result = Optional.of(sourceResult);
+                result = getSourceResult(connStmtRs);
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("8c537eed::error in class %s exception %s", ex.getClass(), ex.getMessage()));
@@ -86,5 +70,16 @@ public class Source {
         }
 
         return result;
+    }
+
+    private Optional<SourceResult> getSourceResult(ConnStmtRs connStmtRs) throws SQLException {
+        var id = connStmtRs.rs.getInt("id");
+        var name = connStmtRs.rs.getString("name");
+
+        var sourceResult = new SourceResult()
+                .setId(id)
+                .setName(name);
+
+        return Optional.of(sourceResult);
     }
 }
