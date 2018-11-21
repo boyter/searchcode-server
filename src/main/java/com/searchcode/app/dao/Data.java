@@ -75,6 +75,7 @@ public class Data {
         return value;
     }
 
+    // TODO modify this to return optional
     public synchronized String getDataByName(String key) {
         String value = null;
         var connStmtRs = new ConnStmtRs();
