@@ -25,6 +25,8 @@ import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
 import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -72,7 +74,6 @@ public final class Singleton {
 
     private static boolean enqueueRepositoryJobFirstRun = true;
     private static boolean enqueueFileRepositoryJobFirstRun = true;
-
 
     public static synchronized void setEnqueueRepositoryJobFirstRun(boolean value) {
         enqueueRepositoryJobFirstRun = value;

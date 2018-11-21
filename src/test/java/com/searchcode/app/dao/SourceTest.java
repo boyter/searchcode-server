@@ -29,5 +29,4 @@ public class SourceTest extends TestCase {
             this.source.getSourceById(i).map(x -> assertThat(this.source.getSourceByName(x.name).isPresent()));
         }
     }
-
 }

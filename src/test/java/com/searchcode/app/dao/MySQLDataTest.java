@@ -9,6 +9,7 @@ import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -101,5 +102,20 @@ public class MySQLDataTest extends TestCase {
 
         var actual = data.getAllData();
         assertThat(actual.size()).isGreaterThanOrEqualTo(1);
+    }
+
+    public void testValuesParallel() {
+        var someList = new ArrayList<String>();
+
+        for (int i = 0; i < 100; i++) {
+            someList.add("" + i);
+        }
+
+        someList.parallelStream()
+                .forEach(x -> {
+                    this.data.getDataByName(x);
+                    this.data.getDataByName(x, "");
+                    this.data.getAllData();
+                });
     }
 }
