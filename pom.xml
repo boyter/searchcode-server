@@ -118,12 +118,6 @@
             <version>1.4</version>
             <type>jar</type>
         </dependency>
-        <!-- LRU Cache https://github.com/jhalterman/expiringmap -->
-        <dependency>
-            <groupId>net.jodah</groupId>
-            <artifactId>expiringmap</artifactId>
-            <version>0.5.2</version>
-        </dependency>
         <!-- Write to CSV file -->
         <dependency>
             <groupId>net.sf.opencsv</groupId>
@@ -150,6 +144,13 @@
             <groupId>org.apache.lucene</groupId>
             <artifactId>lucene-facet</artifactId>
             <version>5.5.5</version>
+        </dependency>
+        <!-- Cache Layer -->
+        <dependency>
+            <groupId>org.cache2k</groupId>
+            <artifactId>cache2k-base-bom</artifactId>
+            <version>1.2.0.Final</version>
+            <type>pom</type>
         </dependency>
         <!-- Unit testing-->
         <dependency>

@@ -19,6 +19,8 @@ import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.service.route.TimeSearchRouteService;
 import com.searchcode.app.util.*;
+import org.cache2k.Cache;
+import org.cache2k.Cache2kBuilder;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -30,6 +32,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Lazy Singleton Implementation
@@ -74,6 +77,21 @@ public final class Singleton {
 
     private static boolean enqueueRepositoryJobFirstRun = true;
     private static boolean enqueueFileRepositoryJobFirstRun = true;
+
+    private static Cache<String, Object> genericCache = null;
+
+    public static synchronized Cache<String, Object> getGenericCache() {
+        if (genericCache == null) {
+            // See https://cache2k.org/ for details
+            genericCache = new Cache2kBuilder<String, Object>() {}
+                    .name("genericCache")
+                    .expireAfterWrite(5, TimeUnit.MINUTES)
+                    .entryCapacity(10000)
+                    .build();
+        }
+
+        return genericCache;
+    }
 
     public static synchronized void setEnqueueRepositoryJobFirstRun(boolean value) {
         enqueueRepositoryJobFirstRun = value;
