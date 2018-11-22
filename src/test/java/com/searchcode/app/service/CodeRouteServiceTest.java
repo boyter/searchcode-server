@@ -3,8 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
-import com.searchcode.app.dao.Repo;
-import com.searchcode.app.dto.CodeMatchResult;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.service.route.CodeRouteService;
 import com.searchcode.app.util.Helpers;
@@ -156,7 +155,7 @@ public class CodeRouteServiceTest extends TestCase {
         Response response = mock(Response.class);
         IndexService indexService = mock(IndexService.class);
 
-        CodeRouteService codeRouteService = new CodeRouteService(indexService, new Helpers(), new Repo(), new Data(), null, null, null, null);
+        CodeRouteService codeRouteService = new CodeRouteService(indexService, new Helpers(), new SQLiteRepo(), new Data(), null, null, null, null);
 
         CodeResult codeResult = new CodeResult(new ArrayList<>(), new ArrayList<>());
         codeResult.setLines("100");

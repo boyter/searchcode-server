@@ -16,7 +16,8 @@ import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.dto.Source;
 import com.searchcode.app.dto.Version;
 import com.searchcode.app.model.RepoResult;
@@ -38,7 +39,7 @@ import java.util.stream.Collectors;
 
 public class AdminRouteService {
 
-    private final Repo repo;
+    private final IRepo repo;
     private final Data data;
     private final JobService jobService;
     private final DataService dataService;
@@ -62,7 +63,7 @@ public class AdminRouteService {
     }
 
 
-    public AdminRouteService(Repo repo, Data data, JobService jobService, DataService dataService, IIndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource, LoggerWrapper loggerWrapper) {
+    public AdminRouteService(IRepo repo, Data data, JobService jobService, DataService dataService, IIndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource, LoggerWrapper loggerWrapper) {
         this.repo = repo;
         this.data = data;
         this.jobService = jobService;

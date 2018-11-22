@@ -2,7 +2,7 @@ package com.searchcode.app.service;
 
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.util.Helpers;
@@ -11,14 +11,14 @@ import java.util.Optional;
 
 public class ValidatorService {
 
-    private final Repo repo;
+    private final IRepo repo;
     private final Helpers helpers;
 
     public ValidatorService() {
         this(Singleton.getRepo(), Singleton.getHelpers());
     }
 
-    public ValidatorService(Repo repo, Helpers helpers) {
+    public ValidatorService(IRepo repo, Helpers helpers) {
         this.repo = repo;
         this.helpers = helpers;
     }

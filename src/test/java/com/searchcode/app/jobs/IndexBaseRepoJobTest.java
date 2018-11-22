@@ -1,15 +1,11 @@
 package com.searchcode.app.jobs;
 
-import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
-import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.IndexService;
-import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
@@ -19,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class IndexBaseRepoJobTest extends TestCase {

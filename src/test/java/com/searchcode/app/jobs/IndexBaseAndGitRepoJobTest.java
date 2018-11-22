@@ -3,18 +3,8 @@ package com.searchcode.app.jobs;
 import com.searchcode.app.TestHelpers;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.service.IndexService;
-import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.StatsService;
-import com.searchcode.app.util.Timer;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.LogCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
-import org.eclipse.jgit.lib.Constants;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.revwalk.RevCommit;
 
 import java.io.File;
 import java.io.IOException;

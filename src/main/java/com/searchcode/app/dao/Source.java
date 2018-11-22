@@ -7,6 +7,7 @@ import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import org.cache2k.Cache;
+import org.cache2k.CacheEntry;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -30,7 +31,6 @@ public class Source {
         this.helpers = helpers;
         this.logger = logger;
         this.cache = cache;
-
     }
 
     public Optional<SourceResult> getSourceByName(String sourceName) {

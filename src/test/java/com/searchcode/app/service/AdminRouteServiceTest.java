@@ -1,6 +1,6 @@
 package com.searchcode.app.service;
 
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.route.AdminRouteService;
@@ -68,19 +68,19 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testGetStatValuesExpectValue() {
-        Repo repoMock = mock(Repo.class);
+        SQLiteRepo SQLiteRepoMock = mock(SQLiteRepo.class);
         StatsService statsServiceMock = mock(StatsService.class);
         IndexService indexServiceMock = mock(IndexService.class);
 
         when(statsServiceMock.getMemoryUsage(any())).thenReturn("Yep");
         when(statsServiceMock.getLoadAverage()).thenReturn("Yep");
         when(statsServiceMock.getUpTime()).thenReturn("Yep");
-        when(repoMock.getRepoCount()).thenReturn(1);
+        when(SQLiteRepoMock.getRepoCount()).thenReturn(1);
 
         when(indexServiceMock.getIndexedDocumentCount()).thenReturn(100);
         when(indexServiceMock.shouldPause(IIndexService.JobType.REPO_PARSER)).thenReturn(false);
 
-        AdminRouteService adminRouteService = new AdminRouteService(repoMock, null, null, null, indexServiceMock, statsServiceMock, null, null, Singleton.getLogger());
+        AdminRouteService adminRouteService = new AdminRouteService(SQLiteRepoMock, null, null, null, indexServiceMock, statsServiceMock, null, null, Singleton.getLogger());
         List<String> statValue = Arrays.asList("memoryusage", "loadaverage", "uptime", "searchcount", "spellingcount", "repocount", "numdocs", "servertime", "deletionqueue");
 
         for (String stat : statValue) {
@@ -121,10 +121,10 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testPostRepoRepoNamesEmptyNothing() {
-        Repo mockRepo = Mockito.mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = Mockito.mock(SQLiteRepo.class);
         JobService mockJobService = Mockito.mock(JobService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, null, null, Singleton.getLogger());
+        AdminRouteService adminRouteService = new AdminRouteService(mockSQLiteRepo, null, mockJobService, null, null, null, null, null, Singleton.getLogger());
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn(new String[0]);
@@ -139,15 +139,15 @@ public class AdminRouteServiceTest extends TestCase {
     }
 
     public void testPostRepoMultipleRepo() {
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         JobService mockJobService = mock(JobService.class);
         ValidatorService mockValidatorService = mock(ValidatorService.class);
 
-        when(mockRepo.saveRepo(any())).thenReturn(true);
+        when(mockSQLiteRepo.saveRepo(any())).thenReturn(true);
         when(mockValidatorService.validate(any(), anyBoolean())).thenReturn(new ValidatorResult(true, ""));
-        when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByUrl(any())).thenReturn(Optional.of(new RepoResult()));
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, null, null, null, mockValidatorService, null, Singleton.getLogger());
+        AdminRouteService adminRouteService = new AdminRouteService(mockSQLiteRepo, null, mockJobService, null, null, null, mockValidatorService, null, Singleton.getLogger());
         Request mockRequest = mock(Request.class);
 
         when(mockRequest.queryParamsValues("reponame")).thenReturn("name,name".split(","));
@@ -162,21 +162,21 @@ public class AdminRouteServiceTest extends TestCase {
         when(mockRequest.queryParamsValues("sourceproject")).thenReturn("master,master".split(","));
 
         adminRouteService.postRepo(mockRequest, null, false);
-        verify(mockRepo, times(2)).saveRepo(any());
+        verify(mockSQLiteRepo, times(2)).saveRepo(any());
         verify(mockJobService, times(2)).forceEnqueue(any());
         verify(mockValidatorService, times(2)).validate(any(), anyBoolean());
     }
 
     public void testDeleteRepo() {
-        Repo mockRepo = Mockito.mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = Mockito.mock(SQLiteRepo.class);
         JobService mockJobService = Mockito.mock(JobService.class);
         DataService mockDataService = Mockito.mock(DataService.class);
 
-        AdminRouteService adminRouteService = new AdminRouteService(mockRepo, null, mockJobService, mockDataService, null, null, null, null, Singleton.getLogger());
+        AdminRouteService adminRouteService = new AdminRouteService(mockSQLiteRepo, null, mockJobService, mockDataService, null, null, null, null, Singleton.getLogger());
         Request mockRequest = Mockito.mock(Request.class);
 
         when(mockRequest.queryParams("repoName")).thenReturn("myRepo");
-        when(mockRepo.getRepoByName("myRepo")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("myRepo")).thenReturn(Optional.of(new RepoResult()));
 
 
         adminRouteService.deleteRepo(mockRequest, null);

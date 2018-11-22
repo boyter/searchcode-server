@@ -13,42 +13,38 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.ConnStmtRs;
-import com.searchcode.app.model.ApiResult;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Provides access to all methods required to get Repo details from the database.
+ * Provides access to all methods required to get SQLiteRepo details from the database.
  */
-public class Repo {
+public class SQLiteRepo implements IRepo {
 
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
     private final LoggerWrapper logger;
 
-    public Repo() {
+    public SQLiteRepo() {
         this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
 
-    public Repo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper) {
+    public SQLiteRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = loggerWrapper;
         this.createTableIfMissing();
     }
 
+    @Override
     public synchronized List<RepoResult> getAllRepo() {
         var repoResults = new ArrayList<RepoResult>();
         var connStmtRs = new ConnStmtRs();
@@ -90,6 +86,7 @@ public class Repo {
         return repoResults;
     }
 
+    @Override
     public synchronized List<RepoResult> searchRepo(String searchTerms) {
         var repoResults = this.getAllRepo();
         List<RepoResult> matchRepoResults = new ArrayList<RepoResult>();
@@ -115,6 +112,7 @@ public class Repo {
         return matchRepoResults;
     }
 
+    @Override
     public synchronized List<RepoResult> getPagedRepo(int offset, int pageSize) {
         List<RepoResult> repoResults = new ArrayList<>();
         ConnStmtRs connStmtRs = new ConnStmtRs();
@@ -159,6 +157,7 @@ public class Repo {
         return repoResults;
     }
 
+    @Override
     public synchronized int getRepoCount() {
         int totalCount = 0;
         ConnStmtRs connStmtRs = new ConnStmtRs();
@@ -181,6 +180,7 @@ public class Repo {
         return totalCount;
     }
 
+    @Override
     public synchronized Optional<RepoResult> getRepoByName(String repositoryName) {
         if (repositoryName == null) {
             return Optional.empty();
@@ -229,6 +229,7 @@ public class Repo {
         return result;
     }
 
+    @Override
     public synchronized Optional<RepoResult> getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
             return Optional.empty();
@@ -276,6 +277,7 @@ public class Repo {
         return result;
     }
 
+    @Override
     public synchronized void deleteRepoByName(String repositoryName) {
         ConnStmtRs connStmtRs = new ConnStmtRs();
 
@@ -291,6 +293,7 @@ public class Repo {
         }
     }
 
+    @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
         Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
         ConnStmtRs connStmtRs = new ConnStmtRs();

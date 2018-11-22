@@ -11,7 +11,7 @@
 package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.dto.api.ApiResponse;
@@ -35,7 +35,7 @@ public class ApiRouteService {
     private final ApiService apiService;
     private final JobService jobService;
     private final DataService dataService;
-    private final Repo repo;
+    private final IRepo repo;
     private final ValidatorService validatorService;
     private final IIndexService indexService;
     private final Helpers helpers;
@@ -48,7 +48,7 @@ public class ApiRouteService {
         this(Singleton.getApiService(), Singleton.getJobService(), Singleton.getRepo(), Singleton.getDataService(), Singleton.getValidatorService(), Singleton.getIndexService(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-    public ApiRouteService(ApiService apiService, JobService jobService, Repo repo, DataService dataService, ValidatorService validatorService, IIndexService indexService, Helpers helpers, LoggerWrapper logger) {
+    public ApiRouteService(ApiService apiService, JobService jobService, IRepo repo, DataService dataService, ValidatorService validatorService, IIndexService indexService, Helpers helpers, LoggerWrapper logger) {
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
@@ -119,7 +119,7 @@ public class ApiRouteService {
 
     public String getFileCount(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            ProjectStats projectStats = Singleton.getIndexService().getProjectStats(request.queryParams("reponame"));
+            ProjectStats projectStats = this.indexService.getProjectStats(request.queryParams("reponame"));
             return Values.EMPTYSTRING + projectStats.getTotalFiles();
         }
 
@@ -131,7 +131,7 @@ public class ApiRouteService {
 
         if (request.queryParams().contains("reponame")) {
             Optional<RepoResult> repoResult = this.repo.getRepoByName(request.queryParams("reponame"));
-            indexTime = repoResult.map(x -> Singleton.getHelpers().timeAgo(x.getData().jobRunTime)).orElse(Values.EMPTYSTRING);
+            indexTime = repoResult.map(x -> this.helpers.timeAgo(x.getData().jobRunTime)).orElse(Values.EMPTYSTRING);
         }
 
         return indexTime;
@@ -152,7 +152,7 @@ public class ApiRouteService {
         RepoResult repoResult = null;
 
         if (request.queryParams().contains("reponame")) {
-            Optional<RepoResult> reponame = Singleton.getRepo().getRepoByName(request.queryParams("reponame"));
+            Optional<RepoResult> reponame = this.repo.getRepoByName(request.queryParams("reponame"));
 
             repoResult = reponame.map(x -> {
                 x.setUsername(null);
@@ -209,7 +209,7 @@ public class ApiRouteService {
             }
         }
 
-        List<RepoResult> repoResultList = repo.getAllRepo();
+        List<RepoResult> repoResultList = this.repo.getAllRepo();
 
         this.logger.apiLog("48112c1b::valid signed repoList API call using publicKey=" + publicKey);
         return new RepoResultApiResponse(true, Values.EMPTYSTRING, repoResultList);

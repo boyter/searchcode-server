@@ -27,8 +27,6 @@ import org.quartz.SchedulerFactory;
 import org.quartz.impl.StdSchedulerFactory;
 
 import java.util.AbstractMap;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -50,7 +48,7 @@ public final class Singleton {
     private static FileClassifier fileClassifier = null;
     private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
-    private static Repo repo = null;
+    private static SQLiteRepo SQLiteRepo = null;
     private static Data data = null;
     private static Api api = null;
     private static SourceCode sourceCode = null;
@@ -181,12 +179,12 @@ public final class Singleton {
         return runningIndexRepoJobs;
     }
 
-    public static synchronized Repo getRepo() {
-        if (repo == null) {
-            repo = new Repo();
+    public static synchronized IRepo getRepo() {
+        if (SQLiteRepo == null) {
+            SQLiteRepo = new SQLiteRepo();
         }
 
-        return repo;
+        return SQLiteRepo;
     }
 
     public static synchronized ISpellingCorrector getSpellingCorrector() {

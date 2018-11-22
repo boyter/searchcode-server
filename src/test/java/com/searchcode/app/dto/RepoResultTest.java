@@ -3,8 +3,6 @@ package com.searchcode.app.dto;
 import com.searchcode.app.model.RepoResult;
 import junit.framework.TestCase;
 
-import java.time.Instant;
-
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class RepoResultTest extends TestCase {

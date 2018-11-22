@@ -14,14 +14,14 @@ import com.google.gson.Gson;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.*;
 import com.searchcode.app.util.Properties;
+import com.searchcode.app.util.*;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -38,7 +38,7 @@ import static spark.Spark.halt;
 
 public class CodeRouteService {
 
-    private final Repo repo;
+    private final IRepo repo;
     private final Data data;
     private final Gson gson;
     private final SearchCodeLib searchCodeLib;
@@ -52,7 +52,7 @@ public class CodeRouteService {
         this(Singleton.getIndexService(), Singleton.getHelpers(), Singleton.getRepo(), Singleton.getData(), Singleton.getSearchCodeLib(), Singleton.getCodeMatcher(), Singleton.getOwaspClassifier(), Singleton.getRepositorySource());
     }
 
-    public CodeRouteService(IIndexService indexService, Helpers helpers, Repo repo, Data data, SearchCodeLib searchCodeLib, CodeMatcher codeMatcher, OWASPClassifier owaspClassifier, RepositorySource repositorySource) {
+    public CodeRouteService(IIndexService indexService, Helpers helpers, IRepo repo, Data data, SearchCodeLib searchCodeLib, CodeMatcher codeMatcher, OWASPClassifier owaspClassifier, RepositorySource repositorySource) {
         this.indexService = indexService;
         this.helpers = helpers;
         this.repo = repo;
@@ -312,7 +312,7 @@ public class CodeRouteService {
     public ModelAndView html(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
-        map.put("repoCount", repo.getRepoCount());
+        map.put("repoCount", this.repo.getRepoCount());
 
         if (request.queryParams().contains("q")) {
             String query = request.queryParams("q").trim();

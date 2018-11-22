@@ -11,10 +11,10 @@
 package com.searchcode.app.jobs.enqueue;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
-import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -23,7 +23,6 @@ import org.quartz.*;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -37,7 +36,7 @@ public class EnqueueRepositoryJob implements Job {
 
     private final IIndexService indexService;
     private final LoggerWrapper logger;
-    private final Repo repo;
+    private final IRepo repo;
     private final Helpers helpers;
 
     public EnqueueRepositoryJob() {
@@ -60,7 +59,7 @@ public class EnqueueRepositoryJob implements Job {
 
             // Get all of the repositories and enqueue them
             // Filter out those queued to be deleted
-            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(Singleton.getRepo().getAllRepo())
+            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo())
                     .stream()
                     .filter(x -> !x.getScm().equals(Values.FILE))
                     .collect(Collectors.toList());

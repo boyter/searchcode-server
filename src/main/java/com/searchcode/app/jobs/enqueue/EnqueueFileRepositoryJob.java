@@ -11,15 +11,17 @@
 package com.searchcode.app.jobs.enqueue;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.IIndexService;
-import com.searchcode.app.service.IndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.PersistJobDataAfterExecution;
 
 import java.time.Instant;
 import java.util.List;
@@ -36,7 +38,7 @@ public class EnqueueFileRepositoryJob implements Job {
 
     private final IIndexService indexService;
     private final LoggerWrapper logger;
-    private final Repo repo;
+    private final IRepo repo;
     private final Helpers helpers;
 
     public EnqueueFileRepositoryJob() {

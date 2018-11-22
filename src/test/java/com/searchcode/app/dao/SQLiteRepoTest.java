@@ -3,7 +3,6 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.util.AESEncryptor;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
 
@@ -11,18 +10,18 @@ import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
-public class RepoTest extends TestCase {
+public class SQLiteRepoTest extends TestCase {
 
-    private Repo repo;
+    private SQLiteRepo sqLiteRepo;
 
     public void setUp() throws Exception {
         super.setUp();
-        this.repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
-        this.repo.createTableIfMissing();
+        this.sqLiteRepo = new SQLiteRepo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
+        this.sqLiteRepo.createTableIfMissing();
     }
 
     public void testRepoSaveDelete() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("myname")
                 .setScm("git")
@@ -33,7 +32,7 @@ public class RepoTest extends TestCase {
                 .setBranch("mybranch")
                 .setData("{}"));
 
-        Optional<RepoResult> repoResult = this.repo.getRepoByName("myname");
+        Optional<RepoResult> repoResult = this.sqLiteRepo.getRepoByName("myname");
         RepoResult result = repoResult.get();
 
 
@@ -46,14 +45,14 @@ public class RepoTest extends TestCase {
         assertThat(result.getBranch()).isEqualTo("mybranch");
         assertThat(result.getData().averageIndexTimeSeconds).isEqualTo(0);
 
-        this.repo.deleteRepoByName("myname");
+        this.sqLiteRepo.deleteRepoByName("myname");
 
-        Optional<RepoResult> repoResult2 = this.repo.getRepoByName("myname");
+        Optional<RepoResult> repoResult2 = this.sqLiteRepo.getRepoByName("myname");
         assertThat(repoResult2.isPresent()).isFalse();
     }
 
     public void testRepoSaveGetCacheBug() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("myname")
                 .setScm("git")
@@ -65,14 +64,14 @@ public class RepoTest extends TestCase {
                 .setData("{}"));
 
         for (int i = 0; i < 200; i++) {
-            assertThat(repo.getRepoByName("myname")).isNotNull();
+            assertThat(sqLiteRepo.getRepoByName("myname")).isNotNull();
         }
 
-        this.repo.deleteRepoByName("myname");
+        this.sqLiteRepo.deleteRepoByName("myname");
     }
 
     public void testRepoByUrl() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("myname")
                 .setScm("git")
@@ -82,13 +81,13 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        assertThat(this.repo.getRepoByUrl("myurl").isPresent()).isTrue();
-        this.repo.deleteRepoByName("myname");
+        assertThat(this.sqLiteRepo.getRepoByUrl("myurl").isPresent()).isTrue();
+        this.sqLiteRepo.deleteRepoByName("myname");
     }
 
     public void testRepoByUrlMemoryLeak() {
         for (int i = 0; i < 200; i++) {
-            this.repo.saveRepo(new RepoResult()
+            this.sqLiteRepo.saveRepo(new RepoResult()
                     .setRowId(-1)
                     .setName("myname")
                     .setScm("git")
@@ -98,13 +97,13 @@ public class RepoTest extends TestCase {
                     .setSource("mysource")
                     .setBranch("mybranch")
                     .setData("{}"));
-            assertThat(this.repo.getRepoByUrl("myurl")).isNotNull();
-            this.repo.deleteRepoByName("myname");
+            assertThat(this.sqLiteRepo.getRepoByUrl("myurl")).isNotNull();
+            this.sqLiteRepo.deleteRepoByName("myname");
         }
     }
 
     public void testDeleteRepoMultipleTimes() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("myname")
                 .setScm("git")
@@ -116,13 +115,13 @@ public class RepoTest extends TestCase {
                 .setData("{}"));
 
         for (int i = 0; i < 200; i++) {
-            this.repo.deleteRepoByName("myname");
+            this.sqLiteRepo.deleteRepoByName("myname");
         }
     }
 
     public void testSaveRepoMultipleTimes() {
         for (int i = 0; i < 200; i++) {
-            this.repo.saveRepo(new RepoResult()
+            this.sqLiteRepo.saveRepo(new RepoResult()
                     .setRowId(-1)
                     .setName("myname")
                     .setScm("git")
@@ -134,11 +133,11 @@ public class RepoTest extends TestCase {
                     .setData("{}"));
         }
 
-        this.repo.deleteRepoByName("myname");
+        this.sqLiteRepo.deleteRepoByName("myname");
     }
 
     public void testGetAllRepo() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("myname")
                 .setScm("git")
@@ -148,12 +147,12 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        assertThat(this.repo.getAllRepo().size()).isGreaterThanOrEqualTo(1);
-        this.repo.deleteRepoByName("myname");
+        assertThat(this.sqLiteRepo.getAllRepo().size()).isGreaterThanOrEqualTo(1);
+        this.sqLiteRepo.deleteRepoByName("myname");
     }
 
     public void testGetPagedRepo() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo1")
                 .setScm("git")
@@ -163,7 +162,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo2")
                 .setScm("git")
@@ -173,7 +172,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo3")
                 .setScm("git")
@@ -183,7 +182,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo4")
                 .setScm("git")
@@ -193,7 +192,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo5")
                 .setScm("git")
@@ -204,19 +203,19 @@ public class RepoTest extends TestCase {
                 .setBranch("mybranch")
                 .setData("{}"));
 
-        assertThat(this.repo.getPagedRepo(0, 2).size()).isEqualTo(2);
-        assertThat(this.repo.getPagedRepo(0, 4).size()).isEqualTo(4);
-        assertThat(this.repo.getPagedRepo(2, 2).size()).isEqualTo(2);
+        assertThat(this.sqLiteRepo.getPagedRepo(0, 2).size()).isEqualTo(2);
+        assertThat(this.sqLiteRepo.getPagedRepo(0, 4).size()).isEqualTo(4);
+        assertThat(this.sqLiteRepo.getPagedRepo(2, 2).size()).isEqualTo(2);
 
-        this.repo.deleteRepoByName("testGetPagedRepo1");
-        this.repo.deleteRepoByName("testGetPagedRepo2");
-        this.repo.deleteRepoByName("testGetPagedRepo3");
-        this.repo.deleteRepoByName("testGetPagedRepo4");
-        this.repo.deleteRepoByName("testGetPagedRepo5");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo1");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo2");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo3");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo4");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo5");
     }
 
     public void testSearchRepo() {
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo1")
                 .setScm("git")
@@ -226,7 +225,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo2")
                 .setScm("git")
@@ -236,7 +235,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo3")
                 .setScm("git")
@@ -246,7 +245,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo4")
                 .setScm("git")
@@ -256,7 +255,7 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        this.repo.saveRepo(new RepoResult()
+        this.sqLiteRepo.saveRepo(new RepoResult()
                 .setRowId(-1)
                 .setName("testGetPagedRepo5")
                 .setScm("svn")
@@ -266,21 +265,21 @@ public class RepoTest extends TestCase {
                 .setSource("mysource")
                 .setBranch("mybranch")
                 .setData("{}"));
-        assertThat(this.repo.searchRepo("PassworD").size()).isEqualTo(5);
-        assertThat(this.repo.searchRepo("TESTGetPagedRepo1").size()).isEqualTo(1);
-        assertThat(this.repo.searchRepo("svn testGetPagedRepo5").size()).isEqualTo(1);
-        assertThat(this.repo.searchRepo("svn   testGetPagedRepo5").size()).isEqualTo(1);
+        assertThat(this.sqLiteRepo.searchRepo("PassworD").size()).isEqualTo(5);
+        assertThat(this.sqLiteRepo.searchRepo("TESTGetPagedRepo1").size()).isEqualTo(1);
+        assertThat(this.sqLiteRepo.searchRepo("svn testGetPagedRepo5").size()).isEqualTo(1);
+        assertThat(this.sqLiteRepo.searchRepo("svn   testGetPagedRepo5").size()).isEqualTo(1);
 
-        this.repo.deleteRepoByName("testGetPagedRepo1");
-        this.repo.deleteRepoByName("testGetPagedRepo2");
-        this.repo.deleteRepoByName("testGetPagedRepo3");
-        this.repo.deleteRepoByName("testGetPagedRepo4");
-        this.repo.deleteRepoByName("testGetPagedRepo5");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo1");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo2");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo3");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo4");
+        this.sqLiteRepo.deleteRepoByName("testGetPagedRepo5");
     }
 
 
     public void testGetRepoByNameUsingNull() {
-        Optional<RepoResult> repoResult = this.repo.getRepoByName(null);
+        Optional<RepoResult> repoResult = this.sqLiteRepo.getRepoByName(null);
         assertThat(repoResult.isPresent()).isFalse();
     }
 }

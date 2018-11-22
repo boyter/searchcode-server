@@ -11,7 +11,8 @@
 package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.IRepo;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.DataService;
 import com.searchcode.app.service.IIndexService;
@@ -22,18 +23,14 @@ import com.searchcode.app.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.quartz.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * The job which deletes repositories from the database index and disk where one exists in the deletion queue.
- * TODO fix race condition where it can start deleting while the repo has been re-added to be indexed
+ * TODO fix race condition where it can start deleting while the SQLiteRepo has been re-added to be indexed
  * TODO add some tests for this to ensure everything such as the early return occurs correctly
  */
 @PersistJobDataAfterExecution
@@ -43,7 +40,7 @@ public class DeleteRepositoryJob implements Job {
     private final LoggerWrapper logger;
     private final DataService dataService;
     private final IIndexService indexService;
-    private final Repo repo;
+    private final IRepo repo;
     private final Helpers helpers;
 
     public DeleteRepositoryJob() {

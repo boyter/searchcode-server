@@ -1,7 +1,7 @@
 package com.searchcode.app.service;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
@@ -156,12 +156,12 @@ public class ApiRouteServiceTest extends TestCase {
     public void testRepositoryIndexApiNoRepositorySupplied() {
         JobService mockJobService = mock(JobService.class);
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
         when(mockJobService.forceEnqueue(Matchers.anyObject())).thenReturn(true);
-        when(mockRepo.getRepoByUrl(anyString())).thenReturn(Optional.empty());
+        when(mockSQLiteRepo.getRepoByUrl(anyString())).thenReturn(Optional.empty());
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
 
         ApiResponse apiResponse = apiRouteService.repositoryIndex(mockRequest, null);
@@ -172,13 +172,13 @@ public class ApiRouteServiceTest extends TestCase {
     public void testRepositoryIndexApiNoMatchingRepo() {
         JobService mockJobService = mock(JobService.class);
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
         when(mockJobService.forceEnqueue(Matchers.anyObject())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("test");
-        when(mockRepo.getRepoByUrl(any())).thenReturn(Optional.empty());
+        when(mockSQLiteRepo.getRepoByUrl(any())).thenReturn(Optional.empty());
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
 
         ApiResponse apiResponse = apiRouteService.repositoryIndex(mockRequest, null);
@@ -189,13 +189,13 @@ public class ApiRouteServiceTest extends TestCase {
     public void testRepositoryIndexMatchingRepo() {
         JobService mockJobService = mock(JobService.class);
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
         when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("http://test/");
-        when(mockRepo.getRepoByUrl("http://test/")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByUrl("http://test/")).thenReturn(Optional.of(new RepoResult()));
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
 
         ApiResponse apiResponse = apiRouteService.repositoryIndex(mockRequest, null);
@@ -217,10 +217,10 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoListApiEnabledNoAuth() {
         Request mockRequest = mock(Request.class);
-        Repo repo = new Repo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
-        repo.createTableIfMissing();
+        SQLiteRepo SQLiteRepo = new SQLiteRepo(new SQLiteMemoryDatabaseConfig(), new Helpers(), Singleton.getLogger());
+        SQLiteRepo.createTableIfMissing();
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, repo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, SQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -284,11 +284,11 @@ public class ApiRouteServiceTest extends TestCase {
     public void testRepoListApiEnabledAuthValid() {
         Request mockRequest = mock(Request.class);
         ApiService mockApiService = mock(ApiService.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(true);
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -329,12 +329,12 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoDeleteNoAuthReponame() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         DataService dataServiceMock = mock(DataService.class);
 
-        when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, dataServiceMock, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, dataServiceMock, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -349,12 +349,12 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoDeleteAuthReponameNoPub() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
-        when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -369,12 +369,12 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoDeleteAuthReponameNoSig() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
 
-        when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -390,14 +390,14 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoDeleteAuthReponameFailedAuth() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         UniqueRepoQueue uniqueRepoQueue = new UniqueRepoQueue(new ConcurrentLinkedQueue<>());
         ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
-        when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -414,14 +414,14 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoDeleteAuthReponameAuth() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         DataService dataServiceMock = mock(DataService.class);
         ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=unit-test", ApiService.HmacType.SHA1)).thenReturn(true);
-        when(mockRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("unit-test")).thenReturn(Optional.of(new RepoResult()));
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, dataServiceMock, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, dataServiceMock, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -439,7 +439,7 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testGetAverageIndexTimeSeconds() {
         Request mockRequest = mock(Request.class);
-        Repo repoMock = mock(Repo.class);
+        SQLiteRepo SQLiteRepoMock = mock(SQLiteRepo.class);
 
         when(mockRequest.queryParams("reponame")).thenReturn("somename");
         when(mockRequest.queryParams()).thenReturn(
@@ -448,7 +448,7 @@ public class ApiRouteServiceTest extends TestCase {
                 }}).keySet()
         );
 
-        when(repoMock.getRepoByName("somename")).thenReturn(
+        when(SQLiteRepoMock.getRepoByName("somename")).thenReturn(
                 Optional.of(new RepoResult()
                         .setRowId(0)
                         .setName("name")
@@ -461,14 +461,14 @@ public class ApiRouteServiceTest extends TestCase {
                         .setData("{\"averageIndexTimeSeconds\":1}"))
         );
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, SQLiteRepoMock, null, null, null, new Helpers(), new LoggerWrapper());
         String averageIndexTimeSeconds = apiRouteService.getAverageIndexTimeSeconds(mockRequest, null);
         assertThat(averageIndexTimeSeconds).isEqualTo("2");
     }
 
     public void testGetIndexTime() {
         Request mockRequest = mock(Request.class);
-        Repo repoMock = mock(Repo.class);
+        SQLiteRepo SQLiteRepoMock = mock(SQLiteRepo.class);
 
         when(mockRequest.queryParams("reponame")).thenReturn("somename");
         when(mockRequest.queryParams()).thenReturn(
@@ -477,7 +477,7 @@ public class ApiRouteServiceTest extends TestCase {
                 }}).keySet()
         );
 
-        when(repoMock.getRepoByName("somename")).thenReturn(
+        when(SQLiteRepoMock.getRepoByName("somename")).thenReturn(
                 Optional.of(new RepoResult()
                         .setRowId(0)
                         .setName("name")
@@ -491,7 +491,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         );
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, repoMock, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, SQLiteRepoMock, null, null, null, new Helpers(), new LoggerWrapper());
         String averageIndexTimeSeconds = apiRouteService.getIndexTime(mockRequest, null);
         assertThat(averageIndexTimeSeconds).contains("years ago");
     }
@@ -512,9 +512,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepoName() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -527,9 +527,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepoUrl() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -543,9 +543,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepotype() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -560,9 +560,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepoUsername() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -578,9 +578,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepoPassword() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -597,9 +597,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepoSource() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -617,9 +617,9 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddMissingRepoBranch() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -638,13 +638,13 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddNoAuthSucessful() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
         ValidatorService mockValidatorService = mock(ValidatorService.class);
         when(mockValidatorService.validate(any(), anyBoolean())).thenReturn(new ValidatorResult(true, ""));
-        when(mockRepo.getRepoByName(anyString())).thenReturn(Optional.empty());
+        when(mockSQLiteRepo.getRepoByName(anyString())).thenReturn(Optional.empty());
 
-        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockRepo, null, mockValidatorService, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(null, null, mockSQLiteRepo, null, mockValidatorService, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = false;
 
@@ -660,17 +660,17 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
         assertThat(apiResponse.isSucessful()).isTrue();
-        verify(mockRepo, times(1)).saveRepo(Matchers.anyObject());
+        verify(mockSQLiteRepo, times(1)).saveRepo(Matchers.anyObject());
     }
 
     public void testRepoAddAuthPubMissing() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -690,12 +690,12 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddAuthSigMissing() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -716,12 +716,12 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddAuthInvalidSigned() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         ApiService mockApiService = mock(ApiService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=test&repourl=test&repotype=test&repousername=test&repopassword=test&reposource=test&repobranch=test", ApiService.HmacType.SHA1)).thenReturn(false);
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, null, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -743,15 +743,15 @@ public class ApiRouteServiceTest extends TestCase {
 
     public void testRepoAddAuthValidSigned() {
         Request mockRequest = mock(Request.class);
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
         ApiService mockApiService = mock(ApiService.class);
         ValidatorService mockValidatorService = mock(ValidatorService.class);
 
         when(mockApiService.validateRequest("test", "test", "pub=test&reponame=test&repourl=test&repotype=test&repousername=test&repopassword=test&reposource=test&repobranch=test", ApiService.HmacType.SHA1)).thenReturn(true);
         when(mockValidatorService.validate(any(), anyBoolean())).thenReturn(new ValidatorResult(true, ""));
-        when(mockRepo.getRepoByName(anyString())).thenReturn(Optional.empty());
+        when(mockSQLiteRepo.getRepoByName(anyString())).thenReturn(Optional.empty());
 
-        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockRepo, null, mockValidatorService, null, new Helpers(), new LoggerWrapper());
+        ApiRouteService apiRouteService = new ApiRouteService(mockApiService, null, mockSQLiteRepo, null, mockValidatorService, null, new Helpers(), new LoggerWrapper());
         apiRouteService.apiEnabled = true;
         apiRouteService.apiAuth = true;
 
@@ -769,6 +769,6 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
         assertThat(apiResponse.isSucessful()).isTrue();
-        verify(mockRepo, times(1)).saveRepo(Matchers.anyObject());
+        verify(mockSQLiteRepo, times(1)).saveRepo(Matchers.anyObject());
     }
 }

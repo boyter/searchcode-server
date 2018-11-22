@@ -1,6 +1,6 @@
 package com.searchcode.app.service;
 
-import com.searchcode.app.dao.Repo;
+import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.util.Helpers;
@@ -87,11 +87,11 @@ public class ValidatorServiceTest extends TestCase {
     }
 
     public void testValidatorServiceExistingName() {
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ValidatorService validatorService = new ValidatorService(mockRepo, new Helpers());
+        ValidatorService validatorService = new ValidatorService(mockSQLiteRepo, new Helpers());
 
-        when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
         RepoResult repoResult = new RepoResult()
                 .setRowId(0)
                 .setName("exists")
@@ -107,11 +107,11 @@ public class ValidatorServiceTest extends TestCase {
     }
 
     public void testValidatorServiceExistingNameIgnored() {
-        Repo mockRepo = mock(Repo.class);
+        SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        ValidatorService validatorService = new ValidatorService(mockRepo, new Helpers());
+        ValidatorService validatorService = new ValidatorService(mockSQLiteRepo, new Helpers());
 
-        when(mockRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
+        when(mockSQLiteRepo.getRepoByName("exists")).thenReturn(Optional.of(new RepoResult()));
         RepoResult repoResult = new RepoResult()
                 .setRowId(0)
                 .setName("exists")
