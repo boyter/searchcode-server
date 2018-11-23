@@ -36,7 +36,6 @@ public class SQLiteRepo implements IRepo {
         this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-
     public SQLiteRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
