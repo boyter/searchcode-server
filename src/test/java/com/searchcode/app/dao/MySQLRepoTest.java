@@ -18,6 +18,14 @@ public class MySQLRepoTest extends TestCase {
         this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper());
     }
 
+    public void testGetRepo() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
+        var result = this.repo.getRepoByUrl("boyter");
+
+        assertThat(result.get().getUrl()).isEqualTo("boyter");
+    }
+
     public void testSaveRepo() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 

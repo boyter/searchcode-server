@@ -1,6 +1,7 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
+import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
@@ -30,15 +31,15 @@ public class MySQLRepo implements IRepo {
     @Override
     public boolean saveRepo(RepoResult repoResult) {
         Optional<RepoResult> existing = this.getRepoByUrl(repoResult.getUrl());
-        ConnStmtRs connStmtRs = new ConnStmtRs();
-        boolean isNew = false;
+        var connStmtRs = new ConnStmtRs();
+        var isNew = false;
 
         // Update with new details
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
             if (existing.isPresent()) {
-                connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE \"repo\" SET \"name\" = ?, \"scm\" = ?, \"url\" = ?, \"username\" = ?, \"password\" = ?, \"source\" = ?, \"branch\" = ?, \"data\" = ? WHERE  \"name\" = ?");
-                connStmtRs.stmt.setString(9, repoResult.getName());
+                connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE `repo` SET `name`=?,`scm`=?,`url`=?,`suggestedname`=?,`sourceurl`=?,`instructions`=?,`sourceid`=?,`spdx`=?,`username`=? WHERE `id`=?");
+                connStmtRs.stmt.setInt(9, repoResult.getRowId());
             } else {
                 isNew = true;
                 connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO `repo`(`id`, `name`, `scm`, `url`, `suggestedname`, `sourceurl`, `instructions`, `sourceid`, `spdx`, `username`) VALUES (null,?,?,?,?,?,?,?,?,?);");
@@ -47,12 +48,12 @@ public class MySQLRepo implements IRepo {
             connStmtRs.stmt.setString(1, repoResult.getName());
             connStmtRs.stmt.setString(2, repoResult.getScm());
             connStmtRs.stmt.setString(3, repoResult.getUrl());
-            // suggestedd
-            // sourcerurl
-            // instructions
-            // sourceid
-            // spdx
-            // username
+            connStmtRs.stmt.setString(4, Values.EMPTYSTRING); // suggestedurl
+            connStmtRs.stmt.setString(5, Values.EMPTYSTRING); // sourceurl
+            connStmtRs.stmt.setString(6, Values.EMPTYSTRING); // instructions
+            connStmtRs.stmt.setInt(7, 1); // TODO populate this sourceid
+            connStmtRs.stmt.setString(8, Values.EMPTYSTRING); // spdx
+            connStmtRs.stmt.setString(9, Values.EMPTYSTRING); // username
 
             connStmtRs.stmt.execute();
         } catch (SQLException ex) {
@@ -66,7 +67,6 @@ public class MySQLRepo implements IRepo {
 
     @Override
     public void deleteRepoByName(String repositoryName) {
-
     }
 
     @Override
@@ -76,35 +76,26 @@ public class MySQLRepo implements IRepo {
         }
 
         Optional<RepoResult> result = Optional.empty();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
-            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select rowid,name,scm,url,username,password,source,branch,data from repo where url=?;");
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select `id`, `name`, `scm`, `url`, `suggestedname`, `sourceurl`, `instructions`, `sourceid`, `spdx`, `username` from repo where url = ?;");
             connStmtRs.stmt.setString(1, repositoryUrl);
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                int rowId = connStmtRs.rs.getInt("rowid");
-                String repoName = connStmtRs.rs.getString("name");
-                String repoScm = connStmtRs.rs.getString("scm");
-                String repoUrl = connStmtRs.rs.getString("url");
-                String repoUsername = connStmtRs.rs.getString("username");
-                String repoPassword = connStmtRs.rs.getString("password");
-                String repoSource = connStmtRs.rs.getString("source");
-                String repoBranch = connStmtRs.rs.getString("branch");
-                String repoData = connStmtRs.rs.getString("data");
+                var rowId = connStmtRs.rs.getInt("id");
+                var repoName = connStmtRs.rs.getString("name");
+                var repoScm = connStmtRs.rs.getString("scm");
+                var repoUrl = connStmtRs.rs.getString("url");
 
-                RepoResult repoResult = new RepoResult()
+
+                var repoResult = new RepoResult()
                         .setRowId(rowId)
                         .setName(repoName)
                         .setScm(repoScm)
-                        .setUrl(repoUrl)
-                        .setUsername(repoUsername)
-                        .setPassword(repoPassword)
-                        .setSource(repoSource)
-                        .setBranch(repoBranch)
-                        .setData(repoData);
+                        .setUrl(repoUrl);
 
                 result = Optional.of(repoResult);
             }
