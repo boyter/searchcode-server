@@ -21,10 +21,13 @@ public class MySQLRepoTest extends TestCase {
     public void testSaveRepo() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
-        this.repo.saveRepo(new RepoResult()
+        var result = this.repo.saveRepo(new RepoResult()
                 .setName("test")
                 .setUrl("boyter"));
-        var result = this.repo.saveRepo(new RepoResult()
+
+        assertThat(result).isTrue();
+
+        result = this.repo.saveRepo(new RepoResult()
                 .setName("test")
                 .setUrl("boyter"));
 
