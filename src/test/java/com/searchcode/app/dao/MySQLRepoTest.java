@@ -20,12 +20,25 @@ public class MySQLRepoTest extends TestCase {
         this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), Singleton.getGenericCache());
     }
 
-    public void testGetRepo() {
+    public void testGetRepoByUrl() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 
         var result = this.repo.getRepoByUrl("boyter");
 
         assertThat(result.get().getUrl()).isEqualTo("boyter");
+    }
+
+    public void testGetRepoByUrlCache() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
+        var cache = Singleton.getGenericCache();
+        cache.put("dao.mysqlrepo.boyter", Optional.of(new RepoResult().setRowId(999).setName("ZeName").setUrl("boyter")));
+        var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
+
+        var result = newSource.getRepoByUrl("boyter");
+
+        assertThat(result.get().getRowId()).isEqualTo(999);
+        assertThat(result.get().getName()).isEqualTo("ZeName");
     }
 
     public void testGetRepoById() {

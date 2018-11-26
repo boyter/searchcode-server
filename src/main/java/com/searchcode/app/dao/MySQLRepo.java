@@ -112,6 +112,11 @@ public class MySQLRepo implements IRepo {
             return Optional.empty();
         }
 
+        var cacheResult = this.cache.peekEntry(CachePrefix + repositoryUrl);
+        if (cacheResult != null) {
+            return (Optional<RepoResult>) cacheResult.getValue();
+        }
+
         Optional<RepoResult> result = Optional.empty();
         var connStmtRs = new ConnStmtRs();
 
@@ -128,6 +133,10 @@ public class MySQLRepo implements IRepo {
             this.logger.severe(String.format("fb6e9dfe::error in class %s exception %s searchcode was unable to get repository by url %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryUrl));
         } finally {
             this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        if (result.isPresent()) {
+            this.cache.put(CachePrefix + repositoryUrl, result);
         }
 
         return result;

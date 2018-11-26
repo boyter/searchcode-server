@@ -78,6 +78,12 @@ public final class Singleton {
 
     private static Cache<String, Object> genericCache = null;
 
+    /**
+     * This is intended as a generic L1 cache for searchcode which has no network
+     * overhead and as such is very fast. Of course it is cleared on service
+     * shutdown and intended to be used in collaboration with another process
+     * such as memcached or redis.
+     */
     public static synchronized Cache<String, Object> getGenericCache() {
         if (genericCache == null) {
             // See https://cache2k.org/ for details
