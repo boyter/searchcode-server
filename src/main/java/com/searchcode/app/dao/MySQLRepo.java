@@ -70,6 +70,29 @@ public class MySQLRepo implements IRepo {
     }
 
     @Override
+    public Optional<RepoResult> getRepoById(int repoId) {
+        Optional<RepoResult> result = Optional.empty();
+        var connStmtRs = new ConnStmtRs();
+
+        try {
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select `id`, `name`, `scm`, `url`, `suggestedname`, `sourceurl`, `instructions`, `sourceid`, `spdx`, `username` from repo where id = ?;");
+            connStmtRs.stmt.setInt(1, repoId);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+
+            while (connStmtRs.rs.next()) {
+                result = buildRepoResult(connStmtRs);
+            }
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("2b1ad83d::error in class %s exception %s searchcode was unable to get repository by id %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repoId));
+        } finally {
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        return result;
+    }
+
+    @Override
     public Optional<RepoResult> getRepoByUrl(String repositoryUrl) {
         if (repositoryUrl == null) {
             return Optional.empty();
@@ -85,19 +108,7 @@ public class MySQLRepo implements IRepo {
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                var rowId = connStmtRs.rs.getInt("id");
-                var repoName = connStmtRs.rs.getString("name");
-                var repoScm = connStmtRs.rs.getString("scm");
-                var repoUrl = connStmtRs.rs.getString("url");
-
-
-                var repoResult = new RepoResult()
-                        .setRowId(rowId)
-                        .setName(repoName)
-                        .setScm(repoScm)
-                        .setUrl(repoUrl);
-
-                result = Optional.of(repoResult);
+                result = buildRepoResult(connStmtRs);
             }
         } catch (SQLException ex) {
             this.logger.severe(String.format("fb6e9dfe::error in class %s exception %s searchcode was unable to get repository by url %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repositoryUrl));
@@ -131,5 +142,20 @@ public class MySQLRepo implements IRepo {
     @Override
     public List<RepoResult> getAllRepo() {
         return null;
+    }
+
+    private Optional<RepoResult> buildRepoResult(ConnStmtRs connStmtRs) throws SQLException {
+        var rowId = connStmtRs.rs.getInt("id");
+        var repoName = connStmtRs.rs.getString("name");
+        var repoScm = connStmtRs.rs.getString("scm");
+        var repoUrl = connStmtRs.rs.getString("url");
+
+        var repoResult = new RepoResult()
+                .setRowId(rowId)
+                .setName(repoName)
+                .setScm(repoScm)
+                .setUrl(repoUrl);
+
+        return Optional.of(repoResult);
     }
 }

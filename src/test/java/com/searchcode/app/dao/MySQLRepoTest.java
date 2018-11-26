@@ -26,6 +26,19 @@ public class MySQLRepoTest extends TestCase {
         assertThat(result.get().getUrl()).isEqualTo("boyter");
     }
 
+    public void testGetRepoById() {
+        if (Singleton.getHelpers().isLocalInstance()) return;
+
+        this.repo.saveRepo(new RepoResult()
+                .setName("test")
+                .setUrl("boyter"));
+
+        var result = this.repo.getRepoByUrl("boyter");
+        var result2 = this.repo.getRepoById(result.get().getRowId());
+
+        assertThat(result2.get().getRowId()).isEqualTo(result.get().getRowId());
+    }
+
     public void testSaveRepo() {
         if (Singleton.getHelpers().isLocalInstance()) return;
 

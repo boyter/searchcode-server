@@ -277,6 +277,11 @@ public class SQLiteRepo implements IRepo {
     }
 
     @Override
+    public synchronized Optional<RepoResult> getRepoById(int repoId) {
+        return Optional.empty();
+    }
+
+    @Override
     public synchronized void deleteRepoByName(String repositoryName) {
         ConnStmtRs connStmtRs = new ConnStmtRs();
 
