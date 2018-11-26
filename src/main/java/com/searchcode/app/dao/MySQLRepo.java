@@ -7,6 +7,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
+import org.cache2k.Cache;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,14 +19,18 @@ public class MySQLRepo implements IRepo {
     private final Helpers helpers;
     private final LoggerWrapper logger;
 
+    private final Cache<String, Object> cache;
+    private final String CachePrefix = "dao.mysqlrepo.";
+
     public MySQLRepo() {
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(), Singleton.getGenericCache());
     }
 
-    public MySQLRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper) {
+    public MySQLRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper, Cache cache) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = loggerWrapper;
+        this.cache = cache;
     }
 
     @Override
@@ -71,6 +76,11 @@ public class MySQLRepo implements IRepo {
 
     @Override
     public Optional<RepoResult> getRepoById(int repoId) {
+        var cacheResult = this.cache.peekEntry(CachePrefix + repoId);
+        if (cacheResult != null) {
+            return (Optional<RepoResult>) cacheResult.getValue();
+        }
+
         Optional<RepoResult> result = Optional.empty();
         var connStmtRs = new ConnStmtRs();
 
@@ -87,6 +97,10 @@ public class MySQLRepo implements IRepo {
             this.logger.severe(String.format("2b1ad83d::error in class %s exception %s searchcode was unable to get repository by id %s, this is likely to cause indexing issues and its likely other issues will be in the logs", ex.getClass(), ex.getMessage(), repoId));
         } finally {
             this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        if (result.isPresent()) {
+            this.cache.put(CachePrefix + repoId, result);
         }
 
         return result;

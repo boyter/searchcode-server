@@ -7,18 +7,16 @@ import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import org.cache2k.Cache;
-import org.cache2k.CacheEntry;
 
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class Source {
 
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;
     private final LoggerWrapper logger;
+
     private final Cache<String, Object> cache;
     private final String CachePrefix = "dao.source.";
 
