@@ -1,6 +1,5 @@
 package com.searchcode.app.dao;
 
-
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
