@@ -46,7 +46,9 @@ public class CodeRouteService {
     private final OWASPClassifier owaspClassifier;
     private final RepositorySource repositorySource;
     private final Helpers helpers;
-    private IIndexService indexService;
+    private final IIndexService indexService;
+    private final String highlighter;
+    private final int highlightLimit;
 
     public CodeRouteService() {
         this(Singleton.getIndexService(), Singleton.getHelpers(), Singleton.getRepo(), Singleton.getData(), Singleton.getSearchCodeLib(), Singleton.getCodeMatcher(), Singleton.getOwaspClassifier(), Singleton.getRepositorySource());
@@ -62,17 +64,18 @@ public class CodeRouteService {
         this.owaspClassifier = owaspClassifier;
         this.repositorySource = repositorySource;
         this.gson = new Gson();
+
+        this.highlighter = Properties.getProperties().getProperty(Values.HIGHLIGHTER, Values.DEFAULT_HIGHLIGHTER);
+        this.highlightLimit = Integer.parseInt(Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
     }
 
     public ModelAndView root(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
-
+        var map = new HashMap<>();
         map.put("repoCount", this.repo.getRepoCount());
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
             String query = request.queryParams("q").trim();
             int page = this.getPage(request, 0);
-
 
             List<String> reposList = new ArrayList<>();
             List<String> langsList = new ArrayList<>();
@@ -148,22 +151,34 @@ public class CodeRouteService {
     }
 
     public Map<String, Object> getCode(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
+        var map = new HashMap<String, Object>();
 
-        Cocomo2 coco = new Cocomo2();
+        // If set to remote highlighter then post to it to render
+        // TODO still work in progress
+        if (!Values.DEFAULT_HIGHLIGHTER.equalsIgnoreCase(this.highlighter)) {
+            try {
+                var res = this.helpers.sendPost("http://localhost:8089/", "{\"content\": \"int estimatedCode = (int)coco.estimateCost(effort);\"}");
+                var highlighter = this.gson.fromJson(res, Highlighter.class);
+                map.put("chromaCss", highlighter.css);
+                map.put("chromaHtml", highlighter.html);
+            } catch (Exception ex) {}
+        }
 
-        String codeId = request.params(":codeid");
-        CodeResult codeResult = this.indexService.getCodeResultByCodeId(codeId);
+        var coco = new Cocomo2();
+
+        var codeId = request.params(":codeid");
+        var codeResult = this.indexService.getCodeResultByCodeId(codeId);
 
         if (codeResult == null) {
             response.redirect("/404/");
             halt();
         }
 
-        List<String> codeLines = codeResult.code;
-        StringBuilder code = new StringBuilder();
-        StringBuilder lineNos = new StringBuilder();
-        StringBuilder padStr = new StringBuilder();
+        var codeLines = codeResult.code;
+        var code = new StringBuilder();
+        var lineNos = new StringBuilder();
+        var padStr = new StringBuilder();
+
         for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
             padStr.append(" ");
         }
@@ -186,17 +201,14 @@ public class CodeRouteService {
                     .append("\n");
         }
 
-        List<OWASPMatchingResult> owaspResults = new ArrayList<OWASPMatchingResult>();
+        var owaspResults = new ArrayList<OWASPMatchingResult>();
         if (CommonRouteService.owaspAdvisoriesEnabled()) {
             if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
                 owaspResults = this.owaspClassifier.classifyCode(codeLines, codeResult.languageName);
             }
         }
 
-        int limit = Integer.parseInt(
-                Properties.getProperties().getProperty(
-                        Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
-        boolean highlight = this.helpers.tryParseInt(codeResult.codeLines, "0") <= limit;
+        var highlight = this.helpers.tryParseInt(codeResult.codeLines, "0") <= this.highlightLimit;
 
         Optional<RepoResult> repoResult = this.repo.getRepoByName(codeResult.repoName);
         repoResult.map(x -> map.put("source", x.getSource()));
@@ -208,25 +220,21 @@ public class CodeRouteService {
         }})));
 
         map.put("fileName", codeResult.fileName);
-
         map.put("codePath", codeResult.getDisplayLocation());
         map.put("codeLength", codeResult.lines);
-
         map.put("linenos", lineNos.toString());
-
         map.put("languageName", codeResult.languageName);
         map.put("md5Hash", codeResult.md5hash);
         map.put("repoName", codeResult.repoName);
         map.put("highlight", highlight);
         map.put("repoLocation", codeResult.getRepoLocation());
-
         map.put("codeValue", code.toString());
         map.put("highligher", CommonRouteService.getSyntaxHighlighter());
         map.put("codeOwner", codeResult.getCodeOwner());
         map.put("owaspResults", owaspResults);
 
-        double estimatedEffort = coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0"));
-        int estimatedCost = (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
+        var estimatedEffort = coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0"));
+        var estimatedCost = (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
         map.put("estimatedCost", estimatedCost);
 
         map.put("logoImage", CommonRouteService.getLogo());

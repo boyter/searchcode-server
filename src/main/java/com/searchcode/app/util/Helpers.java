@@ -18,6 +18,9 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -27,8 +30,6 @@ import org.eclipse.jgit.lib.Repository;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -332,6 +333,27 @@ public class Helpers {
             }
         }
         return true;
+    }
+
+    /**
+     * Post top a given url with the given value payload (usually JSON)
+     */
+    public String sendPost(String url, String value) throws Exception {
+        var client = new DefaultHttpClient();
+        var post = new HttpPost(url);
+
+        post.setEntity(new StringEntity(value));
+
+        var response = client.execute(post);
+        var rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+        var result = new StringBuffer();
+        var line = Values.EMPTYSTRING;
+        while ((line = rd.readLine()) != null) {
+            result.append(line);
+        }
+
+        return result.toString();
     }
 
     /**

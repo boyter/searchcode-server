@@ -112,6 +112,10 @@ public class Values {
     public static final String HOST_NAME = "host_name";
     public static final String DEFAULT_HOST_NAME = "localhost:8080";
 
+    // Used for both searchcoee server and searchcode.com
+    public static final String DEFAULT_HIGHLIGHTER = "javascript";
+    public static final String HIGHLIGHTER = "highlighter";
+
     // Mostly used for changing over to distributed searchcode.com index
     public static final String DELETE_REPO_AFTER_PROCESS = "delete_repo_after_process";
     public static final String DEFAULT_DELETE_REPO_AFTER_PROCESS = "false";
