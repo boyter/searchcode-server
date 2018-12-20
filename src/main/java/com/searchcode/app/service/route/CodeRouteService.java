@@ -164,8 +164,6 @@ public class CodeRouteService {
             } catch (Exception ex) {}
         }
 
-        var coco = new Cocomo2();
-
         var codeId = request.params(":codeid");
         var codeResult = this.indexService.getCodeResultByCodeId(codeId);
 
@@ -233,6 +231,7 @@ public class CodeRouteService {
         map.put("codeOwner", codeResult.getCodeOwner());
         map.put("owaspResults", owaspResults);
 
+        var coco = new Cocomo2();
         var estimatedEffort = coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0"));
         var estimatedCost = (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
         map.put("estimatedCost", estimatedCost);

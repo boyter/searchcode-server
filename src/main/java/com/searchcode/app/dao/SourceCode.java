@@ -203,15 +203,15 @@ public class SourceCode {
 
     public Optional<SourceCodeDTO> getById(int id) {
         Optional<SourceCodeDTO> result = Optional.empty();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
 
-            String query = "SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type as languagename" +
-                    " FROM sourcecode" +
-                    " INNER JOIN languagetype ON languagetype.id = sourcecode.languageid" +
-                    " WHERE sourcecode.id=? LIMIT 1;";
+            var query = "     SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type AS languagename" +
+                        "       FROM sourcecode" +
+                        " INNER JOIN languagetype ON languagetype.id = sourcecode.languageid" +
+                        "      WHERE sourcecode.id=? LIMIT 1;";
 
             connStmtRs.stmt = connStmtRs.conn.prepareStatement(query);
             connStmtRs.stmt.setInt(1, id);
