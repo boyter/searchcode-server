@@ -92,27 +92,27 @@ public class SphinxIndexService implements IIndexService {
                     var sourceCodeDTO = sourceCode.saveCode(codeResult);
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
-                    var shard = (sourceCodeDTO.getId() % this.SHARD_COUNT) + 1;
-                    stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
+                    var shard = (sourceCodeDTO.id % this.SHARD_COUNT) + 1;
+                    stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?)", shard));
 
-                    var indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getFilename()) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getFilename(), true) + Values.SINGLE_SPACE +
-                            sourceCodeDTO.getLocation() + Values.SINGLE_SPACE +
-                            this.searchcodeLib.splitKeywords(sourceCodeDTO.getContent(), true) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.getContent()) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.findInterestingKeywords(sourceCodeDTO.getContent()) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.findInterestingCharacters(sourceCodeDTO.getContent()).toLowerCase();
+                    var indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.filename) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.splitKeywords(sourceCodeDTO.filename, true) + Values.SINGLE_SPACE +
+                            sourceCodeDTO.location + Values.SINGLE_SPACE +
+                            this.searchcodeLib.splitKeywords(sourceCodeDTO.content, true) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.content) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.findInterestingKeywords(sourceCodeDTO.content) + Values.SINGLE_SPACE +
+                            this.searchcodeLib.findInterestingCharacters(sourceCodeDTO.content).toLowerCase();
 
-                    stmt.setInt(1, sourceCodeDTO.getId());
+                    stmt.setInt(1, sourceCodeDTO.id);
                     stmt.setString(2, indexContents);
-                    stmt.setString(3, sourceCodeDTO.getFilename());
-                    stmt.setString(4, this.helpers.replaceForIndex(sourceCodeDTO.getLocation()));
-                    stmt.setInt(5, sourceCodeDTO.getRepoid());
-                    stmt.setInt(6, sourceCodeDTO.getLanguageid());
-                    stmt.setInt(7, sourceCodeDTO.getSourceid());
-                    stmt.setInt(8, sourceCodeDTO.getOwnerid());
-                    stmt.setInt(9, sourceCodeDTO.getLicenseid());
-                    stmt.setInt(10, sourceCodeDTO.getLinescount());
+                    stmt.setString(3, sourceCodeDTO.filename);
+                    stmt.setString(4, this.helpers.replaceForIndex(sourceCodeDTO.location));
+                    stmt.setInt(5, sourceCodeDTO.repoId);
+                    stmt.setInt(6, sourceCodeDTO.languageName);
+//                    stmt.setInt(7, sourceCodeDTO.getSourceid()); // TODO get the below values
+//                    stmt.setInt(8, sourceCodeDTO.getOwnerid());
+//                    stmt.setInt(9, sourceCodeDTO.getLicenseid());
+//                    stmt.setInt(10, sourceCodeDTO.getLinescount());
 
                     stmt.execute();
                 } catch (SQLException ex) {
@@ -247,7 +247,7 @@ public class SphinxIndexService implements IIndexService {
     @Override
     public CodeResult getCodeResultByCodeId(String codeId) {
         var byId = this.sourceCode.getById(this.helpers.tryParseInt(codeId, "-1"));
-        return byId.map(x -> new CodeResult(Arrays.asList(x.getContent().split("\n")), null)).orElse(null);
+        return byId.map(x -> new CodeResult(Arrays.asList(x.content.split("\n")), null)).orElse(null);
     }
 
     @Override
@@ -371,20 +371,20 @@ public class SphinxIndexService implements IIndexService {
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
-        var codeResult = new CodeResult(Arrays.asList(sourceCodeDTO.getContent().split(Values.ALL_NEWLINE)), null);
-        codeResult.setFilePath(sourceCodeDTO.getLocation());
+        var codeResult = new CodeResult(Arrays.asList(sourceCodeDTO.content.split(Values.ALL_NEWLINE)), null);
+        codeResult.setFilePath(sourceCodeDTO.location);
 
-        codeResult.setCodePath(sourceCodeDTO.getLocation());
-        codeResult.setFileName(sourceCodeDTO.getFilename());
-        codeResult.setLanguageName(sourceCodeDTO.getLanguagename());
-        codeResult.setMd5hash(sourceCodeDTO.getHash());
-        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + Values.EMPTYSTRING);
-        codeResult.setDocumentId(sourceCodeDTO.getId());
-        codeResult.setRepoName(sourceCodeDTO.getRepoid() + Values.EMPTYSTRING);
-        codeResult.setRepoLocation(sourceCodeDTO.getLocation() + Values.EMPTYSTRING);
-        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + Values.EMPTYSTRING);
-        codeResult.setCodeId(sourceCodeDTO.getId() + Values.EMPTYSTRING);
-        codeResult.setDisplayLocation(sourceCodeDTO.getLocation());
+        codeResult.setCodePath(sourceCodeDTO.location);
+        codeResult.setFileName(sourceCodeDTO.filename);
+        codeResult.setLanguageName(sourceCodeDTO.languageName + Values.EMPTYSTRING);
+        codeResult.setMd5hash(sourceCodeDTO.hash);
+//        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + Values.EMPTYSTRING);
+        codeResult.setDocumentId(sourceCodeDTO.id);
+        codeResult.setRepoName(sourceCodeDTO.repoId + Values.EMPTYSTRING);
+        codeResult.setRepoLocation(sourceCodeDTO.location + Values.EMPTYSTRING);
+//        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + Values.EMPTYSTRING);
+        codeResult.setCodeId(sourceCodeDTO.id + Values.EMPTYSTRING);
+        codeResult.setDisplayLocation(sourceCodeDTO.location);
 
         return codeResult;
     }

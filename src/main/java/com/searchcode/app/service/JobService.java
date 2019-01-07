@@ -26,10 +26,12 @@ import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
+import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +70,7 @@ public class JobService {
     private String TRASHLOCATION = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
     private boolean LOWMEMORY = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
+    private String HIGHLIGHTER_BINARY_LOCATION = Properties.getProperties().getProperty(Values.HIGHLIGHTER_BINARY_LOCATION, Values.DEFAULT_HIGHLIGHTER_BINARY_LOCATION);
 
     public JobService() {
         this.scheduler = Singleton.getScheduler();
@@ -283,6 +286,21 @@ public class JobService {
             this.startEnqueueJob();
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("8c3cd302::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+        }
+    }
+
+    /**
+     * Starts a background process used to highlight code
+     */
+    public void startHighlighter() {
+        try {
+            if (SystemUtils.IS_OS_LINUX) {
+                new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter").destroyOnExit().start().getFuture();
+            } else if (SystemUtils.IS_OS_WINDOWS) {
+                new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter.exe").destroyOnExit().start().getFuture();
+            }
+        } catch (IOException ex) {
+            this.logger.severe(String.format("947e8a85::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 

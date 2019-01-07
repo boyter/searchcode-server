@@ -1,6 +1,6 @@
 package com.searchcode.app.dto;
 
-public class Highlighter {
+public class HighlighterResponse {
     public String css;
     public String html;
 }

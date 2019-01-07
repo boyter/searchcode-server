@@ -174,22 +174,22 @@ public class SourceCode {
 
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
             while (connStmtRs.rs.next()) {
-                result = Optional.of(new SourceCodeDTO(
-                        connStmtRs.rs.getInt("id"),
-                        connStmtRs.rs.getInt("repoid"),
-                        connStmtRs.rs.getInt("languageid"),
-                        connStmtRs.rs.getString("languagename"),
-                        connStmtRs.rs.getInt("sourceid"),
-                        connStmtRs.rs.getInt("ownerid"),
-                        connStmtRs.rs.getInt("licenseid"),
-                        connStmtRs.rs.getString("location"),
-                        connStmtRs.rs.getString("filename"),
-                        connStmtRs.rs.getString("content"),
-                        connStmtRs.rs.getString("hash"),
-                        connStmtRs.rs.getString("simhash"),
-                        connStmtRs.rs.getInt("linescount"),
-                        connStmtRs.rs.getString("data")
-                ));
+//                result = Optional.of(new SourceCodeDTO(
+//                        connStmtRs.rs.getInt("id"),
+//                        connStmtRs.rs.getInt("repoid"),
+//                        connStmtRs.rs.getInt("languageid"),
+//                        connStmtRs.rs.getString("languagename"),
+//                        connStmtRs.rs.getInt("sourceid"),
+//                        connStmtRs.rs.getInt("ownerid"),
+//                        connStmtRs.rs.getInt("licenseid"),
+//                        connStmtRs.rs.getString("location"),
+//                        connStmtRs.rs.getString("filename"),
+//                        connStmtRs.rs.getString("content"),
+//                        connStmtRs.rs.getString("hash"),
+//                        connStmtRs.rs.getString("simhash"),
+//                        connStmtRs.rs.getInt("linescount"),
+//                        connStmtRs.rs.getString("data")
+//                ));
             }
 
         } catch (SQLException ex) {
@@ -208,32 +208,25 @@ public class SourceCode {
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
 
-            var query = "     SELECT sourcecode.id, repoid, languageid, sourceid, ownerid, licenseid, location, filename, UNCOMPRESS(content) AS content, hash, simhash, linescount, data, languagetype.type AS languagename" +
-                        "       FROM sourcecode" +
-                        " INNER JOIN languagetype ON languagetype.id = sourcecode.languageid" +
-                        "      WHERE sourcecode.id=? LIMIT 1;";
+            var query = "   SELECT id, repoid, filetypeid, location, filename, UNCOMPRESS(content) AS content, hash, languagename" +
+                        "     FROM code" +
+                        "    WHERE id=? LIMIT 1;";
 
             connStmtRs.stmt = connStmtRs.conn.prepareStatement(query);
             connStmtRs.stmt.setInt(1, id);
 
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
             while (connStmtRs.rs.next()) {
-                result = Optional.of(new SourceCodeDTO(
-                        connStmtRs.rs.getInt("id"),
-                        connStmtRs.rs.getInt("repoid"),
-                        connStmtRs.rs.getInt("languageid"),
-                        connStmtRs.rs.getString("languagename"),
-                        connStmtRs.rs.getInt("sourceid"),
-                        connStmtRs.rs.getInt("ownerid"),
-                        connStmtRs.rs.getInt("licenseid"),
-                        connStmtRs.rs.getString("location"),
-                        connStmtRs.rs.getString("filename"),
-                        connStmtRs.rs.getString("content"),
-                        connStmtRs.rs.getString("hash"),
-                        connStmtRs.rs.getString("simhash"),
-                        connStmtRs.rs.getInt("linescount"),
-                        connStmtRs.rs.getString("data")
-                ));
+                result = Optional.of(new SourceCodeDTO()
+                        .setId(connStmtRs.rs.getInt("id"))
+                        .setRepoId(connStmtRs.rs.getInt("repoid"))
+                        .setFileTypeId(connStmtRs.rs.getInt("filetypeid"))
+                        .setLocation(connStmtRs.rs.getString("location"))
+                        .setFilename(connStmtRs.rs.getString("filename"))
+                        .setContent(connStmtRs.rs.getString("content"))
+                        .setHash(connStmtRs.rs.getString("hash"))
+                        .setLanguageName(connStmtRs.rs.getInt("languagename"))
+                );
             }
 
         } catch (SQLException ex) {

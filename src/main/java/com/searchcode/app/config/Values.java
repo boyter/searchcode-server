@@ -115,6 +115,8 @@ public class Values {
     // Used for both searchcoee server and searchcode.com
     public static final String DEFAULT_HIGHLIGHTER = "javascript";
     public static final String HIGHLIGHTER = "highlighter";
+    public static final String HIGHLIGHTER_BINARY_LOCATION = "highlighter_binary_location";
+    public static final String DEFAULT_HIGHLIGHTER_BINARY_LOCATION = "./include/binaries/";
 
     // Mostly used for changing over to distributed searchcode.com index
     public static final String DELETE_REPO_AFTER_PROCESS = "delete_repo_after_process";

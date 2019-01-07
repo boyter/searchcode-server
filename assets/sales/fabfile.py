@@ -14,6 +14,7 @@ from fabric.colors import yellow
 env.user = 'root'
 env.SERVERS = [
     {'name': 'server1', 'ip': '45.63.29.175'},
+    {'name': 'searchcode', 'ip': '78.47.90.135'},
 ]
 
 

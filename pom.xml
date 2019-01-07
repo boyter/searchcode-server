@@ -145,6 +145,12 @@
             <artifactId>lucene-facet</artifactId>
             <version>5.5.5</version>
         </dependency>
+        <!-- For forking background processes https://github.com/zeroturnaround/zt-exec -->
+        <dependency>
+            <groupId>org.zeroturnaround</groupId>
+            <artifactId>zt-exec</artifactId>
+            <version>1.10</version>
+        </dependency>
         <!-- Cache Layer -->
         <dependency>
             <groupId>org.cache2k</groupId>

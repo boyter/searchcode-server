@@ -117,6 +117,15 @@
     </table>
 </div>
 
+<#--
+<hr>
+<div>
+${chromaHtml}
+</div>
+<style>
+${chromaCss}
+</style>
+-->
 
 <script>
 $('#toggleOwasp').click(function(e) {

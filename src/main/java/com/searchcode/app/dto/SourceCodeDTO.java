@@ -1,95 +1,93 @@
 package com.searchcode.app.dto;
 
-import com.google.gson.Gson;
-
+/**
+ * Represents a single record inside the searchcode.com database
+ * NB not all fields are represented here as they are not required
+ * they should be removed from the DB at some point
+ */
 public class SourceCodeDTO {
-    private int id;
-    private int repoid;
-    private int languageid;
-    private String languagename;
-    private int sourceid;
-    private int ownerid;
-    private int licenseid;
-    private String location;
-    private String filename;
-    private String content;
-    private String hash;
-    private String simhash;
-    private int linescount;
-    private SourceCodeDTOData sourceCodeData;
 
-    public SourceCodeDTO(int id, int repoid, int languageid, String languagename, int sourceid, int ownerid, int licenseid, String location, String filename, String content, String hash, String simhash, int linescount, String data) {
-        Gson gson = new Gson();
+    public int id;
+    public int repoId; // Foreign key to id of repo
+    public int fileTypeId; // Foreign key to file type DEPRECATED
+    public String location; // Location of the file in the repository
+    public String filename; // Name of the file with extension
+    public String content; // The content stored in a MySQL COMPRESS blob column
+    public String hash; // MD5 hash of the content field
+    public int languageName; // Foreign key to language type
 
+    // The below are used for filters inside the DB itself but we can calculate them on the fly
+    // cheaply so dont bother pulling them back from the DB most of the time
+    public int blank; // Count of the number of blank lines
+    public int comment; // Count of the number of comment lines
+    public int code; // Count of the number of code lines
+    public int estimatedCost; // COCOMO calculation figure
+    public int linesCount; // Count of the number of lines in the file blank + comment + code
+
+    public SourceCodeDTO() {}
+
+    public SourceCodeDTO setId(int id) {
         this.id = id;
-        this.repoid = repoid;
-        this.languageid = languageid;
-        this.languagename = languagename;
-        this.sourceid = sourceid;
-        this.ownerid = ownerid;
-        this.licenseid = licenseid;
+        return this;
+    }
+
+    public SourceCodeDTO setRepoId(int repoId) {
+        this.repoId = repoId;
+        return this;
+    }
+
+    public SourceCodeDTO setFileTypeId(int fileTypeId) {
+        this.fileTypeId = fileTypeId;
+        return this;
+    }
+
+    public SourceCodeDTO setLocation(String location) {
         this.location = location;
+        return this;
+    }
+
+    public SourceCodeDTO setFilename(String filename) {
         this.filename = filename;
+        return this;
+    }
+
+    public SourceCodeDTO setContent(String content) {
         this.content = content;
+        return this;
+    }
+
+    public SourceCodeDTO setHash(String hash) {
         this.hash = hash;
-        this.simhash = simhash;
-        this.linescount = linescount;
-        this.sourceCodeData = gson.fromJson(data, SourceCodeDTOData.class);
+        return this;
     }
 
-    public int getId() {
-        return id;
+    public SourceCodeDTO setLanguageName(int languageName) {
+        this.languageName = languageName;
+        return this;
     }
 
-    public int getRepoid() {
-        return repoid;
+    public SourceCodeDTO setBlank(int blank) {
+        this.blank = blank;
+        return this;
     }
 
-    public int getLanguageid() {
-        return languageid;
+    public SourceCodeDTO setComment(int comment) {
+        this.comment = comment;
+        return this;
     }
 
-    public String getLanguagename() {
-        return languagename;
+    public SourceCodeDTO setCode(int code) {
+        this.code = code;
+        return this;
     }
 
-    public int getSourceid() {
-        return sourceid;
+    public SourceCodeDTO setEstimatedCost(int estimatedCost) {
+        this.estimatedCost = estimatedCost;
+        return this;
     }
 
-    public int getOwnerid() {
-        return ownerid;
-    }
-
-    public int getLicenseid() {
-        return licenseid;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public String getSimhash() {
-        return simhash;
-    }
-
-    public int getLinescount() {
-        return linescount;
-    }
-
-    public SourceCodeDTOData getSourceCodeData() {
-        return sourceCodeData;
+    public SourceCodeDTO setLinesCount(int linesCount) {
+        this.linesCount = linesCount;
+        return this;
     }
 }

@@ -153,17 +153,6 @@ public class CodeRouteService {
     public Map<String, Object> getCode(Request request, Response response) {
         var map = new HashMap<String, Object>();
 
-        // If set to remote highlighter then post to it to render
-        // TODO still work in progress
-        if (!Values.DEFAULT_HIGHLIGHTER.equalsIgnoreCase(this.highlighter)) {
-            try {
-                var res = this.helpers.sendPost("http://localhost:8089/", "{\"content\": \"int estimatedCode = (int)coco.estimateCost(effort);\"}");
-                var highlighter = this.gson.fromJson(res, Highlighter.class);
-                map.put("chromaCss", highlighter.css);
-                map.put("chromaHtml", highlighter.html);
-            } catch (Exception ex) {}
-        }
-
         var codeId = request.params(":codeid");
         var codeResult = this.indexService.getCodeResultByCodeId(codeId);
 
@@ -171,6 +160,22 @@ public class CodeRouteService {
             response.redirect("/404/");
             halt();
         }
+
+        // If set to remote highlighter then post to it to render
+        // TODO still work in progress
+//        if (!Values.DEFAULT_HIGHLIGHTER.equalsIgnoreCase(this.highlighter)) {
+//            try {
+//                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
+//                        .setContent(String.join("\n", codeResult.code))
+//                        .setFileName("test.py")
+//                        .setStyle("monokai"));
+//
+//                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
+//                var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
+//                map.put("chromaCss", highlighter.css);
+//                map.put("chromaHtml", highlighter.html);
+//            } catch (Exception ex) {}
+//        }
 
         var codeLines = codeResult.code;
         var code = new StringBuilder();
