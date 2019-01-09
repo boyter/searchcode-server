@@ -279,6 +279,7 @@ public class JobService {
      */
     public void initialJobs() {
         try {
+            //this.startHighlighter();
             this.startDeleteJob();
             this.startSpellingJob();
             this.startIndexerJob();
