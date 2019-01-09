@@ -64,7 +64,6 @@ public class JobService {
     private int NUMBERGITPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_GIT_PROCESSORS, Values.DEFAULT_NUMBER_GIT_PROCESSORS), Values.DEFAULT_NUMBER_GIT_PROCESSORS);
     private int NUMBERSVNPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_SVN_PROCESSORS, Values.DEFAULT_NUMBER_SVN_PROCESSORS), Values.DEFAULT_NUMBER_SVN_PROCESSORS);
     private int NUMBERFILEPROCESSORS = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.NUMBER_FILE_PROCESSORS, Values.DEFAULT_NUMBER_FILE_PROCESSORS), Values.DEFAULT_NUMBER_FILE_PROCESSORS);
-    ;
 
     private String REPOLOCATION = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
     private String TRASHLOCATION = Properties.getProperties().getProperty(Values.TRASH_LOCATION, Values.DEFAULT_TRASH_LOCATION);
@@ -278,16 +277,12 @@ public class JobService {
      * TODO move the indexer job start into method like the above ones
      */
     public void initialJobs() {
-        try {
-            //this.startHighlighter();
-            this.startDeleteJob();
-            this.startSpellingJob();
-            this.startIndexerJob();
-            this.startRepositoryJobs();
-            this.startEnqueueJob();
-        } catch (SchedulerException ex) {
-            this.logger.severe(String.format("8c3cd302::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
+        //this.startHighlighter();
+        this.startDeleteJob();
+        this.startSpellingJob();
+        this.startIndexerJob();
+        this.startRepositoryJobs();
+        this.startEnqueueJob();
     }
 
     /**
@@ -305,8 +300,11 @@ public class JobService {
         }
     }
 
-    private void startIndexerJob() throws SchedulerException {
-        // Setup the indexer which runs forever indexing
+    /**
+     * Sets up the indexer job which runs in the background forever
+     * indexing files that are added to the index queue
+     */
+    private void startIndexerJob() {
         JobDetail job = newJob(IndexDocumentsJob.class)
                 .withIdentity("indexerjob")
                 .build();
@@ -321,8 +319,12 @@ public class JobService {
                 .withPriority(15)
                 .build();
 
-        this.scheduler.scheduleJob(job, trigger);
-        this.scheduler.start();
+        try {
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
+        } catch (SchedulerException ex) {
+            this.logger.severe(String.format("8c3cd302::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+        }
     }
 
     private void startRepositoryJobs() {
