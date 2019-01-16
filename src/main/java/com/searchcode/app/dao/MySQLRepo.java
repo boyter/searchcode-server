@@ -35,7 +35,7 @@ public class MySQLRepo implements IRepo {
 
     @Override
     public boolean saveRepo(RepoResult repoResult) {
-        Optional<RepoResult> existing = this.getRepoByUrl(repoResult.getUrl());
+        var existing = this.getRepoByUrl(repoResult.getUrl());
         var connStmtRs = new ConnStmtRs();
         var isNew = false;
 
@@ -44,7 +44,7 @@ public class MySQLRepo implements IRepo {
             connStmtRs.conn = this.dbConfig.getConnection();
             if (existing.isPresent()) {
                 connStmtRs.stmt = connStmtRs.conn.prepareStatement("UPDATE `repo` SET `name`=?,`scm`=?,`url`=?,`suggestedname`=?,`sourceurl`=?,`instructions`=?,`sourceid`=?,`spdx`=?,`username`=? WHERE `id`=?");
-                connStmtRs.stmt.setInt(9, repoResult.getRowId());
+                connStmtRs.stmt.setInt(10, repoResult.getRowId());
             } else {
                 isNew = true;
                 connStmtRs.stmt = connStmtRs.conn.prepareStatement("INSERT INTO `repo`(`id`, `name`, `scm`, `url`, `suggestedname`, `sourceurl`, `instructions`, `sourceid`, `spdx`, `username`) VALUES (null,?,?,?,?,?,?,?,?,?);");
@@ -72,6 +72,25 @@ public class MySQLRepo implements IRepo {
 
     @Override
     public void deleteRepoByName(String repositoryName) {
+    }
+
+    @Override
+    public boolean deleteRepoById(int repoId) {
+        var connStmtRs = new ConnStmtRs();
+
+        try {
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("DELETE FROM repo WHERE id = ?;");
+            connStmtRs.stmt.setInt(1, repoId);
+            connStmtRs.stmt.execute();
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("679548ab::error in class %s exception %s searchcode was unable to delete repository by id %s", ex.getClass(), ex.getMessage(), repoId));
+            return false;
+        } finally {
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        return true;
     }
 
     @Override

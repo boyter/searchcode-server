@@ -1,7 +1,6 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.MySQLDatabaseConfig;
-import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -29,7 +28,7 @@ public class MySQLDataTest extends TestCase {
     }
 
     public void testDataSaveUpdate() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var expected = Values.EMPTYSTRING + System.currentTimeMillis();
         var actual = this.data.getDataByName("testDataSaveUpdate");
@@ -41,7 +40,7 @@ public class MySQLDataTest extends TestCase {
     }
 
     public void testGetWithoutSave() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var actual = data.getDataByName("testSingleSaveManyGet");
         for (int i = 0; i < 100; i++) {
@@ -51,7 +50,7 @@ public class MySQLDataTest extends TestCase {
     }
 
     public void testGetWithRandomValuesExpectingNull() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var random = new Random();
 
@@ -62,7 +61,7 @@ public class MySQLDataTest extends TestCase {
     }
 
     public void testSingleSaveManyGet() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var expected = "" + System.currentTimeMillis();
         data.saveData("testSingleSaveManyGet", expected);
@@ -77,7 +76,7 @@ public class MySQLDataTest extends TestCase {
      * Stress test the saving to check if we are closing connections properly
      */
     public void testManySaveAndGet() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         for (int i = 0; i < 100; i++) {
             var expected = "" + System.currentTimeMillis();
@@ -89,14 +88,14 @@ public class MySQLDataTest extends TestCase {
     }
 
     public void testDefaultReturns() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var actual = Double.parseDouble(data.getDataByName("THISSHOULDNEVEREXISTIHOPE", "0"));
         assertThat(actual).isEqualTo(0);
     }
 
     public void testGetAllData() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         data.saveData("testAllData", "anything");
 

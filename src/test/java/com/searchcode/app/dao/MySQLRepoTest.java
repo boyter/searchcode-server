@@ -21,7 +21,7 @@ public class MySQLRepoTest extends TestCase {
     }
 
     public void testGetRepoByUrl() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var result = this.repo.getRepoByUrl("boyter");
 
@@ -29,7 +29,7 @@ public class MySQLRepoTest extends TestCase {
     }
 
     public void testGetRepoByUrlCache() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var cache = Singleton.getGenericCache();
         cache.put("dao.mysqlrepo.boyter", Optional.of(new RepoResult().setRowId(999).setName("ZeName").setUrl("boyter")));
@@ -42,7 +42,7 @@ public class MySQLRepoTest extends TestCase {
     }
 
     public void testGetRepoById() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         this.repo.saveRepo(new RepoResult()
                 .setName("test")
@@ -55,7 +55,7 @@ public class MySQLRepoTest extends TestCase {
     }
 
     public void testGetRepoByIdCache() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var cache = Singleton.getGenericCache();
         cache.put("dao.mysqlrepo.999", Optional.of(new RepoResult().setRowId(999).setName("ZeName")));
@@ -67,17 +67,35 @@ public class MySQLRepoTest extends TestCase {
         assertThat(result.get().getName()).isEqualTo("ZeName");
     }
 
+    public void testDeleteRepo() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-    public void testSaveRepo() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
-
-        var result = this.repo.saveRepo(new RepoResult()
+        this.repo.saveRepo(new RepoResult()
                 .setName("test")
                 .setUrl("boyter"));
 
+        var r1 = this.repo.getRepoByUrl("boyter");
+        var result = this.repo.deleteRepoById(r1.get().getRowId());
         assertThat(result).isTrue();
 
-        result = this.repo.saveRepo(new RepoResult()
+        Singleton.getGenericCache().clear();
+
+        r1 = this.repo.getRepoByUrl("boyter");
+        assertThat(r1.isPresent()).isFalse();
+    }
+
+    public void testSaveRepo() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        this.repo.saveRepo(new RepoResult()
+                .setName("test")
+                .setUrl("boyter"));
+
+        var r = this.repo.getRepoByUrl("boyter");
+        assertThat(r.get().getName()).isEqualTo("test");
+        assertThat(r.get().getUrl()).isEqualTo("boyter");
+
+        var result = this.repo.saveRepo(new RepoResult()
                 .setName("test")
                 .setUrl("boyter"));
 

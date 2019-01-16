@@ -8,6 +8,7 @@ import java.util.Optional;
 public interface IRepo {
     boolean saveRepo(RepoResult repoResult);
     void deleteRepoByName(String repositoryName);
+    boolean deleteRepoById(int repoId);
     Optional<RepoResult> getRepoByUrl(String repositoryUrl);
     Optional<RepoResult> getRepoByName(String repositoryName);
     Optional<RepoResult> getRepoById(int repoId);

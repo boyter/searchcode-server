@@ -41,7 +41,7 @@ public class Data {
         this.helpers = helpers;
         this.logger = logger;
 
-        if (Singleton.getHelpers().isLocalInstance()) {
+        if (Singleton.getHelpers().isStandaloneInstance()) {
             this.createTableIfMissing();
         }
     }

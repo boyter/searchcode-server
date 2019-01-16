@@ -298,6 +298,11 @@ public class SQLiteRepo implements IRepo {
     }
 
     @Override
+    public boolean deleteRepoById(int repoId) {
+        return false;
+    }
+
+    @Override
     public synchronized boolean saveRepo(RepoResult repoResult) {
         Optional<RepoResult> existing = this.getRepoByName(repoResult.getName());
         ConnStmtRs connStmtRs = new ConnStmtRs();

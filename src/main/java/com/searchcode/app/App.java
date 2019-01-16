@@ -38,9 +38,8 @@ public class App {
         Spark.staticFileLocation("/public");
 
         Singleton.getJobService().initialJobs();
-//        Singleton.getJobService().startHighlighter();
 
-        if (Singleton.getHelpers().isLocalInstance()) {
+        if (Singleton.getHelpers().isStandaloneInstance()) {
             RegisterServerRoutes();
         } else {
             RegisterSearchcodeRoutes();

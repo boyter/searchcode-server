@@ -12,7 +12,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 public class SourceCodeTest extends TestCase {
 
     public void testGetCodeBetween() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         SourceCode code = new SourceCode();
         List<SearchcodeCodeResult> codeBetween = code.getCodeBetween(0, 200);
@@ -20,7 +20,7 @@ public class SourceCodeTest extends TestCase {
     }
 
     public void testGetMaxId() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         SourceCode code = new SourceCode();
         int maxId = code.getMaxId();
@@ -28,7 +28,7 @@ public class SourceCodeTest extends TestCase {
     }
 
     public void testGetLocation() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         SourceCode sourceCode = new SourceCode();
 

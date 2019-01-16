@@ -14,7 +14,7 @@ import static org.mockito.Mockito.when;
 
 public class SphinxIndexServiceTest extends TestCase {
     public void testSearch() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var sphinxIndexService = new SphinxIndexService();
 
@@ -30,7 +30,7 @@ public class SphinxIndexServiceTest extends TestCase {
     }
 
     public void testSearchEnsureConnectionsClose() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var sphinxIndexService = new SphinxIndexService();
 
@@ -56,7 +56,7 @@ public class SphinxIndexServiceTest extends TestCase {
 
 
     public void testGetShardCountExpectingZero() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("")).isZero();
@@ -64,7 +64,7 @@ public class SphinxIndexServiceTest extends TestCase {
     }
 
     public void testGetShardCountExpectingTwo() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2")).isEqualTo(2);
@@ -72,7 +72,7 @@ public class SphinxIndexServiceTest extends TestCase {
     }
 
     public void testGetShardCountExpectingFour() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var sphinxIndexService = new SphinxIndexService();
         assertThat(sphinxIndexService.getShardCount("localhost:1,2,3,4")).isEqualTo(4);
@@ -80,7 +80,7 @@ public class SphinxIndexServiceTest extends TestCase {
     }
 
     public void testTransformLanguageTypeEmpty() {
-        if (Singleton.getHelpers().isLocalInstance()) return;
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var mock = Mockito.mock(LanguageType.class);
         var sphinxIndexService = new SphinxIndexService(mock);
@@ -92,7 +92,7 @@ public class SphinxIndexServiceTest extends TestCase {
     }
 
 //    public void testTransformLanguageTypeSingleResult() {
-//        if (Singleton.getHelpers().isLocalInstance()) return;
+//        if (Singleton.getHelpers().isStandaloneInstance()) return;
 //
 //        LanguageType mock = Mockito.mock(LanguageType.class);
 //        SphinxIndexService sphinxIndexService = new SphinxIndexService(mock);

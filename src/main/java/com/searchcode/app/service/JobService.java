@@ -271,18 +271,27 @@ public class JobService {
         }
     }
 
+    private boolean initalJobsRun = false;
     /**
      * Starts all of the above jobs as per their unique requirements
-     * TODO fix so this can only run once
-     * TODO move the indexer job start into method like the above ones
      */
     public void initialJobs() {
-        //this.startHighlighter();
-        this.startDeleteJob();
-        this.startSpellingJob();
-        this.startIndexerJob();
-        this.startRepositoryJobs();
-        this.startEnqueueJob();
+        // Having this run multiple times can be an issue so ensure it can never happen
+        if (initalJobsRun) {
+            return;
+        }
+
+        initalJobsRun = true;
+
+        if (Singleton.getHelpers().isStandaloneInstance()) {
+            this.startHighlighter();
+        } else {
+            this.startDeleteJob();
+            this.startSpellingJob();
+            this.startIndexerJob();
+            this.startRepositoryJobs();
+            this.startEnqueueJob();
+        }
     }
 
     /**

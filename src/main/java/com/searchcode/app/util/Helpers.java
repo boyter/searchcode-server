@@ -360,7 +360,7 @@ public class Helpers {
      * Determine if this instance of searchcode is a local one which means it maintains its own
      * lucene index and the like. If configured to be searchcode.com it would use sphinx
      */
-    public boolean isLocalInstance() {
+    public boolean isStandaloneInstance() {
         return Values.DEFAULT_INDEX_SERVICE.equals(Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE));
     }
 
