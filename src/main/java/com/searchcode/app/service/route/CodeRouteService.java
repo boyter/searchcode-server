@@ -162,20 +162,22 @@ public class CodeRouteService {
         }
 
         // If set to remote highlighter then post to it to render
-        // TODO still work in progress
-//        if (!Values.DEFAULT_HIGHLIGHTER.equalsIgnoreCase(this.highlighter)) {
-//            try {
-//                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
-//                        .setContent(String.join("\n", codeResult.code))
-//                        .setFileName("test.py")
-//                        .setStyle("monokai"));
-//
-//                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
-//                var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
-//                map.put("chromaCss", highlighter.css);
-//                map.put("chromaHtml", highlighter.html);
-//            } catch (Exception ex) {}
-//        }
+        // TODO still work in progress should probably be in service layer too
+        if (!this.helpers.isStandaloneInstance()) {
+            try {
+                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
+                        .setContent(String.join("\n", codeResult.code))
+                        .setFileName("test.py")
+                        .setStyle("monokai"));
+
+                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
+                var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
+                map.put("chromaCss", highlighter.css);
+                map.put("chromaHtml", highlighter.html);
+            } catch (Exception ex) {
+                Singleton.getLogger().severe(String.format("f2d40796::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            }
+        }
 
         var codeLines = codeResult.code;
         var code = new StringBuilder();

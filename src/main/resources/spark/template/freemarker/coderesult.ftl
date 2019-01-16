@@ -104,28 +104,30 @@
     </table>
 </div>
 
+
+<#if chromaHtml??>
+    <div>
+        ${chromaHtml}
+    </div>
+    <style>
+        ${chromaCss}
+    </style>
+<#else>
 <div class="coderesult-code">
     <table style="width:100%;">
         <tr>
-        <td class="coderesult-linenos" valign="top">
-            <pre><code <#if !highlight>class="hljs"</#if> >${linenos}</code></pre>
-        </td>
-        <td class="coderesult-code" valign="top">
-            <pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
-        </td>
+            <td class="coderesult-linenos" valign="top">
+                <pre><code <#if !highlight>class="hljs"</#if> >${linenos}</code></pre>
+            </td>
+            <td class="coderesult-code" valign="top">
+                <pre><code <#if !highlight>class="hljs"</#if> >${codeValue}</code></pre>
+            </td>
         </tr>
     </table>
 </div>
+</#if>
 
-<#--
-<hr>
-<div>
-${chromaHtml}
-</div>
-<style>
-${chromaCss}
-</style>
--->
+
 
 <script>
 $('#toggleOwasp').click(function(e) {

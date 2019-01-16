@@ -283,7 +283,7 @@ public class JobService {
 
         initalJobsRun = true;
 
-        if (Singleton.getHelpers().isStandaloneInstance()) {
+        if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
         } else {
             this.startDeleteJob();
