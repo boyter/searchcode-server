@@ -60,9 +60,8 @@ public class ServerRoutes {
             return new FreeMarkerEngine().render(codeRouteService.root(request, response));
         });
 
-        get("/healthcheck/", (request, response) -> {
-            return new JsonTransformer().render(true);
-        });
+        get("/healthcheck/", (request, response) -> new JsonTransformer().render(true));
+        get("/health-check/", (request, response) -> new JsonTransformer().render(true));
 
         get("/html/", (request, response) -> {
             CodeRouteService codeRouteService = new CodeRouteService();

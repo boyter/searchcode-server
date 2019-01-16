@@ -18,6 +18,7 @@ public class SearchcodeRoutes {
         });
 
         get("/healthcheck/", (request, response) -> new JsonTransformer().render(true));
+        get("/health-check/", (request, response) -> new JsonTransformer().render(true));
 
         get("/file/:codeid/*", (request, response) -> {
             CodeRouteService codeRouteService = new CodeRouteService();
