@@ -100,5 +100,7 @@ public class MySQLRepoTest extends TestCase {
                 .setUrl("boyter"));
 
         assertThat(result).isFalse();
+        this.repo.deleteRepoById(r.get().getRowId());
+
     }
 }
