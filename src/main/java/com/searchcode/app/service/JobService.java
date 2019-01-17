@@ -271,17 +271,17 @@ public class JobService {
         }
     }
 
-    private boolean initalJobsRun = false;
+    private boolean initialJobsRun = false;
     /**
      * Starts all of the above jobs as per their unique requirements
      */
     public void initialJobs() {
-        // Having this run multiple times can be an issue so ensure it can never happen
-        if (initalJobsRun) {
+        // Having this run multiple times can be an issue so ensure it can not happen
+        if (initialJobsRun) {
             return;
         }
 
-        initalJobsRun = true;
+        initialJobsRun = true;
 
         if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
