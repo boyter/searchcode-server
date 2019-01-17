@@ -247,7 +247,10 @@ public class SphinxIndexService implements IIndexService {
     @Override
     public CodeResult getCodeResultByCodeId(String codeId) {
         var byId = this.sourceCode.getById(this.helpers.tryParseInt(codeId, "-1"));
-        return byId.map(x -> new CodeResult(Arrays.asList(x.content.split("\n")), null)).orElse(null);
+        return byId.map(x -> {
+            return new CodeResult(Arrays.asList(x.content.split("\n")), null)
+                    .setFileName(x.filename);
+        }).orElse(null);
     }
 
     @Override

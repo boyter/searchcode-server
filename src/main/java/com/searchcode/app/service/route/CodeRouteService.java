@@ -167,7 +167,7 @@ public class CodeRouteService {
             try {
                 var highlighterRequest = this.gson.toJson(new HighlighterRequest()
                         .setContent(String.join("\n", codeResult.code))
-                        .setFileName("test.py")
+                        .setFileName(codeResult.fileName)
                         .setStyle("monokai"));
 
                 var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
@@ -177,39 +177,42 @@ public class CodeRouteService {
             } catch (Exception ex) {
                 Singleton.getLogger().severe(String.format("f2d40796::error in class %s exception %s", ex.getClass(), ex.getMessage()));
             }
-        }
+        } else {
+            var codeLines = codeResult.code;
+            var code = new StringBuilder();
+            var lineNos = new StringBuilder();
+            var padStr = new StringBuilder();
 
-        var codeLines = codeResult.code;
-        var code = new StringBuilder();
-        var lineNos = new StringBuilder();
-        var padStr = new StringBuilder();
-
-        for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
-            padStr.append(" ");
-        }
-        for (int i = 1, d = 10, len = codeLines.size(); i <= len; i++) {
-            if (i / d > 0) {
-                d *= 10;
-                padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
+            for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
+                padStr.append(" ");
             }
-            code.append("<span id=\"")
-                    .append(i)
-                    .append("\"></span>")
-                    .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
-                    .append("\n");
-            lineNos.append(padStr)
-                    .append("<a href=\"#")
-                    .append(i)
-                    .append("\">")
-                    .append(i)
-                    .append("</a>")
-                    .append("\n");
+            for (int i = 1, d = 10, len = codeLines.size(); i <= len; i++) {
+                if (i / d > 0) {
+                    d *= 10;
+                    padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
+                }
+                code.append("<span id=\"")
+                        .append(i)
+                        .append("\"></span>")
+                        .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
+                        .append("\n");
+                lineNos.append(padStr)
+                        .append("<a href=\"#")
+                        .append(i)
+                        .append("\">")
+                        .append(i)
+                        .append("</a>")
+                        .append("\n");
+            }
+
+            map.put("linenos", lineNos.toString());
+            map.put("codeValue", code.toString());
         }
 
         var owaspResults = new ArrayList<OWASPMatchingResult>();
         if (CommonRouteService.owaspAdvisoriesEnabled()) {
             if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
-                owaspResults = this.owaspClassifier.classifyCode(codeLines, codeResult.languageName);
+                owaspResults = this.owaspClassifier.classifyCode(codeResult.code, codeResult.languageName);
             }
         }
 
@@ -227,13 +230,12 @@ public class CodeRouteService {
         map.put("fileName", codeResult.fileName);
         map.put("codePath", codeResult.getDisplayLocation());
         map.put("codeLength", codeResult.lines);
-        map.put("linenos", lineNos.toString());
+
         map.put("languageName", codeResult.languageName);
         map.put("md5Hash", codeResult.md5hash);
         map.put("repoName", codeResult.repoName);
         map.put("highlight", highlight);
         map.put("repoLocation", codeResult.getRepoLocation());
-        map.put("codeValue", code.toString());
         map.put("highligher", CommonRouteService.getSyntaxHighlighter());
         map.put("codeOwner", codeResult.getCodeOwner());
         map.put("owaspResults", owaspResults);
