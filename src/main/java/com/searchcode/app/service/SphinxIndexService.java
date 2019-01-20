@@ -249,7 +249,10 @@ public class SphinxIndexService implements IIndexService {
         var byId = this.sourceCode.getById(this.helpers.tryParseInt(codeId, "-1"));
         return byId.map(x -> {
             return new CodeResult(Arrays.asList(x.content.split("\n")), null)
-                    .setFileName(x.filename);
+                    .setFileName(x.filename)
+                    .setLines(Integer.toString(x.linesCount))
+                    .setCodeLines(Integer.toString(x.code))
+                    .setCommentLines(Integer.toString(x.comment));
         }).orElse(null);
     }
 
