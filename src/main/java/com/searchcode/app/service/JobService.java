@@ -303,6 +303,8 @@ public class JobService {
                 new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter-x86_64-unknown-linux").destroyOnExit().start().getFuture();
             } else if (SystemUtils.IS_OS_WINDOWS) {
                 new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter-x86_64-pc-windows.exe").destroyOnExit().start().getFuture();
+            } else  if (SystemUtils.IS_OS_MAC) {
+                new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter-x86_64-apple-darwin").destroyOnExit().start().getFuture();
             }
         } catch (IOException ex) {
             this.logger.severe(String.format("947e8a85::error in class %s exception %s", ex.getClass(), ex.getMessage()));
