@@ -68,6 +68,7 @@ public final class Singleton {
 
     private static OWASPClassifier owaspClassifier = null;
     private static RepositorySource repositorySource = null;
+    private static Highlight highlight = null;
 
     private static UniqueRepoQueue uniqueGitRepoQueue = null; // Used to queue the next repository to be indexed
     private static UniqueRepoQueue uniqueFileRepoQueue = null; // Used to queue the next repository to be indexed
@@ -207,6 +208,14 @@ public final class Singleton {
         }
 
         return repositorySource;
+    }
+
+    public static synchronized Highlight getHighlight() {
+        if (highlight == null) {
+            highlight = new Highlight();
+        }
+
+        return highlight;
     }
 
     public static synchronized OWASPClassifier getOwaspClassifier() {

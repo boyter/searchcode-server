@@ -14,10 +14,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
@@ -151,13 +148,14 @@ public class CodeRouteServiceTest extends TestCase {
     }
 
     public void testGetCodeWithParamsWithMatch() {
-        Request request = mock(Request.class);
-        Response response = mock(Response.class);
-        IndexService indexService = mock(IndexService.class);
+        var request = mock(Request.class);
+        var response = mock(Response.class);
+        var indexService = mock(IndexService.class);
+        var highlight = mock(Highlight.class);
 
-        CodeRouteService codeRouteService = new CodeRouteService(indexService, new Helpers(), new SQLiteRepo(), new Data(), null, null, null, null);
+        var codeRouteService = new CodeRouteService(indexService, new Helpers(), new SQLiteRepo(), new Data(), null, null, null, null, highlight);
 
-        CodeResult codeResult = new CodeResult(new ArrayList<>(), new ArrayList<>());
+        var codeResult = new CodeResult(new ArrayList<>(), new ArrayList<>());
         codeResult.setLines("100");
         codeResult.setLanguageName("LanguageName");
         codeResult.setMd5hash("md5hash");
@@ -168,8 +166,11 @@ public class CodeRouteServiceTest extends TestCase {
 
         when(request.params(":codeid")).thenReturn("MATCH-MOCK");
         when(indexService.getCodeResultByCodeId("MATCH-MOCK")).thenReturn(codeResult);
+        when(highlight.highlightCodeResult(any())).thenReturn(new HashMap<>(){{
+            put("codeValue", "");
+        }});
 
-        Map<String, Object> map = codeRouteService.getCode(request, response);
+        var map = codeRouteService.getCode(request, response);
 
         assertThat(map.get("codePath")).isEqualTo("myDisplayLocation");
         assertThat(map.get("codeLength")).isEqualTo("100");
@@ -178,7 +179,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(map.get("repoName")).isEqualTo("myRepo");
         assertThat(map.get("highlight")).isEqualTo(true);
         assertThat(map.get("repoLocation")).isEqualTo("repoLocation");
-        assertThat(map.get("codeValue")).isEqualTo("");
+        assertThat(map.get("codeValue")).isEqualTo(""); // TODO depends on the highlighter being used
         assertThat(map.get("highligher")).isNotNull();
         assertThat(map.get("codeOwner")).isEqualTo("codeOwner");
         assertThat(map.get("owaspResults")).isNotNull();

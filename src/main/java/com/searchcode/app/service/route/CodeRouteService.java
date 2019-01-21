@@ -18,11 +18,11 @@ import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
+import com.searchcode.app.service.Highlight;
 import com.searchcode.app.service.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.*;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.ModelAndView;
@@ -49,12 +49,13 @@ public class CodeRouteService {
     private final IIndexService indexService;
     private final String highlighter;
     private final int highlightLimit;
+    private final Highlight highlight;
 
     public CodeRouteService() {
-        this(Singleton.getIndexService(), Singleton.getHelpers(), Singleton.getRepo(), Singleton.getData(), Singleton.getSearchCodeLib(), Singleton.getCodeMatcher(), Singleton.getOwaspClassifier(), Singleton.getRepositorySource());
+        this(Singleton.getIndexService(), Singleton.getHelpers(), Singleton.getRepo(), Singleton.getData(), Singleton.getSearchCodeLib(), Singleton.getCodeMatcher(), Singleton.getOwaspClassifier(), Singleton.getRepositorySource(), Singleton.getHighlight());
     }
 
-    public CodeRouteService(IIndexService indexService, Helpers helpers, IRepo repo, Data data, SearchCodeLib searchCodeLib, CodeMatcher codeMatcher, OWASPClassifier owaspClassifier, RepositorySource repositorySource) {
+    public CodeRouteService(IIndexService indexService, Helpers helpers, IRepo repo, Data data, SearchCodeLib searchCodeLib, CodeMatcher codeMatcher, OWASPClassifier owaspClassifier, RepositorySource repositorySource, Highlight highlight) {
         this.indexService = indexService;
         this.helpers = helpers;
         this.repo = repo;
@@ -64,6 +65,7 @@ public class CodeRouteService {
         this.owaspClassifier = owaspClassifier;
         this.repositorySource = repositorySource;
         this.gson = new Gson();
+        this.highlight = highlight;
 
         this.highlighter = Properties.getProperties().getProperty(Values.HIGHLIGHTER, Values.DEFAULT_HIGHLIGHTER);
         this.highlightLimit = Integer.parseInt(Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
@@ -161,53 +163,7 @@ public class CodeRouteService {
             halt();
         }
 
-        // If set to remote highlighter then post to it to render
-        // TODO still work in progress should probably be in service layer too
-        if (!this.helpers.isStandaloneInstance()) {
-            try {
-                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
-                        .setContent(String.join("\n", codeResult.code))
-                        .setFileName(codeResult.fileName)
-                        .setStyle("monokai"));
-
-                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
-                var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
-                map.put("chromaCss", highlighter.css);
-                map.put("chromaHtml", highlighter.html);
-            } catch (Exception ex) {
-                Singleton.getLogger().severe(String.format("f2d40796::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-            }
-        } else {
-            var codeLines = codeResult.code;
-            var code = new StringBuilder();
-            var lineNos = new StringBuilder();
-            var padStr = new StringBuilder();
-
-            for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
-                padStr.append(" ");
-            }
-            for (int i = 1, d = 10, len = codeLines.size(); i <= len; i++) {
-                if (i / d > 0) {
-                    d *= 10;
-                    padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
-                }
-                code.append("<span id=\"")
-                        .append(i)
-                        .append("\"></span>")
-                        .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
-                        .append("\n");
-                lineNos.append(padStr)
-                        .append("<a href=\"#")
-                        .append(i)
-                        .append("\">")
-                        .append(i)
-                        .append("</a>")
-                        .append("\n");
-            }
-
-            map.put("linenos", lineNos.toString());
-            map.put("codeValue", code.toString());
-        }
+        map.putAll(this.highlight.highlightCodeResult(codeResult));
 
         var owaspResults = new ArrayList<OWASPMatchingResult>();
         if (CommonRouteService.owaspAdvisoriesEnabled()) {
