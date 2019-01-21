@@ -25,20 +25,7 @@ public class Highlight {
 
         // If set to remote highlighter then post to it to render
         if (!this.helpers.isStandaloneInstance()) {
-            try {
-                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
-                        .setContent(String.join("\n", codeResult.code))
-                        .setFileName(codeResult.fileName)
-                        .setStyle("monokai"));
-
-                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
-                var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
-
-                map.put("chromaCss", highlighter.css);
-                map.put("chromaHtml", highlighter.html);
-            } catch (Exception ex) {
-                Singleton.getLogger().severe(String.format("f2d40796::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-            }
+            highlightExternal(codeResult, map);
         } else {
             var codeLines = codeResult.code;
             var code = new StringBuilder();
@@ -72,5 +59,22 @@ public class Highlight {
         }
 
         return map;
+    }
+
+    public void highlightExternal(CodeResult codeResult, HashMap<String, Object> map) {
+        try {
+            var highlighterRequest = this.gson.toJson(new HighlighterRequest()
+                    .setContent(String.join("\n", codeResult.code))
+                    .setFileName(codeResult.fileName)
+                    .setStyle("monokai"));
+
+            var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
+            var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
+
+            map.put("chromaCss", highlighter.css);
+            map.put("chromaHtml", highlighter.html);
+        } catch (Exception ex) {
+            Singleton.getLogger().severe(String.format("f2d40796::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+        }
     }
 }
