@@ -27,38 +27,42 @@ public class Highlight {
         if (!this.helpers.isStandaloneInstance()) {
             highlightExternal(codeResult, map);
         } else {
-            var codeLines = codeResult.code;
-            var code = new StringBuilder();
-            var lineNos = new StringBuilder();
-            var padStr = new StringBuilder();
-
-            for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
-                padStr.append(" ");
-            }
-            for (int i = 1, d = 10, len = codeLines.size(); i <= len; i++) {
-                if (i / d > 0) {
-                    d *= 10;
-                    padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
-                }
-                code.append("<span id=\"")
-                        .append(i)
-                        .append("\"></span>")
-                        .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
-                        .append("\n");
-                lineNos.append(padStr)
-                        .append("<a href=\"#")
-                        .append(i)
-                        .append("\">")
-                        .append(i)
-                        .append("</a>")
-                        .append("\n");
-            }
-
-            map.put("linenos", lineNos.toString());
-            map.put("codeValue", code.toString());
+            highlightInternal(codeResult, map);
         }
 
         return map;
+    }
+
+    public void highlightInternal(CodeResult codeResult, HashMap<String, Object> map) {
+        var codeLines = codeResult.code;
+        var code = new StringBuilder();
+        var lineNos = new StringBuilder();
+        var padStr = new StringBuilder();
+
+        for (int total = codeLines.size() / 10; total > 0; total = total / 10) {
+            padStr.append(" ");
+        }
+        for (int i = 1, d = 10, len = codeLines.size(); i <= len; i++) {
+            if (i / d > 0) {
+                d *= 10;
+                padStr = new StringBuilder(padStr.substring(0, padStr.length() - 1));  // Del last char
+            }
+            code.append("<span id=\"")
+                    .append(i)
+                    .append("\"></span>")
+                    .append(StringEscapeUtils.escapeHtml4(codeLines.get(i - 1)))
+                    .append("\n");
+            lineNos.append(padStr)
+                    .append("<a href=\"#")
+                    .append(i)
+                    .append("\">")
+                    .append(i)
+                    .append("</a>")
+                    .append("\n");
+        }
+
+        map.put("linenos", lineNos.toString());
+        map.put("codeValue", code.toString());
     }
 
     public void highlightExternal(CodeResult codeResult, HashMap<String, Object> map) {
