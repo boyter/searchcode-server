@@ -26,7 +26,7 @@ public class HighlightTest extends TestCase {
 
     public void testHighlightExternal() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
-        
+
         // Requirement that the highlighter has started
         Singleton.getJobService().startHighlighter();
 
