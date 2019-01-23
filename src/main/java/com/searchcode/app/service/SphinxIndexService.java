@@ -84,6 +84,11 @@ public class SphinxIndexService implements IIndexService {
             // TODO should batch these
             for (var codeResult : codeIndexDocumentList) {
                 try {
+
+                    // TODO this is wrong. It assumes that we want to save to the database as well IE its doing too much
+                    // TODO refactor so it ONLY does the indexing. It should already be in the database at this point.
+
+
                     // Check if language in database
                     // Upsert value into database
                     // Upsert the index
