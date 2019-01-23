@@ -38,8 +38,8 @@ public class SourceCode {
     }
 
     public synchronized int getMaxId() {
-        int maxId = 0;
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var maxId = 0;
+        var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
@@ -59,14 +59,14 @@ public class SourceCode {
     }
 
     public synchronized List<CodeResult> getByIds(List<Integer> codeIds) {
-        List<CodeResult> codeResultList = new ArrayList<>();
-        ConnStmtRs connStmtRs = new ConnStmtRs();
+        var codeResultList = new ArrayList<CodeResult>();
+        var connStmtRs = new ConnStmtRs();
 
-        StringBuffer stringBuffer = new StringBuffer();
-        for (Integer codeId : codeIds) {
+        var stringBuffer = new StringBuffer();
+        for (var codeId : codeIds) {
             stringBuffer.append(codeId).append(",");
         }
-        String codeIdsString = StringUtils.substring(stringBuffer.toString(), 0, -1);
+        var codeIdsString = StringUtils.substring(stringBuffer.toString(), 0, -1);
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
