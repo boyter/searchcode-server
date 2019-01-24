@@ -69,9 +69,9 @@ public class ReindexerJob implements Job {
     }
 
     public CodeIndexDocument convert(SearchcodeCodeResult codeResult) {
-
         return new CodeIndexDocument()
                 .setFileName(codeResult.getFilename())
-                .setContents(codeResult.getContent());
+                .setContents(codeResult.getContent())
+                .setId(codeResult.getId());
     }
 }

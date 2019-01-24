@@ -14,6 +14,7 @@ import com.searchcode.app.config.Values;
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class CodeIndexDocument {
+    private int id;
     private String repoLocationRepoNameLocationFilename; // Primary key and full path to file relative to where application is installed
     private String repoName;
     private String fileName;
@@ -59,6 +60,15 @@ public class CodeIndexDocument {
     public CodeIndexDocument setRepoLocationRepoNameLocationFilename(String repoLocationRepoNameLocationFilename) {
         // TODO move this out of here, lets keep these things as simple as possible
         this.repoLocationRepoNameLocationFilename = repoLocationRepoNameLocationFilename.replace("//", "/");
+        return this;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public CodeIndexDocument setId(int id) {
+        this.id = id;
         return this;
     }
 
