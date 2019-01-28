@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SphinxIndexService implements IIndexService {
+public class SphinxIndexService extends IndexBaseService {
 
     private final Helpers helpers;
     private final SphinxSearchConfig sphinxSearchConfig;
@@ -94,26 +94,20 @@ public class SphinxIndexService implements IIndexService {
                     // Upsert the index
 
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
-                    var sourceCodeDTO = sourceCode.saveCode(codeResult);
+//                    var sourceCodeDTO = sourceCode.saveCode(codeResult);
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
-                    var shard = (sourceCodeDTO.id % this.SHARD_COUNT) + 1;
+                    var shard = (codeResult.getId() % this.SHARD_COUNT) + 1;
                     stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?)", shard));
 
-                    var indexContents = this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.filename) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.splitKeywords(sourceCodeDTO.filename, true) + Values.SINGLE_SPACE +
-                            sourceCodeDTO.location + Values.SINGLE_SPACE +
-                            this.searchcodeLib.splitKeywords(sourceCodeDTO.content, true) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.codeCleanPipeline(sourceCodeDTO.content) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.findInterestingKeywords(sourceCodeDTO.content) + Values.SINGLE_SPACE +
-                            this.searchcodeLib.findInterestingCharacters(sourceCodeDTO.content).toLowerCase();
+                    var indexContents = this.indexContentPipeline(codeResult);
 
-                    stmt.setInt(1, sourceCodeDTO.id);
+                    stmt.setInt(1, codeResult.getId());
                     stmt.setString(2, indexContents);
-                    stmt.setString(3, sourceCodeDTO.filename);
-                    stmt.setString(4, this.helpers.replaceForIndex(sourceCodeDTO.location));
-                    stmt.setInt(5, sourceCodeDTO.repoId);
-                    stmt.setInt(6, sourceCodeDTO.languageName);
+                    stmt.setString(3, codeResult.getFileName());
+                    stmt.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
+                    stmt.setInt(5, 1);
+                    stmt.setInt(6, 1);
 //                    stmt.setInt(7, sourceCodeDTO.getSourceid()); // TODO get the below values
 //                    stmt.setInt(8, sourceCodeDTO.getOwnerid());
 //                    stmt.setInt(9, sourceCodeDTO.getLicenseid());
@@ -449,7 +443,7 @@ public class SphinxIndexService implements IIndexService {
 
     /**
      * Calculate the number of pages which can be searched through
-     * TODO taken from indexservice should be centralised
+     * TODO taken from indexservice should be centralised with base class
      */
     private List<Integer> calculatePages(int numTotalHits, int noPages) {
         var pages = new ArrayList<Integer>();

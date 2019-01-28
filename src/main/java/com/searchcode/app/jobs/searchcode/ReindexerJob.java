@@ -52,7 +52,7 @@ public class ReindexerJob implements Job {
                 // Check if the indexQueue size is large, and if so skip processing for a while
                 if (codeIndexQueueSize > 10000) {
                     this.logger.info(String.format("feddddbd::index queue size %d is large so pausing reindexer", codeIndexQueueSize));
-                    Thread.sleep(this.INDEXTIME * 2);
+                    Thread.sleep(this.INDEXTIME);
                     continue;
                 }
 

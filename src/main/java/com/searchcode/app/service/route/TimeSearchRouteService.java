@@ -38,7 +38,7 @@ public class TimeSearchRouteService {
     public SearchResult getTimeSearch(Request request, Response response) {
         Data data = Singleton.getData();
 
-        SearchCodeLib scl = Singleton.getSearchcodeLib();
+        SearchCodeLib scl = Singleton.getNewSearchcodeLib();
         TimeCodeSearcher cs = new TimeCodeSearcher();
         CodeMatcher cm = new CodeMatcher(data, Singleton.getLogger());
 

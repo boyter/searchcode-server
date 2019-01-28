@@ -66,7 +66,7 @@ public class SearchRouteService {
         searchResult.setCodeResultList(Singleton.getCodeMatcher().formatResults(searchResult.getCodeResultList(), query, true));
         searchResult.setQuery(query);
 
-        for (String altQuery : Singleton.getSearchcodeLib().generateAltQueries(query)) {
+        for (String altQuery : Singleton.getSearchCodeLib().generateAltQueries(query)) {
             searchResult.addAltQuery(altQuery);
         }
 

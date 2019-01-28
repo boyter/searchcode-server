@@ -278,7 +278,7 @@ public final class Singleton {
      * Overwrites the internal searchcode lib with the new one which will refresh the data it needs. Mainly used to
      * change the minified settings.
      */
-    public static synchronized SearchCodeLib getSearchcodeLib() {
+    public static synchronized SearchCodeLib getNewSearchcodeLib() {
         searchcodeLib = new SearchCodeLib();
 
         return searchcodeLib;

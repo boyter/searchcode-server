@@ -51,12 +51,11 @@ import java.util.stream.Collectors;
  * Service to deal with any tasks that involve talking to the index
  * specifically
  */
-public class IndexService implements IIndexService {
+public class IndexService extends IndexBaseService {
 
 
     private final StatsService statsService;
     private final Data data;
-    private final SearchCodeLib searchcodeLib;
     private final LoggerWrapper logger;
     private final Helpers helpers;
     private final JobService jobService;
@@ -86,8 +85,6 @@ public class IndexService implements IIndexService {
     private boolean repoJobExit = false;        // Controls if repo indexing jobs should exit instantly
     private int codeIndexLinesCount = 0;
 
-    private List<String> indexAllFields; // Contains the fields that should be added to the all portion of the index
-
     ///////////////////////////////////////////////////////////////////////
     // The below store state for when the reindexing + flip should occur
     //////////////////////////////////////////////////////////////////////
@@ -107,6 +104,7 @@ public class IndexService implements IIndexService {
     }
 
     public IndexService(Data data, StatsService statsService, SearchCodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue, JobService jobService) {
+        super();
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
@@ -116,8 +114,6 @@ public class IndexService implements IIndexService {
 
         this.MAX_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUESIZE, Values.DEFAULTMAXDOCUMENTQUEUESIZE), Values.DEFAULTMAXDOCUMENTQUEUESIZE);
         this.MAX_LINES_INDEX_SIZE = this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXDOCUMENTQUEUELINESIZE, Values.DEFAULTMAXDOCUMENTQUEUELINESIZE), Values.DEFAULTMAXDOCUMENTQUEUELINESIZE);
-
-        this.indexAllFields = Arrays.asList(Properties.getProperties().getProperty(Values.INDEX_ALL_FIELDS, Values.DEFAULT_INDEX_ALL_FIELDS).split(","));
 
         // Locations that should never change once class created
         this.INDEX_A_LOCATION = Paths.get(Properties.getProperties().getProperty(Values.INDEXLOCATION, Values.DEFAULTINDEXLOCATION) + "/" + Values.INDEX_A);
@@ -271,7 +267,7 @@ public class IndexService implements IIndexService {
         }
 
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
-        String indexContents = indexContentPipeline(codeIndexDocument);
+        String indexContents = this.indexContentPipeline(codeIndexDocument);
 
         document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
         document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
@@ -300,34 +296,6 @@ public class IndexService implements IIndexService {
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
         return document;
-    }
-
-    public String indexContentPipeline(CodeIndexDocument codeIndexDocument) {
-        // This is the main pipeline for making code searchable and probably the most important
-        // part of the indexer codebase
-        StringBuilder indexBuilder = new StringBuilder();
-
-        if (this.indexAllFields.contains("filename")) {
-            indexBuilder.append(this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getFileName())).append(" ");
-        }
-        if (this.indexAllFields.contains("filenamereverse")) {
-            indexBuilder.append(new StringBuilder(codeIndexDocument.getFileName()).reverse().toString()).append(" ");
-        }
-        if (this.indexAllFields.contains("path")) {
-            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getFileName(), true)).append(" ");
-            indexBuilder.append(codeIndexDocument.getFileLocationFilename()).append(" ");
-            indexBuilder.append(codeIndexDocument.getFileLocation()).append(" ");
-        }
-        if (this.indexAllFields.contains("content")) {
-            indexBuilder.append(this.searchcodeLib.splitKeywords(codeIndexDocument.getContents(), true)).append(" ");
-            indexBuilder.append( this.searchcodeLib.codeCleanPipeline(codeIndexDocument.getContents())).append(" ");
-        }
-        if (this.indexAllFields.contains("interesting")) {
-            indexBuilder.append(this.searchcodeLib.findInterestingKeywords(codeIndexDocument.getContents())).append(" ");
-            indexBuilder.append(this.searchcodeLib.findInterestingCharacters(codeIndexDocument.getContents()));
-        }
-
-        return indexBuilder.toString();
     }
 
     /**

@@ -104,6 +104,8 @@ public class MySQLDataTest extends TestCase {
     }
 
     public void testValuesParallel() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
         var someList = new ArrayList<String>();
 
         for (int i = 0; i < 100; i++) {
