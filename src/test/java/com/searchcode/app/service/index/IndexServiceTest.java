@@ -1,4 +1,4 @@
-package com.searchcode.app.service;
+package com.searchcode.app.service.index;
 
 import com.searchcode.app.config.SQLiteMemoryDatabaseConfig;
 import com.searchcode.app.config.Values;
@@ -8,6 +8,9 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.JobService;
+import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.StatsService;
 import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.util.Helpers;
