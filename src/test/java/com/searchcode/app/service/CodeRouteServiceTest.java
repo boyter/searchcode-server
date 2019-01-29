@@ -5,6 +5,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.dto.CodeResult;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.service.route.CodeRouteService;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;

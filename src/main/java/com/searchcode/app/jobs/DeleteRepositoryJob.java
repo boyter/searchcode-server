@@ -12,10 +12,9 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.DataService;
-import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;

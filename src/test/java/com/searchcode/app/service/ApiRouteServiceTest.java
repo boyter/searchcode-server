@@ -6,6 +6,7 @@ import com.searchcode.app.dto.api.ApiResponse;
 import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.service.route.ApiRouteService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;

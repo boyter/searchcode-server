@@ -2,7 +2,7 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.TestHelpers;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
-import com.searchcode.app.service.IndexService;
+import com.searchcode.app.service.index.IndexService;
 import junit.framework.TestCase;
 import org.apache.commons.io.FileUtils;
 

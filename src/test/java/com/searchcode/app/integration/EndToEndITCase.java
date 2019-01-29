@@ -3,18 +3,16 @@ package com.searchcode.app.integration;
 import com.searchcode.app.TestHelpers;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeResult;
-import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.IndexService;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.util.Properties;
 import junit.framework.TestCase;
 
 import java.io.*;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;

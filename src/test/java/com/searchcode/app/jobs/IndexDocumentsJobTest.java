@@ -1,14 +1,12 @@
 package com.searchcode.app.jobs;
 
-import com.searchcode.app.jobs.repository.IndexDocumentsJob;
-import com.searchcode.app.service.IndexService;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import static org.assertj.core.api.AssertionsForClassTypes.in;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.mock;
 

@@ -17,7 +17,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeOwner;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;

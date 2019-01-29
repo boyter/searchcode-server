@@ -3,6 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dto.CodeFacetLanguage;
 import com.searchcode.app.dto.CodeIndexDocument;
+import com.searchcode.app.service.index.SphinxIndexService;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 

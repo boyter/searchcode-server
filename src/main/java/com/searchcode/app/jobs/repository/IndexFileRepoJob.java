@@ -14,7 +14,7 @@ package com.searchcode.app.jobs.repository;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.SearchCodeLib;
 import com.searchcode.app.util.UniqueRepoQueue;

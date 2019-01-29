@@ -19,6 +19,7 @@ import com.searchcode.app.dto.api.RepoResultApiResponse;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;

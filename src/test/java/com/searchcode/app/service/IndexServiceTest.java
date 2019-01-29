@@ -8,6 +8,8 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.index.IIndexService;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;

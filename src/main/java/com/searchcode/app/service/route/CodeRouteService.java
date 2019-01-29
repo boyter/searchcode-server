@@ -19,7 +19,7 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.Highlight;
-import com.searchcode.app.service.IIndexService;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.*;

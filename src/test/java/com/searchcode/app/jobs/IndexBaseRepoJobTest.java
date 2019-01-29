@@ -2,8 +2,8 @@ package com.searchcode.app.jobs;
 
 import com.searchcode.app.jobs.repository.IndexBaseRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
-import com.searchcode.app.service.IIndexService;
-import com.searchcode.app.service.IndexService;
+import com.searchcode.app.service.index.IIndexService;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
 import org.quartz.JobDataMap;

@@ -12,8 +12,7 @@ package com.searchcode.app.jobs.repository;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
-import com.searchcode.app.service.IIndexService;
-import com.searchcode.app.service.IndexService;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
 import com.searchcode.app.util.LoggerWrapper;

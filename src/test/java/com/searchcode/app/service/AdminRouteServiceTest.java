@@ -3,6 +3,8 @@ package com.searchcode.app.service;
 import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
+import com.searchcode.app.service.index.IIndexService;
+import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.service.route.AdminRouteService;
 import junit.framework.TestCase;
 import org.mockito.Mockito;

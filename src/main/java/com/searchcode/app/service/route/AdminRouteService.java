@@ -17,12 +17,12 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.dao.SQLiteRepo;
 import com.searchcode.app.dto.Source;
 import com.searchcode.app.dto.Version;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.*;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 
