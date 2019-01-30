@@ -3,6 +3,7 @@ package com.searchcode.app.service.index;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 
@@ -12,17 +13,22 @@ import java.util.List;
 public abstract class IndexBaseService implements IIndexService {
 
     protected SearchCodeLib searchcodeLib;
-
+    protected LoggerWrapper logger;
     protected List<String> indexAllFields; // Contains the fields that should be added to the all portion of the index
+    protected final int PAGE_LIMIT, NO_PAGES_LIMIT;
 
     public IndexBaseService() {
         this.indexAllFields = Arrays.asList(Properties.getProperties().getProperty(Values.INDEX_ALL_FIELDS, Values.DEFAULT_INDEX_ALL_FIELDS).split(","));
         this.searchcodeLib = Singleton.getSearchCodeLib();
+        this.logger = Singleton.getLogger();
+        this.PAGE_LIMIT = 20;
+        this.NO_PAGES_LIMIT = 20;
     }
 
-    public IndexBaseService(SearchCodeLib searchCodeLib) {
+    public IndexBaseService(SearchCodeLib searchCodeLib, LoggerWrapper logger) {
         this();
         this.searchcodeLib = searchCodeLib;
+        this.logger = logger;
     }
 
     public String indexContentPipeline(CodeIndexDocument codeIndexDocument) {

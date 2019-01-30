@@ -56,33 +56,19 @@ import java.util.stream.Collectors;
  */
 public class IndexService extends IndexBaseService {
 
-
     private final StatsService statsService;
     private final Data data;
-    private final LoggerWrapper logger;
     private final Helpers helpers;
     private final JobService jobService;
 
-    private final int MAX_INDEX_SIZE;
-    private final int MAX_LINES_INDEX_SIZE;
+    private final int MAX_INDEX_SIZE, MAX_LINES_INDEX_SIZE;
+    private final Path INDEX_A_LOCATION, INDEX_B_LOCATION, FACET_A_LOCATION, FACET_B_LOCATION;
+    private Path INDEX_READ_LOCATION, INDEX_WRITE_LOCATION, FACET_WRITE_LOCATION;
 
-    private final Path INDEX_A_LOCATION;
-    private final Path INDEX_B_LOCATION;
-    private final Path FACET_A_LOCATION;
-    private final Path FACET_B_LOCATION;
-
-    private Path INDEX_READ_LOCATION;
-    private Path INDEX_WRITE_LOCATION;
-    private Path FACET_WRITE_LOCATION;
-
-    private int PAGE_LIMIT;
-    private int NO_PAGES_LIMIT;
     private int CHILD_FACET_LIMIT;
 
     private final Queue<CodeIndexDocument> codeIndexDocumentQueue;
-    private final UniqueRepoQueue uniqueGitRepoQueue;
-    private final UniqueRepoQueue uniqueFileRepoQueue;
-    private final UniqueRepoQueue uniqueSvnRepoQueue;
+    private final UniqueRepoQueue uniqueGitRepoQueue, uniqueFileRepoQueue, uniqueSvnRepoQueue;
 
     private boolean repoAdderPause = false;     // Controls if repo add job should pause, controlled through the UI
     private boolean repoJobExit = false;        // Controls if repo indexing jobs should exit instantly
@@ -146,8 +132,6 @@ public class IndexService extends IndexBaseService {
         // Facet locations are keyed off the index so only needs write location
         this.FACET_WRITE_LOCATION = Values.INDEX_A.equals(indexRead) ? this.FACET_A_LOCATION : this.FACET_B_LOCATION;
 
-        this.PAGE_LIMIT = 20;
-        this.NO_PAGES_LIMIT = 20;
         this.CHILD_FACET_LIMIT = 200;
 
         this.codeIndexDocumentQueue = codeIndexDocumentQueue;

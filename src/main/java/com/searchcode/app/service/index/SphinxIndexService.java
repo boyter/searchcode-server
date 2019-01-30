@@ -8,7 +8,6 @@ import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
@@ -29,27 +28,23 @@ public class SphinxIndexService extends IndexBaseService {
     private final SearchCodeLib searchcodeLib;
     private final LanguageType languageType;
 
-    private final int PAGE_LIMIT;
-    private final int NO_PAGES_LIMIT;
-    private final String SPHINX_SERVERS_SHARDS;
     private final int SHARD_COUNT;
-    private final LoggerWrapper logger;
+    private final String SPHINX_SERVERS_SHARDS;
 
     public SphinxIndexService() {
+
         this(Singleton.getLanguageType());
     }
 
     public SphinxIndexService(LanguageType languageType) {
+        super();
         this.languageType = languageType;
 
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
         this.sourceCode = Singleton.getSourceCode();
         this.searchcodeLib = Singleton.getSearchCodeLib();
-        this.logger = Singleton.getLogger();
 
-        this.PAGE_LIMIT = 20;
-        this.NO_PAGES_LIMIT = 20;
         this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
         this.SHARD_COUNT = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
     }
