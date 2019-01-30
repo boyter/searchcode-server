@@ -16,6 +16,8 @@ public class MySQLRepoTest extends TestCase {
     private MySQLRepo repo;
 
     public void setUp() throws Exception {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
         super.setUp();
         this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), Singleton.getGenericCache());
     }

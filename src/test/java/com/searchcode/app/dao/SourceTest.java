@@ -14,6 +14,8 @@ public class SourceTest extends TestCase {
     private Source source;
 
     public void setUp() throws Exception {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
         super.setUp();
         this.source = new Source(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), Singleton.getGenericCache());
     }

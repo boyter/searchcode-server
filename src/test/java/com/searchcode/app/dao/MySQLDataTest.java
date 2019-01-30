@@ -23,6 +23,8 @@ public class MySQLDataTest extends TestCase {
     private Data data;
 
     public void setUp() throws Exception {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
         super.setUp();
         this.data = new Data(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper());
     }
