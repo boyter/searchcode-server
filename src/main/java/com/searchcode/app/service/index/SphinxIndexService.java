@@ -436,24 +436,4 @@ public class SphinxIndexService extends IndexBaseService {
 
         return count;
     }
-
-    /**
-     * Calculate the number of pages which can be searched through
-     * TODO taken from indexservice should be centralised with base class
-     */
-    private List<Integer> calculatePages(int numTotalHits, int noPages) {
-        var pages = new ArrayList<Integer>();
-        if (numTotalHits != 0) {
-
-            // Account for off by 1 errors
-            if (numTotalHits % 10 == 0) {
-                noPages -= 1;
-            }
-
-            for (int i = 0; i <= noPages; i++) {
-                pages.add(i);
-            }
-        }
-        return pages;
-    }
 }

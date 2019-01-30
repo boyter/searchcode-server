@@ -7,6 +7,7 @@ import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -57,5 +58,24 @@ public abstract class IndexBaseService implements IIndexService {
         }
 
         return indexBuilder.toString();
+    }
+
+    /**
+     * Calculate the number of pages which can be searched through
+     * TODO this needs more attention and testing on it as the results seem bizzare
+     */
+    protected List<Integer> calculatePages(int numTotalHits, int noPages) {
+        var pages = new ArrayList<Integer>();
+        if (numTotalHits != 0) {
+            // Account for off by 1 errors
+            if (numTotalHits % 10 == 0) {
+                noPages -= 1;
+            }
+
+            for (var i = 0; i <= noPages; i++) {
+                pages.add(i);
+            }
+        }
+        return pages;
     }
 }

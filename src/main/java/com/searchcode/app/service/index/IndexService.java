@@ -928,24 +928,6 @@ public class IndexService extends IndexBaseService {
         return codeResult;
     }
 
-    /**
-     * Calculate the number of pages which can be searched through
-     */
-    private List<Integer> calculatePages(int numTotalHits, int noPages) {
-        List<Integer> pages = new ArrayList<>();
-        if (numTotalHits != 0) {
-
-            // Account for off by 1 errors
-            if (numTotalHits % 10 == 0) {
-                noPages -= 1;
-            }
-
-            for (int i = 0; i <= noPages; i++) {
-                pages.add(i);
-            }
-        }
-        return pages;
-    }
 
     /**
      * Returns the matching language facets for a given query

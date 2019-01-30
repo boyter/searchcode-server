@@ -11,8 +11,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.JobService;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.StatsService;
-import com.searchcode.app.service.index.IIndexService;
-import com.searchcode.app.service.index.IndexService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import junit.framework.TestCase;
@@ -79,7 +77,6 @@ public class IndexServiceTest extends TestCase {
         codeResult = this.indexService.getCodeResultByCodeId(this.codeId);
         assertThat(codeResult).isNull();
     }
-
 
     public void testDeleteByCodeId() throws IOException {
         this.indexService = new IndexService();
