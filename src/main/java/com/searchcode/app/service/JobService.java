@@ -20,6 +20,7 @@ import com.searchcode.app.jobs.repository.IndexDocumentsJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
 import com.searchcode.app.jobs.repository.IndexSvnRepoJob;
+import com.searchcode.app.jobs.searchcode.ReindexerJob;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.Helpers;
@@ -285,12 +286,37 @@ public class JobService {
 
         if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
+//            this.startReindexer();
         } else {
             this.startDeleteJob();
             this.startSpellingJob();
-            this.startIndexerJob();
             this.startRepositoryJobs();
             this.startEnqueueJob();
+        }
+
+        this.startIndexerJob();
+    }
+
+    public void startReindexer() {
+        JobDetail job = newJob(ReindexerJob.class)
+                .withIdentity("reindexer")
+                .build();
+
+        SimpleTrigger trigger = newTrigger()
+                .withIdentity("reindexer")
+                .withSchedule(
+                        simpleSchedule()
+                                .withIntervalInSeconds(this.INDEXTIME)
+                                .repeatForever()
+                )
+                .withPriority(15)
+                .build();
+
+        try {
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
+        } catch (SchedulerException ex) {
+            this.logger.severe(String.format("5e7b51d8::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 

@@ -94,7 +94,7 @@ public class SphinxIndexService extends IndexBaseService {
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
                     var shard = (codeResult.getId() % this.SHARD_COUNT) + 1;
-                    stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?)", shard));
+                    stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
                     var indexContents = this.indexContentPipeline(codeResult);
 
@@ -104,10 +104,10 @@ public class SphinxIndexService extends IndexBaseService {
                     stmt.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
                     stmt.setInt(5, 1);
                     stmt.setInt(6, 1);
-//                    stmt.setInt(7, sourceCodeDTO.getSourceid()); // TODO get the below values
-//                    stmt.setInt(8, sourceCodeDTO.getOwnerid());
-//                    stmt.setInt(9, sourceCodeDTO.getLicenseid());
-//                    stmt.setInt(10, sourceCodeDTO.getLinescount());
+                    stmt.setInt(7, 1); // TODO get the below values
+                    stmt.setInt(8, 1);
+                    stmt.setInt(9, 1);
+                    stmt.setInt(10, codeResult.getLines());
 
                     stmt.execute();
                 } catch (SQLException ex) {

@@ -46,7 +46,6 @@ public class ReindexerJob implements Job {
         // This should run forever, and only restart if it has a hard crash
         try {
             while (true) {
-
                 var codeIndexQueueSize = this.indexQueue.size();
 
                 // Check if the indexQueue size is large, and if so skip processing for a while
@@ -56,8 +55,8 @@ public class ReindexerJob implements Job {
                     continue;
                 }
 
-                // Fetch ~1000 documents from SQL and add them to the index
-                var codeBetween = this.sourcecode.getCodeBetween(0, 1000);
+                // Fetch documents from SQL and add them to the index
+                var codeBetween = this.sourcecode.getCodeBetween(0, 10000);
                 var indexDocuments = codeBetween.stream().map(this::convert).collect(Collectors.toList());
                 this.indexQueue.addAll(indexDocuments);
 
@@ -68,10 +67,16 @@ public class ReindexerJob implements Job {
         }
     }
 
+    /**
+     * Convert between searchcode result from DB to index result we can process
+     * TODO this needs to be shared between this job and the indexer jobs possibly
+     */
     public CodeIndexDocument convert(SearchcodeCodeResult codeResult) {
         return new CodeIndexDocument()
                 .setFileName(codeResult.getFilename())
                 .setContents(codeResult.getContent())
+                .setLanguageNameId(codeResult.getLangugeid())
+                .setLines(codeResult.getLinescount())
                 .setId(codeResult.getId());
     }
 }

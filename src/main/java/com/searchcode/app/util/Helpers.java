@@ -318,10 +318,18 @@ public class Helpers {
     }
 
     public String replaceForIndex(String toReplace) {
+        if (toReplace == null) {
+            return Values.EMPTYSTRING;
+        }
+
         return this.replaceNonAlphanumeric(toReplace, "_").toLowerCase();
     }
 
     public String replaceNonAlphanumeric(String toReplace, String replaceWith) {
+        if (toReplace == null) {
+            return Values.EMPTYSTRING;
+        }
+
         return toReplace.replaceAll("[^A-Za-z0-9]", replaceWith);
     }
 
