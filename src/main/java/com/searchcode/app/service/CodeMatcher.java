@@ -18,7 +18,10 @@ import com.searchcode.app.util.LoggerWrapper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -29,8 +32,7 @@ import java.util.stream.Collectors;
 public class CodeMatcher {
 
     private final LoggerWrapper logger;
-    public int MATCHLINES;
-    public int MAXLINEDEPTH;
+    public int MATCHLINES, MAXLINEDEPTH;
 
     public CodeMatcher() {
         this(Singleton.getData(), Singleton.getLogger());
@@ -46,12 +48,12 @@ public class CodeMatcher {
      * Entry point for matching lines
      */
     public List<CodeResult> formatResults(List<CodeResult> codeResult, String matchTerms, boolean highlightLine) {
-        List<String> lstMatchTerms = this.splitTerms(matchTerms);
+        var lstMatchTerms = this.splitTerms(matchTerms);
 
         List<CodeResult> results = new ArrayList<>();
 
-        for (CodeResult code : codeResult) {
-            List<CodeMatchResult> result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
+        for (var code : codeResult) {
+            var result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
 
             if (result != null) {
                 code.setMatchingResults(result);
@@ -66,23 +68,23 @@ public class CodeMatcher {
      * Actually does the matching for a single code result given the match terms
      */
     public List<CodeMatchResult> matchResults(List<String> code, List<String> matchTerms, boolean highlightLine) {
-        List<CodeMatchResult> resultLines = findMatchingLines(code, matchTerms, highlightLine);
+        List<CodeMatchResult> resultLines = this.findMatchingLines(code, matchTerms, highlightLine);
         List<CodeMatchResult> newResultLines = new ArrayList<>();
 
         // get the top matching lines for this result
         resultLines.sort((p1, p2) -> Integer.valueOf(p2.getLineMatches()).compareTo(p1.getLineMatches()));
 
         // gets the best snippets based on number of matches
-        for (int i = 0; i < resultLines.size(); i++) {
-            CodeMatchResult match = resultLines.get(i);
+        for (var i = 0; i < resultLines.size(); i++) {
+            var match = resultLines.get(i);
             match.setLineNumber(match.getLineNumber() + 1);
 
             if (!resultExists(newResultLines, match.getLineNumber())) {
                 newResultLines.add(match);
             }
 
-            CodeMatchResult resultBefore = getResultByLineNumber(resultLines, match.getLineNumber() - 1);
-            CodeMatchResult resultAfter = getResultByLineNumber(resultLines, match.getLineNumber() + 1);
+            var resultBefore = getResultByLineNumber(resultLines, match.getLineNumber() - 1);
+            var resultAfter = getResultByLineNumber(resultLines, match.getLineNumber() + 1);
 
             if (resultBefore != null && !resultExists(newResultLines, match.getLineNumber() - 1)) {
                 newResultLines.add(resultBefore);
@@ -120,11 +122,11 @@ public class CodeMatcher {
         int matching = 0;
 
         // Go through each line finding matching lines
-        for (int i = 0; i < searchThrough; i++) {
-            String matchRes = code.get(i).toLowerCase().replaceAll("\\s+", " ");
+        for (var i = 0; i < searchThrough; i++) {
+            var matchRes = code.get(i).toLowerCase().replaceAll("\\s+", " ");
             matching = 0;
 
-            for (String matchTerm : matchTerms) {
+            for (var matchTerm : matchTerms) {
                 if (matchRes.contains(matchTerm.replace("*", ""))) {
                     matching++;
                 }
@@ -137,7 +139,7 @@ public class CodeMatcher {
 
         // Get the adjacent lines
         List<CodeMatchResult> adjacentLines = new LinkedList<>();
-        for (CodeMatchResult cmr : resultLines) {
+        for (var cmr : resultLines) {
             int linenumber = cmr.getLineNumber();
             int previouslinenumber = linenumber - 1;
             int nextlinenumber = linenumber + 1;
@@ -164,7 +166,7 @@ public class CodeMatcher {
 
         // Highlight the lines if required but always escape everything
         if (highlightLine) {
-            for (CodeMatchResult cmr : resultLines) {
+            for (var cmr : resultLines) {
                 if (cmr.isMatching()) {
                     String line = Values.EMPTYSTRING;
                     try {
@@ -178,7 +180,7 @@ public class CodeMatcher {
                 }
             }
         } else {
-            for (CodeMatchResult cmr : resultLines) {
+            for (var cmr : resultLines) {
                 cmr.setLine(StringEscapeUtils.escapeHtml4(cmr.getLine()));
             }
         }
@@ -193,7 +195,7 @@ public class CodeMatcher {
         List<String> splitMatchTerms = new ArrayList<>();
         List<String> newTerms = new ArrayList<>();
 
-        for (String s : matchTerms.trim().split(" ")) {
+        for (var s : matchTerms.trim().split(" ")) {
             if (!s.isEmpty()) {
                 switch (s) {
                     case "AND":
@@ -207,28 +209,28 @@ public class CodeMatcher {
             }
         }
 
-        for (String s : splitMatchTerms) {
-            for (String t : s.split("\\.")) {
+        for (var s : splitMatchTerms) {
+            for (var t : s.split("\\.")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for (String t : s.split("\\(")) {
+            for (var t : s.split("\\(")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for (String t : s.split("\\-")) {
+            for (var t : s.split("\\-")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for (String t : s.split("<")) {
+            for (var t : s.split("<")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
             }
-            for (String t : s.split(">")) {
+            for (var t : s.split(">")) {
                 if (!t.isEmpty()) {
                     newTerms.add(t);
                 }
@@ -237,7 +239,7 @@ public class CodeMatcher {
         }
 
         // Remove duplicates
-        List<String> depdupeTerms = new ArrayList<>(new LinkedHashSet<>(newTerms));
+        var depdupeTerms = new ArrayList<>(new LinkedHashSet<>(newTerms));
         // Sort largest to smallest to produce largest matching results
         depdupeTerms.sort((p1, p2) -> Integer.valueOf(p2.length()).compareTo(p1.length()));
         return depdupeTerms;
@@ -249,20 +251,18 @@ public class CodeMatcher {
      * TODO a bug exists here, see test cases for details
      */
     public String highlightLine(String line, List<String> matchTerms) throws StringIndexOutOfBoundsException {
-
-        List<String> terms = matchTerms.stream()
+        var terms = matchTerms.stream()
                 .filter(s -> !"AND".equals(s) && !"OR".equals(s) && !"NOT".equals(s))
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
-        List<String> tokens = Arrays.asList(line.split(" "));
+        var tokens = line.split(" ");
         List<String> returnList = new ArrayList<>();
 
-        for (String token : tokens) {
+        for (var token : tokens) {
+            var longestTerm = Values.EMPTYSTRING;
 
-            String longestTerm = "";
-
-            for (String term : terms) {
+            for (var term : terms) {
                 // Find the longest matching
                 if (term.replace(")", "").endsWith("*")) {
                     if (token.toLowerCase().contains(term.replace(")", "").replace("*", ""))) {
@@ -279,14 +279,14 @@ public class CodeMatcher {
                 }
             }
 
-            if (!"".equals(longestTerm)) {
+            if (!Values.EMPTYSTRING.equals(longestTerm)) {
                 if (longestTerm.replace(")", "").endsWith("*")) {
                     int loc = token.toLowerCase().indexOf(longestTerm.replace(")", "").replace("*", ""));
 
                     returnList.add(StringEscapeUtils.escapeHtml4(
                             token.substring(0, loc)) +
                             "<strong>" +
-                            StringEscapeUtils.escapeHtml4(token.substring(loc, token.length())) +
+                            StringEscapeUtils.escapeHtml4(token.substring(loc)) +
                             "</strong>");
                 } else {
                     int loc = token.toLowerCase().indexOf(longestTerm);
@@ -296,7 +296,7 @@ public class CodeMatcher {
                             "<strong>" +
                             StringEscapeUtils.escapeHtml4(token.substring(loc, loc + longestTerm.length())) +
                             "</strong>" +
-                            this.highlightLine(token.substring(loc + longestTerm.length(), token.length()), matchTerms));
+                            this.highlightLine(token.substring(loc + longestTerm.length()), matchTerms));
                 }
             } else {
                 returnList.add(StringEscapeUtils.escapeHtml4(token));
@@ -310,7 +310,7 @@ public class CodeMatcher {
      * Helper to check if result exists in the collection based on line number
      */
     private boolean resultExists(List<CodeMatchResult> lst, int value) {
-        for (CodeMatchResult s : lst) {
+        for (var s : lst) {
             if (s.getLineNumber() == value) {
                 return true;
             }
@@ -322,7 +322,7 @@ public class CodeMatcher {
      * Helper to pull value out of the list based on line number
      */
     private CodeMatchResult getResultByLineNumber(List<CodeMatchResult> lst, int value) {
-        for (CodeMatchResult s : lst) {
+        for (var s : lst) {
             if (s.getLineNumber() == value) {
                 return s;
             }

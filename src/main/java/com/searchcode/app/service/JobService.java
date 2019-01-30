@@ -48,7 +48,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 /**
  * Starts all of the quartz jobs which perform background tasks such as cloning/updating from GIT/SVN and
  * the jobs which delete repositories and which add repositories to the queue to be indexed.
- * <p>
  * TODO implement using below for the stopping and starting of jobs
  * http://stackoverflow.com/questions/7159080/how-to-interrupt-or-stop-currently-running-quartz-job#7159719
  */

@@ -9,6 +9,10 @@ import com.searchcode.app.util.Helpers;
 
 import java.util.Optional;
 
+/**
+ * Validation logic for anything that spits an error back to the user or though the
+ * API should go in here.
+ */
 public class ValidatorService {
 
     private final IRepo repo;
