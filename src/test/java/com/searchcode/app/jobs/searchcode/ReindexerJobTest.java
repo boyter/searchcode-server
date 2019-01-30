@@ -1,6 +1,5 @@
-package com.searchcode.app.jobs;
+package com.searchcode.app.jobs.searchcode;
 
-import com.searchcode.app.jobs.searchcode.ReindexerJob;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import junit.framework.TestCase;
 

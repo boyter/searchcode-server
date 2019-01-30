@@ -17,6 +17,7 @@ import java.text.DecimalFormat;
  * Contains any static values we need locations, names etc....
  */
 public class Values {
+    public Values() {}
 
     // Property values used for looking up values
     // in the properties file
