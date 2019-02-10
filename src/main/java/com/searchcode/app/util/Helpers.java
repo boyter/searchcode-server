@@ -372,6 +372,9 @@ public class Helpers {
         return Values.DEFAULT_INDEX_SERVICE.equals(Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE));
     }
 
+    /**
+     * Returns the configured SERVER_PORT property inside the searchcode.properties file
+     */
     public int getServerPort() {
         return Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.SERVER_PORT, Values.DEFAULT_SERVER_PORT), Values.DEFAULT_SERVER_PORT);
     }

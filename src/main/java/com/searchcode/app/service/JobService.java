@@ -273,6 +273,7 @@ public class JobService {
     }
 
     private boolean initialJobsRun = false;
+
     /**
      * Starts all of the above jobs as per their unique requirements
      */
