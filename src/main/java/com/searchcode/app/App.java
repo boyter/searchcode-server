@@ -42,7 +42,7 @@ public class App {
         Spark.staticFileLocation("/public");
 
         Singleton.getJobService().initialJobs();
-        
+
         if (Singleton.getHelpers().isStandaloneInstance()) {
             RegisterServerRoutes();
         } else {
