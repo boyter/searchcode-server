@@ -16,13 +16,11 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Properties;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Random;
 
 public class CommonRouteService {
     public static String getLogo() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Values.EMPTYSTRING;
         }
 
@@ -31,7 +29,7 @@ public class CommonRouteService {
     }
 
     public static double getAverageSalary() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Double.parseDouble(Values.DEFAULTAVERAGESALARY);
         }
 
@@ -47,7 +45,7 @@ public class CommonRouteService {
     }
 
     public static double getMatchLines() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Double.parseDouble(Values.DEFAULTMATCHLINES);
         }
 
@@ -63,7 +61,7 @@ public class CommonRouteService {
     }
 
     public static double getMaxLineDepth() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Double.parseDouble(Values.DEFAULTMAXLINEDEPTH);
         }
 
@@ -79,7 +77,7 @@ public class CommonRouteService {
     }
 
     public static double getMinifiedLength() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Double.parseDouble(Values.DEFAULTMINIFIEDLENGTH);
         }
 
@@ -95,7 +93,7 @@ public class CommonRouteService {
     }
 
     public static double getBackoffValue() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Double.parseDouble(Values.DEFAULTBACKOFFVALUE);
         }
 
@@ -111,7 +109,7 @@ public class CommonRouteService {
     }
 
     public static String getEmbed() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Values.EMPTYSTRING;
         }
 
@@ -120,7 +118,7 @@ public class CommonRouteService {
     }
 
     public static boolean owaspAdvisoriesEnabled() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return false;
         }
 
@@ -136,7 +134,7 @@ public class CommonRouteService {
     }
 
     public static String getSyntaxHighlighter() {
-        if (App.ISCOMMUNITY) {
+        if (App.IS_COMMUNITY) {
             return Values.DEFAULTSYNTAXHIGHLIGHTER;
         }
 

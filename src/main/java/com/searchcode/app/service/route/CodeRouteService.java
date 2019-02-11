@@ -135,7 +135,7 @@ public class CodeRouteService {
             map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, srcsList, pathValue, isLiteral)));
 
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", App.ISCOMMUNITY);
+            map.put("isCommunity", App.IS_COMMUNITY);
             map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "search_ajax.ftl");
         }
@@ -147,7 +147,7 @@ public class CodeRouteService {
 
         map.put("numDocs", this.indexService.getIndexedDocumentCount());
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
     }
@@ -202,7 +202,7 @@ public class CodeRouteService {
         map.put("estimatedCost", estimatedCost);
 
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
@@ -247,7 +247,7 @@ public class CodeRouteService {
 
         map.put("repoName", repoName);
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
@@ -275,7 +275,7 @@ public class CodeRouteService {
         map.put("nextOffset", indexOffset + 1);
         map.put("previousOffset", indexOffset - 1);
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
@@ -414,7 +414,7 @@ public class CodeRouteService {
 
             map.put("isHtml", true);
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", App.ISCOMMUNITY);
+            map.put("isCommunity", App.IS_COMMUNITY);
             map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "searchresults.ftl");
         }
@@ -422,7 +422,7 @@ public class CodeRouteService {
         map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));
         map.put("numDocs", this.indexService.getCodeIndexLinesCount());
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         return new ModelAndView(map, "index.ftl");
     }

@@ -171,7 +171,7 @@ public class AdminRouteService {
         map.put("deletionQueue", this.dataService.getPersistentDelete().size());
         map.put("version", App.VERSION);
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put("index_paused", this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER) ? "paused" : "running");
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
@@ -211,7 +211,7 @@ public class AdminRouteService {
         map.put("repoCount", this.getStat("repoCount"));
 
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         map.put("repositorySource", this.repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
@@ -226,7 +226,7 @@ public class AdminRouteService {
 
         repository.ifPresent(x -> map.put("repoResult", x));
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put("repoCount", this.getStat("repoCount"));
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         map.put("repositorySource", this.repositorySource.loadDatabase().stream().map(Source::getName).collect(Collectors.toList()));
@@ -246,7 +246,7 @@ public class AdminRouteService {
 
         map.put("apiAuthentication", apiEnabled && apiAuth);
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         map.put("repoCount", this.getStat("repoCount"));
 
@@ -267,7 +267,7 @@ public class AdminRouteService {
         map.put("owaspenabled", CommonRouteService.owaspAdvisoriesEnabled());
         map.put("backoffValue", CommonRouteService.getBackoffValue());
         map.put("embed", CommonRouteService.getEmbed());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put("highlighters", highlighters);
         map.put("repoCount", this.getStat("repoCount"));
 
@@ -312,7 +312,7 @@ public class AdminRouteService {
         map.put("logs", logs);
 
         map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.ISCOMMUNITY);
+        map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
         map.put("repoCount", this.getStat("repoCount"));
 

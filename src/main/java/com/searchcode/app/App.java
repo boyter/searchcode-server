@@ -22,7 +22,7 @@ import static com.searchcode.app.ServerRoutes.RegisterServerRoutes;
 public class App {
 
     // Flag which controls the community state which disables functionality on the frontend and some backend
-    public static final boolean ISCOMMUNITY = true;
+    public static final boolean IS_COMMUNITY = true;
 
     // Version as a string
     // TODO improve this so we can determine how many versions behind from source

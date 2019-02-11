@@ -128,7 +128,7 @@ def build_all_release():
 def build_release():
     _check_os
     replacements = {
-        'public static final boolean ISCOMMUNITY = true;': 'public static final boolean ISCOMMUNITY = false;'
+        'public static final boolean IS_COMMUNITY = true;': 'public static final boolean IS_COMMUNITY = false;'
     }
     _python_sed(
         fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)
@@ -152,7 +152,7 @@ def build_community_release():
     _check_os
     # modify community flag in application
     replacements = {
-        'public static final boolean ISCOMMUNITY = false;': 'public static final boolean ISCOMMUNITY = true;'
+        'public static final boolean IS_COMMUNITY = false;': 'public static final boolean IS_COMMUNITY = true;'
     }
     _python_sed(
         fileloc='./src/main/java/com/searchcode/app/App.java', replacements=replacements)

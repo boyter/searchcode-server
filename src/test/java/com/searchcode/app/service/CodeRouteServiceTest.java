@@ -43,7 +43,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("numDocs")).isInstanceOf(Integer.class);
         assertThat((int) model.get("numDocs")).isGreaterThanOrEqualTo(0);
         assertThat(model.get("logoImage")).isNotNull();
-        assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
+        assertThat(model.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
 
         assertThat(viewName).isEqualTo("index.ftl");
     }
@@ -66,7 +66,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("searchValue")).isEqualTo("test");
         assertThat(model.get("searchResultJson")).isNotNull();
         assertThat(model.get("logoImage")).isNotNull();
-        assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
+        assertThat(model.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
 
         assertThat(viewName).isEqualTo("search_ajax.ftl");
     }
@@ -86,7 +86,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("numDocs")).isInstanceOf(Integer.class);
         assertThat((int) model.get("numDocs")).isGreaterThanOrEqualTo(0);
         assertThat(model.get("logoImage")).isNotNull();
-        assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
+        assertThat(model.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
 
         assertThat(viewName).isEqualTo("index.ftl");
     }
@@ -115,7 +115,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat((int) model.get("totalPages")).isGreaterThanOrEqualTo(0);
         assertThat((boolean) model.get("isHtml")).isTrue();
         assertThat(model.get("logoImage")).isNotNull();
-        assertThat(model.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
+        assertThat(model.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
 
         assertThat(viewName).isEqualTo("searchresults.ftl");
     }
@@ -167,7 +167,7 @@ public class CodeRouteServiceTest extends TestCase {
 
         when(request.params(":codeid")).thenReturn("MATCH-MOCK");
         when(indexService.getCodeResultByCodeId("MATCH-MOCK")).thenReturn(codeResult);
-        when(highlight.highlightCodeResult(any())).thenReturn(new HashMap<>(){{
+        when(highlight.highlightCodeResult(any())).thenReturn(new HashMap<>() {{
             put("codeValue", "");
         }});
 
@@ -185,7 +185,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(map.get("codeOwner")).isEqualTo("codeOwner");
         assertThat(map.get("owaspResults")).isNotNull();
         assertThat(map.get("logoImage")).isNotNull();
-        assertThat(map.get("isCommunity")).isEqualTo(App.ISCOMMUNITY);
+        assertThat(map.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
         assertThat(map.get("estimatedCost")).isEqualTo(0);
     }
 

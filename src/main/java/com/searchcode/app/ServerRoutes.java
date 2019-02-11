@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.searchcode.app.App.ISCOMMUNITY;
+import static com.searchcode.app.App.IS_COMMUNITY;
 import static spark.Spark.*;
 import static spark.Spark.get;
 import static spark.Spark.halt;
@@ -91,7 +91,7 @@ public class ServerRoutes {
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
+            map.put("isCommunity", IS_COMMUNITY);
             map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new FreeMarkerEngine().render(new ModelAndView(map, "documentation.ftl"));
         });
@@ -100,7 +100,7 @@ public class ServerRoutes {
             Map<String, Object> map = new HashMap<>();
 
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
+            map.put("isCommunity", IS_COMMUNITY);
             map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new FreeMarkerEngine().render(new ModelAndView(map, "404.ftl"));
         });
@@ -229,7 +229,7 @@ public class ServerRoutes {
 
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
+            map.put("isCommunity", IS_COMMUNITY);
             map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
             return new FreeMarkerEngine().render(new ModelAndView(map, "login.ftl"));
@@ -244,7 +244,7 @@ public class ServerRoutes {
 
             Map<String, Object> map = new HashMap<>();
             map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", ISCOMMUNITY);
+            map.put("isCommunity", IS_COMMUNITY);
             map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
             if (request.queryParams().contains("password")) {
@@ -346,7 +346,7 @@ public class ServerRoutes {
                 Map<String, Object> map = new HashMap<>();
 
                 map.put("logoImage", CommonRouteService.getLogo());
-                map.put("isCommunity", ISCOMMUNITY);
+                map.put("isCommunity", IS_COMMUNITY);
                 map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
                 map.put("repoCount", adminRouteService.getStat("repoCount"));
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_bulk.ftl"));
@@ -361,7 +361,7 @@ public class ServerRoutes {
                     Map<String, Object> map = new HashMap<>();
 
                     map.put("logoImage", CommonRouteService.getLogo());
-                    map.put("isCommunity", ISCOMMUNITY);
+                    map.put("isCommunity", IS_COMMUNITY);
                     map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
                     map.put("repoCount", adminRouteService.getStat("repoCount"));
                     map.put("validatorResults", validatorResults);
@@ -392,7 +392,7 @@ public class ServerRoutes {
 
             post("/settings/", (request, response) -> {
                 checkLoggedIn(request, response);
-                if (ISCOMMUNITY) {
+                if (IS_COMMUNITY) {
                     response.redirect("/admin/settings/");
                     halt();
                 }
