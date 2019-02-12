@@ -86,7 +86,6 @@ public class ServerRoutes {
         ////////////////////////////////////////////////////
         //              Page Routes Below
         ////////////////////////////////////////////////////
-
         get("/documentation/", (request, response) -> {
             Map<String, Object> map = new HashMap<>();
 
