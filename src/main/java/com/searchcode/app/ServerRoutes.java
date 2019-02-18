@@ -87,7 +87,7 @@ public class ServerRoutes {
         //              Page Routes Below
         ////////////////////////////////////////////////////
         get("/documentation/", (request, response) -> {
-            Map<String, Object> map = new HashMap<>();
+            var map = new HashMap<String, Object>();
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", IS_COMMUNITY);
@@ -96,7 +96,7 @@ public class ServerRoutes {
         });
 
         get("/404/", (request, response) -> {
-            Map<String, Object> map = new HashMap<>();
+            var map = new HashMap<String, Object>();
 
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", IS_COMMUNITY);
@@ -226,7 +226,7 @@ public class ServerRoutes {
                 return null;
             }
 
-            Map<String, Object> map = new HashMap<>();
+            var map = new HashMap<String, Object>();
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", IS_COMMUNITY);
             map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
@@ -241,7 +241,7 @@ public class ServerRoutes {
                 halt();
             }
 
-            Map<String, Object> map = new HashMap<>();
+            var map = new HashMap<String, Object>();
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", IS_COMMUNITY);
             map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
@@ -327,7 +327,7 @@ public class ServerRoutes {
             get("/repolist/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                var map = adminRouteService.adminRepo(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repolist.ftl"));
             });
@@ -335,14 +335,14 @@ public class ServerRoutes {
             get("/repo/error/:reponame/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminGetRepo(request, response);
+                var map = adminRouteService.adminGetRepo(request, response);
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_error.ftl"));
             });
 
             get("/bulk/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = new HashMap<>();
+                var map = new HashMap<String, Object>();
 
                 map.put("logoImage", CommonRouteService.getLogo());
                 map.put("isCommunity", IS_COMMUNITY);
@@ -357,7 +357,7 @@ public class ServerRoutes {
                 List<ValidatorResult> validatorResults = adminRouteService.postBulk(request, response);
 
                 if (!validatorResults.isEmpty()) {
-                    Map<String, Object> map = new HashMap<>();
+                    var map = new HashMap<String, Object>();
 
                     map.put("logoImage", CommonRouteService.getLogo());
                     map.put("isCommunity", IS_COMMUNITY);
@@ -376,7 +376,7 @@ public class ServerRoutes {
             get("/settings/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminSettings(request, response);
+                var map = adminRouteService.adminSettings(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_settings.ftl"));
             });
@@ -384,7 +384,7 @@ public class ServerRoutes {
             get("/logs/", (request, response) -> {
                 checkLoggedIn(request, response);
                 AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminLogs(request, response);
+                var map = adminRouteService.adminLogs(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_logs.ftl"));
             });
