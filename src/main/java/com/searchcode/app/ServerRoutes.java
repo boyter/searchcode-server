@@ -2,7 +2,6 @@ package com.searchcode.app;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.api.VersionResponse;
-import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.route.*;
 import com.searchcode.app.util.JsonTransformer;
@@ -13,13 +12,10 @@ import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.searchcode.app.App.IS_COMMUNITY;
 import static spark.Spark.*;
-import static spark.Spark.get;
-import static spark.Spark.halt;
 
 /**
  * This provides all the routes for the single package/deploy instance
@@ -56,7 +52,7 @@ public class ServerRoutes {
 
     public static void RegisterServerRoutes() {
         get("/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(codeRouteService.root(request, response));
         });
 
@@ -64,22 +60,22 @@ public class ServerRoutes {
         get("/health-check/", (request, response) -> new JsonTransformer().render(true));
 
         get("/html/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(codeRouteService.html(request, response));
         });
 
         get("/file/:codeid/:reponame/*", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl"));
         });
 
         get("/repository/overview/:reponame/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getProject(request, response), "repository_overview.ftl"));
         });
 
         get("/repository/list/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getRepositoryList(request, response), "repository_list.ftl"));
         });
 
@@ -124,20 +120,20 @@ public class ServerRoutes {
 
             get("/codesearch/", (request, response) -> {
                 addJsonHeaders(response);
-                SearchRouteService searchRouteService = new SearchRouteService();
+                var searchRouteService = new SearchRouteService();
                 return new JsonTransformer().render(searchRouteService.codeSearch(request, response));
             });
 
             get("/literalcodesearch/", (request, response) -> {
                 addJsonHeaders(response);
-                SearchRouteService searchRouteService = new SearchRouteService();
+                var searchRouteService = new SearchRouteService();
                 return new JsonTransformer().render(searchRouteService.literalCodeSearch(request, response));
             });
 
             get("/codesearch/rss/", (request, response) -> {
                 addXmlHeaders(response);
-                SearchRouteService searchRouteService = new SearchRouteService();
-                Map<String, Object> map = new HashMap<>();
+                var searchRouteService = new SearchRouteService();
+                var map = new HashMap<String, Object>();
                 map.put("result", searchRouteService.codeSearch(request, response));
                 map.put("hostname", Properties.getProperties().getProperty(Values.HOST_NAME, Values.DEFAULT_HOST_NAME));
 
@@ -146,32 +142,32 @@ public class ServerRoutes {
 
             get("/timecodesearch/", (request, response) -> {
                 addJsonHeaders(response);
-                TimeSearchRouteService ars = new TimeSearchRouteService();
+                var ars = new TimeSearchRouteService();
                 return new JsonTransformer().render(ars.getTimeSearch(request, response));
             });
 
             path("/repo", () -> {
                 get("/add/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.repoAdd(request, response));
                 });
 
                 get("/delete/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.repoDelete(request, response));
                 });
 
                 get("/list/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.repoList(request, response));
                 });
 
                 get("/reindex/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.repositoryReindex(request, response));
                 });
 
@@ -181,34 +177,34 @@ public class ServerRoutes {
 
                 get("/index/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.repositoryIndex(request, response));
                 });
 
                 get("/filecount/", "application/json", (request, response) -> {
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return apiRouteService.getFileCount(request, response);
                 });
 
                 get("/indextime/", "application/json", (request, response) -> {
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return apiRouteService.getIndexTime(request, response);
                 });
 
                 get("/indextimeseconds/", "application/json", (request, response) -> {
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return apiRouteService.getAverageIndexTimeSeconds(request, response);
                 });
 
                 get("/repo/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.getRepo(request, response));
                 });
 
                 get("/repotree/", "application/json", (request, response) -> {
                     addJsonHeaders(response);
-                    ApiRouteService apiRouteService = new ApiRouteService();
+                    var apiRouteService = new ApiRouteService();
                     return new JsonTransformer().render(apiRouteService.repoTree(request, response));
                 });
             });
@@ -262,32 +258,32 @@ public class ServerRoutes {
         path("/admin", () -> {
             get("/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminPage(request, response);
+                var adminRouteService = new AdminRouteService();
+                var map = adminRouteService.adminPage(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin.ftl"));
             });
 
             get("/repo/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                var adminRouteService = new AdminRouteService();
+                var map = adminRouteService.adminRepo(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo.ftl"));
             });
 
             post("/repo/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                ValidatorResult validatorResult = adminRouteService.postRepo(request, response, false);
+                var adminRouteService = new AdminRouteService();
+                var validatorResult = adminRouteService.postRepo(request, response, false);
 
                 if (!validatorResult.isValid) {
-                    Map<String, Object> map = adminRouteService.adminRepo(request, response);
+                    var map = adminRouteService.adminRepo(request, response);
                     map.put("validatorResult", validatorResult);
                     return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo.ftl"));
                 }
 
-                String[] returns = request.queryParamsValues("return");
+                var returns = request.queryParamsValues("return");
 
                 if (returns != null) {
                     response.redirect("/admin/repo/");
@@ -301,16 +297,16 @@ public class ServerRoutes {
 
             get("/repo/edit/:reponame/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                Map<String, Object> map = adminRouteService.adminGetRepo(request, response);
+                var adminRouteService = new AdminRouteService();
+                var map = adminRouteService.adminGetRepo(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_edit.ftl"));
             });
 
             post("/repo/edit/:reponame/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                ValidatorResult validatorResult = adminRouteService.postRepo(request, response, true);
+                var adminRouteService = new AdminRouteService();
+                var validatorResult = adminRouteService.postRepo(request, response, true);
 
                 if (!validatorResult.isValid) {
                     Map<String, Object> map = adminRouteService.adminRepo(request, response);
@@ -326,7 +322,7 @@ public class ServerRoutes {
 
             get("/repolist/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 var map = adminRouteService.adminRepo(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repolist.ftl"));
@@ -334,14 +330,14 @@ public class ServerRoutes {
 
             get("/repo/error/:reponame/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 var map = adminRouteService.adminGetRepo(request, response);
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_repo_error.ftl"));
             });
 
             get("/bulk/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 var map = new HashMap<String, Object>();
 
                 map.put("logoImage", CommonRouteService.getLogo());
@@ -353,8 +349,8 @@ public class ServerRoutes {
 
             post("/bulk/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
-                List<ValidatorResult> validatorResults = adminRouteService.postBulk(request, response);
+                var adminRouteService = new AdminRouteService();
+                var validatorResults = adminRouteService.postBulk(request, response);
 
                 if (!validatorResults.isEmpty()) {
                     var map = new HashMap<String, Object>();
@@ -375,7 +371,7 @@ public class ServerRoutes {
 
             get("/settings/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 var map = adminRouteService.adminSettings(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_settings.ftl"));
@@ -383,7 +379,7 @@ public class ServerRoutes {
 
             get("/logs/", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 var map = adminRouteService.adminLogs(request, response);
 
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_logs.ftl"));
@@ -396,7 +392,7 @@ public class ServerRoutes {
                     halt();
                 }
 
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 adminRouteService.postSettings(request, response);
 
                 response.redirect("/admin/settings/");
@@ -406,14 +402,14 @@ public class ServerRoutes {
 
             get("/delete/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 adminRouteService.deleteRepo(request, response);
                 return new JsonTransformer().render(true);
             });
 
             get("/reindex/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 adminRouteService.reindexRepo(request, response);
                 return new JsonTransformer().render(true);
             });
@@ -475,15 +471,15 @@ public class ServerRoutes {
 
             get("/checkversion/", "application/json", (request, response) -> {
                 checkLoggedIn(request, response);
-                AdminRouteService adminRouteService = new AdminRouteService();
+                var adminRouteService = new AdminRouteService();
                 return adminRouteService.checkVersion();
             });
 
             path("/api", () -> {
                 get("/", (request, response) -> {
                     checkLoggedIn(request, response);
-                    AdminRouteService adminRouteService = new AdminRouteService();
-                    Map<String, Object> map = adminRouteService.adminApi(request, response);
+                    var adminRouteService = new AdminRouteService();
+                    var map = adminRouteService.adminApi(request, response);
 
                     return new FreeMarkerEngine().render(new ModelAndView(map, "admin_api.ftl"));
                 });
@@ -513,19 +509,19 @@ public class ServerRoutes {
 
                 get("/getstat/", (request, response) -> {
                     checkLoggedIn(request, response);
-                    AdminRouteService adminRouteService = new AdminRouteService();
+                    var adminRouteService = new AdminRouteService();
                     return adminRouteService.getStat(request, response);
                 });
 
                 get("/getstatjson/", "application/json", (request, response) -> {
                     checkLoggedIn(request, response);
-                    AdminRouteService adminRouteService = new AdminRouteService();
+                    var adminRouteService = new AdminRouteService();
                     return new JsonTransformer().render(adminRouteService.getStat(request, response));
                 });
 
                 get("/checkindexstatus/", "application/json", (request, response) -> {
                     // TODO move this to unsecured routes
-                    AdminRouteService adminRouteService = new AdminRouteService();
+                    var adminRouteService = new AdminRouteService();
                     return adminRouteService.checkIndexStatus(request, response);
                 });
             });
