@@ -50,6 +50,15 @@ public class ServerRoutes {
         request.session().removeAttribute(Values.USERSESSIONID);
     }
 
+    private static HashMap<String, Object> getDefaultMap() {
+        var map = new HashMap<String, Object>();
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", IS_COMMUNITY);
+        map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+
+        return map;
+    }
+
     public static void RegisterServerRoutes() {
         get("/", (request, response) -> {
             var codeRouteService = new CodeRouteService();
@@ -83,20 +92,12 @@ public class ServerRoutes {
         //              Page Routes Below
         ////////////////////////////////////////////////////
         get("/documentation/", (request, response) -> {
-            var map = new HashMap<String, Object>();
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", IS_COMMUNITY);
-            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+            var map = getDefaultMap();
             return new FreeMarkerEngine().render(new ModelAndView(map, "documentation.ftl"));
         });
 
         get("/404/", (request, response) -> {
-            var map = new HashMap<String, Object>();
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", IS_COMMUNITY);
-            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+            var map = getDefaultMap();
             return new FreeMarkerEngine().render(new ModelAndView(map, "404.ftl"));
         });
 
@@ -222,10 +223,7 @@ public class ServerRoutes {
                 return null;
             }
 
-            var map = new HashMap<String, Object>();
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", IS_COMMUNITY);
-            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+            var map = getDefaultMap();
 
             return new FreeMarkerEngine().render(new ModelAndView(map, "login.ftl"));
         });
@@ -237,10 +235,7 @@ public class ServerRoutes {
                 halt();
             }
 
-            var map = new HashMap<String, Object>();
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", IS_COMMUNITY);
-            map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+            var map = getDefaultMap();
 
             if (request.queryParams().contains("password")) {
                 map.put("passwordInvalid", true);
@@ -338,11 +333,7 @@ public class ServerRoutes {
             get("/bulk/", (request, response) -> {
                 checkLoggedIn(request, response);
                 var adminRouteService = new AdminRouteService();
-                var map = new HashMap<String, Object>();
-
-                map.put("logoImage", CommonRouteService.getLogo());
-                map.put("isCommunity", IS_COMMUNITY);
-                map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+                var map = getDefaultMap();
                 map.put("repoCount", adminRouteService.getStat("repoCount"));
                 return new FreeMarkerEngine().render(new ModelAndView(map, "admin_bulk.ftl"));
             });
@@ -353,11 +344,7 @@ public class ServerRoutes {
                 var validatorResults = adminRouteService.postBulk(request, response);
 
                 if (!validatorResults.isEmpty()) {
-                    var map = new HashMap<String, Object>();
-
-                    map.put("logoImage", CommonRouteService.getLogo());
-                    map.put("isCommunity", IS_COMMUNITY);
-                    map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));
+                    var map = getDefaultMap();
                     map.put("repoCount", adminRouteService.getStat("repoCount"));
                     map.put("validatorResults", validatorResults);
 
