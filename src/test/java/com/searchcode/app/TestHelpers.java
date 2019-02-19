@@ -1,13 +1,26 @@
 package com.searchcode.app;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Random;
 
 public class TestHelpers {
+
+    public static String getRandomAscii() {
+        Random random = new Random();
+        return RandomStringUtils.randomAscii(random.nextInt(20) + 20);
+    }
+
+    public static String getRandomAlphanumeric() {
+        Random random = new Random();
+        return RandomStringUtils.randomAlphanumeric(random.nextInt(20) + 20);
+    }
+
     public static File createDirectoryWithFiles(String unique) throws IOException {
         File tempPath = clearAndCreateTempPath(unique);
 

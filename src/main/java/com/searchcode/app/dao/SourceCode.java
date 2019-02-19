@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Responsible for interacting with the database table which contains the actual source code used by searchcode.com
+ */
 public class SourceCode {
     private final Helpers helpers;
     private final IDatabaseConfig dbConfig;

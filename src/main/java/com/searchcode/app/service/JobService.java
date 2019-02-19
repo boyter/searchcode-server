@@ -71,6 +71,7 @@ public class JobService {
     private boolean LOWMEMORY = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.LOWMEMORY, Values.DEFAULTLOWMEMORY));
     private boolean SVNENABLED = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.SVNENABLED, Values.DEFAULTSVNENABLED));
     private String HIGHLIGHTER_BINARY_LOCATION = Properties.getProperties().getProperty(Values.HIGHLIGHTER_BINARY_LOCATION, Values.DEFAULT_HIGHLIGHTER_BINARY_LOCATION);
+    private boolean initialJobsRun = false;
 
     public JobService() {
         this.scheduler = Singleton.getScheduler();
@@ -272,8 +273,6 @@ public class JobService {
         }
     }
 
-    private boolean initialJobsRun = false;
-
     /**
      * Starts all of the above jobs as per their unique requirements
      */
@@ -287,7 +286,7 @@ public class JobService {
 
         if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
-//            this.startReindexer();
+            this.startReIndexer();
         } else {
             this.startDeleteJob();
             this.startSpellingJob();
@@ -298,17 +297,20 @@ public class JobService {
         this.startIndexerJob();
     }
 
-    public void startReindexer() {
+    /**
+     * This job runs in the background connecting to the searchcode.com database
+     * pulling out files and adding them to the queue to be indexed
+     */
+    public void startReIndexer() {
         JobDetail job = newJob(ReindexerJob.class)
                 .withIdentity("reindexer")
                 .build();
 
         SimpleTrigger trigger = newTrigger()
                 .withIdentity("reindexer")
-                .withSchedule(
-                        simpleSchedule()
-                                .withIntervalInSeconds(this.INDEXTIME)
-                                .repeatForever()
+                .withSchedule(simpleSchedule()
+                        .withIntervalInSeconds(this.INDEXTIME)
+                        .repeatForever()
                 )
                 .withPriority(15)
                 .build();
@@ -330,7 +332,7 @@ public class JobService {
                 new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter-x86_64-unknown-linux").destroyOnExit().start().getFuture();
             } else if (SystemUtils.IS_OS_WINDOWS) {
                 new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter-x86_64-pc-windows.exe").destroyOnExit().start().getFuture();
-            } else  if (SystemUtils.IS_OS_MAC) {
+            } else if (SystemUtils.IS_OS_MAC) {
                 new ProcessExecutor().command(HIGHLIGHTER_BINARY_LOCATION + "/searchcode-server-highlighter-x86_64-apple-darwin").destroyOnExit().start().getFuture();
             }
         } catch (IOException ex) {

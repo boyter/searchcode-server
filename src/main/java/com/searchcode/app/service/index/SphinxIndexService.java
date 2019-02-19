@@ -66,7 +66,7 @@ public class SphinxIndexService extends IndexBaseService {
             this.logger.severe(String.format("90cf00ef::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
-
+        // Pull out documents from the queue ready to be indexed
         var codeIndexDocument = documentQueue.poll();
         var codeIndexDocumentList = new ArrayList<CodeIndexDocument>();
 
@@ -90,7 +90,6 @@ public class SphinxIndexService extends IndexBaseService {
                     // Upsert the index
 
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
-//                    var sourceCodeDTO = sourceCode.saveCode(codeResult);
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
                     var shard = (codeResult.getId() % this.SHARD_COUNT) + 1;

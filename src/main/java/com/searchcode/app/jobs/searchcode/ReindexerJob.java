@@ -49,6 +49,7 @@ public class ReindexerJob implements Job {
                 var codeIndexQueueSize = this.indexQueue.size();
 
                 // Check if the indexQueue size is large, and if so skip processing for a while
+                // TODO also check system load and pause if there is a lot of activity
                 if (codeIndexQueueSize > 10000) {
                     this.logger.info(String.format("feddddbd::index queue size %d is large so pausing reindexer", codeIndexQueueSize));
                     Thread.sleep(this.INDEXTIME);
@@ -59,6 +60,8 @@ public class ReindexerJob implements Job {
                 var codeBetween = this.sourcecode.getCodeBetween(0, 10000);
                 var indexDocuments = codeBetween.stream().map(this::convert).collect(Collectors.toList());
                 this.indexQueue.addAll(indexDocuments);
+
+                // TODO update database so we know where we have started
 
                 Thread.sleep(this.INDEXTIME);
             }
