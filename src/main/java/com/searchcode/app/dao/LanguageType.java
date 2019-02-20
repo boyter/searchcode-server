@@ -10,7 +10,9 @@ import com.searchcode.app.util.LoggerWrapper;
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
 
-import java.sql.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,30 +28,66 @@ public class LanguageType {
     private final IDatabaseConfig dbConfig;
     private final LoggerWrapper logger;
 
-    // Gets its own cache as this is likely to be one of the harder hit endpoints and we want to cache it for a long time
-    private final Cache<String, Object> cache;
+    // Gets its own typeCache as this is likely to be one of the harder hit endpoints and we want to typeCache it for a long time
+    private final Cache<String, Optional<LanguageTypeDTO>> typeCache;
     private final String CachePrefix = "dao.languagetype.";
 
     public LanguageType() {
         this(
-            new MySQLDatabaseConfig(),
-            Singleton.getHelpers(),
-            Singleton.getLogger(),
-            new Cache2kBuilder<String, Object>() {}
-                    .name("languagetype")
-                    .expireAfterWrite(60, TimeUnit.DAYS)
-                    .entryCapacity(10000)
-                    .build()
+                new MySQLDatabaseConfig(),
+                Singleton.getHelpers(),
+                Singleton.getLogger(),
+                new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
+                        .name("languagetype")
+                        .expireAfterWrite(60, TimeUnit.DAYS)
+                        .entryCapacity(10000)
+                        .build()
         );
     }
 
-    public LanguageType(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger, Cache<String, Object> cache) {
+    public LanguageType(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger, Cache<String, Optional<LanguageTypeDTO>> typeCache) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = logger;
-        this.cache = cache;
+        this.typeCache = typeCache;
     }
 
+    public synchronized Optional<LanguageTypeDTO> getByType(String type) {
+        var cacheKey = CachePrefix + type;
+        var cacheResult = this.typeCache.peekEntry(cacheKey);
+        if (cacheResult != null) {
+            return cacheResult.getValue();
+        }
+
+        Optional<LanguageTypeDTO> optional = Optional.empty();
+        var connStmtRs = new ConnStmtRs();
+
+        try {
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT id, type FROM languagetype WHERE type = ? LIMIT 1;");
+            connStmtRs.stmt.setString(1, type);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+
+            while (connStmtRs.rs.next()) {
+                var id = connStmtRs.rs.getInt("id");
+                type = connStmtRs.rs.getString("type");
+                optional = Optional.of(new LanguageTypeDTO(id, type));
+            }
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("5d3921d2::error in class %s exception %s searchcode was unable to get language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
+        } finally {
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        if (optional.isPresent()) {
+            this.typeCache.put(cacheKey, optional);
+        }
+
+        return optional;
+    }
+
+    // TODO remove this method and use the by id or by type to get cache benefits
+    @Deprecated
     public synchronized List<LanguageTypeDTO> getLanguageNamesByIds(List<String> ids) {
         var languageTypeList = new ArrayList<LanguageTypeDTO>();
         var connStmtRs = new ConnStmtRs();
@@ -73,41 +111,46 @@ public class LanguageType {
         return languageTypeList;
     }
 
-    public synchronized Optional<LanguageTypeDTO> getByType(String type) {
-        var cacheResult = this.cache.peekEntry(CachePrefix + type);
+    public synchronized Optional<LanguageTypeDTO> getById(int id) {
+        var cacheKey = CachePrefix + id;
+        var cacheResult = this.typeCache.peekEntry(cacheKey);
         if (cacheResult != null) {
-            return (Optional<LanguageTypeDTO>) cacheResult.getValue();
+            return cacheResult.getValue();
         }
 
-        Optional<LanguageTypeDTO> languageTypeDTO = Optional.empty();
+        Optional<LanguageTypeDTO> optional = Optional.empty();
         var connStmtRs = new ConnStmtRs();
 
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
-            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT id, type FROM languagetype WHERE type = ? LIMIT 1;");
-            connStmtRs.stmt.setString(1, type);
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("SELECT id, type FROM languagetype WHERE id = ? LIMIT 1;");
+            connStmtRs.stmt.setInt(1, id);
             connStmtRs.rs = connStmtRs.stmt.executeQuery();
 
             while (connStmtRs.rs.next()) {
-                var id = connStmtRs.rs.getInt("id");
-                type = connStmtRs.rs.getString("type");
-                languageTypeDTO = Optional.of(new LanguageTypeDTO(id, type));
+                id = connStmtRs.rs.getInt("id");
+                var type = connStmtRs.rs.getString("type");
+                optional = Optional.of(new LanguageTypeDTO(id, type));
             }
         } catch (SQLException ex) {
-            this.logger.severe(String.format("5d3921d2::error in class %s exception %s searchcode was unable to get language by type %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), type));
+            this.logger.severe(String.format("af0acf72::error in class %s exception %s searchcode was unable to get language by id %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), id));
         } finally {
             this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
 
-        if (languageTypeDTO.isPresent()) {
-            this.cache.put(CachePrefix + type, languageTypeDTO);
+        if (optional.isPresent()) {
+            this.typeCache.put(cacheKey, optional);
         }
 
-        return languageTypeDTO;
+        return optional;
     }
 
+    /**
+     * Create a new language type in the database and return an optional containing it.
+     * If given a type that already exists will return that one rather than create a new one.
+     */
     public synchronized Optional<LanguageTypeDTO> createLanguageType(String type) {
-        Optional<LanguageTypeDTO> byType = this.getByType(type);
+        var byType = this.getByType(type);
         if (byType.isPresent()) {
             return byType;
         }
