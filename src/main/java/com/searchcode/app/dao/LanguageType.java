@@ -40,7 +40,7 @@ public class LanguageType {
                 new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
                         .name("languagetype")
                         .expireAfterWrite(60, TimeUnit.DAYS)
-                        .entryCapacity(10000)
+                        .entryCapacity(1000)
                         .build()
         );
     }
