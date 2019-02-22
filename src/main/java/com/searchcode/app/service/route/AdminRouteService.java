@@ -14,7 +14,6 @@ package com.searchcode.app.service.route;
 import com.google.gson.Gson;
 import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dao.Api;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dto.Source;
@@ -221,9 +220,9 @@ public class AdminRouteService {
     }
 
     public Map<String, Object> adminGetRepo(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
-        String repoName = request.params(":reponame");
-        Optional<RepoResult> repository = this.repo.getRepoByName(repoName);
+        var map = new HashMap<String, Object>();
+        var repoName = request.params(":reponame");
+        var repository = this.repo.getRepoByName(repoName);
 
         repository.ifPresent(x -> map.put("repoResult", x));
         map.put("logoImage", CommonRouteService.getLogo());
@@ -236,14 +235,13 @@ public class AdminRouteService {
     }
 
     public Map<String, Object> adminApi(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
-
-        Api api = Singleton.getApi();
+        var map = new HashMap<String, Object>();
+        var api = Singleton.getApi();
 
         map.put("apiKeys", api.getAllApi());
 
-        boolean apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
-        boolean apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
+        var apiEnabled = Boolean.parseBoolean(Properties.getProperties().getProperty("api_enabled", "false"));
+        var apiAuth = Boolean.parseBoolean(Properties.getProperties().getProperty("api_key_authentication", "true"));
 
         map.put("apiAuthentication", apiEnabled && apiAuth);
         map.put("logoImage", CommonRouteService.getLogo());
@@ -255,9 +253,9 @@ public class AdminRouteService {
     }
 
     public Map<String, Object> adminSettings(Request request, Response response) {
-        String[] highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
+        var highlighters = "agate,androidstudio,arta,ascetic,atelier-cave.dark,atelier-cave.light,atelier-dune.dark,atelier-dune.light,atelier-estuary.dark,atelier-estuary.light,atelier-forest.dark,atelier-forest.light,atelier-heath.dark,atelier-heath.light,atelier-lakeside.dark,atelier-lakeside.light,atelier-plateau.dark,atelier-plateau.light,atelier-savanna.dark,atelier-savanna.light,atelier-seaside.dark,atelier-seaside.light,atelier-sulphurpool.dark,atelier-sulphurpool.light,brown_paper,codepen-embed,color-brewer,dark,darkula,default,docco,far,foundation,github-gist,github,googlecode,grayscale,hopscotch,hybrid,idea,ir_black,kimbie.dark,kimbie.light,magula,mono-blue,monokai,monokai_sublime,obsidian,paraiso.dark,paraiso.light,pojoaque,railscasts,rainbow,school_book,solarized_dark,solarized_light,sunburst,tomorrow-night-blue,tomorrow-night-bright,tomorrow-night-eighties,tomorrow-night,tomorrow,vs,xcode,zenburn".split(",");
 
-        Map<String, Object> map = new HashMap<>();
+        var map = new HashMap<String, Object>();
 
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("syntaxHighlighter", CommonRouteService.getSyntaxHighlighter());
@@ -276,10 +274,10 @@ public class AdminRouteService {
     }
 
     public Map<String, Object> adminLogs(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
-        String level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
+        var map = new HashMap<String, Object>();
+        var level = Properties.getProperties().getOrDefault("log_level", "SEVERE").toString().toUpperCase();
 
-        if (request.queryParams().contains("level") && !request.queryParams("level").trim().equals("")) {
+        if (request.queryParams().contains("level") && !request.queryParams("level").trim().equals(Values.EMPTYSTRING)) {
             level = request.queryParams("level").trim().toUpperCase();
         }
 
@@ -321,46 +319,46 @@ public class AdminRouteService {
     }
 
     public void postSettings(Request request, Response response) {
-        String logo = request.queryParams("logo").trim();
-        String syntaxHighlighter = request.queryParams("syntaxhighligher");
-        String embed = request.queryParams("embed").trim();
+        var logo = request.queryParams("logo").trim();
+        var syntaxHighlighter = request.queryParams("syntaxhighligher");
+        var embed = request.queryParams("embed").trim();
 
         try {
-            double averageSalary = Double.parseDouble(request.queryParams("averagesalary"));
+            var averageSalary = Double.parseDouble(request.queryParams("averagesalary"));
             this.data.saveData(Values.AVERAGESALARY, "" + (int) averageSalary);
         } catch (NumberFormatException ex) {
             this.data.saveData(Values.AVERAGESALARY, Values.DEFAULTAVERAGESALARY);
         }
 
         try {
-            double averageSalary = Double.parseDouble(request.queryParams("matchlines"));
+            var averageSalary = Double.parseDouble(request.queryParams("matchlines"));
             this.data.saveData(Values.MATCHLINES, "" + (int) averageSalary);
         } catch (NumberFormatException ex) {
             this.data.saveData(Values.MATCHLINES, Values.DEFAULTMATCHLINES);
         }
 
         try {
-            double averageSalary = Double.parseDouble(request.queryParams("maxlinedepth"));
+            var averageSalary = Double.parseDouble(request.queryParams("maxlinedepth"));
             this.data.saveData(Values.MAXLINEDEPTH, "" + (int) averageSalary);
         } catch (NumberFormatException ex) {
             this.data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
         }
 
         try {
-            double minifiedlength = Double.parseDouble(request.queryParams("minifiedlength"));
+            var minifiedlength = Double.parseDouble(request.queryParams("minifiedlength"));
             this.data.saveData(Values.MINIFIEDLENGTH, "" + (int) minifiedlength);
         } catch (NumberFormatException ex) {
             this.data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
         }
 
         try {
-            double backoffValue = Double.parseDouble(request.queryParams("backoffValue"));
+            var backoffValue = Double.parseDouble(request.queryParams("backoffValue"));
             this.data.saveData(Values.BACKOFFVALUE, "" + backoffValue);
         } catch (NumberFormatException ex) {
             this.data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
         }
 
-        boolean owaspadvisories = Boolean.parseBoolean(request.queryParams("owaspadvisories"));
+        var owaspadvisories = Boolean.parseBoolean(request.queryParams("owaspadvisories"));
         this.data.saveData(Values.OWASPENABLED, "" + owaspadvisories);
 
         this.data.saveData(Values.LOGO, logo);
@@ -369,21 +367,21 @@ public class AdminRouteService {
     }
 
     public List<ValidatorResult> postBulk(Request request, Response response) {
-        String repos = request.queryParams("repos");
-        String repolines[] = repos.split("\\r?\\n");
+        var repos = request.queryParams("repos");
+        var repolines = repos.split("\\r?\\n");
 
-        List<ValidatorResult> validatorResults = new ArrayList<>();
+        var validatorResults = new ArrayList<ValidatorResult>();
 
         for (String line : repolines) {
-            String[] repoparams = line.split(",", -1);
+            var repoparams = line.split(",", -1);
 
             if (repoparams.length == 7) {
-                String branch = repoparams[6].trim();
+                var branch = repoparams[6].trim();
                 if (branch.equals(Values.EMPTYSTRING)) {
                     branch = "master";
                 }
 
-                String scm = repoparams[1].trim().toLowerCase();
+                var scm = repoparams[1].trim().toLowerCase();
                 if (scm.equals(Values.EMPTYSTRING)) {
                     scm = "git";
                 }
@@ -399,7 +397,7 @@ public class AdminRouteService {
                         .setBranch(branch)
                         .setData("{}");
 
-                ValidatorResult validate = this.validatorService.validate(repoResult, false);
+                var validate = this.validatorService.validate(repoResult, false);
 
                 if (validate.isValid) {
                     this.repo.saveRepo(repoResult);
@@ -420,30 +418,29 @@ public class AdminRouteService {
 
     // TODO split out so we don't need the ignoreDuplicates param
     public ValidatorResult postRepo(Request request, Response response, boolean ignoreDuplicates) {
-        String[] reponames = request.queryParamsValues("reponame");
-        String[] reposcms = request.queryParamsValues("reposcm");
-        String[] repourls = request.queryParamsValues("repourl");
-        String[] repousername = request.queryParamsValues("repousername");
-        String[] repopassword = request.queryParamsValues("repopassword");
-        String[] reposource = request.queryParamsValues("reposource");
-        String[] repobranch = request.queryParamsValues("repobranch");
+        var reponames = request.queryParamsValues("reponame");
+        var reposcms = request.queryParamsValues("reposcm");
+        var repourls = request.queryParamsValues("repourl");
+        var repousername = request.queryParamsValues("repousername");
+        var repopassword = request.queryParamsValues("repopassword");
+        var reposource = request.queryParamsValues("reposource");
+        var repobranch = request.queryParamsValues("repobranch");
 
         // Additional
-        String[] source = request.queryParamsValues("source");
-        String[] sourceuser = request.queryParamsValues("sourceuser");
-        String[] sourceproject = request.queryParamsValues("sourceproject");
+        var source = request.queryParamsValues("source");
+        var sourceuser = request.queryParamsValues("sourceuser");
+        var sourceproject = request.queryParamsValues("sourceproject");
 
+        var validate = new ValidatorResult(true, Values.EMPTYSTRING);
 
-        ValidatorResult validate = new ValidatorResult(true, Values.EMPTYSTRING);
+        for (var i = 0; i < reponames.length; i++) {
 
-        for (int i = 0; i < reponames.length; i++) {
-
-            String branch = repobranch[i].trim();
+            var branch = repobranch[i].trim();
             if (branch.equals(Values.EMPTYSTRING)) {
                 branch = "master";
             }
 
-            RepoResult repoResult = new RepoResult()
+            var repoResult = new RepoResult()
                     .setRowId(-1)
                     .setName(reponames[i])
                     .setScm(reposcms[i])
@@ -466,7 +463,7 @@ public class AdminRouteService {
             }
 
             this.repo.saveRepo(repoResult);
-            Optional<RepoResult> repoByUrl = this.repo.getRepoByUrl(repourls[i]);
+            var repoByUrl = this.repo.getRepoByUrl(repourls[i]);
             repoByUrl.ifPresent(this.jobService::forceEnqueue);
         }
 
@@ -474,14 +471,14 @@ public class AdminRouteService {
     }
 
     public void deleteRepo(Request request, Response response) {
-        String repoName = request.queryParams("repoName");
-        Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
+        var repoName = request.queryParams("repoName");
+        var repoResult = this.repo.getRepoByName(repoName);
         repoResult.ifPresent(x -> this.dataService.addToPersistentDelete(x.getName()));
     }
 
     public void reindexRepo(Request request, Response response) {
-        String repoName = request.queryParams("repoName");
-        Optional<RepoResult> repoResult = this.repo.getRepoByName(repoName);
+        var repoName = request.queryParams("repoName");
+        var repoResult = this.repo.getRepoByName(repoName);
 
         repoResult.ifPresent(x -> {
             x.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
@@ -522,7 +519,7 @@ public class AdminRouteService {
 
         switch (statName.toLowerCase()) {
             case "memoryusage":
-                return this.statsService.getMemoryUsage("<br>");
+                return this.statsService.getMemoryUsage(Values.LINE_BREAK);
             case "loadaverage":
                 return this.statsService.getLoadAverage();
             case "uptime":
@@ -530,11 +527,11 @@ public class AdminRouteService {
             case "searchcount":
                 return Values.EMPTYSTRING + this.statsService.getSearchCount();
             case "runningjobs":
-                String collect = Singleton.getRunningIndexRepoJobs().keySet().stream()
+                var collect = Singleton.getRunningIndexRepoJobs().keySet().stream()
                         .filter(x -> Singleton.getRunningIndexRepoJobs().get(x) != null)
                         .map(x -> x + " <small>(" + (Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(x).startTime) + "s)</small>")
-                        .collect(Collectors.joining("<br>"));
-                return collect + "&nbsp;";
+                        .collect(Collectors.joining(Values.LINE_BREAK));
+                return collect + Values.NBSP;
             case "spellingcount":
                 return Values.EMPTYSTRING + Singleton.getSpellingCorrector().getWordCount();
             case "repocount":

@@ -219,4 +219,8 @@ public class Values {
     public static final String CHARSET_UTF8 = "UTF8";
     public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
     public static final String ALL_NEWLINE = "\\r?\\n";
+
+    // Various HTML
+    public static final String LINE_BREAK = "<br>";
+    public static final String NBSP = "&nbsp;";
 }
