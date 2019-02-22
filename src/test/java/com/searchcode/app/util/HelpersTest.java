@@ -144,27 +144,15 @@ public class HelpersTest extends TestCase {
     }
 
     public void testAllUnique() {
-        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
-            add("a");
-            add("a");
-        }})).isFalse();
-
-        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
-            add("a");
-            add("b");
-        }})).isTrue();
-
-        assertThat(this.helpers.allUnique(new ArrayList<String>() {{
-            add("a");
-            add("b");
-            add("b");
-        }})).isFalse();
+        assertThat(this.helpers.allUnique(List.of("a", "a"))).isFalse();
+        assertThat(this.helpers.allUnique(List.of("a", "b"))).isTrue();
+        assertThat(this.helpers.allUnique(List.of("a", "b", "b"))).isFalse();
     }
 
     public void testFilterRunningAndDeletedRepoJobs() {
         assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<>()).size()).isEqualTo(0);
-        assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<RepoResult>() {{
-            add(new RepoResult()
+        assertThat(this.helpers.filterRunningAndDeletedRepoJobs(List.of(
+            new RepoResult()
                     .setRowId(0)
                     .setName("reallyuniquenameihope")
                     .setScm("something")
@@ -173,7 +161,7 @@ public class HelpersTest extends TestCase {
                     .setPassword("")
                     .setSource("source")
                     .setBranch("branch")
-                    .setData("{}"));
-        }}).size()).isEqualTo(1);
+                    .setData("{}"))
+        ).size()).isEqualTo(1);
     }
 }

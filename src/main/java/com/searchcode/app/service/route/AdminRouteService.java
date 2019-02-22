@@ -25,14 +25,15 @@ import com.searchcode.app.service.*;
 import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
-
 import com.searchcode.app.util.RepositorySource;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import spark.Request;
 import spark.Response;
 
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -494,8 +495,15 @@ public class AdminRouteService {
     public String checkVersion() {
         Version version;
         try {
-            String downloaded = IOUtils.toString(new URL("https://searchcodeserver.com/version.json"));
-            version = this.gson.fromJson(downloaded, Version.class);
+            var httpClient = HttpClient.newBuilder().build();
+            var request = HttpRequest.newBuilder()
+                    .uri(URI.create("https://searchcodeserver.com/version.json"))
+                    .GET()
+                    .build();
+
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            version = this.gson.fromJson(response.body(), Version.class);
         } catch (Exception ex) {
             return "Unable to determine if running the latest version. Check https://searchcodeserver.com/pricing.html for the latest release.";
         }

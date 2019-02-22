@@ -176,12 +176,14 @@ public class CodeRouteService {
 
         Optional<RepoResult> repoResult = this.repo.getRepoByName(codeResult.repoName);
         repoResult.map(x -> map.put("source", x.getSource()));
-        repoResult.map(x -> map.put("fileLink", this.repositorySource.getLink(x.getData().source, new HashMap<String, String>() {{
+        repoResult.map(x -> map.put("fileLink", this.repositorySource.getLink(x.getData().source,
+                new HashMap<String, String>() {{
             put("user", x.getData().user);
             put("project", x.getData().project);
             put("branch", x.getBranch());
             put("filepath", codeResult.getDisplayLocation());
         }})));
+
 
         map.put("fileName", codeResult.fileName);
         map.put("codePath", codeResult.getDisplayLocation());
