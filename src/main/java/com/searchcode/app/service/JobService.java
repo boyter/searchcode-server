@@ -286,7 +286,7 @@ public class JobService {
 
         if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
-            this.startReIndexer();
+//            this.startReIndexer();
         } else {
             this.startDeleteJob();
             this.startSpellingJob();

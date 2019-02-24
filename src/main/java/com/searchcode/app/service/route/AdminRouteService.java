@@ -206,8 +206,8 @@ public class AdminRouteService {
         map.put("searchQuery", searchQuery);
         map.put("hasPrevious", indexOffset > 0);
         map.put("hasNext", (indexOffset + 100) < repoCount);
-        map.put("previousOffset", "" + (indexOffset - 100));
-        map.put("nextOffset", "" + (indexOffset + 100));
+        map.put("previousOffset", Values.EMPTYSTRING + (indexOffset - 100));
+        map.put("nextOffset", Values.EMPTYSTRING + (indexOffset + 100));
         map.put("repoCount", this.getStat("repoCount"));
 
         map.put("logoImage", CommonRouteService.getLogo());
@@ -345,8 +345,8 @@ public class AdminRouteService {
         }
 
         try {
-            var minifiedlength = Double.parseDouble(request.queryParams("minifiedlength"));
-            this.data.saveData(Values.MINIFIEDLENGTH, "" + (int) minifiedlength);
+            var minifiedLength = Double.parseDouble(request.queryParams("minifiedlength"));
+            this.data.saveData(Values.MINIFIEDLENGTH, "" + (int) minifiedLength);
         } catch (NumberFormatException ex) {
             this.data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
         }
