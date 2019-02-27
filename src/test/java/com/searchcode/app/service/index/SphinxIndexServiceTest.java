@@ -4,7 +4,6 @@ import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dto.CodeFacetLanguage;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.service.index.SphinxIndexService;
 import junit.framework.TestCase;
 import org.mockito.Mockito;
 
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.when;
 
 public class SphinxIndexServiceTest extends TestCase {
     public void testSearch() {
@@ -86,8 +84,6 @@ public class SphinxIndexServiceTest extends TestCase {
 
         var mock = Mockito.mock(LanguageType.class);
         var sphinxIndexService = new SphinxIndexService(mock);
-
-        when(mock.getLanguageNamesByIds(new ArrayList<>())).thenReturn(new ArrayList<>());
 
         List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
         assertThat(codeFacetLanguages).hasSize(0);

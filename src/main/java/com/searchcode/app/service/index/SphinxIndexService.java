@@ -353,18 +353,11 @@ public class SphinxIndexService extends IndexBaseService {
     public ArrayList<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
         var properCodeFacetLanguages = new ArrayList<CodeFacetLanguage>();
 
-        var languageNamesByIds = this.languageType.getLanguageNamesByIds(
-                codeFacetLanguages.stream().map(x -> x.languageName).collect(Collectors.toList())
-        );
-
         for (var codeFacetLanguage : codeFacetLanguages) {
-            languageNamesByIds.stream()
-                    .filter(languageType -> (Integer.toString(languageType.getId())).equals(codeFacetLanguage.languageName))
-                    .findFirst()
-                    .ifPresent(x -> {
-                        codeFacetLanguage.languageName = x.getType();
-                        properCodeFacetLanguages.add(new CodeFacetLanguage(x.getType(), codeFacetLanguage.count));
-                    });
+            var byName = this.languageType.getById(Integer.parseInt(codeFacetLanguage.languageName));
+            byName.ifPresent(x -> {
+                properCodeFacetLanguages.add(new CodeFacetLanguage(x.getType(), codeFacetLanguage.count));
+            });
         }
 
         return properCodeFacetLanguages;

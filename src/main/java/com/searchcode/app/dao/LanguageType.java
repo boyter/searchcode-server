@@ -13,8 +13,6 @@ import org.cache2k.Cache2kBuilder;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -84,31 +82,6 @@ public class LanguageType {
         }
 
         return optional;
-    }
-
-    // TODO remove this method and use the by id or by type to get cache benefits
-    @Deprecated
-    public synchronized List<LanguageTypeDTO> getLanguageNamesByIds(List<String> ids) {
-        var languageTypeList = new ArrayList<LanguageTypeDTO>();
-        var connStmtRs = new ConnStmtRs();
-
-        try {
-            connStmtRs.conn = this.dbConfig.getConnection();
-            connStmtRs.stmt = connStmtRs.conn.prepareStatement(String.format("SELECT id, type FROM languagetype WHERE id IN (%s);", String.join(",", ids)));
-            connStmtRs.rs = connStmtRs.stmt.executeQuery();
-
-            while (connStmtRs.rs.next()) {
-                var id = connStmtRs.rs.getInt("id");
-                var type = connStmtRs.rs.getString("type");
-                languageTypeList.add(new LanguageTypeDTO(id, type));
-            }
-        } catch (SQLException ex) {
-            this.logger.severe(String.format("39bde74f::error in class %s exception %s searchcode was unable to get language names by ids %s, this is likely to break all sorts of things, most likely the table has changed or is missing", ex.getClass(), ex.getMessage(), String.join(", ", ids)));
-        } finally {
-            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
-        }
-
-        return languageTypeList;
     }
 
     public synchronized Optional<LanguageTypeDTO> getById(int id) {
