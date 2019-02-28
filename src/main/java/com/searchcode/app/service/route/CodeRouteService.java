@@ -286,8 +286,6 @@ public class CodeRouteService {
     public ModelAndView html(Request request, Response response) {
         Map<String, Object> map = new HashMap<>();
 
-        map.put("repoCount", this.repo.getRepoCount());
-
         if (request.queryParams().contains("q")) {
             String query = request.queryParams("q").trim();
             String altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
@@ -419,6 +417,8 @@ public class CodeRouteService {
             map.put("isCommunity", App.IS_COMMUNITY);
             map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "searchresults.ftl");
+        } else {
+            map.put("repoCount", this.repo.getRepoCount());
         }
 
         map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));

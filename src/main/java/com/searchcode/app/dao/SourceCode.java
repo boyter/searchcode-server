@@ -13,11 +13,14 @@ import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import org.apache.commons.lang3.StringUtils;
+import org.cache2k.Cache;
+import org.cache2k.Cache2kBuilder;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -29,15 +32,28 @@ public class SourceCode {
     private final LanguageType languageType;
     private final LoggerWrapper logger;
 
+    private final Cache<String, Optional<SourceCodeDTO>> codeCache;
+    private final String CachePrefix = "dao.sourcecode.";
+
     public SourceCode() {
-        this(new MySQLDatabaseConfig(), Singleton.getHelpers(), Singleton.getLanguageType(), Singleton.getLogger());
+        this(
+                new MySQLDatabaseConfig(),
+                Singleton.getHelpers(),
+                Singleton.getLanguageType(),
+                Singleton.getLogger(),
+                new Cache2kBuilder<String, Optional<SourceCodeDTO>>() {}
+                        .name("sourcecode")
+                        .expireAfterWrite(4, TimeUnit.HOURS)
+                        .entryCapacity(10000)
+                        .build());
     }
 
-    public SourceCode(IDatabaseConfig dbConfig, Helpers helpers, LanguageType languageType, LoggerWrapper logger) {
+    public SourceCode(IDatabaseConfig dbConfig, Helpers helpers, LanguageType languageType, LoggerWrapper logger, Cache<String, Optional<SourceCodeDTO>> codeCache) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.languageType = languageType;
         this.logger = logger;
+        this.codeCache = codeCache;
     }
 
     public synchronized int getMaxId() {
@@ -205,6 +221,12 @@ public class SourceCode {
     }
 
     public Optional<SourceCodeDTO> getById(int id) {
+        var cacheKey = CachePrefix + id;
+        var cacheResult = this.codeCache.peekEntry(cacheKey);
+        if (cacheResult != null) {
+            return cacheResult.getValue();
+        }
+
         Optional<SourceCodeDTO> result = Optional.empty();
         var connStmtRs = new ConnStmtRs();
 
@@ -236,6 +258,10 @@ public class SourceCode {
             this.logger.severe(String.format("a8ea57fb::error in class %s exception %s searchcode unable to get code by id %d", ex.getClass(), ex.getMessage(), id));
         } finally {
             this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        if (result.isPresent()) {
+            this.codeCache.put(cacheKey, result);
         }
 
         return result;
