@@ -64,6 +64,7 @@ public class SphinxIndexService extends IndexBaseService {
             connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
         } catch (SQLException ex) {
             this.logger.severe(String.format("90cf00ef::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            return;
         }
 
         // Pull out documents from the queue ready to be indexed
@@ -101,11 +102,11 @@ public class SphinxIndexService extends IndexBaseService {
                     stmt.setString(2, indexContents);
                     stmt.setString(3, codeResult.getFileName());
                     stmt.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
-                    stmt.setInt(5, 1);
-                    stmt.setInt(6, 1);
-                    stmt.setInt(7, 1); // TODO get the below values
-                    stmt.setInt(8, 1);
-                    stmt.setInt(9, 1);
+                    stmt.setInt(5, 1); // RepoId
+                    stmt.setInt(6, codeResult.getLanguageNameId()); // LanguageId
+                    stmt.setInt(7, 1); // SourceId
+                    stmt.setInt(8, 1); // OwnerId
+                    stmt.setInt(9, 1); // LicenseId
                     stmt.setInt(10, codeResult.getLines());
 
                     stmt.execute();

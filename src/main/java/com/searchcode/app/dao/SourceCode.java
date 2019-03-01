@@ -221,6 +221,7 @@ public class SourceCode {
     }
 
     public Optional<SourceCodeDTO> getById(int id) {
+//        System.out.println(this.codeCache.toString());
         var cacheKey = CachePrefix + id;
         var cacheResult = this.codeCache.peekEntry(cacheKey);
         if (cacheResult != null) {

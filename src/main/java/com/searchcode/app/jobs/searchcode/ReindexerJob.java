@@ -63,7 +63,7 @@ public class ReindexerJob implements Job {
 
                 // TODO update database so we know where we have started
 
-                Thread.sleep(this.INDEXTIME);
+                Thread.sleep(this.INDEXTIME * 100000);
             }
         } catch (Exception ex) {
             this.logger.severe(String.format("32639901::error in class %s exception %s", ex.getClass(), ex.getMessage()));
