@@ -199,15 +199,15 @@ public class SearchCodeLib {
      */
     public boolean isMinified(List<String> codeLines, String fileName) {
 
-        String lowerFileName = fileName.toLowerCase();
+        var lowerFileName = fileName.toLowerCase();
 
-        for (String extension : this.WHITE_LIST) {
+        for (var extension : this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return false;
             }
         }
 
-        OptionalDouble average = codeLines.stream().map(x -> x.trim().replace(" ", "")).mapToInt(String::length).average();
+        var average = codeLines.stream().map(x -> x.trim().replace(" ", "")).mapToInt(String::length).average();
         if (average.isPresent() && average.getAsDouble() > this.MINIFIED_LENGTH) {
             return true;
         }
@@ -224,27 +224,27 @@ public class SearchCodeLib {
             return new BinaryFinding(true, "file is empty");
         }
 
-        String lowerFileName = fileName.toLowerCase();
+        var lowerFileName = fileName.toLowerCase();
         // Check against user set whitelist
-        for (String extension : this.WHITE_LIST) {
+        for (var extension : this.WHITE_LIST) {
             if (lowerFileName.endsWith("." + extension)) {
                 return new BinaryFinding(false, "appears in extension whitelist");
             }
         }
 
         // Check against user set blacklist
-        for (String extension : this.BLACK_LIST) {
+        for (var extension : this.BLACK_LIST) {
             if (lowerFileName.endsWith("." + extension) || lowerFileName.equals(extension)) {
                 return new BinaryFinding(true, "appears in extension blacklist");
             }
         }
 
         // Check if whitelisted extention IE what we know about
-        HashMap<String, FileClassifierResult> database = fileClassifier.getDatabase();
-        for (String key : database.keySet()) {
-            FileClassifierResult fileClassifierResult = database.get(key);
-            for (String extention : fileClassifierResult.extensions) {
-                if (lowerFileName.endsWith("." + extention)) {
+        var database = fileClassifier.getDatabase();
+        for (var key : database.keySet()) {
+            var fileClassifierResult = database.get(key);
+            for (var extension : fileClassifierResult.extensions) {
+                if (lowerFileName.endsWith("." + extension)) {
                     return new BinaryFinding(false, "appears in internal extension whitelist");
                 }
             }

@@ -11,8 +11,8 @@ import com.searchcode.app.service.Singleton;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Optional;
 
 /**
  * This class uses the database from the scc project in order to classify files under a specific language.
@@ -22,17 +22,20 @@ import java.util.Optional;
 public class FileClassifier {
 
     private final LoggerWrapper logger;
-    private String DATABASEPATH = Properties.getProperties().getProperty(Values.CLASSIFIER_DATABASE_LOCATION, Values.DEFAULT_CLASSIFIER_DATABASE_LOCATION);
+    private final Helpers helpers;
+    private String DATABASE_PATH = Properties.getProperties().getProperty(Values.CLASSIFIER_DATABASE_LOCATION, Values.DEFAULT_CLASSIFIER_DATABASE_LOCATION);
     private HashMap<String, FileClassifierResult> database;
 
     public FileClassifier() {
         this.database = this.loadDatabase();
         this.logger = Singleton.getLogger();
+        this.helpers = Singleton.getHelpers();
     }
 
     public FileClassifier(HashMap<String, FileClassifierResult> database) {
         this.database = database;
         this.logger = Singleton.getLogger();
+        this.helpers = Singleton.getHelpers();
     }
 
     public HashMap<String, FileClassifierResult> getDatabase() {
@@ -64,37 +67,65 @@ public class FileClassifier {
     /**
      * Given a filename guesses the file type
      */
-    public String languageGuesser(String fileName) {
+    public String languageGuesser(String fileName, String content) {
         fileName = fileName.toLowerCase();
-        String extension = Values.EMPTYSTRING;
+        var matches = new ArrayList<String>();
+        var extension = Values.EMPTYSTRING;
 
-        Optional<String> lang = this.checkIfExtentionExists(fileName);
+        // Try finding using the whole name EG LICENSE
+        matches = this.checkIfExtentionExists(fileName);
 
-        if (!lang.isPresent()) {
+        // Try matching based on one level EG d.ts OR ts
+        if (matches.isEmpty()) {
             extension = this.getExtension(fileName);
-            lang = this.checkIfExtentionExists(extension);
+            matches = this.checkIfExtentionExists(extension);
         }
 
-        if (!lang.isPresent()) {
+        // Catch all if the above did not work, IE turn d.ts into ts
+        if (matches.isEmpty()) {
             extension = this.getExtension(extension);
-            lang = this.checkIfExtentionExists(extension);
+            matches = this.checkIfExtentionExists(extension);
         }
 
-        return lang.orElse(Values.UNKNOWN_LANGUAGE);
-    }
+        // If no idea at this point return that we don't know
+        if (matches.isEmpty()) {
+            return Values.UNKNOWN_LANGUAGE;
+        }
 
-    private Optional<String> checkIfExtentionExists(String extension) {
-        for (String key : database.keySet()) {
-            FileClassifierResult fileClassifierResult = database.get(key);
+        // If we have a single match then return it
+        if (matches.size() == 1) {
+            return matches.get(0);
+        }
 
-            for (String ext : fileClassifierResult.extensions) {
-                if (extension.equals(ext)) {
-                    return Optional.of(key);
+        // We have multiple matches, so try to work out which one is the most likely result
+        var toSort = new HashMap<String, Integer>();
+
+        for (var m : matches) {
+            toSort.put(m, 0);
+            for (var keyword: this.database.get(m).keywords) {
+                if (content.contains(keyword)) {
+                    toSort.put(m, toSort.get(m) + 1);
                 }
             }
         }
 
-        return Optional.empty();
+        return this.helpers.sortByValue(toSort).keySet().stream().findFirst().orElse(Values.UNKNOWN_LANGUAGE);
+    }
+
+    private ArrayList<String> checkIfExtentionExists(String extension) {
+        var matches = new ArrayList<String>();
+
+        for (String key : database.keySet()) {
+            var fileClassifierResult = database.get(key);
+
+            for (var ext : fileClassifierResult.extensions) {
+                if (extension.equals(ext)) {
+                    matches.add(key);
+                }
+            }
+        }
+
+        return matches;
     }
 
     /**
@@ -107,7 +138,7 @@ public class FileClassifier {
             Gson gson = new GsonBuilder().create();
             Type type = new TypeToken<HashMap<String, FileClassifierResult>>() {
             }.getType();
-            database = gson.fromJson(new FileReader(this.DATABASEPATH), type);
+            database = gson.fromJson(new FileReader(this.DATABASE_PATH), type);
         } catch (FileNotFoundException | JsonSyntaxException ex) {
             this.logger.severe(String.format("62bfa6c9::error in class %s exception %s unable to load file classifier, languages will not be recognised", ex.getClass(), ex.getMessage()));
         }

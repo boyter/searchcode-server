@@ -1269,6 +1269,16 @@
     "extensions": [
       "v"
     ],
+    "keywords": [
+      "Require",
+      "Hypothesis",
+      "Inductive",
+      "Remark",
+      "Lemma",
+      "Proof",
+      "Definition",
+      "Theorem"
+    ],
     "line_comment": [],
     "multi_line": [
       [
@@ -2691,6 +2701,41 @@
     ],
     "multi_line": [],
     "quotes": []
+  },
+  "Janet": {
+    "complexitychecks": [
+      "(if ",
+      "(for ",
+      "(for ",
+      "(cond ",
+      "(switch ",
+      "(when ",
+      "(while ",
+      "(loop ",
+      "(case "
+    ],
+    "extensions": [
+      "janet"
+    ],
+    "line_comment": [
+      "#"
+    ],
+    "multi_line": [],
+    "nestedmultiline": false,
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ],
+      [
+        "``",
+        "``"
+      ],
+      [
+        "@\"",
+        "\""
+      ]
+    ]
   },
   "Java": {
     "complexitychecks": [
@@ -5300,7 +5345,15 @@
     ],
     "extensions": [
       "sv",
-      "svh"
+      "svh",
+      "v"
+    ],
+    "keywords": [
+      "endmodule",
+      "posedge",
+      "edge",
+      "always",
+      "wire"
     ],
     "line_comment": [
       "//"
@@ -5675,6 +5728,52 @@
     ],
     "multi_line": [],
     "quotes": []
+  },
+  "V": {
+    "complexitychecks": [
+      "for ",
+      "for(",
+      "if ",
+      "if(",
+      "switch ",
+      "while ",
+      "else ",
+      "|| ",
+      "&& ",
+      "!= ",
+      "== "
+    ],
+    "extensions": [
+      "v"
+    ],
+    "keywords": [
+      "fn",
+      "const",
+      "println",
+      "import",
+      "struct",
+      "module"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "nestedmultiline": true,
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ],
+      [
+        "`",
+        "`"
+      ]
+    ]
   },
   "VHDL": {
     "complexitychecks": [
