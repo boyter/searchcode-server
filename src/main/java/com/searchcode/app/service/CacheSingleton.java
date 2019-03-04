@@ -44,7 +44,7 @@ public final class CacheSingleton {
     public static synchronized Cache<String, Optional<LanguageTypeDTO>> getLanguageTypeCache() {
         if (typeCache == null) {
             typeCache = new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
-                    .name("type")
+                    .name("typeCache")
                     .expireAfterWrite(Values.HIGH_CACHE_DAYS, TimeUnit.DAYS)
                     .entryCapacity(Values.SMALL_CACHE_SIZE)
                     .build();
@@ -56,7 +56,7 @@ public final class CacheSingleton {
     public static synchronized Cache<String, Optional<SourceResult>> getSourceCache() {
         if (sourceCache == null) {
             sourceCache = new Cache2kBuilder<String, Optional<SourceResult>>() {}
-                    .name("source")
+                    .name("sourceCache")
                     .expireAfterWrite(Values.HIGH_CACHE_DAYS, TimeUnit.DAYS)
                     .entryCapacity(Values.SMALL_CACHE_SIZE)
                     .build();
@@ -68,7 +68,7 @@ public final class CacheSingleton {
     public static synchronized Cache<String, HighlighterResponse> getHighlightCache() {
         if (highlightCache == null) {
             highlightCache = new Cache2kBuilder<String, HighlighterResponse>() {}
-                    .name("highlight")
+                    .name("highlightCache")
                     .expireAfterWrite(Values.LOW_CACHE_DAYS, TimeUnit.DAYS)
                     .entryCapacity(Values.DEFAULT_CACHE_SIZE)
                     .build();
@@ -80,7 +80,7 @@ public final class CacheSingleton {
     public static synchronized Cache<String, Optional<SourceCodeDTO>> getSourceCodeCache() {
         if (sourceCodeCache == null) {
             sourceCodeCache = new Cache2kBuilder<String, Optional<SourceCodeDTO>>() {}
-                    .name("highlight")
+                    .name("sourceCodeCache")
                     .expireAfterWrite(Values.LOW_CACHE_DAYS, TimeUnit.DAYS)
                     .entryCapacity(Values.DEFAULT_CACHE_SIZE)
                     .build();
