@@ -84,6 +84,10 @@ public class Highlight {
         map.put("codeValue", code.toString());
     }
 
+    /**
+     * Calls out to external application to produce the highlighted code
+     * External application is https://github.com/boyter/searchcode-server-highlighter
+     */
     public void highlightExternal(CodeResult codeResult, HashMap<String, Object> map) throws Exception {
         var cacheKey = CachePrefix + codeResult.getCodeId();
         var cacheResult = this.highlightCache.peekEntry(cacheKey);
