@@ -144,4 +144,15 @@ public class FileClassifierTest extends TestCase {
         languageGuess = fileClassifier.languageGuesser("test.v", "Require,Hypothesis,Inductive,Remark,Lemma,Proof,Definition,Theorem");
         assertThat(languageGuess).isEqualTo("Coq");
     }
+
+    public void testIdentifyLanguageMultipleExtHigherMatch() {
+        var database = new HashMap<String, FileClassifierResult>();
+        database.put("V", new FileClassifierResult("v", "Require,Hypothesis,Inductive,Remark,Lemma,Proof,Definition,Theorem"));
+        database.put("Coq", new FileClassifierResult("v", "fn,const,println,import,struct,module"));
+        database.put("Verilog", new FileClassifierResult("v", "endmodule,posedge,edge,always,wire"));
+        var fileClassifier = new FileClassifier(database);
+
+        var languageGuess = fileClassifier.languageGuesser("test.v", "fn,const,println,import,struct,module,endmodule,posedge,edge,always,wire");
+        assertThat(languageGuess).isEqualTo("V");
+    }
 }
