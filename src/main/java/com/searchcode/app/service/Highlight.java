@@ -5,6 +5,7 @@ import com.searchcode.app.dto.CodeResult;
 import com.searchcode.app.dto.HighlighterRequest;
 import com.searchcode.app.dto.HighlighterResponse;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LoggerWrapper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
@@ -19,6 +20,7 @@ public class Highlight {
 
     private final Cache<String, HighlighterResponse> highlightCache;
     private final String CachePrefix = "highlight.";
+    private final LoggerWrapper logger;
 
     public Highlight() {
         this.helpers = Singleton.getHelpers();
@@ -28,6 +30,7 @@ public class Highlight {
                 .expireAfterWrite(1, TimeUnit.DAYS)
                 .entryCapacity(100000)
                 .build();
+        this.logger = Singleton.getLogger();
     }
 
     // TODO test this method quite a lot
@@ -36,7 +39,12 @@ public class Highlight {
 
         // If set to remote highlighter then post to it to render
         if (!this.helpers.isStandaloneInstance()) {
-            highlightExternal(codeResult, map);
+            try {
+                highlightExternal(codeResult, map);
+            } catch (Exception ex) {
+                this.logger.severe(String.format("cf3292f9::error in class %s exception %s falling back to other highlighter", ex.getClass(), ex.getMessage()));
+                highlightInternal(codeResult, map);
+            }
         } else {
             highlightInternal(codeResult, map);
         }
@@ -76,29 +84,25 @@ public class Highlight {
         map.put("codeValue", code.toString());
     }
 
-    public void highlightExternal(CodeResult codeResult, HashMap<String, Object> map) {
-        try {
-            var cacheKey = CachePrefix + codeResult.getCodeId();
-            var cacheResult = this.highlightCache.peekEntry(cacheKey);
-            HighlighterResponse highlighter;
+    public void highlightExternal(CodeResult codeResult, HashMap<String, Object> map) throws Exception {
+        var cacheKey = CachePrefix + codeResult.getCodeId();
+        var cacheResult = this.highlightCache.peekEntry(cacheKey);
+        HighlighterResponse highlighter;
 
-            if (cacheResult != null) {
-                highlighter = cacheResult.getValue();
-            } else {
-                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
-                        .setContent(String.join("\n", codeResult.code))
-                        .setFileName(codeResult.fileName)
-                        .setStyle("monokai"));
+        if (cacheResult != null) {
+            highlighter = cacheResult.getValue();
+        } else {
+            var highlighterRequest = this.gson.toJson(new HighlighterRequest()
+                    .setContent(String.join("\n", codeResult.code))
+                    .setFileName(codeResult.fileName)
+                    .setStyle("monokai"));
 
-                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
-                highlighter = this.gson.fromJson(res, HighlighterResponse.class);
-                this.highlightCache.put(cacheKey, highlighter);
-            }
-
-            map.put("chromaCss", highlighter.css);
-            map.put("chromaHtml", highlighter.html);
-        } catch (Exception ex) {
-            Singleton.getLogger().severe(String.format("f2d40796::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+            var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
+            highlighter = this.gson.fromJson(res, HighlighterResponse.class);
+            this.highlightCache.put(cacheKey, highlighter);
         }
+
+        map.put("chromaCss", highlighter.css);
+        map.put("chromaHtml", highlighter.html);
     }
 }

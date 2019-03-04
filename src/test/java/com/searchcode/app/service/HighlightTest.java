@@ -24,7 +24,7 @@ public class HighlightTest extends TestCase {
         assertThat(map.get("codeValue")).isNotNull();
     }
 
-    public void testHighlightExternal() {
+    public void testHighlightExternal() throws Exception {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         // Requirement that the highlighter has started
