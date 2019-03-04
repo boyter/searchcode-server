@@ -2,6 +2,7 @@ package com.searchcode.app.dao;
 
 import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -19,7 +20,7 @@ public class MySQLRepoTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         super.setUp();
-        this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), Singleton.getGenericCache());
+        this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), CacheSingleton.getGenericCache());
     }
 
     public void testGetRepoByUrl() {
@@ -33,7 +34,7 @@ public class MySQLRepoTest extends TestCase {
     public void testGetRepoByUrlCache() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-        var cache = Singleton.getGenericCache();
+        var cache = CacheSingleton.getGenericCache();
         cache.put("dao.mysqlrepo.boyter", Optional.of(new RepoResult().setRowId(999).setName("ZeName").setUrl("boyter")));
         var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
@@ -59,7 +60,7 @@ public class MySQLRepoTest extends TestCase {
     public void testGetRepoByIdCache() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-        var cache = Singleton.getGenericCache();
+        var cache = CacheSingleton.getGenericCache();
         cache.put("dao.mysqlrepo.999", Optional.of(new RepoResult().setRowId(999).setName("ZeName")));
         var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
@@ -80,7 +81,7 @@ public class MySQLRepoTest extends TestCase {
         var result = this.repo.deleteRepoById(r1.get().getRowId());
         assertThat(result).isTrue();
 
-        Singleton.getGenericCache().clear();
+        CacheSingleton.getGenericCache().clear();
 
         r1 = this.repo.getRepoByUrl("boyter");
         assertThat(r1.isPresent()).isFalse();

@@ -4,17 +4,16 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.LanguageTypeDTO;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import org.cache2k.Cache;
-import org.cache2k.Cache2kBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Generally only used when Sphinx is set as the indexing engine and used to store language
@@ -28,18 +27,14 @@ public class LanguageType {
 
     // Gets its own typeCache as this is likely to be one of the harder hit endpoints and we want to typeCache it for a long time
     private final Cache<String, Optional<LanguageTypeDTO>> typeCache;
-    private final String CachePrefix = "dao.languagetype.";
+    private final String CachePrefix = "d.l.";
 
     public LanguageType() {
         this(
                 new MySQLDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLogger(),
-                new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
-                        .name("languagetype")
-                        .expireAfterWrite(60, TimeUnit.DAYS)
-                        .entryCapacity(1000)
-                        .build()
+                CacheSingleton.getLanguageTypeCache()
         );
     }
 

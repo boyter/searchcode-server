@@ -4,6 +4,7 @@ import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -23,7 +24,7 @@ public class MySQLRepo implements IRepo {
     private final String CachePrefix = "dao.mysqlrepo.";
 
     public MySQLRepo() {
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(), Singleton.getGenericCache());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(), CacheSingleton.getGenericCache());
     }
 
     public MySQLRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper, Cache cache) {

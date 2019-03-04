@@ -3,6 +3,7 @@ package com.searchcode.app.dao;
 import com.searchcode.app.TestHelpers;
 import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.dto.LanguageTypeDTO;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 import org.cache2k.Cache2kBuilder;
@@ -59,11 +60,7 @@ public class LanguageTypeTest extends TestCase {
     public void testGetLanguageTypeCachedExists() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-        var cache = new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
-                .name(TestHelpers.getRandomAlphanumeric())
-                .expireAfterWrite(1, TimeUnit.MINUTES)
-                .entryCapacity(10000)
-                .build();
+        var cache = CacheSingleton.getLanguageTypeCache();
 
         this.languageType = new LanguageType(
                 new MySQLDatabaseConfig(),
@@ -78,7 +75,7 @@ public class LanguageTypeTest extends TestCase {
 
         assertThat(result.get().getType()).isEqualTo("kwyjibo");
 
-        assertThat(cache.get("dao.languagetype.kwyjibo")).isNotNull();
+        assertThat(cache.get("d.l.kwyjibo")).isNotNull();
     }
 
     public void testGetLanguageTypeCachedNotExists() {
@@ -112,11 +109,7 @@ public class LanguageTypeTest extends TestCase {
     public void testGetLanguageTypeByIdCached() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-        var cache = new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
-                .name(TestHelpers.getRandomAlphanumeric())
-                .expireAfterWrite(1, TimeUnit.MINUTES)
-                .entryCapacity(10000)
-                .build();
+        var cache = CacheSingleton.getLanguageTypeCache();
 
         this.languageType = new LanguageType(
                 new MySQLDatabaseConfig(),
@@ -132,7 +125,7 @@ public class LanguageTypeTest extends TestCase {
         result = this.languageType.getById(result.get().getId());
 
         assertThat(result.get().getType()).isEqualTo("kwyjibo");
-        assertThat(cache.get("dao.languagetype." + result.get().getId())).isNotNull();
+        assertThat(cache.get("d.l." + result.get().getId())).isNotNull();
     }
 
     public void testGetLanguageTypeParallel() {

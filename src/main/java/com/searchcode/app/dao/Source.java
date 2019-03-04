@@ -3,6 +3,7 @@ package com.searchcode.app.dao;
 import com.searchcode.app.config.IDatabaseConfig;
 import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.model.SourceResult;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -17,14 +18,15 @@ public class Source {
     private final IDatabaseConfig dbConfig;
     private final LoggerWrapper logger;
 
-    private final Cache<String, Object> cache;
-    private final String CachePrefix = "dao.source.";
+    private final Cache<String, Optional<SourceResult>> cache;
+    private final String CachePrefix = "d.s.";
 
     public Source() {
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(), Singleton.getGenericCache());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(),
+                CacheSingleton.getSourceCache());
     }
 
-    public Source(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger, Cache<String, Object> cache) {
+    public Source(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger, Cache<String, Optional<SourceResult>> cache) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = logger;
@@ -32,9 +34,10 @@ public class Source {
     }
 
     public Optional<SourceResult> getSourceByName(String sourceName) {
-        var cacheResult = this.cache.peekEntry(CachePrefix + sourceName);
+        var cacheKey = this.CachePrefix + sourceName;
+        var cacheResult = this.cache.peekEntry(cacheKey);
         if (cacheResult != null) {
-            return (Optional<SourceResult>) cacheResult.getValue();
+            return cacheResult.getValue();
         }
 
         Optional<SourceResult> result = Optional.empty();
@@ -57,16 +60,17 @@ public class Source {
         }
 
         if (result.isPresent()) {
-            this.cache.put(CachePrefix + sourceName, result);
+            this.cache.put(cacheKey, result);
         }
 
         return result;
     }
 
     public Optional<SourceResult> getSourceById(int sourceId) {
-        var cacheResult = this.cache.peekEntry(CachePrefix + sourceId);
+        var cacheKey = this.CachePrefix + sourceId;
+        var cacheResult = this.cache.peekEntry(cacheKey);
         if (cacheResult != null) {
-            return (Optional<SourceResult>) cacheResult.getValue();
+            return cacheResult.getValue();
         }
 
         Optional<SourceResult> result = Optional.empty();
@@ -89,7 +93,7 @@ public class Source {
         }
 
         if (result.isPresent()) {
-            this.cache.put(CachePrefix + sourceId, result);
+            this.cache.put(cacheKey, result);
         }
 
         return result;

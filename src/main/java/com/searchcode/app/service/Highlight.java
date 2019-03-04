@@ -8,10 +8,8 @@ import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.cache2k.Cache;
-import org.cache2k.Cache2kBuilder;
 
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 
 public class Highlight {
 
@@ -19,17 +17,13 @@ public class Highlight {
     private final Gson gson;
 
     private final Cache<String, HighlighterResponse> highlightCache;
-    private final String CachePrefix = "highlight.";
+    private final String CachePrefix = "s.h.";
     private final LoggerWrapper logger;
 
     public Highlight() {
         this.helpers = Singleton.getHelpers();
         this.gson = new Gson();
-        this.highlightCache = new Cache2kBuilder<String, HighlighterResponse>() {}
-                .name("highlight")
-                .expireAfterWrite(1, TimeUnit.DAYS)
-                .entryCapacity(100000)
-                .build();
+        this.highlightCache = CacheSingleton.getHighlightCache();
         this.logger = Singleton.getLogger();
     }
 
