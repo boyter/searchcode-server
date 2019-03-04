@@ -8,12 +8,12 @@ import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.SourceCodeDTO;
 import com.searchcode.app.model.CodeResult;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.cache2k.Cache;
-import org.cache2k.Cache2kBuilder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -21,7 +21,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +33,7 @@ public class SourceCode {
     private final LoggerWrapper logger;
 
     private final Cache<String, Optional<SourceCodeDTO>> codeCache;
-    private final String CachePrefix = "dao.sourcecode.";
+    private final String CachePrefix = "d.s.";
 
     public SourceCode() {
         this(
@@ -42,11 +41,7 @@ public class SourceCode {
                 Singleton.getHelpers(),
                 Singleton.getLanguageType(),
                 Singleton.getLogger(),
-                new Cache2kBuilder<String, Optional<SourceCodeDTO>>() {}
-                        .name("sourcecode")
-                        .expireAfterWrite(4, TimeUnit.HOURS)
-                        .entryCapacity(10000)
-                        .build());
+                CacheSingleton.getSourceCodeCache());
     }
 
     public SourceCode(IDatabaseConfig dbConfig, Helpers helpers, LanguageType languageType, LoggerWrapper logger, Cache<String, Optional<SourceCodeDTO>> codeCache) {

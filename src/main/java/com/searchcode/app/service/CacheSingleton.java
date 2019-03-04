@@ -3,6 +3,7 @@ package com.searchcode.app.service;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.HighlighterResponse;
 import com.searchcode.app.dto.LanguageTypeDTO;
+import com.searchcode.app.dto.SourceCodeDTO;
 import com.searchcode.app.model.SourceResult;
 import org.cache2k.Cache;
 import org.cache2k.Cache2kBuilder;
@@ -19,6 +20,7 @@ public final class CacheSingleton {
     private static Cache<String, Optional<LanguageTypeDTO>> typeCache = null;
     private static Cache<String, Optional<SourceResult>> sourceCache = null;
     private static Cache<String, HighlighterResponse> highlightCache = null;
+    private static Cache<String, Optional<SourceCodeDTO>> sourceCodeCache = null;
 
     /**
      * This is intended as a generic L1 cache for searchcode which has no network
@@ -73,5 +75,17 @@ public final class CacheSingleton {
         }
 
         return highlightCache;
+    }
+
+    public static synchronized Cache<String, Optional<SourceCodeDTO>> getSourceCodeCache() {
+        if (sourceCodeCache == null) {
+            sourceCodeCache = new Cache2kBuilder<String, Optional<SourceCodeDTO>>() {}
+                    .name("highlight")
+                    .expireAfterWrite(Values.LOW_CACHE_DAYS, TimeUnit.DAYS)
+                    .entryCapacity(Values.DEFAULT_CACHE_SIZE)
+                    .build();
+        }
+
+        return sourceCodeCache;
     }
 }
