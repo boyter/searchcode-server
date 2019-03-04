@@ -239,7 +239,7 @@ public class SearchCodeLib {
             }
         }
 
-        // Check if whitelisted extention IE what we know about
+        // Check if whitelisted extension IE what we know about
         var database = fileClassifier.getDatabase();
         for (var key : database.keySet()) {
             var fileClassifierResult = database.get(key);
@@ -259,7 +259,7 @@ public class SearchCodeLib {
         // byte in it then it is binary. If its good enough for those giants
         // its good enough for us.
         for (int i = 0; i < codeLines.size(); i++) {
-            String line = codeLines.get(i);
+            var line = codeLines.get(i);
             for (int j = 0; j < line.length(); j++) {
                 if (line.charAt(j) == 0) {
                     return new BinaryFinding(true, "nul byte found");

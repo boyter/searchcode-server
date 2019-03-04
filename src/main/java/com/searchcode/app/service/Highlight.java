@@ -6,17 +6,28 @@ import com.searchcode.app.dto.HighlighterRequest;
 import com.searchcode.app.dto.HighlighterResponse;
 import com.searchcode.app.util.Helpers;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.cache2k.Cache;
+import org.cache2k.Cache2kBuilder;
 
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 public class Highlight {
 
     private final Helpers helpers;
     private final Gson gson;
 
+    private final Cache<String, HighlighterResponse> highlightCache;
+    private final String CachePrefix = "highlight.";
+
     public Highlight() {
         this.helpers = Singleton.getHelpers();
         this.gson = new Gson();
+        this.highlightCache = new Cache2kBuilder<String, HighlighterResponse>() {}
+                .name("highlight")
+                .expireAfterWrite(1, TimeUnit.DAYS)
+                .entryCapacity(100000)
+                .build();
     }
 
     // TODO test this method quite a lot
@@ -67,13 +78,22 @@ public class Highlight {
 
     public void highlightExternal(CodeResult codeResult, HashMap<String, Object> map) {
         try {
-            var highlighterRequest = this.gson.toJson(new HighlighterRequest()
-                    .setContent(String.join("\n", codeResult.code))
-                    .setFileName(codeResult.fileName)
-                    .setStyle("monokai"));
+            var cacheKey = CachePrefix + codeResult.getCodeId();
+            var cacheResult = this.highlightCache.peekEntry(cacheKey);
+            HighlighterResponse highlighter;
 
-            var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
-            var highlighter = this.gson.fromJson(res, HighlighterResponse.class);
+            if (cacheResult != null) {
+                highlighter = cacheResult.getValue();
+            } else {
+                var highlighterRequest = this.gson.toJson(new HighlighterRequest()
+                        .setContent(String.join("\n", codeResult.code))
+                        .setFileName(codeResult.fileName)
+                        .setStyle("monokai"));
+
+                var res = this.helpers.sendPost("http://localhost:8089/v1/highlight/", highlighterRequest);
+                highlighter = this.gson.fromJson(res, HighlighterResponse.class);
+                this.highlightCache.put(cacheKey, highlighter);
+            }
 
             map.put("chromaCss", highlighter.css);
             map.put("chromaHtml", highlighter.html);
