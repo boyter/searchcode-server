@@ -20,7 +20,7 @@ public class MySQLRepoTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         super.setUp();
-        this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), CacheSingleton.getGenericCache());
+        this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), CacheSingleton.getRepoResultCache());
     }
 
     public void testGetRepoByUrl() {
@@ -34,8 +34,8 @@ public class MySQLRepoTest extends TestCase {
     public void testGetRepoByUrlCache() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-        var cache = CacheSingleton.getGenericCache();
-        cache.put("dao.mysqlrepo.boyter", Optional.of(new RepoResult().setRowId(999).setName("ZeName").setUrl("boyter")));
+        var cache = CacheSingleton.getRepoResultCache();
+        cache.put("d.m.boyter", Optional.of(new RepoResult().setRowId(999).setName("ZeName").setUrl("boyter")));
         var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
         var result = newSource.getRepoByUrl("boyter");
@@ -60,8 +60,8 @@ public class MySQLRepoTest extends TestCase {
     public void testGetRepoByIdCache() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
-        var cache = CacheSingleton.getGenericCache();
-        cache.put("dao.mysqlrepo.999", Optional.of(new RepoResult().setRowId(999).setName("ZeName")));
+        var cache = CacheSingleton.getRepoResultCache();
+        cache.put("d.m.999", Optional.of(new RepoResult().setRowId(999).setName("ZeName")));
         var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
         var result = newSource.getRepoById(999);

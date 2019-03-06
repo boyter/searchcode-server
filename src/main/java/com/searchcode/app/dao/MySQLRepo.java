@@ -20,14 +20,14 @@ public class MySQLRepo implements IRepo {
     private final Helpers helpers;
     private final LoggerWrapper logger;
 
-    private final Cache<String, Object> cache;
-    private final String CachePrefix = "dao.mysqlrepo.";
+    private final Cache<String, Optional<RepoResult>> cache;
+    private final String CachePrefix = "d.m.";
 
     public MySQLRepo() {
-        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(), CacheSingleton.getGenericCache());
+        this(Singleton.getDatabaseConfig(), Singleton.getHelpers(), Singleton.getLogger(), CacheSingleton.getRepoResultCache());
     }
 
-    public MySQLRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper, Cache cache) {
+    public MySQLRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper, Cache<String, Optional<RepoResult>> cache) {
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.logger = loggerWrapper;
@@ -98,7 +98,7 @@ public class MySQLRepo implements IRepo {
     public Optional<RepoResult> getRepoById(int repoId) {
         var cacheResult = this.cache.peekEntry(CachePrefix + repoId);
         if (cacheResult != null) {
-            return (Optional<RepoResult>) cacheResult.getValue();
+            return cacheResult.getValue();
         }
 
         Optional<RepoResult> result = Optional.empty();
@@ -134,7 +134,7 @@ public class MySQLRepo implements IRepo {
 
         var cacheResult = this.cache.peekEntry(CachePrefix + repositoryUrl);
         if (cacheResult != null) {
-            return (Optional<RepoResult>) cacheResult.getValue();
+            return cacheResult.getValue();
         }
 
         Optional<RepoResult> result = Optional.empty();
