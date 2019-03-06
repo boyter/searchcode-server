@@ -48,7 +48,7 @@ public final class Singleton {
     private static FileClassifier fileClassifier = null;
     private static LoggerWrapper loggerWrapper = null;
     private static Scheduler scheduler = null;
-    private static SQLiteRepo SQLiteRepo = null;
+    private static IRepo repo = null;
     private static Data data = null;
     private static Api api = null;
     private static SourceCode sourceCode = null;
@@ -166,11 +166,21 @@ public final class Singleton {
     }
 
     public static synchronized IRepo getRepo() {
-        if (SQLiteRepo == null) {
-            SQLiteRepo = new SQLiteRepo();
+        if (repo == null) {
+            String index = Properties.getProperties().getProperty(Values.INDEX_SERVICE, Values.DEFAULT_INDEX_SERVICE);
+
+            switch (index) {
+                case "sphinx":
+                    repo = new MySQLRepo();
+                    break;
+                case "internal":
+                default:
+                    repo = new SQLiteRepo();
+                    break;
+            }
         }
 
-        return SQLiteRepo;
+        return repo;
     }
 
     public static synchronized ISpellingCorrector getSpellingCorrector() {
