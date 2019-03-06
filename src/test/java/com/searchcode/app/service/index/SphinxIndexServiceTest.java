@@ -1,6 +1,7 @@
 package com.searchcode.app.service.index;
 
 import com.searchcode.app.dao.LanguageType;
+import com.searchcode.app.dao.MySQLRepo;
 import com.searchcode.app.dto.CodeFacetLanguage;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.service.Singleton;
@@ -83,7 +84,8 @@ public class SphinxIndexServiceTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var mock = Mockito.mock(LanguageType.class);
-        var sphinxIndexService = new SphinxIndexService(mock);
+        var mockRepo = Mockito.mock(MySQLRepo.class);
+        var sphinxIndexService = new SphinxIndexService(mock, mockRepo);
 
         List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
         assertThat(codeFacetLanguages).hasSize(0);

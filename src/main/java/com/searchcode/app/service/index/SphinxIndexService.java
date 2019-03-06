@@ -2,6 +2,7 @@ package com.searchcode.app.service.index;
 
 import com.searchcode.app.config.SphinxSearchConfig;
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.*;
@@ -27,18 +28,20 @@ public class SphinxIndexService extends IndexBaseService {
     private final SourceCode sourceCode;
     private final SearchCodeLib searchcodeLib;
     private final LanguageType languageType;
+    private final IRepo repo;
 
     private final int SHARD_COUNT;
     private final String SPHINX_SERVERS_SHARDS;
 
     public SphinxIndexService() {
 
-        this(Singleton.getLanguageType());
+        this(Singleton.getLanguageType(), Singleton.getRepo());
     }
 
-    public SphinxIndexService(LanguageType languageType) {
+    public SphinxIndexService(LanguageType languageType, IRepo repo) {
         super();
         this.languageType = languageType;
+        this.repo = repo;
 
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
@@ -343,6 +346,7 @@ public class SphinxIndexService extends IndexBaseService {
         List<Integer> pages = this.calculatePages(numTotalHits, noPages);
 
         codeFacetLanguages = this.transformLanguageType(codeFacetLanguages);
+        codeFacetRepository = this.transformRepositoryType(codeFacetRepository);
 
         return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), new ArrayList<>());
     }
@@ -351,17 +355,30 @@ public class SphinxIndexService extends IndexBaseService {
      * Given the list of language facet id's from Sphinx convert them into a string
      * which matches the name EG 23 -> Ruby
      */
-    public ArrayList<CodeFacetLanguage> transformLanguageType(List<CodeFacetLanguage> codeFacetLanguages) {
-        var properCodeFacetLanguages = new ArrayList<CodeFacetLanguage>();
-
+    public ArrayList<CodeFacetLanguage> transformLanguageType(ArrayList<CodeFacetLanguage> codeFacetLanguages) {
         for (var codeFacetLanguage : codeFacetLanguages) {
-            var byName = this.languageType.getById(Integer.parseInt(codeFacetLanguage.languageName));
-            byName.ifPresent(x -> {
-                properCodeFacetLanguages.add(new CodeFacetLanguage(x.getType(), codeFacetLanguage.count));
+            var byId = this.languageType.getById(Integer.parseInt(codeFacetLanguage.languageName));
+            byId.ifPresent(x -> {
+                codeFacetLanguage.languageName = x.getType();
             });
         }
 
-        return properCodeFacetLanguages;
+        return codeFacetLanguages;
+    }
+
+    /**
+     * Given the list of repository facet id's from Sphinx convert them back so we
+     * known which repository they actually are based on the name EG 763 -> github.com/boyter/scc/
+     */
+    public ArrayList<CodeFacetRepo> transformRepositoryType(ArrayList<CodeFacetRepo> codeFacetRepos) {
+        for (var codeFacetRepo: codeFacetRepos) {
+            var byId = this.repo.getRepoById(Integer.parseInt(codeFacetRepo.repoName));
+            byId.ifPresent(x -> {
+                codeFacetRepo.repoName = x.getName();
+            });
+        }
+
+        return codeFacetRepos;
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {

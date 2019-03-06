@@ -81,7 +81,7 @@ public class MySQLRepoTest extends TestCase {
         var result = this.repo.deleteRepoById(r1.get().getRowId());
         assertThat(result).isTrue();
 
-        CacheSingleton.getGenericCache().clear();
+        CacheSingleton.getRepoResultCache().clear();
 
         r1 = this.repo.getRepoByUrl("boyter");
         assertThat(r1.isPresent()).isFalse();
