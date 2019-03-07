@@ -71,8 +71,8 @@ public class SphinxIndexService extends IndexBaseService {
         try {
             var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
             connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
-        } catch (SQLException ex) {
-            this.logger.severe(String.format("90cf00ef::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+        } catch (SQLException | IOException ex) {
+            this.logger.severe(String.format("90cf00ef::error in class %s exception %s unable to connect to sphinx", ex.getClass(), ex.getMessage()));
             return;
         }
 
@@ -209,13 +209,13 @@ public class SphinxIndexService extends IndexBaseService {
     }
 
     @Override
-    public void setCodeIndexLinesCount(int value) {
-
+    public int getCodeIndexLinesCount() {
+        return 0;
     }
 
     @Override
-    public int getCodeIndexLinesCount() {
-        return 0;
+    public void setCodeIndexLinesCount(int value) {
+
     }
 
     @Override
@@ -392,7 +392,7 @@ public class SphinxIndexService extends IndexBaseService {
      * known which repository they actually are based on the name EG 763 -> github.com/boyter/scc/
      */
     public ArrayList<CodeFacetRepo> transformRepositoryType(ArrayList<CodeFacetRepo> codeFacetRepos) {
-        for (var codeFacetRepo: codeFacetRepos) {
+        for (var codeFacetRepo : codeFacetRepos) {
             var byId = this.repo.getRepoById(Integer.parseInt(codeFacetRepo.repoName));
             byId.ifPresent(x -> {
                 codeFacetRepo.repoName = x.getName();
@@ -407,7 +407,7 @@ public class SphinxIndexService extends IndexBaseService {
      * known which repository they actually are based on the name EG 763 -> github.com/boyter/scc/
      */
     public ArrayList<CodeFacetSource> transformSourceType(ArrayList<CodeFacetSource> codeFacetSources) {
-        for (var source: codeFacetSources) {
+        for (var source : codeFacetSources) {
             var byId = this.source.getSourceById(Integer.parseInt(source.source));
             byId.ifPresent(x -> {
                 source.source = x.name;
