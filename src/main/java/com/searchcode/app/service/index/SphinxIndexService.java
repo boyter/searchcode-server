@@ -21,7 +21,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 public class SphinxIndexService extends IndexBaseService {
@@ -111,9 +110,9 @@ public class SphinxIndexService extends IndexBaseService {
                     stmt.setString(2, indexContents);
                     stmt.setString(3, codeResult.getFileName());
                     stmt.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
-                    stmt.setInt(5, ThreadLocalRandom.current().nextInt(1, 1000)); // RepoId
+                    stmt.setInt(5, codeResult.getRepoNameId()); // RepoId
                     stmt.setInt(6, codeResult.getLanguageNameId()); // LanguageId
-                    stmt.setInt(7, ThreadLocalRandom.current().nextInt(1, 6)); // SourceId
+                    stmt.setInt(7, codeResult.getSourceId()); // SourceId
                     stmt.setInt(8, 1); // OwnerId
                     stmt.setInt(9, 1); // LicenseId
                     stmt.setInt(10, codeResult.getLines());

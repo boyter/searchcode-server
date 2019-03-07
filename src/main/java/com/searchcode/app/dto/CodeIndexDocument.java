@@ -22,7 +22,9 @@ public class CodeIndexDocument {
     private String fileLocationFilename;
     private String md5hash;
     private String languageName;
+    private int repoNameId;
     private int languageNameId;
+    private int sourceId;
     private int lines; // How many lines in the file
     private int codeLines; // How many lines are code
     private int commentLines; // How many lines are comments
@@ -131,6 +133,20 @@ public class CodeIndexDocument {
 
     public CodeIndexDocument setLanguageNameId(int id) {
         this.languageNameId = id;
+        return this;
+    }
+
+    public int getSourceId() { return sourceId; }
+
+    public CodeIndexDocument setSourceId(int id) {
+        this.sourceId = id;
+        return this;
+    }
+
+    public int getRepoNameId() { return repoNameId; }
+
+    public CodeIndexDocument setRepoNameId(int id) {
+        this.repoNameId = id;
         return this;
     }
 

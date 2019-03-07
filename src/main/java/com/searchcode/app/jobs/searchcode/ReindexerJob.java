@@ -80,6 +80,8 @@ public class ReindexerJob implements Job {
                 .setContents(codeResult.getContent())
                 .setLanguageNameId(codeResult.getLangugeid())
                 .setLines(codeResult.getLinescount())
-                .setId(codeResult.getId());
+                .setId(codeResult.getId())
+                .setRepoNameId(codeResult.getRepoid())
+                .setSourceId(codeResult.getSourceid());
     }
 }
