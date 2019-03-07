@@ -51,6 +51,7 @@ public final class Singleton {
     private static IRepo repo = null;
     private static Data data = null;
     private static Api api = null;
+    private static Source source = null;
     private static SourceCode sourceCode = null;
     private static LanguageType languageType = null;
     private static ApiService apiService = null;
@@ -324,6 +325,14 @@ public final class Singleton {
         }
 
         return languageType;
+    }
+
+    public static synchronized Source getSource() {
+        if (source == null) {
+            source = new Source();
+        }
+
+        return source;
     }
 
     public static synchronized SourceCode getSourceCode() {

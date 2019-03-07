@@ -380,7 +380,7 @@ public class CodeRouteService {
             // split the query escape it and and it together
             String cleanQueryString = this.searchCodeLib.formatQueryString(query);
 
-            SearchResult searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page, false);
+            var searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
 
             for (CodeFacetRepo f : searchResult.getRepoFacetResults()) {
@@ -429,6 +429,7 @@ public class CodeRouteService {
         return new ModelAndView(map, "index.ftl");
     }
 
+    // TODO this should not be static
     public static int getPage(Request request, int page) {
         if (request.queryParams().contains("p")) {
             try {

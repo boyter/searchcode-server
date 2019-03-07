@@ -30,19 +30,21 @@ public class SphinxIndexService extends IndexBaseService {
     private final SearchCodeLib searchcodeLib;
     private final LanguageType languageType;
     private final IRepo repo;
+    private final com.searchcode.app.dao.Source source;
 
     private final int SHARD_COUNT;
     private final String SPHINX_SERVERS_SHARDS;
 
     public SphinxIndexService() {
 
-        this(Singleton.getLanguageType(), Singleton.getRepo());
+        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource());
     }
 
-    public SphinxIndexService(LanguageType languageType, IRepo repo) {
+    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source) {
         super();
         this.languageType = languageType;
         this.repo = repo;
+        this.source = source;
 
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
@@ -108,7 +110,7 @@ public class SphinxIndexService extends IndexBaseService {
                     stmt.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
                     stmt.setInt(5, ThreadLocalRandom.current().nextInt(1, 1000)); // RepoId
                     stmt.setInt(6, codeResult.getLanguageNameId()); // LanguageId
-                    stmt.setInt(7, 1); // SourceId
+                    stmt.setInt(7, ThreadLocalRandom.current().nextInt(1, 6)); // SourceId
                     stmt.setInt(8, 1); // OwnerId
                     stmt.setInt(9, 1); // LicenseId
                     stmt.setInt(10, codeResult.getLines());
@@ -264,6 +266,7 @@ public class SphinxIndexService extends IndexBaseService {
         var codeResultList = new ArrayList<CodeResult>();
         var codeFacetLanguages = new ArrayList<CodeFacetLanguage>();
         var codeFacetRepository = new ArrayList<CodeFacetRepo>();
+        var codeFacetSource = new ArrayList<CodeFacetSource>();
         var numTotalHits = 0;
 
         var start = this.PAGE_LIMIT * page;
@@ -277,8 +280,8 @@ public class SphinxIndexService extends IndexBaseService {
                     this.getLanguageFacets(facets) +
                     " LIMIT ?, 20 " +
                     " FACET repoid ORDER BY COUNT(*) DESC " +
-                    " FACET languageid ORDER BY COUNT(*) DESC; " +
-                    // "FACET sourceid ORDER BY COUNT(*) DESC " +
+                    " FACET languageid ORDER BY COUNT(*) DESC" +
+                    " FACET sourceid ORDER BY COUNT(*) DESC;" +
                     // "FACET ownerid ORDER BY COUNT(*) DESC " +
                     // "FACET licenseid ORDER BY COUNT(*) DESC; " +
                     "SHOW META;";
@@ -325,6 +328,17 @@ public class SphinxIndexService extends IndexBaseService {
                 isResultSet = stmt.getMoreResults();
             }
 
+            // Source Facets
+            if (isResultSet) {
+                resultSet = stmt.getResultSet();
+
+                while (resultSet.next()) {
+                    codeFacetSource.add(new CodeFacetSource(resultSet.getString("sourceid"), this.helpers.tryParseInt(resultSet.getString("count(*)"), "0")));
+                }
+
+                isResultSet = stmt.getMoreResults();
+            }
+
             // Meta results produce all sorts of interesting information about the search but the main one is the total number of results
             if (isResultSet) {
                 resultSet = stmt.getResultSet();
@@ -348,8 +362,9 @@ public class SphinxIndexService extends IndexBaseService {
 
         codeFacetLanguages = this.transformLanguageType(codeFacetLanguages);
         codeFacetRepository = this.transformRepositoryType(codeFacetRepository);
+        codeFacetSource = this.transformSourceType(codeFacetSource);
 
-        return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), new ArrayList<>());
+        return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), codeFacetSource);
     }
 
     /**
@@ -380,6 +395,21 @@ public class SphinxIndexService extends IndexBaseService {
         }
 
         return codeFacetRepos;
+    }
+
+    /**
+     * Given the list of repository facet id's from Sphinx convert them back so we
+     * known which repository they actually are based on the name EG 763 -> github.com/boyter/scc/
+     */
+    public ArrayList<CodeFacetSource> transformSourceType(ArrayList<CodeFacetSource> codeFacetSources) {
+        for (var source: codeFacetSources) {
+            var byId = this.source.getSourceById(Integer.parseInt(source.source));
+            byId.ifPresent(x -> {
+                source.source = x.name;
+            });
+        }
+
+        return codeFacetSources;
     }
 
     public CodeResult sourceCodeDTOtoCodeResult(SourceCodeDTO sourceCodeDTO) {
