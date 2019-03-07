@@ -7,11 +7,13 @@ import com.searchcode.app.dao.LanguageType;
 import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.model.RepoResult;
+import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
+import org.cache2k.Cache;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -31,20 +33,21 @@ public class SphinxIndexService extends IndexBaseService {
     private final LanguageType languageType;
     private final IRepo repo;
     private final com.searchcode.app.dao.Source source;
+    private final Cache<String, SearchResult> cache;
 
     private final int SHARD_COUNT;
     private final String SPHINX_SERVERS_SHARDS;
 
     public SphinxIndexService() {
-
-        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource());
+        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getSearchResultCache());
     }
 
-    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source) {
+    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source, Cache<String, SearchResult> cache) {
         super();
         this.languageType = languageType;
         this.repo = repo;
         this.source = source;
+        this.cache = cache;
 
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
@@ -364,7 +367,9 @@ public class SphinxIndexService extends IndexBaseService {
         codeFacetRepository = this.transformRepositoryType(codeFacetRepository);
         codeFacetSource = this.transformSourceType(codeFacetSource);
 
-        return new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), codeFacetSource);
+        var searchResult = new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), codeFacetSource);
+
+        return searchResult;
     }
 
     /**
