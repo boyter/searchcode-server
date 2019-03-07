@@ -8,3 +8,7 @@ mysql -P9306 -h 127.0.0.1 < assets/sql/truncate_sphinx.sql
 SELECT id FROM codesearchrealtime WHERE MATCH('test');
 
 NB manticore search does not work on Windows with WSL currently. Worth trying it on Linux.
+
+Example queries
+
+SELECT id FROM codesearchrealtime WHERE MATCH('test public') AND linescount >= 100 AND linescount <= 300;
