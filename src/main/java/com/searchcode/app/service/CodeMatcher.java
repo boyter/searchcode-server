@@ -46,10 +46,10 @@ public class CodeMatcher {
     /**
      * Entry point for matching lines
      */
-    public List<CodeResult> formatResults(List<CodeResult> codeResult, String matchTerms, boolean highlightLine) {
+    public ArrayList<CodeResult> formatResults(List<CodeResult> codeResult, String matchTerms, boolean highlightLine) {
         var lstMatchTerms = this.splitTerms(matchTerms);
 
-        List<CodeResult> results = new ArrayList<>();
+        var results = new ArrayList<CodeResult>();
 
         for (var code : codeResult) {
             var result = this.matchResults(code.getCode(), lstMatchTerms, highlightLine);
@@ -66,9 +66,9 @@ public class CodeMatcher {
     /**
      * Actually does the matching for a single code result given the match terms
      */
-    public List<CodeMatchResult> matchResults(List<String> code, List<String> matchTerms, boolean highlightLine) {
-        List<CodeMatchResult> resultLines = this.findMatchingLines(code, matchTerms, highlightLine);
-        List<CodeMatchResult> newResultLines = new ArrayList<>();
+    public ArrayList<CodeMatchResult> matchResults(List<String> code, ArrayList<String> matchTerms, boolean highlightLine) {
+        var resultLines = this.findMatchingLines(code, matchTerms, highlightLine);
+        var newResultLines = new ArrayList<CodeMatchResult>();
 
         // get the top matching lines for this result
         resultLines.sort((p1, p2) -> Integer.valueOf(p2.getLineMatches()).compareTo(p1.getLineMatches()));
@@ -113,8 +113,8 @@ public class CodeMatcher {
      * just to avoid those issues even though the result was a LONGER method
      * TODO wring more performance out of this method where possible
      */
-    public List<CodeMatchResult> findMatchingLines(List<String> code, List<String> matchTerms, boolean highlightLine) {
-        List<CodeMatchResult> resultLines = new ArrayList<>();
+    public List<CodeMatchResult> findMatchingLines(List<String> code, ArrayList<String> matchTerms, boolean highlightLine) {
+        var resultLines = new ArrayList<CodeMatchResult>();
 
         int codesize = code.size();
         int searchThrough = codesize > this.MAXLINEDEPTH ? this.MAXLINEDEPTH : codesize;
@@ -137,7 +137,7 @@ public class CodeMatcher {
         }
 
         // Get the adjacent lines
-        List<CodeMatchResult> adjacentLines = new ArrayList<>();
+        var adjacentLines = new ArrayList<CodeMatchResult>();
         for (var cmr : resultLines) {
             int linenumber = cmr.getLineNumber();
             int previouslinenumber = linenumber - 1;
@@ -190,9 +190,9 @@ public class CodeMatcher {
     // TODO Investigate issues such as "List<String> test = *p;"
     // which produces string> and <string which is not what
     // we want although they are cleared later so not a huge issue
-    public List<String> splitTerms(String matchTerms) {
-        List<String> splitMatchTerms = new ArrayList<>();
-        List<String> newTerms = new ArrayList<>();
+    public ArrayList<String> splitTerms(String matchTerms) {
+        var splitMatchTerms = new ArrayList<String>();
+        var newTerms = new ArrayList<String>();
 
         for (var s : matchTerms.trim().split(" ")) {
             if (!s.isEmpty()) {
@@ -249,14 +249,14 @@ public class CodeMatcher {
      * terms with <strong> tags.
      * TODO a bug exists here, see test cases for details
      */
-    public String highlightLine(String line, List<String> matchTerms) throws StringIndexOutOfBoundsException {
+    public String highlightLine(String line, ArrayList<String> matchTerms) throws StringIndexOutOfBoundsException {
         var terms = matchTerms.stream()
                 .filter(s -> !"AND".equals(s) && !"OR".equals(s) && !"NOT".equals(s))
                 .map(String::toLowerCase)
                 .collect(Collectors.toList());
 
         var tokens = line.split(" ");
-        List<String> returnList = new ArrayList<>();
+        var returnList = new ArrayList<String>();
 
         for (var token : tokens) {
             var longestTerm = Values.EMPTYSTRING;
@@ -281,7 +281,7 @@ public class CodeMatcher {
 
             if (!Values.EMPTYSTRING.equals(longestTerm)) {
                 if (longestTerm.replace(")", "").endsWith("*")) {
-                    int loc = tokenLowercase.indexOf(longestTerm.replace(")", "").replace("*", ""));
+                    var loc = tokenLowercase.indexOf(longestTerm.replace(")", "").replace("*", ""));
 
                     returnList.add(StringEscapeUtils.escapeHtml4(
                             token.substring(0, loc)) +
@@ -289,7 +289,7 @@ public class CodeMatcher {
                             StringEscapeUtils.escapeHtml4(token.substring(loc)) +
                             "</strong>");
                 } else {
-                    int loc = tokenLowercase.indexOf(longestTerm);
+                    var loc = tokenLowercase.indexOf(longestTerm);
 
                     returnList.add(StringEscapeUtils.escapeHtml4(
                             token.substring(0, loc)) +

@@ -31,13 +31,13 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testMatchResults() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
         matchTerms.add("this");
         matchTerms.add("is");
 
-        List<String> code = new ArrayList<>();
+        var code = new ArrayList<String>();
         code.add("this is");
         code.add("some code");
 
@@ -45,12 +45,12 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testMatchResultsBadCase() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("eval");
         matchTerms.add("$_GET");
 
-        List<String> code = new ArrayList<>();
+        var code = new ArrayList<String>();
         code.add("<?php eval($_GET['id']); ?>\n");
         code.add("fatal-error\n");
 
@@ -64,12 +64,12 @@ public class CodeMatcherTest extends TestCase {
         CodeMatcher codeMatcher = new CodeMatcher();
         codeMatcher.MATCHLINES = 2;
 
-        List<String> matchTerms = new ArrayList<>();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("test");
         matchTerms.add("test1");
         matchTerms.add("test2");
 
-        List<String> code = new ArrayList<>();
+        var code = new ArrayList<String>();
         code.add("test\n");
         code.add("test\n");
         code.add("test\n");
@@ -86,14 +86,14 @@ public class CodeMatcherTest extends TestCase {
         code.add("test test1\n");
         code.add("test test1 test2\n");
 
-        List<CodeMatchResult> codeMatchResults = codeMatcher.matchResults(code, matchTerms, true);
+        var codeMatchResults = codeMatcher.matchResults(code, matchTerms, true);
         assertThat(codeMatchResults.get(0).getLine()).isEqualTo("<strong>test</strong> <strong>test1</strong>\n");
         assertThat(codeMatchResults.get(1).getLine()).isEqualTo("<strong>test</strong> <strong>test1</strong> <strong>test2</strong>\n");
     }
 
     public void testHighlightLineMultiNonOverlapping() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("validate");
         matchTerms.add("data");
 
@@ -102,8 +102,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineWildcardMiddleString() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("data*");
 
         String result = cm.highlightLine("expect(data).to_be_empty()", matchTerms);
@@ -111,8 +111,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineIgnoresOperators() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("AND");
         matchTerms.add("OR");
         matchTerms.add("NOT");
@@ -124,7 +124,7 @@ public class CodeMatcherTest extends TestCase {
 
     public void testHighlightLineWildcardMiddleStringWithBracket() {
         CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<>();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("data*)");
 
         String result = cm.highlightLine("expect(data).to_be_empty()", matchTerms);
@@ -145,8 +145,8 @@ public class CodeMatcherTest extends TestCase {
 //    }
 
     public void testHighlightLineExtended() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code*");
 
         String result = cm.highlightLine("codesomething", matchTerms);
@@ -154,8 +154,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineExtendedTwo() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code*");
 
         String result = cm.highlightLine("codesomething another thing", matchTerms);
@@ -163,8 +163,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineExtendedThree() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code*");
 
         String result = cm.highlightLine("codesomething another codething", matchTerms);
@@ -172,8 +172,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineExtendedErrorOne() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("b*");
 
         String result = cm.highlightLine("This is meant to be a really small repo", matchTerms);
@@ -181,8 +181,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineExtendedErrorTwo() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("t*");
 
         String result = cm.highlightLine("this that", matchTerms);
@@ -190,8 +190,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineExtendedErrorThree() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("t*");
         matchTerms.add("a*");
 
@@ -201,8 +201,8 @@ public class CodeMatcherTest extends TestCase {
 
 
     public void testHighlightLineSimple() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
 
         String result = cm.highlightLine("code", matchTerms);
@@ -210,8 +210,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineEscape() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
 
         String result = cm.highlightLine("<code", matchTerms);
@@ -219,8 +219,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineEscapeCaseIgnore() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("TESTINDEX");
 
         String result = cm.highlightLine("public  void testIndex() {", matchTerms);
@@ -228,8 +228,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineMultipleTerms() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
         matchTerms.add("this");
         matchTerms.add("is");
@@ -239,8 +239,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineNoOverlapMultipleTerms() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("t");
         matchTerms.add("h");
         matchTerms.add("i");
@@ -252,12 +252,12 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testHighlightLineFuzzTest() {
-        Random rand = new Random();
-        CodeMatcher cm = new CodeMatcher();
+        var rand = new Random();
+        var cm = new CodeMatcher();
 
         for (int i = 0; i < 1000; i++) {
 
-            List<String> matchTerms = new ArrayList<String>();
+            var matchTerms = new ArrayList<String>();
 
             for (int j = 0; j < rand.nextInt(10) + 1; j++) {
                 matchTerms.add(RandomStringUtils.randomAlphabetic(rand.nextInt(10) + 1) + "*");
@@ -277,9 +277,9 @@ public class CodeMatcherTest extends TestCase {
      */
 
     public void testHighlightLineEscapeFuzz() {
-        Random rand = new Random();
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms;
+        var rand = new Random();
+        var cm = new CodeMatcher();
+        ArrayList<String> matchTerms;
 
         for (int i = 0; i < 1000; i++) {
             matchTerms = new ArrayList<String>();
@@ -299,7 +299,7 @@ public class CodeMatcherTest extends TestCase {
         Random rand = new Random();
         CodeMatcher cm = new CodeMatcher();
 
-        List<String> matchTerms = new ArrayList<String>() {{
+        var matchTerms = new ArrayList<String>() {{
             add("q");
         }};
 
@@ -337,7 +337,7 @@ public class CodeMatcherTest extends TestCase {
      */
     public void testFindMatchingLinesPerformance() {
         CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
         matchTerms.add("this");
 
@@ -366,7 +366,7 @@ public class CodeMatcherTest extends TestCase {
 
     public void testFindMatchingLines() {
         CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
         matchTerms.add("this");
 
@@ -382,7 +382,7 @@ public class CodeMatcherTest extends TestCase {
 
     public void testFindMatchingLines2() {
         CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<String>();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
         matchTerms.add("this");
 
@@ -402,8 +402,8 @@ public class CodeMatcherTest extends TestCase {
     }
 
     public void testFindMatchingLines3() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("code");
         matchTerms.add("this");
 
@@ -419,8 +419,8 @@ public class CodeMatcherTest extends TestCase {
 
 
     public void testFindBestMatchingLinesOver1000Limit() {
-        CodeMatcher cm = new CodeMatcher();
-        List<String> matchTerms = new ArrayList<>();
+        var cm = new CodeMatcher();
+        var matchTerms = new ArrayList<String>();
         matchTerms.add("re.compile");
         matchTerms.add("compile");
         matchTerms.add("re");
