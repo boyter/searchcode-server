@@ -346,7 +346,7 @@ public class SphinxIndexService extends IndexBaseService {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
-                    if ("total".equals(resultSet.getString("Variable_name"))) {
+                    if ("total_found".equals(resultSet.getString("Variable_name"))) {
                         numTotalHits = this.helpers.tryParseInt(resultSet.getString("Value"), "0");
                     }
                 }
