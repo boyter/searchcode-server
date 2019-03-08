@@ -284,35 +284,34 @@ public class CodeRouteService {
     }
 
     public ModelAndView html(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
+        var map = new HashMap<String, Object>();
 
         if (request.queryParams().contains("q")) {
-            String query = request.queryParams("q").trim();
-            String altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
-            int page = this.getPage(request, 0);
+            var query = request.queryParams("q").trim();
+            var altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
+            var page = getPage(request, 0);
 
-            String[] repos = new String[0];
-            String[] langs = new String[0];
-            String[] owners = new String[0];
-            String reposFilter = Values.EMPTYSTRING;
-            String langsFilter = Values.EMPTYSTRING;
-            String ownersFilter = Values.EMPTYSTRING;
-            String reposQueryString = Values.EMPTYSTRING;
-            String langsQueryString = Values.EMPTYSTRING;
-            String ownsQueryString = Values.EMPTYSTRING;
-
+            var repos = new String[0];
+            var langs = new String[0];
+            var owners = new String[0];
+            var reposFilter = Values.EMPTYSTRING;
+            var langsFilter = Values.EMPTYSTRING;
+            var ownersFilter = Values.EMPTYSTRING;
+            var reposQueryString = Values.EMPTYSTRING;
+            var langsQueryString = Values.EMPTYSTRING;
+            var ownsQueryString = Values.EMPTYSTRING;
 
             if (request.queryParams().contains("repo")) {
                 repos = request.queryParamsValues("repo");
 
                 if (repos.length != 0) {
-                    List<String> reposList = Arrays.asList(repos).stream()
+                    var reposList = Arrays.asList(repos).stream()
                             .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
 
-                    List<String> reposQueryList = Arrays.asList(repos).stream()
+                    var reposQueryList = Arrays.asList(repos).stream()
                             .map((s) -> {
                                 try {
                                     return "&repo=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -331,13 +330,13 @@ public class CodeRouteService {
                 langs = request.queryParamsValues("lan");
 
                 if (langs.length != 0) {
-                    List<String> langsList = Arrays.asList(langs).stream()
+                    var langsList = Arrays.asList(langs).stream()
                             .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
 
-                    List<String> langsQueryList = Arrays.asList(langs).stream()
+                    var langsQueryList = Arrays.asList(langs).stream()
                             .map((s) -> {
                                 try {
                                     return "&lan=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -356,13 +355,13 @@ public class CodeRouteService {
                 owners = request.queryParamsValues("own");
 
                 if (owners.length != 0) {
-                    List<String> ownersList = Arrays.asList(owners).stream()
+                    var ownersList = Arrays.asList(owners).stream()
                             .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
                             .collect(Collectors.toList());
 
                     ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
 
-                    List<String> ownsQueryList = Arrays.asList(owners).stream()
+                    var ownsQueryList = Arrays.asList(owners).stream()
                             .map((s) -> {
                                 try {
                                     return "&own=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
@@ -378,24 +377,25 @@ public class CodeRouteService {
             }
 
             // split the query escape it and and it together
-            String cleanQueryString = this.searchCodeLib.formatQueryString(query);
+            var cleanQueryString = this.searchCodeLib.formatQueryString(query);
 
             var searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
 
-            for (CodeFacetRepo f : searchResult.getRepoFacetResults()) {
+            // Set chosen filters to be selected
+            for (var f : searchResult.getRepoFacetResults()) {
                 if (Arrays.asList(repos).contains(f.getRepoName())) {
                     f.setSelected(true);
                 }
             }
 
-            for (CodeFacetLanguage f : searchResult.getLanguageFacetResults()) {
+            for (var f : searchResult.getLanguageFacetResults()) {
                 if (Arrays.asList(langs).contains(f.getLanguageName())) {
                     f.setSelected(true);
                 }
             }
 
-            for (CodeFacetOwner f : searchResult.getOwnerFacetResults()) {
+            for (var f : searchResult.getOwnerFacetResults()) {
                 if (Arrays.asList(owners).contains(f.getOwner())) {
                     f.setSelected(true);
                 }
@@ -406,11 +406,8 @@ public class CodeRouteService {
             map.put("reposQueryString", reposQueryString);
             map.put("langsQueryString", langsQueryString);
             map.put("ownsQueryString", ownsQueryString);
-
             map.put("altQuery", altQuery);
-
             map.put("totalPages", searchResult.getPages().size());
-
 
             map.put("isHtml", true);
             map.put("logoImage", CommonRouteService.getLogo());
