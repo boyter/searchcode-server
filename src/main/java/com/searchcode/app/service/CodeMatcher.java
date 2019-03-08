@@ -20,7 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -115,7 +114,7 @@ public class CodeMatcher {
      * TODO wring more performance out of this method where possible
      */
     public List<CodeMatchResult> findMatchingLines(List<String> code, List<String> matchTerms, boolean highlightLine) {
-        List<CodeMatchResult> resultLines = new LinkedList<>();
+        List<CodeMatchResult> resultLines = new ArrayList<>();
 
         int codesize = code.size();
         int searchThrough = codesize > this.MAXLINEDEPTH ? this.MAXLINEDEPTH : codesize;
@@ -138,7 +137,7 @@ public class CodeMatcher {
         }
 
         // Get the adjacent lines
-        List<CodeMatchResult> adjacentLines = new LinkedList<>();
+        List<CodeMatchResult> adjacentLines = new ArrayList<>();
         for (var cmr : resultLines) {
             int linenumber = cmr.getLineNumber();
             int previouslinenumber = linenumber - 1;
@@ -261,17 +260,18 @@ public class CodeMatcher {
 
         for (var token : tokens) {
             var longestTerm = Values.EMPTYSTRING;
+            var tokenLowercase = token.toLowerCase();
 
             for (var term : terms) {
                 // Find the longest matching
                 if (term.replace(")", "").endsWith("*")) {
-                    if (token.toLowerCase().contains(term.replace(")", "").replace("*", ""))) {
+                    if (tokenLowercase.contains(term.replace(")", "").replace("*", ""))) {
                         if (term.length() > longestTerm.length()) {
                             longestTerm = term;
                         }
                     }
                 } else {
-                    if (token.toLowerCase().contains(term)) {
+                    if (tokenLowercase.contains(term)) {
                         if (term.length() > longestTerm.length()) {
                             longestTerm = term;
                         }
@@ -281,7 +281,7 @@ public class CodeMatcher {
 
             if (!Values.EMPTYSTRING.equals(longestTerm)) {
                 if (longestTerm.replace(")", "").endsWith("*")) {
-                    int loc = token.toLowerCase().indexOf(longestTerm.replace(")", "").replace("*", ""));
+                    int loc = tokenLowercase.indexOf(longestTerm.replace(")", "").replace("*", ""));
 
                     returnList.add(StringEscapeUtils.escapeHtml4(
                             token.substring(0, loc)) +
@@ -289,7 +289,7 @@ public class CodeMatcher {
                             StringEscapeUtils.escapeHtml4(token.substring(loc)) +
                             "</strong>");
                 } else {
-                    int loc = token.toLowerCase().indexOf(longestTerm);
+                    int loc = tokenLowercase.indexOf(longestTerm);
 
                     returnList.add(StringEscapeUtils.escapeHtml4(
                             token.substring(0, loc)) +
