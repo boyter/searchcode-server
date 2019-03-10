@@ -1,6 +1,5 @@
 package com.searchcode.app.dao;
 
-import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
@@ -26,7 +25,7 @@ public class MySQLDataTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         super.setUp();
-        this.data = new Data(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper());
+        this.data = new Data(Singleton.getDatabaseConfig(), new Helpers(), new LoggerWrapper());
     }
 
     public void testDataSaveUpdate() {

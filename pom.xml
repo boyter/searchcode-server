@@ -54,9 +54,9 @@
         </dependency>
         <!--  Connection pool -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${dbcp.version}</version>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.3.1</version>
         </dependency>
         <!-- Password hashes / Security -->
         <dependency>

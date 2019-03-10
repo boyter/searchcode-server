@@ -1,7 +1,6 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
-import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.dto.ConnStmtRs;
 import com.searchcode.app.dto.LanguageTypeDTO;
 import com.searchcode.app.service.CacheSingleton;
@@ -31,7 +30,7 @@ public class LanguageType {
 
     public LanguageType() {
         this(
-                new MySQLDatabaseConfig(),
+                Singleton.getDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLogger(),
                 CacheSingleton.getLanguageTypeCache()
@@ -45,7 +44,7 @@ public class LanguageType {
         this.typeCache = typeCache;
     }
 
-    public synchronized Optional<LanguageTypeDTO> getByType(String type) {
+    public Optional<LanguageTypeDTO> getByType(String type) {
         var cacheKey = CachePrefix + type;
         var cacheResult = this.typeCache.peekEntry(cacheKey);
         if (cacheResult != null) {
@@ -79,7 +78,7 @@ public class LanguageType {
         return optional;
     }
 
-    public synchronized Optional<LanguageTypeDTO> getById(int id) {
+    public Optional<LanguageTypeDTO> getById(int id) {
         var cacheKey = CachePrefix + id;
         var cacheResult = this.typeCache.peekEntry(cacheKey);
         if (cacheResult != null) {
@@ -117,7 +116,7 @@ public class LanguageType {
      * Create a new language type in the database and return an optional containing it.
      * If given a type that already exists will return that one rather than create a new one.
      */
-    public synchronized Optional<LanguageTypeDTO> createLanguageType(String type) {
+    public Optional<LanguageTypeDTO> createLanguageType(String type) {
         var byType = this.getByType(type);
         if (byType.isPresent()) {
             return byType;

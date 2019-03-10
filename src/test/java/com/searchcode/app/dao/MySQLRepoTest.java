@@ -1,6 +1,5 @@
 package com.searchcode.app.dao;
 
-import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
@@ -20,7 +19,7 @@ public class MySQLRepoTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         super.setUp();
-        this.repo = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), new LoggerWrapper(), CacheSingleton.getRepoResultCache());
+        this.repo = new MySQLRepo(Singleton.getDatabaseConfig(), new Helpers(), new LoggerWrapper(), CacheSingleton.getRepoResultCache());
     }
 
     public void testGetRepoByUrl() {
@@ -36,7 +35,7 @@ public class MySQLRepoTest extends TestCase {
 
         var cache = CacheSingleton.getRepoResultCache();
         cache.put("d.m.boyter", Optional.of(new RepoResult().setRowId(999).setName("ZeName").setUrl("boyter")));
-        var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
+        var newSource = new MySQLRepo(Singleton.getDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
         var result = newSource.getRepoByUrl("boyter");
 
@@ -62,7 +61,7 @@ public class MySQLRepoTest extends TestCase {
 
         var cache = CacheSingleton.getRepoResultCache();
         cache.put("d.m.999", Optional.of(new RepoResult().setRowId(999).setName("ZeName")));
-        var newSource = new MySQLRepo(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
+        var newSource = new MySQLRepo(Singleton.getDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
         var result = newSource.getRepoById(999);
 

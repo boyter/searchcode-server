@@ -78,6 +78,8 @@ public final class Singleton {
     private static boolean enqueueRepositoryJobFirstRun = true;
     private static boolean enqueueFileRepositoryJobFirstRun = true;
 
+    private static MySQLDatabaseConfig mysqlDatabaseConfig = null;
+
     public static synchronized void setEnqueueRepositoryJobFirstRun(boolean value) {
         enqueueRepositoryJobFirstRun = value;
     }

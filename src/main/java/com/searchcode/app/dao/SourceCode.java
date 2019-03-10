@@ -1,7 +1,6 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.config.IDatabaseConfig;
-import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.dto.ConnStmtRs;
@@ -37,7 +36,7 @@ public class SourceCode {
 
     public SourceCode() {
         this(
-                new MySQLDatabaseConfig(),
+                Singleton.getDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLanguageType(),
                 Singleton.getLogger(),
@@ -52,7 +51,7 @@ public class SourceCode {
         this.codeCache = codeCache;
     }
 
-    public synchronized int getMaxId() {
+    public int getMaxId() {
         var maxId = 0;
         var connStmtRs = new ConnStmtRs();
 
@@ -73,7 +72,7 @@ public class SourceCode {
         return maxId;
     }
 
-    public synchronized List<CodeResult> getByIds(List<Integer> codeIds) {
+    public List<CodeResult> getByIds(List<Integer> codeIds) {
         var codeResultList = new ArrayList<CodeResult>();
         var connStmtRs = new ConnStmtRs();
 
@@ -130,7 +129,7 @@ public class SourceCode {
         return codeResultList;
     }
 
-    public synchronized List<SearchcodeCodeResult> getCodeBetween(int start, int end) {
+    public List<SearchcodeCodeResult> getCodeBetween(int start, int end) {
         List<SearchcodeCodeResult> codeResultList = new ArrayList<>(end - start);
         ConnStmtRs connStmtRs = new ConnStmtRs();
 

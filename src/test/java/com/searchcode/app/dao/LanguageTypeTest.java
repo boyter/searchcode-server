@@ -1,7 +1,6 @@
 package com.searchcode.app.dao;
 
 import com.searchcode.app.TestHelpers;
-import com.searchcode.app.config.MySQLDatabaseConfig;
 import com.searchcode.app.dto.LanguageTypeDTO;
 import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
@@ -22,7 +21,7 @@ public class LanguageTypeTest extends TestCase {
 
         super.setUp();
         this.languageType = new LanguageType(
-                new MySQLDatabaseConfig(),
+                Singleton.getDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLogger(),
                 new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {
@@ -63,7 +62,7 @@ public class LanguageTypeTest extends TestCase {
         var cache = CacheSingleton.getLanguageTypeCache();
 
         this.languageType = new LanguageType(
-                new MySQLDatabaseConfig(),
+                Singleton.getDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLogger(),
                 cache
@@ -82,7 +81,7 @@ public class LanguageTypeTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         this.languageType = new LanguageType(
-                new MySQLDatabaseConfig(),
+                Singleton.getDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLogger(),
                 new Cache2kBuilder<String, Optional<LanguageTypeDTO>>() {}
@@ -112,7 +111,7 @@ public class LanguageTypeTest extends TestCase {
         var cache = CacheSingleton.getLanguageTypeCache();
 
         this.languageType = new LanguageType(
-                new MySQLDatabaseConfig(),
+                Singleton.getDatabaseConfig(),
                 Singleton.getHelpers(),
                 Singleton.getLogger(),
                 cache

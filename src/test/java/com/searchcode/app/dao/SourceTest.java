@@ -1,16 +1,12 @@
 package com.searchcode.app.dao;
 
-import com.searchcode.app.config.MySQLDatabaseConfig;
-import com.searchcode.app.config.Values;
 import com.searchcode.app.model.SourceResult;
 import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import junit.framework.TestCase;
-import org.cache2k.Cache2kBuilder;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -21,12 +17,8 @@ public class SourceTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         super.setUp();
-        this.source = new Source(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(),
-                new Cache2kBuilder<String, Optional<SourceResult>>() {}
-                .name("source")
-                .expireAfterWrite(Values.HIGH_CACHE_DAYS, TimeUnit.DAYS)
-                .entryCapacity(Values.SMALL_CACHE_SIZE)
-                .build());
+        this.source = new Source(Singleton.getDatabaseConfig(), new Helpers(), Singleton.getLogger(),
+                CacheSingleton.getSourceCache());
     }
 
     public void testGetSourceByNameNonExistent() {
@@ -54,7 +46,7 @@ public class SourceTest extends TestCase {
 
         var cache = CacheSingleton.getSourceCache();
         cache.put("d.s.999", Optional.of(new SourceResult().setId(999).setName("ZeName")));
-        var newSource = new Source(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
+        var newSource = new Source(Singleton.getDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
         var result = newSource.getSourceById(999);
 
@@ -67,7 +59,7 @@ public class SourceTest extends TestCase {
 
         var cache = CacheSingleton.getSourceCache();
         cache.put("d.s.ZeName", Optional.of(new SourceResult().setId(999).setName("ZeName")));
-        var newSource = new Source(new MySQLDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
+        var newSource = new Source(Singleton.getDatabaseConfig(), new Helpers(), Singleton.getLogger(), cache);
 
         var result = newSource.getSourceByName("ZeName");
 
