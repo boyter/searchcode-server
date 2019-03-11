@@ -3,6 +3,9 @@ package com.searchcode.app.config;
 import com.searchcode.app.service.Singleton;
 import junit.framework.TestCase;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class SphinxSearchConfigTest extends TestCase {
@@ -11,7 +14,7 @@ public class SphinxSearchConfigTest extends TestCase {
 
         var ssc = new SphinxSearchConfig();
         var connection = ssc.getConnection("127.0.0.1");
-        assertThat(connection.get()).isNotNull();
+        assertThat(connection.isEmpty()).isFalse();
     }
 
     public void testMultipleConnectionSphinx() throws Exception {
@@ -21,8 +24,26 @@ public class SphinxSearchConfigTest extends TestCase {
 
         for (int i = 0; i < 1000; i++) {
             var connection = ssc.getConnection("127.0.0.1");
-            assertThat(connection.get()).isNotNull();
+            assertThat(connection.isEmpty()).isFalse();
         }
+    }
+
+    public void testGetLanguageTypeParallel() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        var stringTypes = new ArrayList<SphinxSearchConfig>();
+        for (int i = 0; i < 100; i++) {
+            stringTypes.add(new SphinxSearchConfig());
+        }
+
+        stringTypes.parallelStream().forEach(x -> {
+            try {
+                var con = x.getConnection();
+                assertThat(con.isEmpty()).isFalse();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public void testGetShardCountExpectingZero() {

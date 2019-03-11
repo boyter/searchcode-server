@@ -63,7 +63,7 @@ public class SphinxIndexService extends IndexBaseService {
         try {
             var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
             connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
-        } catch (SQLException | IOException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("90cf00ef::error in class %s exception %s unable to connect to sphinx", ex.getClass(), ex.getMessage()));
             return;
         }
@@ -267,8 +267,7 @@ public class SphinxIndexService extends IndexBaseService {
 
         try {
             var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
-            // TODO handle this better
-            connection = connectionOptional.get();
+            connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
 
             var searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
                     this.getLanguageFacets(facets) +
@@ -344,7 +343,7 @@ public class SphinxIndexService extends IndexBaseService {
                 }
             }
 
-        } catch (SQLException ex) {
+        } catch (SQLException | IOException ex) {
             this.logger.severe(String.format("c0ed0920::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         } finally {
             this.helpers.closeQuietly(resultSet);

@@ -42,7 +42,7 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
     }
 
     @Override
-    public synchronized Connection getConnection() throws SQLException {
+    public Connection getConnection() throws SQLException {
         return this.datasource.getConnection();
     }
 

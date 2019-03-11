@@ -25,6 +25,9 @@ import java.util.Optional;
  * This is slightly different to the other database connections because we need multiple
  * connections in order to support the different shards that Sphinx requires in order to
  * use a real time index.
+ *
+ * NB connections to sphinx are fairly cheap and pooled in the server itself so no need
+ * to pool them here.
  */
 public class SphinxSearchConfig {
 
@@ -51,7 +54,7 @@ public class SphinxSearchConfig {
             if (connection == null || connection.isClosed() || !connection.isValid(1)) {
                 this.helpers.closeQuietly(connection);
                 Class.forName("com.mysql.jdbc.Driver");
-                String connectionString = (String) Properties.getProperties().getOrDefault("sphinx_connection_string", "jdbc:mysql://%s:9306?characterEncoding=utf8&maxAllowedPacket=10000000");
+                var connectionString = (String) Properties.getProperties().getOrDefault("sphinx_connection_string", "jdbc:mysql://%s:9306?characterEncoding=utf8&maxAllowedPacket=1073741824&net_buffer_length=16384");
 
                 connectionString = String.format(connectionString, server);
                 connection = DriverManager.getConnection(connectionString, Values.EMPTYSTRING, Values.EMPTYSTRING);
@@ -63,6 +66,10 @@ public class SphinxSearchConfig {
         }
 
         return Optional.ofNullable(connection);
+    }
+
+    public Optional<Connection> getConnection() throws SQLException {
+        return this.getConnection("127.0.0.1");
     }
 
     /**
