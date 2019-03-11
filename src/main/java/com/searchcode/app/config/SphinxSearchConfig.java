@@ -21,8 +21,15 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 
+/**
+ * This is slightly different to the other database connections because we need multiple
+ * connections in order to support the different shards that Sphinx requires in order to
+ * use a real time index.
+ */
 public class SphinxSearchConfig {
 
+    private final int SHARD_COUNT;
+    private final String SPHINX_SERVERS_SHARDS;
     private final Helpers helpers;
     private final HashMap<String, Connection> connectionList = new HashMap<>();
     private final LoggerWrapper logger;
@@ -30,6 +37,9 @@ public class SphinxSearchConfig {
     public SphinxSearchConfig() {
         this.helpers = Singleton.getHelpers();
         this.logger = Singleton.getLogger();
+
+        this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
+        this.SHARD_COUNT = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
     }
 
     public synchronized Optional<Connection> getConnection(String server) throws SQLException {
@@ -53,5 +63,32 @@ public class SphinxSearchConfig {
         }
 
         return Optional.ofNullable(connection);
+    }
+
+    /**
+     * Returns the number of sphinx shards based on properties file settings
+     */
+    public int getShardCount() {
+        return this.getShardCount(this.SPHINX_SERVERS_SHARDS);
+    }
+
+    /**
+     * Using sphinxrt index means we need to work out which shards on which
+     * host we need to add documents to
+     */
+    public int getShardCount(String sphinxShards) {
+        var count = 0;
+        var serverShards = sphinxShards.split(";");
+
+        for (var shard : serverShards) {
+            var servers = shard.split(":");
+
+            if (servers.length == 2) {
+                var shards = servers[1].split(",");
+                count += shards.length;
+            }
+        }
+
+        return count;
     }
 }

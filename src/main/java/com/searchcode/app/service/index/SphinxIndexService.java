@@ -10,7 +10,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
-import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
 import org.cache2k.Cache;
@@ -34,9 +33,6 @@ public class SphinxIndexService extends IndexBaseService {
     private final com.searchcode.app.dao.Source source;
     private final Cache<String, SearchResult> cache;
 
-    private final int SHARD_COUNT;
-    private final String SPHINX_SERVERS_SHARDS;
-
     public SphinxIndexService() {
         this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getSearchResultCache());
     }
@@ -52,9 +48,6 @@ public class SphinxIndexService extends IndexBaseService {
         this.sphinxSearchConfig = new SphinxSearchConfig();
         this.sourceCode = Singleton.getSourceCode();
         this.searchcodeLib = Singleton.getSearchCodeLib();
-
-        this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
-        this.SHARD_COUNT = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
     }
 
     @Override
@@ -90,7 +83,6 @@ public class SphinxIndexService extends IndexBaseService {
             for (var codeResult : codeIndexDocumentList) {
                 try {
 
-                    // TODO this is wrong. It assumes that we want to save to the database as well IE its doing too much
                     // TODO refactor so it ONLY does the indexing. It should already be in the database at this point.
 
 
@@ -101,7 +93,7 @@ public class SphinxIndexService extends IndexBaseService {
                     // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
-                    var shard = (codeResult.getId() % this.SHARD_COUNT) + 1;
+                    var shard = (codeResult.getId() % this.sphinxSearchConfig.getShardCount()) + 1;
                     stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
                     var indexContents = this.indexContentPipeline(codeResult);
@@ -460,25 +452,5 @@ public class SphinxIndexService extends IndexBaseService {
         }
 
         return languageFacetsString;
-    }
-
-    /**
-     * Using sphinxrt index means we need to work out which shards on which
-     * host we need to add documents to
-     */
-    public int getShardCount(String sphinxShards) {
-        var count = 0;
-        var serverShards = sphinxShards.split(";");
-
-        for (var shard : serverShards) {
-            var servers = shard.split(":");
-
-            if (servers.length == 2) {
-                var shards = servers[1].split(",");
-                count += shards.length;
-            }
-        }
-
-        return count;
     }
 }

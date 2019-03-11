@@ -58,30 +58,6 @@ public class SphinxIndexServiceTest extends TestCase {
             .setSource("source");
 
 
-    public void testGetShardCountExpectingZero() {
-        if (Singleton.getHelpers().isStandaloneInstance()) return;
-
-        var sphinxIndexService = new SphinxIndexService();
-        assertThat(sphinxIndexService.getShardCount("")).isZero();
-        assertThat(sphinxIndexService.getShardCount("localhost:")).isZero();
-    }
-
-    public void testGetShardCountExpectingTwo() {
-        if (Singleton.getHelpers().isStandaloneInstance()) return;
-
-        var sphinxIndexService = new SphinxIndexService();
-        assertThat(sphinxIndexService.getShardCount("localhost:1,2")).isEqualTo(2);
-        assertThat(sphinxIndexService.getShardCount("localhost:1;localhost:2")).isEqualTo(2);
-    }
-
-    public void testGetShardCountExpectingFour() {
-        if (Singleton.getHelpers().isStandaloneInstance()) return;
-
-        var sphinxIndexService = new SphinxIndexService();
-        assertThat(sphinxIndexService.getShardCount("localhost:1,2,3,4")).isEqualTo(4);
-        assertThat(sphinxIndexService.getShardCount("localhost:1,2;localhost:3,4")).isEqualTo(4);
-    }
-
     public void testTransformLanguageTypeEmpty() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
