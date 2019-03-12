@@ -28,7 +28,7 @@ public class SphinxSearchConfigTest extends TestCase {
         }
     }
 
-    public void testGetLanguageTypeParallel() {
+    public void testGetConnectionParallel() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var stringTypes = new ArrayList<SphinxSearchConfig>();
@@ -44,6 +44,46 @@ public class SphinxSearchConfigTest extends TestCase {
                 e.printStackTrace();
             }
         });
+    }
+
+    public void testGetAllConnection() throws SQLException {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        var ssc = new SphinxSearchConfig();
+        ssc.setSphinxServersShards("localhost:1,2");
+
+        var con = ssc.getAllConnection();
+
+        assertThat(con.size()).isEqualTo(2);
+        for (var key : con.keySet()) {
+            con.get(key).ifPresent(x -> {
+                try {
+                    x.close();
+                } catch (SQLException ignored) {
+                }
+            });
+        }
+    }
+
+    public void testGetAllConnectionMultiple() throws SQLException {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        var ssc = new SphinxSearchConfig();
+        ssc.setSphinxServersShards("localhost:1,2,3,4;127.0.0.1:5,6,7,8");
+
+        var con = ssc.getAllConnection();
+
+        assertThat(con.size()).isEqualTo(8);
+        assertThat(con.get("1")).isNotEqualTo(con.get("8"));
+
+        for (var key : con.keySet()) {
+            con.get(key).ifPresent(x -> {
+                try {
+                    x.close();
+                } catch (SQLException ignored) {
+                }
+            });
+        }
     }
 
     public void testGetShardCountExpectingZero() {

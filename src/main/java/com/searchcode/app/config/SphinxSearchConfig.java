@@ -27,7 +27,8 @@ import java.util.Optional;
  * use a real time index.
  *
  * NB connections to sphinx are fairly cheap and pooled in the server itself so no need
- * to pool them here.
+ * to pool them here, at least that's the theory we shall see how it holds up in the
+ * real world at some point.
  */
 public class SphinxSearchConfig {
 
@@ -43,7 +44,7 @@ public class SphinxSearchConfig {
         this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
     }
 
-    public synchronized Optional<Connection> getConnection(String server) throws SQLException {
+    public Optional<Connection> getConnection(String server) throws SQLException {
         Connection connection = null;
 
         try {
@@ -66,7 +67,31 @@ public class SphinxSearchConfig {
         return Optional.ofNullable(connection);
     }
 
+    /**
+     * Only used for indexing. Returns a connection to each server
+     * with identifier to make knowing which one to hit
+     */
+    public HashMap<String, Optional<Connection>> getAllConnection() throws SQLException {
+        var connections = new HashMap<String, Optional<Connection>>();
+        var serverShards = this.SPHINX_SERVERS_SHARDS.split(";");
+
+        for (var shard : serverShards) {
+            var servers = shard.split(":");
+
+            if (servers.length == 2) {
+               var con = this.getConnection(servers[0]);
+
+               for (var s : servers[1].split(",")) {
+                   connections.put(s, con);
+               }
+            }
+        }
+
+        return connections;
+    }
+
     public Optional<Connection> getConnection() throws SQLException {
+        // TODO should get the first server in the connection list
         return this.getConnection("127.0.0.1");
     }
 
