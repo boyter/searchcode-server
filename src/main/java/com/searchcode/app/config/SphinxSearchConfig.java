@@ -71,11 +71,8 @@ public class SphinxSearchConfig {
     }
 
     public Optional<Connection> getConnection(int shard) throws SQLException {
-
         // Determine which connection to make and return that
-        
-
-        return Optional.empty();
+        return this.getConnection(this.getServerForShard(shard));
     }
 
     /**
