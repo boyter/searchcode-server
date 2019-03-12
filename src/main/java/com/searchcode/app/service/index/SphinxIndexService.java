@@ -56,13 +56,12 @@ public class SphinxIndexService extends IndexBaseService {
 
     @Override
     public void indexDocument(Queue<CodeIndexDocument> documentQueue) throws IOException {
-        // TODO Need to connect to each sphinx config eventually
-        Connection connection = null;
-        PreparedStatement stmt = null;
+
+        PreparedStatement preparedStatement = null;
+        HashMap<String, Optional<Connection>> connections = null;
 
         try {
-            var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
-            connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
+            connections = this.sphinxSearchConfig.getAllConnection();
         } catch (SQLException ex) {
             this.logger.severe(String.format("90cf00ef::error in class %s exception %s unable to connect to sphinx", ex.getClass(), ex.getMessage()));
             return;
@@ -94,29 +93,33 @@ public class SphinxIndexService extends IndexBaseService {
 
                     // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
                     var shard = (codeResult.getId() % this.sphinxSearchConfig.getShardCount()) + 1;
-                    stmt = connection.prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
+                    preparedStatement = connections.get(Integer.toString(shard)).get()
+                            .prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
 
                     var indexContents = this.indexContentPipeline(codeResult);
 
-                    stmt.setInt(1, codeResult.getId());
-                    stmt.setString(2, indexContents);
-                    stmt.setString(3, codeResult.getFileName());
-                    stmt.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
-                    stmt.setInt(5, codeResult.getRepoNameId()); // RepoId
-                    stmt.setInt(6, codeResult.getLanguageNameId()); // LanguageId
-                    stmt.setInt(7, codeResult.getSourceId()); // SourceId
-                    stmt.setInt(8, 1); // OwnerId
-                    stmt.setInt(9, 1); // LicenseId
-                    stmt.setInt(10, codeResult.getLines());
+                    preparedStatement.setInt(1, codeResult.getId());
+                    preparedStatement.setString(2, indexContents);
+                    preparedStatement.setString(3, codeResult.getFileName());
+                    preparedStatement.setString(4, this.helpers.replaceForIndex(codeResult.getDisplayLocation()));
+                    preparedStatement.setInt(5, codeResult.getRepoNameId()); // RepoId
+                    preparedStatement.setInt(6, codeResult.getLanguageNameId()); // LanguageId
+                    preparedStatement.setInt(7, codeResult.getSourceId()); // SourceId
+                    preparedStatement.setInt(8, 1); // OwnerId
+                    preparedStatement.setInt(9, 1); // LicenseId
+                    preparedStatement.setInt(10, codeResult.getLines());
 
-                    stmt.execute();
+                    preparedStatement.execute();
                 } catch (SQLException ex) {
                     this.logger.severe(String.format("893321b2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
             }
         } finally {
-            this.helpers.closeQuietly(stmt);
-            this.helpers.closeQuietly(connection);
+            this.helpers.closeQuietly(preparedStatement);
+
+            for (var key : connections.keySet()) {
+                connections.get(key).ifPresent(this.helpers::closeQuietly);
+            }
         }
     }
 
