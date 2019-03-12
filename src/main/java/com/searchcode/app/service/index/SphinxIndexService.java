@@ -116,7 +116,7 @@ public class SphinxIndexService extends IndexBaseService {
             }
         } finally {
             this.helpers.closeQuietly(stmt);
-            // this.helpers.closeQuietly(connection);
+            this.helpers.closeQuietly(connection);
         }
     }
 
