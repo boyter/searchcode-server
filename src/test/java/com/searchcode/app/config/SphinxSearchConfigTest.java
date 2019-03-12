@@ -77,4 +77,20 @@ public class SphinxSearchConfigTest extends TestCase {
         assertThat(ssc.getShardCount("localhost:1,2,3,4,5,6,7,8")).isEqualTo(8);
         assertThat(ssc.getShardCount("localhost:1,2,3,4;localhost:5,6,7,8")).isEqualTo(8);
     }
+
+    public void testGetServerForShard() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        var ssc = new SphinxSearchConfig();
+        ssc.setSphinxServersShards("localhost:1,2,3,4;localhost2:5,6,7,8");
+        assertThat(ssc.getServerForShard(1)).isEqualTo("localhost");
+        assertThat(ssc.getServerForShard(2)).isEqualTo("localhost");
+        assertThat(ssc.getServerForShard(3)).isEqualTo("localhost");
+        assertThat(ssc.getServerForShard(4)).isEqualTo("localhost");
+
+        assertThat(ssc.getServerForShard(5)).isEqualTo("localhost2");
+        assertThat(ssc.getServerForShard(6)).isEqualTo("localhost2");
+        assertThat(ssc.getServerForShard(7)).isEqualTo("localhost2");
+        assertThat(ssc.getServerForShard(8)).isEqualTo("localhost2");
+    }
 }

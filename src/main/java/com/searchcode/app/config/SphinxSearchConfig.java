@@ -31,8 +31,7 @@ import java.util.Optional;
  */
 public class SphinxSearchConfig {
 
-    private final int SHARD_COUNT;
-    private final String SPHINX_SERVERS_SHARDS;
+    private String SPHINX_SERVERS_SHARDS;
     private final Helpers helpers;
     private final HashMap<String, Connection> connectionList = new HashMap<>();
     private final LoggerWrapper logger;
@@ -42,7 +41,6 @@ public class SphinxSearchConfig {
         this.logger = Singleton.getLogger();
 
         this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
-        this.SHARD_COUNT = this.getShardCount(this.SPHINX_SERVERS_SHARDS);
     }
 
     public synchronized Optional<Connection> getConnection(String server) throws SQLException {
@@ -72,6 +70,14 @@ public class SphinxSearchConfig {
         return this.getConnection("127.0.0.1");
     }
 
+    public Optional<Connection> getConnection(int shard) throws SQLException {
+
+        // Determine which connection to make and return that
+        
+
+        return Optional.empty();
+    }
+
     /**
      * Returns the number of sphinx shards based on properties file settings
      */
@@ -97,5 +103,29 @@ public class SphinxSearchConfig {
         }
 
         return count;
+    }
+
+
+    public String getServerForShard(int shardId) {
+        var serverShards = this.SPHINX_SERVERS_SHARDS.split(";");
+
+        for (var shard : serverShards) {
+            var servers = shard.split(":");
+
+            if (servers.length == 2) {
+                var shards = servers[1].split(",");
+                for (var s : shards) {
+                    if (s.equals("" + shardId)) {
+                        return servers[0];
+                    }
+                }
+            }
+        }
+
+        return "127.0.0.1";
+    }
+
+    public void setSphinxServersShards(String value) {
+        this.SPHINX_SERVERS_SHARDS = value;
     }
 }
