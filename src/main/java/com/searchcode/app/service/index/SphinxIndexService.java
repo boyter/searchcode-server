@@ -345,6 +345,8 @@ public class SphinxIndexService extends IndexBaseService {
         codeFacetRepository = this.transformRepositoryType(codeFacetRepository);
         codeFacetSource = this.transformSourceType(codeFacetSource);
 
+        // Need to convert
+
         var searchResult = new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), codeFacetSource);
 
         return searchResult;
@@ -401,11 +403,12 @@ public class SphinxIndexService extends IndexBaseService {
 
         codeResult.setCodePath(sourceCodeDTO.location);
         codeResult.setFileName(sourceCodeDTO.filename);
-        codeResult.setLanguageName(sourceCodeDTO.languageName + Values.EMPTYSTRING);
+        codeResult.setLanguageName(this.languageType.getById(sourceCodeDTO.languageName).get().getType());
         codeResult.setMd5hash(sourceCodeDTO.hash);
 //        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + Values.EMPTYSTRING);
         codeResult.setDocumentId(sourceCodeDTO.id);
-        codeResult.setRepoName(sourceCodeDTO.repoId + Values.EMPTYSTRING);
+        codeResult.setRepoName(this.repo.getRepoById(sourceCodeDTO.repoId).get().getName());
+        codeResult.setRepoId(sourceCodeDTO.repoId);
         codeResult.setRepoLocation(sourceCodeDTO.location + Values.EMPTYSTRING);
 //        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + Values.EMPTYSTRING);
         codeResult.setCodeId(sourceCodeDTO.id + Values.EMPTYSTRING);

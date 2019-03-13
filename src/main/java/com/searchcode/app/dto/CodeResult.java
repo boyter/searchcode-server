@@ -43,6 +43,7 @@ public class CodeResult {
     public String displayLocation = Values.EMPTYSTRING;
     public String source = Values.EMPTYSTRING;
     public float score = 0;
+    public int repoId = 0;
 
     public CodeResult(){}
 
@@ -174,6 +175,15 @@ public class CodeResult {
 
     public CodeResult setRepoName(String repoName) {
         this.repoName = repoName;
+        return this;
+    }
+
+    public int getRepoId() {
+        return repoId;
+    }
+
+    public CodeResult setRepoId(int repoId) {
+        this.repoId = repoId;
         return this;
     }
 
