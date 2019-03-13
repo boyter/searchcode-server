@@ -147,7 +147,7 @@ public class SlocCounter {
             if (!isWhitespace(contents.charAt(index))) {
                 switch (currentState) {
                     case S_CODE:
-                        if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
+                        if (fileClassifierResult.nestedmultiline || endComments.isEmpty()) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
                                 index += endString.length() - 1;
@@ -178,7 +178,7 @@ public class SlocCounter {
                     case S_MULTICOMMENT:
                     case S_MULTICOMMENT_CODE:
 
-                        if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
+                        if (fileClassifierResult.nestedmultiline || endComments.isEmpty()) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
                                 index += endString.length() - 1;
@@ -192,7 +192,7 @@ public class SlocCounter {
                             index += endComments.get(endComments.size() - 1).length() - 1;
                             endComments.remove(endComments.size() - 1);
 
-                            if (endComments.size() == 0) {
+                            if (endComments.isEmpty()) {
                                 if (currentState == State.S_MULTICOMMENT_CODE) {
                                     currentState = State.S_CODE;
                                 } else {
@@ -208,7 +208,7 @@ public class SlocCounter {
                             break;
                         }
 
-                        if (fileClassifierResult.nestedmultiline || endComments.size() == 0) {
+                        if (fileClassifierResult.nestedmultiline || endComments.isEmpty()) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
                                 index += endString.length() - 1;

@@ -155,7 +155,7 @@ public class CodeMatcher {
         resultLines.addAll(adjacentLines);
 
         // If not matching we probably matched on the filename or past 10000
-        if (resultLines.size() == 0) {
+        if (resultLines.isEmpty()) {
             searchThrough = codesize > MATCHLINES ? MATCHLINES : codesize;
 
             for (int i = 0; i < searchThrough; i++) {
