@@ -57,7 +57,7 @@ public class ReindexerJob implements Job {
                 }
 
                 // Fetch documents from SQL and add them to the index
-                var codeBetween = this.sourcecode.getCodeBetween(0, 10000);
+                var codeBetween = this.sourcecode.getCodeBetween(0, 1000);
                 var indexDocuments = codeBetween.stream().map(this::convert).collect(Collectors.toList());
                 this.indexQueue.addAll(indexDocuments);
 

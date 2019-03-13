@@ -51,8 +51,13 @@ import java.util.stream.Stream;
  */
 public class Helpers {
 
-    private java.util.Properties properties;
+    /**
+     * Byte order mark issue fix see
+     * http://stackoverflow.com/questions/4569123/content-is-not-allowed-in-prolog-saxparserexception
+     */
+    private final String UTF8_BOM = "\uFEFF";
     public int MAX_FILE_LENGTH_READ;
+    private java.util.Properties properties;
 
     public Helpers() {
         this(Properties.getProperties());
@@ -273,12 +278,6 @@ public class Helpers {
         }
     }
 
-    /**
-     * Byte order mark issue fix see
-     * http://stackoverflow.com/questions/4569123/content-is-not-allowed-in-prolog-saxparserexception
-     */
-    private final String UTF8_BOM = "\uFEFF";
-
     public String removeUTF8BOM(String s) {
         if (s.startsWith(this.UTF8_BOM)) {
             s = s.substring(1);
@@ -459,6 +458,12 @@ public class Helpers {
         try {
             git.close();
         } catch (Exception ignored) {
+        }
+    }
+
+    public void closeQuietly(HashMap<String, Optional<Connection>> connections) {
+        for (var key : connections.keySet()) {
+            connections.get(key).ifPresent(this::closeQuietly);
         }
     }
 }

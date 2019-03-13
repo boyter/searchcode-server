@@ -77,21 +77,9 @@ public class SphinxIndexService extends IndexBaseService {
         }
 
         try {
-
             // TODO should batch these
             for (var codeResult : codeIndexDocumentList) {
                 try {
-
-                    // TODO refactor so it ONLY does the indexing. It should already be in the database at this point.
-
-
-                    // Check if language in database
-                    // Upsert value into database
-                    // Upsert the index
-
-                    // TODO needs to know what sphinx servers exist, and the number of shards per index and update each
-
-                    // TODO consider using consistent hashing IE like memcached so we can drop in more indexes at will
                     var shard = (codeResult.getId() % this.sphinxSearchConfig.getShardCount()) + 1;
                     preparedStatement = connections.get(Integer.toString(shard)).get()
                             .prepareStatement(String.format("REPLACE INTO codesearchrt%s VALUES(?,?,?,?,?,?,?,?,?,?)", shard));
@@ -108,7 +96,6 @@ public class SphinxIndexService extends IndexBaseService {
                     preparedStatement.setInt(8, 1); // OwnerId
                     preparedStatement.setInt(9, 1); // LicenseId
                     preparedStatement.setInt(10, codeResult.getLines());
-
                     preparedStatement.execute();
                 } catch (SQLException ex) {
                     this.logger.severe(String.format("893321b2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
@@ -116,10 +103,7 @@ public class SphinxIndexService extends IndexBaseService {
             }
         } finally {
             this.helpers.closeQuietly(preparedStatement);
-
-            for (var key : connections.keySet()) {
-                connections.get(key).ifPresent(this.helpers::closeQuietly);
-            }
+            this.helpers.closeQuietly(connections);
         }
     }
 
