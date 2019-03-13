@@ -49,6 +49,9 @@ public class SQLiteDatabaseConfig implements IDatabaseConfig {
 
     @Override
     public boolean closeConnection() {
-        return true;
+        // Do not close the connection or things will break
+        // which is of course different to MySQL where if you don't close it
+        // things will break
+        return false;
     }
 }
