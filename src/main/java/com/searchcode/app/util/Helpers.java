@@ -383,6 +383,8 @@ public class Helpers {
     }
 
     public void closeQuietly(ConnStmtRs connStmtRs, boolean closeConnection) {
+        // We need this in order to do SQL tests against in memory SQLite which
+        // will clear the database if we close the connection
         if (closeConnection) {
             this.closeQuietly(connStmtRs.conn);
         }
