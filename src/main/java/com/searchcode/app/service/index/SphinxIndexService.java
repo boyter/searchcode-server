@@ -234,7 +234,8 @@ public class SphinxIndexService extends IndexBaseService {
                     .setFileName(x.filename)
                     .setLines(Integer.toString(x.linesCount))
                     .setCodeLines(Integer.toString(x.code))
-                    .setCommentLines(Integer.toString(x.comment));
+                    .setCommentLines(Integer.toString(x.comment))
+                    .setCodeId(Integer.toString(x.id));
         }).orElse(null);
     }
 
