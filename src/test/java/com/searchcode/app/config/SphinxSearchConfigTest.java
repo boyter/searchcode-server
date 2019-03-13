@@ -15,6 +15,7 @@ public class SphinxSearchConfigTest extends TestCase {
         var ssc = new SphinxSearchConfig();
         var connection = ssc.getConnection("127.0.0.1");
         assertThat(connection.isEmpty()).isFalse();
+        connection.ifPresent(x -> Singleton.getHelpers().closeQuietly(x));
     }
 
     public void testMultipleConnectionSphinx() throws Exception {
@@ -25,6 +26,7 @@ public class SphinxSearchConfigTest extends TestCase {
         for (int i = 0; i < 1000; i++) {
             var connection = ssc.getConnection("127.0.0.1");
             assertThat(connection.isEmpty()).isFalse();
+            connection.ifPresent(x -> Singleton.getHelpers().closeQuietly(x));
         }
     }
 
@@ -40,6 +42,7 @@ public class SphinxSearchConfigTest extends TestCase {
             try {
                 var con = x.getConnection();
                 assertThat(con.isEmpty()).isFalse();
+                con.ifPresent(y -> Singleton.getHelpers().closeQuietly(y));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -56,12 +59,7 @@ public class SphinxSearchConfigTest extends TestCase {
 
         assertThat(con.size()).isEqualTo(2);
         for (var key : con.keySet()) {
-            con.get(key).ifPresent(x -> {
-                try {
-                    x.close();
-                } catch (SQLException ignored) {
-                }
-            });
+            con.get(key).ifPresent(x -> Singleton.getHelpers().closeQuietly(x));
         }
     }
 
@@ -77,12 +75,7 @@ public class SphinxSearchConfigTest extends TestCase {
         assertThat(con.get("1")).isNotEqualTo(con.get("8"));
 
         for (var key : con.keySet()) {
-            con.get(key).ifPresent(x -> {
-                try {
-                    x.close();
-                } catch (SQLException ignored) {
-                }
-            });
+            con.get(key).ifPresent(x -> Singleton.getHelpers().closeQuietly(x));
         }
     }
 
