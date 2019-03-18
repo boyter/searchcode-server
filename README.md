@@ -22,7 +22,7 @@ Submissions/Pull Requests
 -------------------------
 If you would like to submit code to be integrated into searchcode server please specify that it is dual licenced under Apache Public License v2 and GPL v3. This allows it to be pulled in directly without having to worry about licencing issues in the future.
 
-Before making any submission be sure to run 
+Before making any submission be sure to run (requires fabric<2.0 E.G. pip install 'fabric<2.0')
 
 	fab test
 
