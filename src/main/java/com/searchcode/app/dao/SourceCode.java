@@ -229,7 +229,7 @@ public class SourceCode {
         try {
             connStmtRs.conn = this.dbConfig.getConnection();
 
-            var query = "   SELECT id, repoid, filetypeid, location, filename, UNCOMPRESS(content) AS content, hash, languagename" +
+            var query = "   SELECT id, repoid, filetypeid, location, filename, UNCOMPRESS(content) AS content, hash, languagename, linescount" +
                         "     FROM code" +
                         "    WHERE id=? LIMIT 1;";
 
@@ -247,6 +247,7 @@ public class SourceCode {
                         .setContent(connStmtRs.rs.getString("content"))
                         .setHash(connStmtRs.rs.getString("hash"))
                         .setLanguageName(connStmtRs.rs.getInt("languagename"))
+                        .setLinesCount(connStmtRs.rs.getInt("linescount"))
                 );
             }
 

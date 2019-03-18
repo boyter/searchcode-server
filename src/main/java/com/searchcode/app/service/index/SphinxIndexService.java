@@ -405,12 +405,11 @@ public class SphinxIndexService extends IndexBaseService {
         codeResult.setFileName(sourceCodeDTO.filename);
         codeResult.setLanguageName(this.languageType.getById(sourceCodeDTO.languageName).get().getType());
         codeResult.setMd5hash(sourceCodeDTO.hash);
-//        codeResult.setCodeLines(sourceCodeDTO.getLinescount() + Values.EMPTYSTRING);
+        codeResult.setCodeLines(Integer.toString(sourceCodeDTO.linesCount));
         codeResult.setDocumentId(sourceCodeDTO.id);
         codeResult.setRepoName(this.repo.getRepoById(sourceCodeDTO.repoId).get().getName());
         codeResult.setRepoId(sourceCodeDTO.repoId);
         codeResult.setRepoLocation(sourceCodeDTO.location + Values.EMPTYSTRING);
-//        codeResult.setCodeOwner(sourceCodeDTO.getOwnerid() + Values.EMPTYSTRING);
         codeResult.setCodeId(sourceCodeDTO.id + Values.EMPTYSTRING);
         codeResult.setDisplayLocation(sourceCodeDTO.location);
 
