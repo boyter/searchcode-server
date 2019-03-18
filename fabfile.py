@@ -124,6 +124,11 @@ def build_all_release():
     build_release()
     build_community_release()
 
+    local('md5sum searchcode-server-community.tar.gz')
+    local('sha1sum searchcode-server-community.tar.gz')
+    local('md5sum searchcode-server.tar.gz')
+    local('sha1sum searchcode-server.tar.gz')
+
 
 def build_release():
     _check_os
