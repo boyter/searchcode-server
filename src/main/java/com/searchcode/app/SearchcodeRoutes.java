@@ -13,7 +13,7 @@ import static spark.Spark.get;
 public class SearchcodeRoutes {
     public static void RegisterSearchcodeRoutes() {
         get("/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(codeRouteService.html(request, response));
         });
 
@@ -21,12 +21,12 @@ public class SearchcodeRoutes {
         get("/health-check/", (request, response) -> new JsonTransformer().render(true));
 
         get("/file/:codeid/*", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl"));
         });
 
         get("/repository/overview/:reponame/", (request, response) -> {
-            CodeRouteService codeRouteService = new CodeRouteService();
+            var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getProject(request, response), "repository_overview.ftl"));
         });
     }
