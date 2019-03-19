@@ -28,7 +28,7 @@ public class SearchCodeLib {
     private final FileClassifier fileClassifier;
     private final int MINIFIED_LENGTH;
 
-    private final int MAX_SPLIT_LENGTH = 100000;
+    private final int MAX_SPLIT_LENGTH = 100_000;
     private final Pattern MULTIPLE_UPPERCASE = Pattern.compile("[A-Z]{2,}");
     private final boolean GUESS_BINARY = Boolean.parseBoolean(Properties.getProperties().getProperty(Values.GUESS_BINARY, Values.DEFAULT_GUESS_BINARY));
     private final boolean AND_MATCH = Boolean.parseBoolean(com.searchcode.app.util.Properties.getProperties().getProperty(Values.AND_MATCH, Values.DEFAULT_AND_MATCH));
@@ -182,8 +182,8 @@ public class SearchCodeLib {
         List<String> splitString = Arrays.asList(contents.replaceAll("[^a-zA-Z0-9]", " ").toLowerCase().split(" "));
 
         // Only the first 10000 to avoid causing too much slow-down
-        if (splitString.size() > 10000) {
-            splitString = splitString.subList(0, 10000);
+        if (splitString.size() > 10_000) {
+            splitString = splitString.subList(0, 10_000);
         }
 
         for (String s : splitString) {
@@ -275,7 +275,7 @@ public class SearchCodeLib {
      * NB if a commit is very close to this time it will always win
      */
     public String codeOwner(List<CodeOwner> codeOwners) {
-        long currentUnix = System.currentTimeMillis() / 1000L;
+        long currentUnix = System.currentTimeMillis() / 1_000L;
 
         double best = 0;
         String owner = "Unknown";

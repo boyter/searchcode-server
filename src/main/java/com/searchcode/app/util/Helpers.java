@@ -144,7 +144,7 @@ public class Helpers {
     }
 
     public int getCurrentTimeSeconds() {
-        return (int) (System.currentTimeMillis() / 1000);
+        return (int) (System.currentTimeMillis() / 1_000);
     }
 
     /**

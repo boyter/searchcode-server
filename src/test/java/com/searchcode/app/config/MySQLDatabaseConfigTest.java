@@ -22,7 +22,7 @@ public class MySQLDatabaseConfigTest extends TestCase {
 
         var mySQLDatabaseConfig = Singleton.getDatabaseConfig();
 
-        for (var i=0; i< 10000; i++) {
+        for (var i=0; i< 10_000; i++) {
             var connection = mySQLDatabaseConfig.getConnection();
             connection.close();
         }

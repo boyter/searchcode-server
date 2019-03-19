@@ -32,7 +32,7 @@ public class Cocomo2 {
     public double estimateEffort(double sloc) {
 
         double eaf = 1;
-        double effortApplied = 3.2 * Math.pow(sloc / 1000, 1.05) * eaf;
+        double effortApplied = 3.2 * Math.pow(sloc / 1_000, 1.05) * eaf;
 
         return effortApplied;
     }

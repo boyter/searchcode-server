@@ -23,7 +23,7 @@ public class SphinxSearchConfigTest extends TestCase {
 
         var ssc = new SphinxSearchConfig();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1_000; i++) {
             var connection = ssc.getDefaultConnection();
             assertThat(connection.isEmpty()).isFalse();
             connection.ifPresent(x -> Singleton.getHelpers().closeQuietly(x));

@@ -567,24 +567,24 @@ public class IndexService extends IndexBaseService {
      */
     @Override
     public List<String> getRepoDocuments(String repoName, int page) {
-        int REPOPAGELIMIT = 1000;
-        List<String> fileLocations = new ArrayList<>(REPOPAGELIMIT);
-        int start = REPOPAGELIMIT * page;
+        var repoPageLimit = 1_000;
+        var fileLocations = new ArrayList<String>(repoPageLimit);
+        var start = repoPageLimit * page;
 
         try {
-            IndexReader reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
-            IndexSearcher searcher = new IndexSearcher(reader);
+            var reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
+            var searcher = new IndexSearcher(reader);
 
-            Analyzer analyzer = new CodeAnalyzer();
-            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
-            Query query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
+            var analyzer = new CodeAnalyzer();
+            var parser = new QueryParser(Values.CONTENTS, analyzer);
+            var query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
 
-            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-            int end = Math.min(results.totalHits, (REPOPAGELIMIT * (page + 1)));
-            ScoreDoc[] hits = results.scoreDocs;
+            var results = searcher.search(query, Integer.MAX_VALUE);
+            var end = Math.min(results.totalHits, (repoPageLimit * (page + 1)));
+            var hits = results.scoreDocs;
 
-            for (int i = start; i < end; i++) {
-                Document doc = searcher.doc(hits[i].doc);
+            for (var i = start; i < end; i++) {
+                var doc = searcher.doc(hits[i].doc);
                 fileLocations.add(doc.get(Values.PATH));
             }
 
@@ -693,7 +693,7 @@ public class IndexService extends IndexBaseService {
                 CodeResult codeResult = this.createCodeResult(null, Values.EMPTYSTRING, doc, hits[i].doc, hits[i].score);
                 codeResults.add(codeResult);
 
-                if (i == 1000) {
+                if (i == 1_000) {
                     break;
                 }
             }

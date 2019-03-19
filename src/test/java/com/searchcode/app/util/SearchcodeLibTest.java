@@ -249,7 +249,7 @@ public class SearchcodeLibTest extends TestCase {
         // 86400 seconds in a day
         int daySeconds = 86400;
 
-        long currentUnix = System.currentTimeMillis() / 1000L;
+        long currentUnix = System.currentTimeMillis() / 1_000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
         codeOwners.add(new CodeOwner("Ben", 250, ((int) currentUnix - (daySeconds * 22))));
@@ -266,7 +266,7 @@ public class SearchcodeLibTest extends TestCase {
         // 86400 seconds in a day
         int daySeconds = 86400;
 
-        long currentUnix = System.currentTimeMillis() / 1000L;
+        long currentUnix = System.currentTimeMillis() / 1_000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
         codeOwners.add(new CodeOwner("Ben", 250, (int) currentUnix - (daySeconds * 22)));
@@ -285,7 +285,7 @@ public class SearchcodeLibTest extends TestCase {
         // 86400 seconds in a day
         int daySeconds = 86400;
 
-        long currentUnix = System.currentTimeMillis() / 1000L;
+        long currentUnix = System.currentTimeMillis() / 1_000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
         codeOwners.add(new CodeOwner("Ben", 40, (int) currentUnix - (daySeconds * 365)));
@@ -302,9 +302,9 @@ public class SearchcodeLibTest extends TestCase {
         SearchCodeLib sl = new SearchCodeLib();
 
         // 86400 seconds in a day
-        int daySeconds = 86400;
+        int daySeconds = 86_400;
 
-        long currentUnix = System.currentTimeMillis() / 1000L;
+        long currentUnix = System.currentTimeMillis() / 1_000L;
 
         List<CodeOwner> codeOwners = new ArrayList<>();
         codeOwners.add(new CodeOwner("Ben", 40, (int) currentUnix - (daySeconds * 365)));
@@ -487,7 +487,7 @@ public class SearchcodeLibTest extends TestCase {
     public void testGenerateBusBlurbStress() {
         SearchCodeLib scl = new SearchCodeLib();
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1_000; i++) {
 
             List<CodeFacetOwner> codeFacetOwners = new ArrayList<>();
             for (int j = 0; j < i; j++) {

@@ -154,9 +154,9 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
                 if (split.length > 2 && split[1].length() != 0) {
                     foundSomething = true;
                     String author = split[1].substring(1);
-                    int commitTime = (int) (System.currentTimeMillis() / 1000);
+                    int commitTime = (int) (System.currentTimeMillis() / 1_000);
                     try {
-                        commitTime = (int) (df.parse(split[2]).getTime() / 1000);
+                        commitTime = (int) (df.parse(split[2]).getTime() / 1_000);
                     } catch (ParseException ex) {
                         this.logger.severe(String.format("05aa777b::error in class %s exception %s for time parse", ex.getClass(), ex.getMessage()));
                     }

@@ -101,15 +101,15 @@ public class LoggerWrapperTest extends TestCase {
         LoggerWrapper logger = new LoggerWrapper();
         Random rand = new Random();
 
-        for (int i = 0; i < 2100; i++) {
+        for (int i = 0; i < 2_100; i++) {
             logger.info(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
             logger.searchLog(RandomStringUtils.randomAscii(rand.nextInt(20) + 1));
         }
 
-        assertThat(logger.getInfoLogs().size()).isEqualTo(1000);
+        assertThat(logger.getInfoLogs().size()).isEqualTo(1_000);
         assertThat(logger.getSevereLogs().size()).isEqualTo(0);
-        assertThat(logger.getAllLogs().size()).isEqualTo(1000);
-        assertThat(logger.getSearchLogs().size()).isEqualTo(1000);
+        assertThat(logger.getAllLogs().size()).isEqualTo(1_000);
+        assertThat(logger.getSearchLogs().size()).isEqualTo(1_000);
     }
 
     public void testLoggerWrapperGetLogReversed() {

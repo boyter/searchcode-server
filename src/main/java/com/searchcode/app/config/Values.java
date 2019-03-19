@@ -225,8 +225,8 @@ public class Values {
     public static final String NBSP = "&nbsp;";
 
     // Used to control cache
-    public static final int DEFAULT_CACHE_SIZE = 10000;
-    public static final int SMALL_CACHE_SIZE = 1000;
+    public static final int DEFAULT_CACHE_SIZE = 10_000;
+    public static final int SMALL_CACHE_SIZE = 1_000;
     public static final int LOW_CACHE_DAYS = 5;
     public static final int HIGH_CACHE_DAYS = 30;
     public static final int LOW_CACHE_MINUTES = 5;

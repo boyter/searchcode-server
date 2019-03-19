@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.logging.*;
@@ -107,12 +106,12 @@ public class LoggerWrapper {
             }
         }
 
-        this.allCache = EvictingQueue.create(1000);
-        this.infoRecentCache = EvictingQueue.create(1000);
-        this.severeRecentCache = EvictingQueue.create(1000);
-        this.searchLog = EvictingQueue.create(1000);
-        this.apiLog = EvictingQueue.create(1000);
-        this.fineRecentCache = EvictingQueue.create(1000);
+        this.allCache = EvictingQueue.create(1_000);
+        this.infoRecentCache = EvictingQueue.create(1_000);
+        this.severeRecentCache = EvictingQueue.create(1_000);
+        this.searchLog = EvictingQueue.create(1_000);
+        this.apiLog = EvictingQueue.create(1_000);
+        this.fineRecentCache = EvictingQueue.create(1_000);
     }
 
     public synchronized void clearAllLogs() {

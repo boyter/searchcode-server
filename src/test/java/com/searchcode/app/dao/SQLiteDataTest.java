@@ -77,7 +77,7 @@ public class SQLiteDataTest extends TestCase {
      * Stress test the saving to check if we are closing connections properly
      */
     public void testManySaveAndGet() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 1_000; i++) {
             String expected = "" + System.currentTimeMillis();
             data.saveData("testManySaveAndGet", expected);
 
