@@ -49,7 +49,7 @@ public class SphinxSearchConfig {
         Connection connection = null;
 
         try {
-            connection = connectionList.getOrDefault(server, null);
+            connection = this.connectionList.getOrDefault(server, null);
 
             if (connection == null || connection.isClosed() || !connection.isValid(1)) {
                 this.helpers.closeQuietly(connection);
@@ -59,7 +59,7 @@ public class SphinxSearchConfig {
                 connectionString = String.format(connectionString, server);
                 connection = DriverManager.getConnection(connectionString, Values.EMPTYSTRING, Values.EMPTYSTRING);
 
-                connectionList.put(server, connection);
+                this.connectionList.put(server, connection);
             }
         } catch (ClassNotFoundException ex) {
             this.logger.severe(String.format("f9e4283d::error in class %s exception %s it appears searchcode is unable to connect sphinx using mysql connection as the driver is missing", ex.getClass(), ex.getMessage()));
@@ -93,9 +93,22 @@ public class SphinxSearchConfig {
         return connections;
     }
 
-    public Optional<Connection> getConnection() throws SQLException {
-        // TODO should get the first server in the connection list
-        return this.getConnection("127.0.0.1");
+    /**
+     * Gets a connection to the first server in the connection list
+     * which should always be the main default search server
+     */
+    public Optional<Connection> getDefaultConnection() throws SQLException {
+        var serverShards = this.SPHINX_SERVERS_SHARDS.split(";");
+
+        for (var shard : serverShards) {
+            var servers = shard.split(":");
+
+            if (servers.length == 2) {
+                return this.getConnection(servers[0]);
+            }
+        }
+
+        return Optional.empty();
     }
 
     public Optional<Connection> getConnection(int shard) throws SQLException {

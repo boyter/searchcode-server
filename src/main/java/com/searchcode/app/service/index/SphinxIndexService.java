@@ -254,7 +254,7 @@ public class SphinxIndexService extends IndexBaseService {
         var start = this.PAGE_LIMIT * page;
 
         try {
-            var connectionOptional = this.sphinxSearchConfig.getConnection("localhost");
+            var connectionOptional = this.sphinxSearchConfig.getDefaultConnection();
             connection = connectionOptional.orElseThrow(() -> new IOException("Unable to connect to sphinx"));
 
             var searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?) " +

@@ -13,7 +13,7 @@ public class SphinxSearchConfigTest extends TestCase {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
         var ssc = new SphinxSearchConfig();
-        var connection = ssc.getConnection("127.0.0.1");
+        var connection = ssc.getDefaultConnection();
         assertThat(connection.isEmpty()).isFalse();
         connection.ifPresent(x -> Singleton.getHelpers().closeQuietly(x));
     }
@@ -24,7 +24,7 @@ public class SphinxSearchConfigTest extends TestCase {
         var ssc = new SphinxSearchConfig();
 
         for (int i = 0; i < 1000; i++) {
-            var connection = ssc.getConnection("127.0.0.1");
+            var connection = ssc.getDefaultConnection();
             assertThat(connection.isEmpty()).isFalse();
             connection.ifPresent(x -> Singleton.getHelpers().closeQuietly(x));
         }
@@ -40,7 +40,7 @@ public class SphinxSearchConfigTest extends TestCase {
 
         stringTypes.parallelStream().forEach(x -> {
             try {
-                var con = x.getConnection();
+                var con = x.getDefaultConnection();
                 assertThat(con.isEmpty()).isFalse();
                 con.ifPresent(y -> Singleton.getHelpers().closeQuietly(y));
             } catch (SQLException e) {
