@@ -289,6 +289,8 @@ public class CodeRouteService {
             var langsQueryString = Values.EMPTYSTRING;
             var ownsQueryString = Values.EMPTYSTRING;
 
+            // TODO the below is specific to the way lucene works, we need to modify this to be independent of the search
+            // which should be done using HashMap<String, String[]> which can be passed into search
             if (request.queryParams().contains("repo")) {
                 repos = request.queryParamsValues("repo");
 

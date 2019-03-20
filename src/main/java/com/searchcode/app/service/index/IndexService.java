@@ -759,9 +759,9 @@ public class IndexService extends IndexBaseService {
             return Values.EMPTYSTRING;
         }
 
-        StringBuilder filters = new StringBuilder(Values.EMPTYSTRING);
+        var filters = new StringBuilder(Values.EMPTYSTRING);
 
-        for (String key: facets.keySet()) {
+        for (var key: facets.keySet()) {
             switch (key) {
                 case "repo":
                     List<String> reposList = Arrays.stream(facets.get(key))
