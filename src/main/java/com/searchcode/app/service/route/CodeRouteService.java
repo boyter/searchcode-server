@@ -72,7 +72,7 @@ public class CodeRouteService {
     }
 
     public ModelAndView root(Request request, Response response) {
-        var map = new HashMap<>();
+        var map = this.getMap();
         map.put("repoCount", this.repo.getRepoCount());
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
@@ -146,14 +146,12 @@ public class CodeRouteService {
         }
 
         map.put("numDocs", this.indexService.getIndexedDocumentCount());
-        map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.IS_COMMUNITY);
-        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
+
         return new ModelAndView(map, "index.ftl");
     }
 
     public Map<String, Object> getCode(Request request, Response response) {
-        var map = new HashMap<String, Object>();
+        var map = this.getMap();
 
         var codeId = request.params(":codeid");
         var codeResult = this.indexService.getCodeResultByCodeId(codeId);
@@ -203,15 +201,11 @@ public class CodeRouteService {
         var estimatedCost = (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
         map.put("estimatedCost", estimatedCost);
 
-        map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.IS_COMMUNITY);
-        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
-
         return map;
     }
 
     public Map<String, Object> getProject(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
+        var map = this.getMap();
 
         String repoName = request.params(":reponame");
         Optional<RepoResult> repository = this.repo.getRepoByName(repoName);
@@ -248,15 +242,12 @@ public class CodeRouteService {
         repository.ifPresent(x -> map.put("source", x.getSource()));
 
         map.put("repoName", repoName);
-        map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.IS_COMMUNITY);
-        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
 
     public Map<String, Object> getRepositoryList(Request request, Response response) {
-        Map<String, Object> map = new HashMap<>();
+        var map = this.getMap();
 
         String offSet = request.queryParams("offset");
 
@@ -276,15 +267,12 @@ public class CodeRouteService {
         map.put("repoList", pagedRepo);
         map.put("nextOffset", indexOffset + 1);
         map.put("previousOffset", indexOffset - 1);
-        map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.IS_COMMUNITY);
-        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
 
         return map;
     }
 
-    public ModelAndView html(Request request, Response response) {
-        var map = new HashMap<String, Object>();
+    public Map<String, Object> html(Request request, Response response) {
+        var map = this.getMap();
 
         if (request.queryParams().contains("q")) {
             var query = request.queryParams("q").trim();
@@ -410,20 +398,22 @@ public class CodeRouteService {
             map.put("totalPages", searchResult.getPages().size());
 
             map.put("isHtml", true);
+
             map.put("logoImage", CommonRouteService.getLogo());
             map.put("isCommunity", App.IS_COMMUNITY);
             map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
-            return new ModelAndView(map, "searchresults.ftl");
+
+            map.put("isIndex", false);
+            return map;
         } else {
             map.put("repoCount", this.repo.getRepoCount());
         }
 
         map.put("photoId", CommonRouteService.getPhotoId(Calendar.getInstance().get(Calendar.DAY_OF_YEAR)));
         map.put("numDocs", this.indexService.getCodeIndexLinesCount());
-        map.put("logoImage", CommonRouteService.getLogo());
-        map.put("isCommunity", App.IS_COMMUNITY);
-        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
-        return new ModelAndView(map, "index.ftl");
+
+        map.put("isIndex", true);
+        return map;
     }
 
     // TODO this should not be static
@@ -437,5 +427,15 @@ public class CodeRouteService {
             }
         }
         return page;
+    }
+
+    private HashMap<String, Object> getMap() {
+        var map = new HashMap<String, Object>();
+
+        map.put("logoImage", CommonRouteService.getLogo());
+        map.put("isCommunity", App.IS_COMMUNITY);
+        map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
+
+        return map;
     }
 }

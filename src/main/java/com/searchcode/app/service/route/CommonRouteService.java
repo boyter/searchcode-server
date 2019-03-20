@@ -65,8 +65,8 @@ public class CommonRouteService {
             return Double.parseDouble(Values.DEFAULTMAXLINEDEPTH);
         }
 
-        Data data = Singleton.getData();
-        String matchLines = data.getDataByName(Values.MAXLINEDEPTH);
+        var data = Singleton.getData();
+        var matchLines = data.getDataByName(Values.MAXLINEDEPTH);
 
         if (matchLines == null) {
             data.saveData(Values.MAXLINEDEPTH, Values.DEFAULTMAXLINEDEPTH);
@@ -81,8 +81,8 @@ public class CommonRouteService {
             return Double.parseDouble(Values.DEFAULTMINIFIEDLENGTH);
         }
 
-        Data data = Singleton.getData();
-        String minifiedLength = data.getDataByName(Values.MINIFIEDLENGTH);
+        var data = Singleton.getData();
+        var minifiedLength = data.getDataByName(Values.MINIFIEDLENGTH);
 
         if (minifiedLength == null) {
             data.saveData(Values.MINIFIEDLENGTH, Values.DEFAULTMINIFIEDLENGTH);
@@ -97,8 +97,8 @@ public class CommonRouteService {
             return Double.parseDouble(Values.DEFAULTBACKOFFVALUE);
         }
 
-        Data data = Singleton.getData();
-        String backoffValue = data.getDataByName(Values.BACKOFFVALUE);
+        var data = Singleton.getData();
+        var backoffValue = data.getDataByName(Values.BACKOFFVALUE);
 
         if (backoffValue == null) {
             data.saveData(Values.BACKOFFVALUE, Values.DEFAULTBACKOFFVALUE);
@@ -113,7 +113,7 @@ public class CommonRouteService {
             return Values.EMPTYSTRING;
         }
 
-        Data data = Singleton.getData();
+        var data = Singleton.getData();
         return data.getDataByName(Values.EMBED, Values.EMPTYSTRING);
     }
 
@@ -122,10 +122,11 @@ public class CommonRouteService {
             return false;
         }
 
-        Data data = Singleton.getData();
-        Boolean owaspEnabled = Boolean.parseBoolean(data.getDataByName(Values.OWASPENABLED));
+        var data = Singleton.getData();
+        var owaspEnabledString = data.getDataByName(Values.OWASPENABLED);
+        var owaspEnabled = Boolean.parseBoolean(owaspEnabledString);
 
-        if (owaspEnabled == null) {
+        if (owaspEnabledString == null) {
             data.saveData(Values.OWASPENABLED, "false");
             owaspEnabled = false;
         }
@@ -138,8 +139,8 @@ public class CommonRouteService {
             return Values.DEFAULTSYNTAXHIGHLIGHTER;
         }
 
-        Data data = Singleton.getData();
-        String highlighter = data.getDataByName(Values.SYNTAXHIGHLIGHTER);
+        var data = Singleton.getData();
+        var highlighter = data.getDataByName(Values.SYNTAXHIGHLIGHTER);
 
         if (highlighter == null || highlighter.trim().equals("")) {
             highlighter = Properties.getProperties().getProperty(Values.SYNTAXHIGHLIGHTER, Values.DEFAULTSYNTAXHIGHLIGHTER);
@@ -150,7 +151,7 @@ public class CommonRouteService {
     }
 
     public static int getPhotoId(int seed) {
-        Random random = new Random(seed);
+        var random = new Random(seed);
         return random.nextInt(42) + 1;
     }
 }

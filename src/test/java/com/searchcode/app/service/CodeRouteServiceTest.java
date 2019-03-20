@@ -75,10 +75,7 @@ public class CodeRouteServiceTest extends TestCase {
         CodeRouteService codeRouteService = new CodeRouteService();
 
         Request request = Mockito.mock(Request.class);
-        ModelAndView modelAndView = codeRouteService.html(request, null);
-
-        Map<String, Object> model = (Map<String, Object>) modelAndView.getModel();
-        String viewName = modelAndView.getViewName();
+        var model = codeRouteService.html(request, null);
 
         assertThat(model.get("photoId")).isInstanceOf(Integer.class);
         assertThat((int) model.get("photoId")).isGreaterThanOrEqualTo(0);
@@ -88,7 +85,6 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
 
-        assertThat(viewName).isEqualTo("index.ftl");
     }
 
     public void testHtmlQueryString() {
@@ -101,10 +97,7 @@ public class CodeRouteServiceTest extends TestCase {
         when(request.queryParams()).thenReturn(hashSet);
         when(request.queryParams("q")).thenReturn("test");
 
-        ModelAndView modelAndView = codeRouteService.html(request, null);
-
-        Map<String, Object> model = (Map<String, Object>) modelAndView.getModel();
-        String viewName = modelAndView.getViewName();
+        var model= codeRouteService.html(request, null);
 
         assertThat(model.get("searchValue")).isEqualTo("test");
         assertThat(model.get("searchResult")).isNotNull();
@@ -116,8 +109,6 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat((boolean) model.get("isHtml")).isTrue();
         assertThat(model.get("logoImage")).isNotNull();
         assertThat(model.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
-
-        assertThat(viewName).isEqualTo("searchresults.ftl");
     }
 
     public void testGetCodeNoParams() {

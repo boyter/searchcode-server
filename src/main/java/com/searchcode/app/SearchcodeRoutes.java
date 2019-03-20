@@ -14,7 +14,13 @@ public class SearchcodeRoutes {
     public static void RegisterSearchcodeRoutes() {
         get("/", (request, response) -> {
             var codeRouteService = new CodeRouteService();
-            return new FreeMarkerEngine().render(codeRouteService.html(request, response));
+            var map = codeRouteService.html(request, response);
+
+            if ((Boolean)map.getOrDefault("isIndex", Boolean.TRUE)) {
+                return new FreeMarkerEngine().render(new ModelAndView(map, "index.ftl"));
+            }
+
+            return new FreeMarkerEngine().render(new ModelAndView(map, "searchcode_searchresults.ftl"));
         });
 
         get("/healthcheck/", (request, response) -> new JsonTransformer().render(true));
