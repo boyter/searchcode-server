@@ -52,6 +52,7 @@ public class ServerRoutes {
 
     private static HashMap<String, Object> getDefaultMap() {
         var map = new HashMap<String, Object>();
+
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", IS_COMMUNITY);
         map.put(Values.EMBED, Singleton.getData().getDataByName(Values.EMBED, Values.EMPTYSTRING));

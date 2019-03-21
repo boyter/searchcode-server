@@ -15,16 +15,17 @@ import com.searchcode.app.App;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.dto.*;
+import com.searchcode.app.dto.CodePreload;
+import com.searchcode.app.dto.OWASPMatchingResult;
+import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.Highlight;
-import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.*;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -71,13 +72,26 @@ public class CodeRouteService {
         this.highlightLimit = Integer.parseInt(Properties.getProperties().getProperty(Values.HIGHLIGHT_LINE_LIMIT, Values.DEFAULT_HIGHLIGHT_LINE_LIMIT));
     }
 
+    // TODO this should not be static
+    public static int getPage(Request request, int page) {
+        if (request.queryParams().contains("p")) {
+            try {
+                page = Integer.parseInt(request.queryParams("p"));
+                page = page > 19 ? 19 : page;
+            } catch (NumberFormatException ex) {
+                page = 0;
+            }
+        }
+        return page;
+    }
+
     public ModelAndView root(Request request, Response response) {
         var map = this.getMap();
         map.put("repoCount", this.repo.getRepoCount());
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
             String query = request.queryParams("q").trim();
-            int page = this.getPage(request, 0);
+            int page = getPage(request, 0);
 
             List<String> reposList = new ArrayList<>();
             List<String> langsList = new ArrayList<>();
@@ -176,11 +190,11 @@ public class CodeRouteService {
         repoResult.map(x -> map.put("source", x.getSource()));
         repoResult.map(x -> map.put("fileLink", this.repositorySource.getLink(x.getData().source,
                 new HashMap<String, String>() {{
-            put("user", x.getData().user);
-            put("project", x.getData().project);
-            put("branch", x.getBranch());
-            put("filepath", codeResult.getDisplayLocation());
-        }})));
+                    put("user", x.getData().user);
+                    put("project", x.getData().project);
+                    put("branch", x.getBranch());
+                    put("filepath", codeResult.getDisplayLocation());
+                }})));
 
 
         map.put("fileName", codeResult.fileName);
@@ -282,31 +296,24 @@ public class CodeRouteService {
             var repos = new String[0];
             var langs = new String[0];
             var owners = new String[0];
-            var reposFilter = Values.EMPTYSTRING;
-            var langsFilter = Values.EMPTYSTRING;
-            var ownersFilter = Values.EMPTYSTRING;
+
             var reposQueryString = Values.EMPTYSTRING;
             var langsQueryString = Values.EMPTYSTRING;
             var ownsQueryString = Values.EMPTYSTRING;
 
-            // TODO the below is specific to the way lucene works, we need to modify this to be independent of the search
-            // which should be done using HashMap<String, String[]> which can be passed into search
+            var facets = new HashMap<String, String[]>();
+
             if (request.queryParams().contains("repo")) {
                 repos = request.queryParamsValues("repo");
 
                 if (repos.length != 0) {
-                    var reposList = Arrays.asList(repos).stream()
-                            .map((s) -> Values.REPO_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
-                            .collect(Collectors.toList());
-
-                    reposFilter = " && (" + StringUtils.join(reposList, " || ") + ")";
+                    facets.put("repo", repos);
 
                     var reposQueryList = Arrays.asList(repos).stream()
                             .map((s) -> {
                                 try {
                                     return "&repo=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
                                 } catch (UnsupportedEncodingException ex) {
-                                    // TODO add logging here
                                     return Values.EMPTYSTRING;
                                 }
                             })
@@ -320,18 +327,13 @@ public class CodeRouteService {
                 langs = request.queryParamsValues("lan");
 
                 if (langs.length != 0) {
-                    var langsList = Arrays.asList(langs).stream()
-                            .map((s) -> Values.LANGUAGE_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
-                            .collect(Collectors.toList());
-
-                    langsFilter = " && (" + StringUtils.join(langsList, " || ") + ")";
+                    facets.put("lan", langs);
 
                     var langsQueryList = Arrays.asList(langs).stream()
                             .map((s) -> {
                                 try {
                                     return "&lan=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
                                 } catch (UnsupportedEncodingException e) {
-                                    // TODO log here
                                     return Values.EMPTYSTRING;
                                 }
                             })
@@ -345,18 +347,12 @@ public class CodeRouteService {
                 owners = request.queryParamsValues("own");
 
                 if (owners.length != 0) {
-                    var ownersList = Arrays.asList(owners).stream()
-                            .map((s) -> Values.OWNER_NAME_LITERAL + ":" + QueryParser.escape(this.helpers.replaceForIndex(s)))
-                            .collect(Collectors.toList());
-
-                    ownersFilter = " && (" + StringUtils.join(ownersList, " || ") + ")";
-
+                    facets.put("own", owners);
                     var ownsQueryList = Arrays.asList(owners).stream()
                             .map((s) -> {
                                 try {
                                     return "&own=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
                                 } catch (UnsupportedEncodingException e) {
-                                    // TODO log here
                                     return Values.EMPTYSTRING;
                                 }
                             })
@@ -366,11 +362,8 @@ public class CodeRouteService {
                 }
             }
 
-            // split the query escape it and and it together
-            var cleanQueryString = this.searchCodeLib.formatQueryString(query);
-
-            // TODO the filters should NOT be added in here but passed down using the facets filter
-            var searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page, false);
+            // TODO check if the format query string needs to be modified for sphinx
+            var searchResult = this.indexService.search(this.searchCodeLib.formatQueryString(query), facets, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
 
             // Set chosen filters to be selected
@@ -417,19 +410,6 @@ public class CodeRouteService {
 
         map.put("isIndex", true);
         return map;
-    }
-
-    // TODO this should not be static
-    public static int getPage(Request request, int page) {
-        if (request.queryParams().contains("p")) {
-            try {
-                page = Integer.parseInt(request.queryParams("p"));
-                page = page > 19 ? 19 : page;
-            } catch (NumberFormatException ex) {
-                page = 0;
-            }
-        }
-        return page;
     }
 
     private HashMap<String, Object> getMap() {
