@@ -33,7 +33,7 @@
                         <h5>Sources</h5>
                         <#items as result>
                             <div class="checkbox">
-                                <label><input type="checkbox" name="repo" value="${result.source}"
+                                <label><input type="checkbox" name="source" value="${result.source}"
                                               <#if result.selected >checked</#if> /><span>${result.source[0..*12]}</span><span
                                             class="badge pull-right">${result.count}</span></label>
                             </div>
@@ -61,19 +61,6 @@
                             <div class="checkbox">
                                 <label><input type="checkbox" name="repo" value="${result.repoName}"
                                               <#if result.selected >checked</#if> /><span>${result.repoName[0..*12]}</span><span
-                                            class="badge pull-right">${result.count}</span></label>
-                            </div>
-                        </#items>
-                    </#list>
-                </div>
-
-                <div>
-                    <#list searchResult.repoOwnerResults>
-                        <h5>Owners</h5>
-                        <#items as result>
-                            <div class="checkbox">
-                                <label><input type="checkbox" name="own" value="${result.owner}"
-                                              <#if result.selected >checked</#if>/><span>${result.owner}</span><span
                                             class="badge pull-right">${result.count}</span></label>
                             </div>
                         </#items>

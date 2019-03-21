@@ -293,13 +293,18 @@ public class CodeRouteService {
             var altQuery = query.replaceAll("[^A-Za-z0-9 ]", " ").trim().replaceAll(" +", " ");
             var page = getPage(request, 0);
 
+            // Contains the filters that we want to apply
             var repos = new String[0];
             var langs = new String[0];
             var owners = new String[0];
+            var sources = new String[0];
 
+            // These are needed to create the query string again for HTML pages
+            // so that links preserve the filters
             var reposQueryString = Values.EMPTYSTRING;
             var langsQueryString = Values.EMPTYSTRING;
             var ownsQueryString = Values.EMPTYSTRING;
+            var sourceQueryString = Values.EMPTYSTRING;
 
             var facets = new HashMap<String, String[]>();
 
@@ -362,6 +367,25 @@ public class CodeRouteService {
                 }
             }
 
+            if (request.queryParams().contains("source")) {
+                sources = request.queryParamsValues("source");
+
+                if (sources.length != 0) {
+                    facets.put("source", sources);
+                    var sourcesQueryList = Arrays.asList(sources).stream()
+                            .map((s) -> {
+                                try {
+                                    return "&source=" + URLEncoder.encode(s, java.nio.charset.StandardCharsets.UTF_8.toString());
+                                } catch (UnsupportedEncodingException e) {
+                                    return Values.EMPTYSTRING;
+                                }
+                            })
+                            .collect(Collectors.toList());
+
+                    sourceQueryString = StringUtils.join(sourcesQueryList, "");
+                }
+            }
+
             // TODO check if the format query string needs to be modified for sphinx
             var searchResult = this.indexService.search(this.searchCodeLib.formatQueryString(query), facets, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
@@ -385,21 +409,26 @@ public class CodeRouteService {
                 }
             }
 
+            for (var f : searchResult.getCodeFacetSources()) {
+                if (Arrays.asList(sources).contains(f.source)) {
+                    f.setSelected(true);
+                }
+            }
+
             map.put("searchValue", query);
             map.put("searchResult", searchResult);
+
             map.put("reposQueryString", reposQueryString);
             map.put("langsQueryString", langsQueryString);
             map.put("ownsQueryString", ownsQueryString);
+            map.put("sourceQueryString", sourceQueryString);
+
             map.put("altQuery", altQuery);
             map.put("totalPages", searchResult.getPages().size());
 
             map.put("isHtml", true);
-
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", App.IS_COMMUNITY);
-            map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
-
             map.put("isIndex", false);
+
             return map;
         } else {
             map.put("repoCount", this.repo.getRepoCount());

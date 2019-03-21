@@ -259,6 +259,8 @@ public class SphinxIndexService extends IndexBaseService {
 
             var searchQuery = " SELECT id FROM codesearchrealtime WHERE MATCH(?) " +
                     this.getLanguageFacets(facets) +
+                    this.getRepoFacets(facets) +
+                    this.getSourceFacets(facets) +
                     " LIMIT ?, 20 " +
                     " FACET repoid ORDER BY COUNT(*) DESC " +
                     " FACET languageid ORDER BY COUNT(*) DESC" +
@@ -421,12 +423,10 @@ public class SphinxIndexService extends IndexBaseService {
      * looks up the id that is in the database so that we can tell sphinx which facets to apply
      */
     public String getLanguageFacets(HashMap<String, String[]> facets) {
-        if (facets == null) {
+        if (facets == null || !facets.containsKey("lan")) {
             return Values.EMPTYSTRING;
         }
 
-        // TODO replace this with single get query for all because it would be much faster
-        // TODO or cache the results in the language type? Probably not a bad idea...
         var languageFacets = Arrays.stream(facets.getOrDefault("lan", new String[0]))
                 .map((s) -> this.languageType.getByType(s).orElse(null))
                 .filter(Objects::nonNull)
@@ -441,5 +441,45 @@ public class SphinxIndexService extends IndexBaseService {
         }
 
         return languageFacetsString;
+    }
+
+    public String getRepoFacets(HashMap<String, String[]> facets) {
+        if (facets == null || !facets.containsKey("repo")) {
+            return Values.EMPTYSTRING;
+        }
+
+        var repoFacets = Arrays.stream(facets.getOrDefault("repo", new String[0]))
+                .map((s) -> this.repo.getRepoByName(s).orElse(null))
+                .filter(Objects::nonNull)
+                .map(x -> Integer.toString(x.getRowId()))
+                .collect(Collectors.toList());
+
+        var repoFacetsString = Values.EMPTYSTRING;
+
+        if (!repoFacets.isEmpty()) {
+            repoFacetsString = "AND repoid IN (" + String.join(",", repoFacets) + ")";
+        }
+
+        return repoFacetsString;
+    }
+
+    public String getSourceFacets(HashMap<String, String[]> facets) {
+        if (facets == null || !facets.containsKey("source")) {
+            return Values.EMPTYSTRING;
+        }
+
+        var repoFacets = Arrays.stream(facets.getOrDefault("source", new String[0]))
+                .map((s) -> this.source.getSourceByName(s).orElse(null))
+                .filter(Objects::nonNull)
+                .map(x -> Integer.toString(x.id))
+                .collect(Collectors.toList());
+
+        var sourceFacetsString = Values.EMPTYSTRING;
+
+        if (!repoFacets.isEmpty()) {
+            sourceFacetsString = "AND sourceid IN (" + String.join(",", repoFacets) + ")";
+        }
+
+        return sourceFacetsString;
     }
 }
