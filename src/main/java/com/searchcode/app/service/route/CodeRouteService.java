@@ -369,6 +369,7 @@ public class CodeRouteService {
             // split the query escape it and and it together
             var cleanQueryString = this.searchCodeLib.formatQueryString(query);
 
+            // TODO the filters should NOT be added in here but passed down using the facets filter
             var searchResult = this.indexService.search(cleanQueryString + reposFilter + langsFilter + ownersFilter, null, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
 
