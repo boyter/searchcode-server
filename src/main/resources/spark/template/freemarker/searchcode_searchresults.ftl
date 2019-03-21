@@ -19,10 +19,10 @@
 
                     <div class="center">
                         <a class="btn btn-xs btn-success filter-button"
-                           href="?q=${searchValue?html}&p=${searchResult.page - 1}${reposQueryString}${langsQueryString}${ownsQueryString}"
+                           href="?q=${searchValue?html}&p=${searchResult.page - 1}${reposQueryString}${langsQueryString}${ownsQueryString}${sourceQueryString}"
                            <#if searchResult.page == 0 >disabled="disabled"</#if>>&#9664;
                             Previous</a><span>&nbsp;</span><a class="btn btn-xs btn-success filter-button"
-                                                              href="?q=${searchValue?html}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}"
+                                                              href="?q=${searchValue?html}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}${sourceQueryString}"
                                                               <#if searchResult.page == totalPages >disabled="disabled"</#if>>Next
                             &#9654;</a>
                     </div>
@@ -133,7 +133,7 @@
             <ul class="pagination"><#list searchResult.pages>
                     <#items as page>
                         <li <#if page == searchResult.page>class="active"</#if>><a
-                                    href="?q=${searchValue?html}&p=${page}${reposQueryString}${langsQueryString}${ownsQueryString}">${page + 1}</a>
+                                    href="?q=${searchValue?html}&p=${page}${reposQueryString}${langsQueryString}${ownsQueryString}${sourceQueryString}">${page + 1}</a>
                         </li>
                     </#items>
                 </#list>
