@@ -176,23 +176,29 @@ public class CodeRouteService {
 
         var owaspResults = new ArrayList<OWASPMatchingResult>();
         if (CommonRouteService.owaspAdvisoriesEnabled()) {
-            if (!codeResult.languageName.equals("Text") && !codeResult.languageName.equals("Unknown")) {
-                owaspResults = this.owaspClassifier.classifyCode(codeResult.code, codeResult.languageName);
-            }
+            owaspResults = this.owaspClassifier.classifyCode(codeResult.code, codeResult.languageName);
         }
 
         var highlight = this.helpers.tryParseInt(codeResult.codeLines, "0") <= this.highlightLimit;
 
-        Optional<RepoResult> repoResult = this.repo.getRepoByName(codeResult.repoName);
-        repoResult.map(x -> map.put("source", x.getSource()));
-        repoResult.map(x -> map.put("fileLink", this.repositorySource.getLink(x.getData().source,
-                new HashMap<String, String>() {{
-                    put("user", x.getData().user);
-                    put("project", x.getData().project);
-                    put("branch", x.getBranch());
-                    put("filepath", codeResult.getDisplayLocation());
-                }})));
+        var repoResult = this.repo.getRepoByName(codeResult.repoName);
+        if (repoResult.isEmpty()) {
+            repoResult = this.repo.getRepoById(codeResult.repoId);
+        }
 
+        repoResult.ifPresent(x -> map.put("source", x.getSource()));
+        repoResult.ifPresent(x -> {
+            var m = new HashMap<String, String>();
+
+            m.put("branch", x.getBranch());
+            m.put("filepath", codeResult.getDisplayLocation());
+
+            if (x.getData() != null) {
+                m.put("user", x.getData().user);
+                m.put("project", x.getData().project);
+                map.put("fileLink", this.repositorySource.getLink(x.getData().source, m));
+            }
+        });
 
         map.put("fileName", codeResult.fileName);
         map.put("codePath", codeResult.getDisplayLocation());
@@ -208,8 +214,9 @@ public class CodeRouteService {
         map.put("owaspResults", owaspResults);
 
         var coco = new Cocomo2();
-        var estimatedEffort = coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0"));
-        var estimatedCost = (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary());
+        var estimatedCost = (int) coco.estimateCost(
+                coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0")),
+                CommonRouteService.getAverageSalary());
         map.put("estimatedCost", estimatedCost);
 
         return map;
