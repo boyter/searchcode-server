@@ -48,7 +48,7 @@
     <div style="height:400px;">
         <div style="text-align:center; top: 350px;left: 50%; transform: translate(-50%, 0); position:absolute;">
             <div class="white repocount">
-                <form method="GET" class="form-inline" <#if isHtml??>action="/html/"</#if>>
+                <form method="GET" class="form-inline" action="/">
                     <div class="form-group">
                         <input id="searchbox" type="text" size="50" class="form-control" name="q" autofocus="autofocus"
                                placeholder="Type a code snippet or function" autocapitalize="off" autocorrect="off"

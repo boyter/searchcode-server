@@ -20,11 +20,10 @@
                     <div class="center">
                         <a class="btn btn-xs btn-success filter-button"
                            href="?q=${searchValue?html}&p=${searchResult.page - 1}${reposQueryString}${langsQueryString}${ownsQueryString}${sourceQueryString}"
-                           <#if searchResult.page == 0 >disabled="disabled"</#if>>&#9664;
-                            Previous</a><span>&nbsp;</span><a class="btn btn-xs btn-success filter-button"
-                                                              href="?q=${searchValue?html}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}${sourceQueryString}"
-                                                              <#if searchResult.page == totalPages >disabled="disabled"</#if>>Next
-                            &#9654;</a>
+                           <#if searchResult.page == 0 >disabled="disabled"</#if>>◀ Previous</a><span>&nbsp;</span><a
+                                class="btn btn-xs btn-success filter-button"
+                                href="?q=${searchValue?html}&p=${searchResult.page + 1}${reposQueryString}${langsQueryString}${ownsQueryString}${sourceQueryString}"
+                                <#if searchResult.page == totalPages >disabled="disabled"</#if>>Next ▶</a>
                     </div>
                 </div>
 

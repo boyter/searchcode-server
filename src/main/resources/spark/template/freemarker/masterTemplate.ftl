@@ -20,7 +20,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" <#if isHtml??>href="/html/" <#else>href="/"</#if>>
+            <a class="navbar-brand" href="/">
                 <#if logoImage != "">
                     <img height="24px" src="${logoImage}"/>
                 <#else>
@@ -40,7 +40,7 @@
     </nav>
     <div class="container">
         <div class="search-options">
-            <form method="GET" <#if isHtml??>action="/html/" <#else>action="/"</#if>>
+            <form method="GET" action="/">
                 <div class="form-inline">
                     <div class="form-group"><input name="q" autocapitalize="off" autocorrect="off" autocomplete="off"
                                                    spellcheck="true" size="50" placeholder="Search Expression"

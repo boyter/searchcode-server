@@ -86,7 +86,7 @@ public class CodeRouteService {
     }
 
     public ModelAndView root(Request request, Response response) {
-        var map = this.getMap();
+        var map = this.getMap(request);
         map.put("repoCount", this.repo.getRepoCount());
 
         if (request.queryParams().contains("q") && !request.queryParams("q").trim().equals("")) {
@@ -140,7 +140,7 @@ public class CodeRouteService {
                 pathValue = request.queryParams("path").trim();
             }
 
-            boolean isLiteral = false;
+            var isLiteral = false;
             if (request.queryParams().contains("lit")) {
                 isLiteral = Boolean.parseBoolean(request.queryParams("lit").trim());
             }
@@ -148,9 +148,6 @@ public class CodeRouteService {
             map.put("searchValue", query);
             map.put("searchResultJson", gson.toJson(new CodePreload(query, page, langsList, reposList, ownsList, srcsList, pathValue, isLiteral)));
 
-            map.put("logoImage", CommonRouteService.getLogo());
-            map.put("isCommunity", App.IS_COMMUNITY);
-            map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));
             return new ModelAndView(map, "search_ajax.ftl");
         }
 
@@ -165,7 +162,7 @@ public class CodeRouteService {
     }
 
     public Map<String, Object> getCode(Request request, Response response) {
-        var map = this.getMap();
+        var map = this.getMap(request);
 
         var codeId = request.params(":codeid");
         var codeResult = this.indexService.getCodeResultByCodeId(codeId);
@@ -219,7 +216,7 @@ public class CodeRouteService {
     }
 
     public Map<String, Object> getProject(Request request, Response response) {
-        var map = this.getMap();
+        var map = this.getMap(request);
 
         String repoName = request.params(":reponame");
         Optional<RepoResult> repository = this.repo.getRepoByName(repoName);
@@ -261,7 +258,7 @@ public class CodeRouteService {
     }
 
     public Map<String, Object> getRepositoryList(Request request, Response response) {
-        var map = this.getMap();
+        var map = this.getMap(request);
 
         String offSet = request.queryParams("offset");
 
@@ -286,7 +283,7 @@ public class CodeRouteService {
     }
 
     public Map<String, Object> html(Request request, Response response) {
-        var map = this.getMap();
+        var map = this.getMap(request);
 
         if (request.queryParams().contains("q")) {
             var query = request.queryParams("q").trim();
@@ -441,9 +438,10 @@ public class CodeRouteService {
         return map;
     }
 
-    private HashMap<String, Object> getMap() {
+    private HashMap<String, Object> getMap(Request request) {
         var map = new HashMap<String, Object>();
 
+        map.put("currentUrl", request.url());
         map.put("logoImage", CommonRouteService.getLogo());
         map.put("isCommunity", App.IS_COMMUNITY);
         map.put(Values.EMBED, this.data.getDataByName(Values.EMBED, Values.EMPTYSTRING));

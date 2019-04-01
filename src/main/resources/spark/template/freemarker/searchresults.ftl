@@ -11,7 +11,7 @@
 
         <div class="col-md-3 search-filters-container search-filters">
 
-            <form <#if isHtml??>action="/html/" <#else>action="/"</#if>>
+            <form action="/">
                 <input name="q" value="${searchValue?html}" type="hidden">
 
                 <div>

@@ -69,18 +69,6 @@ public class ServerRoutes {
         get("/healthcheck/", (request, response) -> new JsonTransformer().render(true));
         get("/health-check/", (request, response) -> new JsonTransformer().render(true));
 
-        get("/html/", (request, response) -> {
-            var codeRouteService = new CodeRouteService();
-            var map = codeRouteService.html(request, response);
-
-            if ((Boolean)map.getOrDefault("isIndex", Boolean.TRUE)) {
-                return new FreeMarkerEngine().render(new ModelAndView(map, "index.ftl"));
-            }
-
-            return new FreeMarkerEngine().render(new ModelAndView(map, "searchresults.ftl"));
-
-        });
-
         get("/file/:codeid/:reponame/*", (request, response) -> {
             var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl"));
