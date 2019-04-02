@@ -231,6 +231,7 @@ public class SphinxIndexService extends IndexBaseService {
         var byId = this.sourceCode.getById(this.helpers.tryParseInt(codeId, "-1"));
         return byId.map(x -> {
             var lan = this.languageType.getById(x.languageName).orElse(new LanguageTypeDTO());
+            var repo = this.repo.getRepoById(x.repoId).orElse(new RepoResult());
 
             return new CodeResult(Arrays.asList(x.content.split("\n")), null)
                     .setFileName(x.filename)
@@ -239,6 +240,8 @@ public class SphinxIndexService extends IndexBaseService {
                     .setCommentLines(Integer.toString(x.comment))
                     .setCodeId(Integer.toString(x.id))
                     .setRepoId(x.repoId)
+                    .setMd5hash(x.hash)
+                    .setRepoName(repo.getName())
                     .setLanguageName(lan.getType());
         }).orElse(null);
     }
