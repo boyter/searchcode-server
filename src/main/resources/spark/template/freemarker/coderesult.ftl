@@ -13,21 +13,6 @@
             <h6><a href="${fileLink}">${fileLink}</a></h6>
         </#if>
 
-        <center>
-            <form method="GET" action="/">
-                <div class="form-inline">
-                    <div class="form-group">
-                        <input id="searchwithin" name="q" autocapitalize="off" autocorrect="off" autocomplete="off"
-                               spellcheck="true" size="50" placeholder="Search within ${repoName?html}" type="search"
-                               class="form-control"/>
-                        <input type="hidden" name="repo" value="${repoName?html}"/>
-                    </div>
-                    <input type="submit" value="search" class="btn btn-primary">
-                </div>
-            </form>
-        </center>
-        <br/>
-
         <table class="table">
             <tbody>
             <tr>
@@ -44,9 +29,11 @@
                     <td></td>
                 <#else>
                     <td>
-                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Owner
+                        <#if codeOwner != "">
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Owner
+                        </#if>
                     </td>
-                    <td>${codeOwner}</td>
+                    <td><#if codeOwner != "">${codeOwner}</#if></td>
                 </#if>
             </tr>
             <tr>
@@ -169,7 +156,6 @@
         // Get highlighted text and prefill the search boxes
         function gText(e) {
             var t = (document.all) ? document.selection.createRange().text : document.getSelection();
-            document.getElementById('searchwithin').value = t;
             document.getElementById('searchbox').value = t;
         }
 

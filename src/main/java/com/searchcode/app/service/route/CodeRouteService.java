@@ -215,7 +215,7 @@ public class CodeRouteService {
 
         var coco = new Cocomo2();
         var estimatedCost = (int) coco.estimateCost(
-                coco.estimateEffort(this.helpers.tryParseDouble(codeResult.getCodeLines(), "0")),
+                coco.estimateEffort(this.helpers.tryParseDouble(codeResult.lines, "0")),
                 CommonRouteService.getAverageSalary());
         map.put("estimatedCost", estimatedCost);
 
