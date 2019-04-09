@@ -197,7 +197,8 @@ public class MySQLRepo implements IRepo {
                 .setRowId(rowId)
                 .setName(repoName)
                 .setScm(repoScm)
-                .setUrl(repoUrl);
+                .setUrl(repoUrl)
+                .setSource(repoUrl);
 
         return Optional.of(repoResult);
     }
