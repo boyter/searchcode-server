@@ -16,11 +16,15 @@ public class SearchcodeRoutes {
             var codeRouteService = new CodeRouteService();
             var map = codeRouteService.html(request, response);
 
-            if ((Boolean)map.getOrDefault("isIndex", Boolean.TRUE)) {
-                return new FreeMarkerEngine().render(new ModelAndView(map, "index.ftl"));
+            if ((Boolean) map.getOrDefault("isIndex", Boolean.TRUE)) {
+                return new FreeMarkerEngine().render(
+                        new ModelAndView(map,
+                                "index.ftl"));
             }
 
-            return new FreeMarkerEngine().render(new ModelAndView(map, "searchcode_searchresults.ftl"));
+            return new FreeMarkerEngine().render(
+                    new ModelAndView(map,
+                            "searchcode_searchresults.ftl"));
         });
 
         get("/healthcheck/", (request, response) -> new JsonTransformer().render(true));
@@ -28,12 +32,16 @@ public class SearchcodeRoutes {
 
         get("/file/:codeid/*", (request, response) -> {
             var codeRouteService = new CodeRouteService();
-            return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getCode(request, response), "coderesult.ftl"));
+            return new FreeMarkerEngine().render(
+                    new ModelAndView(codeRouteService.getCode(request, response),
+                            "coderesult.ftl"));
         });
 
         get("/repository/overview/:reponame/", (request, response) -> {
             var codeRouteService = new CodeRouteService();
-            return new FreeMarkerEngine().render(new ModelAndView(codeRouteService.getProject(request, response), "repository_overview.ftl"));
+            return new FreeMarkerEngine().render(
+                    new ModelAndView(codeRouteService.getProject(request, response),
+                            "repository_overview.ftl"));
         });
     }
 }

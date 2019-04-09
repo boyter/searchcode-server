@@ -242,6 +242,7 @@ public class SphinxIndexService extends IndexBaseService {
                     .setRepoId(x.repoId)
                     .setMd5hash(x.hash)
                     .setRepoName(repo.getName())
+                    .setRepoLocation(x.location)
                     .setLanguageName(lan.getType());
         }).orElse(null);
     }
