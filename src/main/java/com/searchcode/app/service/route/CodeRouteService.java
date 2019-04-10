@@ -17,7 +17,6 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.dto.CodePreload;
 import com.searchcode.app.dto.OWASPMatchingResult;
-import com.searchcode.app.dto.ProjectStats;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CodeMatcher;
 import com.searchcode.app.service.Highlight;
@@ -207,6 +206,7 @@ public class CodeRouteService {
         map.put("languageName", codeResult.languageName);
         map.put("md5Hash", codeResult.md5hash);
         map.put("repoName", codeResult.repoName);
+        map.put("repoId", codeResult.repoId);
         map.put("highlight", highlight);
         map.put("repoLocation", codeResult.getRepoLocation());
         map.put("highligher", CommonRouteService.getSyntaxHighlighter());
@@ -225,17 +225,23 @@ public class CodeRouteService {
     public Map<String, Object> getProject(Request request, Response response) {
         var map = this.getMap(request);
 
-        String repoName = request.params(":reponame");
-        Optional<RepoResult> repository = this.repo.getRepoByName(repoName);
-        Cocomo2 coco = new Cocomo2();
-        Gson gson = new Gson();
+        var repoName = request.params(":reponame");
+        var repository = this.repo.getRepoByName(repoName);
+
+        if (repository.isEmpty()) {
+            var repoId = this.helpers.tryParseInt(request.params(":repoid"), "-1");
+            repository = this.repo.getRepoById(repoId);
+        }
+
+        var coco = new Cocomo2();
+        var gson = new Gson();
 
         if (!repository.isPresent()) {
             response.redirect("/404/");
             halt();
         }
 
-        ProjectStats projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
+        var projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
                 .orElseGet(() -> this.indexService.getProjectStats(Values.EMPTYSTRING));
 
         map.put("busBlurb", this.searchCodeLib.generateBusBlurb(projectStats));
@@ -248,7 +254,7 @@ public class CodeRouteService {
         map.put("ownerFacet", projectStats.getRepoFacetOwner());
         map.put("codeByLines", projectStats.getCodeByLines());
 
-        double estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
+        var estimatedEffort = coco.estimateEffort(projectStats.getTotalCodeLines());
         map.put("estimatedEffort", estimatedEffort);
         map.put("estimatedCost", (int) coco.estimateCost(estimatedEffort, CommonRouteService.getAverageSalary()));
 

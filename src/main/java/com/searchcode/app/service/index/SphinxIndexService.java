@@ -213,7 +213,7 @@ public class SphinxIndexService extends IndexBaseService {
 
     @Override
     public ProjectStats getProjectStats(String repoName) {
-        return null;
+        return new ProjectStats(0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     @Override

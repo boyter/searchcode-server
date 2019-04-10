@@ -37,7 +37,7 @@ public class SearchcodeRoutes {
                             "coderesult.ftl"));
         });
 
-        get("/repository/overview/:reponame/", (request, response) -> {
+        get("/repository/overview/:reponame/:repoid/", (request, response) -> {
             var codeRouteService = new CodeRouteService();
             return new FreeMarkerEngine().render(
                     new ModelAndView(codeRouteService.getProject(request, response),

@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="/css/highlight/default.css">
         <script src="/js/jquery-1.11.1.min.js"></script>
 
-        <h4 class="codepath"><a href="/repository/overview/${repoName}/">${repoName}</a> ${codePath}/${fileName}</h4>
+        <h4 class="codepath"><a href="/repository/overview/${repoName}/<#if repoId??>${repoId?c}/</#if>">${repoName}</a> ${codePath}/${fileName}</h4>
 
         <#if fileLink?? && fileLink != "">
             <h6><a href="${fileLink}">${fileLink}</a></h6>
