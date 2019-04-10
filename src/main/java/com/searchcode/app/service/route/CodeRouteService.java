@@ -241,8 +241,8 @@ public class CodeRouteService {
             halt();
         }
 
-        var projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName()))
-                .orElseGet(() -> this.indexService.getProjectStats(Values.EMPTYSTRING));
+        var projectStats = repository.map(x -> this.indexService.getProjectStats(x.getName(), x.getRowId()))
+                .orElseGet(() -> this.indexService.getProjectStats(Values.EMPTYSTRING, -1));
 
         map.put("busBlurb", this.searchCodeLib.generateBusBlurb(projectStats));
         repository.ifPresent(x -> map.put("repoLocation", x.getUrl()));

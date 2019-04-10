@@ -601,13 +601,13 @@ public class IndexService extends IndexBaseService {
      * Collects project stats for a repo given its name
      */
     @Override
-    public ProjectStats getProjectStats(String repoName) {
+    public ProjectStats getProjectStats(String repoName, int repoId) {
         if (this.helpers.isNullEmptyOrWhitespace(repoName)) {
             return new ProjectStats(0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         }
 
-        int totalCodeLines = 0;
-        int totalFiles = 0;
+        var totalCodeLines = 0;
+        var totalFiles = 0;
         List<CodeFacetLanguage> codeFacetLanguages = new ArrayList<>();
         List<CodeFacetOwner> repoFacetOwners = new ArrayList<>();
         List<CodeFacetLanguage> codeByLines = new ArrayList<>();
@@ -616,22 +616,22 @@ public class IndexService extends IndexBaseService {
 
         try {
             reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
-            IndexSearcher searcher = new IndexSearcher(reader);
+            var searcher = new IndexSearcher(reader);
 
-            Analyzer analyzer = new CodeAnalyzer();
-            QueryParser parser = new QueryParser(Values.CONTENTS, analyzer);
-            Query query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
+            var analyzer = new CodeAnalyzer();
+            var parser = new QueryParser(Values.CONTENTS, analyzer);
+            var query = parser.parse(Values.REPO_NAME_LITERAL + ":" + this.helpers.replaceForIndex(repoName));
 
-            TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-            ScoreDoc[] hits = results.scoreDocs;
+            var results = searcher.search(query, Integer.MAX_VALUE);
+            var hits = results.scoreDocs;
 
-            Map<String, Integer> linesCount = new HashMap<>();
+            var linesCount = new HashMap<String, Integer>();
 
             for (int i = 0; i < results.totalHits; i++) {
-                Document doc = searcher.doc(hits[i].doc);
+                var doc = searcher.doc(hits[i].doc);
 
-                String languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
-                int lines = this.helpers.tryParseInt(doc.get(Values.LINES), "0");
+                var languageName = doc.get(Values.LANGUAGENAME).replace("_", " ");
+                var lines = this.helpers.tryParseInt(doc.get(Values.LINES), "0");
                 totalCodeLines += lines;
 
                 if (linesCount.containsKey(languageName)) {
@@ -642,7 +642,7 @@ public class IndexService extends IndexBaseService {
                 }
             }
 
-            for (String key: linesCount.keySet()) {
+            for (var key: linesCount.keySet()) {
                 codeByLines.add(new CodeFacetLanguage(key, linesCount.get(key)));
             }
             codeByLines.sort((a, b) -> b.getCount() - a.getCount());

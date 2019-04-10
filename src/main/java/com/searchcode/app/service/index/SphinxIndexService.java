@@ -212,8 +212,12 @@ public class SphinxIndexService extends IndexBaseService {
     }
 
     @Override
-    public ProjectStats getProjectStats(String repoName) {
-        return new ProjectStats(0, 0, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    public ProjectStats getProjectStats(String repoName, int repoId) {
+        // TODO add cache for this
+        var totalFiles = this.sourceCode.getTotalFiles(repoId);
+        var totalLines = this.sourceCode.getTotalLines(repoId);
+
+        return new ProjectStats(totalLines, totalFiles, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
     @Override

@@ -389,7 +389,7 @@ public class IndexServiceTest extends TestCase {
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        ProjectStats projectStats = this.indexService.getProjectStats(this.repoName);
+        ProjectStats projectStats = this.indexService.getProjectStats(this.repoName, -1);
         assertThat(projectStats.getTotalFiles()).isEqualTo(1);
         assertThat(projectStats.getTotalCodeLines()).isEqualTo(99);
     }
@@ -676,7 +676,7 @@ public class IndexServiceTest extends TestCase {
         methodList.add(arg -> this.indexService.flipIndex());
         methodList.add(arg -> this.indexService.getCodeResultByCodeId(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
         methodList.add(arg -> this.indexService.getIndexedDocumentCount());
-        methodList.add(arg -> this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1)));
+        methodList.add(arg -> this.indexService.getProjectStats(RandomStringUtils.randomAscii(rand.nextInt(20) + 1), -1));
         methodList.add(arg -> {
             try {
                 Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();

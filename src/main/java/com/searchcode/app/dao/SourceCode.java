@@ -72,6 +72,50 @@ public class SourceCode {
         return maxId;
     }
 
+    public int getTotalFiles(int repoId) {
+        var count = 0;
+        var connStmtRs = new ConnStmtRs();
+
+        try {
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select count(id) as total from code where repoid = ? limit 1;");
+            connStmtRs.stmt.setInt(1, repoId);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+
+            while (connStmtRs.rs.next()) {
+                count = connStmtRs.rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("b507183c::error in class %s exception %s searchcode", ex.getClass(), ex.getMessage()));
+        } finally {
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        return count;
+    }
+
+    public int getTotalLines(int repoId) {
+        var count = 0;
+        var connStmtRs = new ConnStmtRs();
+
+        try {
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select sum(linescount) as total from code where repoid = ? limit 1;");
+            connStmtRs.stmt.setInt(1, repoId);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+
+            while (connStmtRs.rs.next()) {
+                count = connStmtRs.rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("e9eeec4a::error in class %s exception %s searchcode", ex.getClass(), ex.getMessage()));
+        } finally {
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        return count;
+    }
+
     public List<CodeResult> getByIds(List<Integer> codeIds) {
         var codeResultList = new ArrayList<CodeResult>();
         var connStmtRs = new ConnStmtRs();

@@ -120,7 +120,7 @@ public class ApiRouteService {
 
     public String getFileCount(Request request, Response response) {
         if (request.queryParams().contains("reponame")) {
-            ProjectStats projectStats = this.indexService.getProjectStats(request.queryParams("reponame"));
+            ProjectStats projectStats = this.indexService.getProjectStats(request.queryParams("reponame"), -1);
             return Values.EMPTYSTRING + projectStats.getTotalFiles();
         }
 

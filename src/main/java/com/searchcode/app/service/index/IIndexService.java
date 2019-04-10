@@ -51,7 +51,7 @@ public interface IIndexService {
 
     Document buildDocument(CodeIndexDocument codeIndexDocument);
     int getIndexedDocumentCount();
-    ProjectStats getProjectStats(String repoName);
+    ProjectStats getProjectStats(String repoName, int repoId);
     SearchResult getProjectFileTree(String repoName);
     List<String> getRepoDocuments(String repoName, int page);
     CodeResult getCodeResultByCodeId(String codeId);
