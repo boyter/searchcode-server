@@ -177,7 +177,7 @@ public class CodeRouteServiceTest extends TestCase {
         assertThat(map.get("owaspResults")).isNotNull();
         assertThat(map.get("logoImage")).isNotNull();
         assertThat(map.get("isCommunity")).isEqualTo(App.IS_COMMUNITY);
-        assertThat(map.get("estimatedCost")).isEqualTo(0);
+        assertThat(map.get("estimatedCost")).isEqualTo(2395);
     }
 
     public void testGetProject() {
