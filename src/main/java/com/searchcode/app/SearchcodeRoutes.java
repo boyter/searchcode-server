@@ -1,8 +1,10 @@
 package com.searchcode.app;
 
+import com.searchcode.app.dto.api.codesearch_I;
 import com.searchcode.app.service.route.CodeRouteService;
 import com.searchcode.app.util.JsonTransformer;
 import spark.ModelAndView;
+import spark.Response;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import static spark.Spark.get;
@@ -50,7 +52,8 @@ public class SearchcodeRoutes {
         path("/api", () -> {
             // Older endpoints maintained for backwards compatibility
             get("/codesearch_I/", (request, response) -> {
-               return new JsonTransformer().render(null);
+                addJsonHeaders(response);
+               return new JsonTransformer().render(new codesearch_I());
             });
 
             // All new API endpoints should go in here to allow public exposure and versioning
@@ -64,5 +67,9 @@ public class SearchcodeRoutes {
                 });
             });
         });
+    }
+
+    private static void addJsonHeaders(Response response) {
+        response.header("Content-Type", "application/json");
     }
 }

@@ -15,11 +15,18 @@ import com.searchcode.app.service.Singleton;
 
 public class CodeFacetLanguage {
     public String languageName = Values.EMPTYSTRING;
+    public int languageId = 0;
     public int count = 0;
     public boolean selected = false;
 
     public CodeFacetLanguage(String languageName, int count) {
         this.setLanguageName(languageName);
+        this.setCount(count);
+    }
+
+    public CodeFacetLanguage(String languageName, int languageId, int count) {
+        this.setLanguageName(languageName);
+        this.setLanguageId(languageId);
         this.setCount(count);
     }
 
@@ -37,6 +44,14 @@ public class CodeFacetLanguage {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public void setLanguageId(int languageId) {
+        this.languageId = languageId;
+    }
+
+    public int getLanguageId() {
+        return this.languageId;
     }
 
     public boolean getSelected() {

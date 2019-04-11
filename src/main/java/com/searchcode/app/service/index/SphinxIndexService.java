@@ -32,17 +32,19 @@ public class SphinxIndexService extends IndexBaseService {
     private final IRepo repo;
     private final com.searchcode.app.dao.Source source;
     private final Cache<String, SearchResult> cache;
+    private final Cache<String, ProjectStats> projectStatsCache;
 
     public SphinxIndexService() {
-        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getSearchResultCache());
+        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getSearchResultCache(), CacheSingleton.getProjectStatsCache());
     }
 
-    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source, Cache<String, SearchResult> cache) {
+    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source, Cache<String, SearchResult> cache, Cache<String, ProjectStats> projectStatsCache) {
         super();
         this.languageType = languageType;
         this.repo = repo;
         this.source = source;
         this.cache = cache;
+        this.projectStatsCache = projectStatsCache;
 
         this.helpers = Singleton.getHelpers();
         this.sphinxSearchConfig = new SphinxSearchConfig();
@@ -213,11 +215,30 @@ public class SphinxIndexService extends IndexBaseService {
 
     @Override
     public ProjectStats getProjectStats(String repoName, int repoId) {
+        var cacheKey = repoName + repoId;
+        var cacheResult = this.projectStatsCache.peekEntry(cacheKey);
+        if (cacheResult != null) {
+            return cacheResult.getValue();
+        }
+
         // TODO add cache for this
         var totalFiles = this.sourceCode.getTotalFiles(repoId);
         var totalLines = this.sourceCode.getTotalLines(repoId);
 
-        return new ProjectStats(totalLines, totalFiles, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        var languageFacet = this.sourceCode.getLanguageFacet(repoId);
+        languageFacet.stream().forEach(x -> {
+            var l = this.languageType.getById(x.languageId);
+
+            l.ifPresent(y -> {
+                x.setLanguageName(y.getType());
+            });
+
+        });
+
+        var projectStats = new ProjectStats(totalLines, totalFiles, languageFacet, new ArrayList<>(), new ArrayList<>());
+
+        this.projectStatsCache.put(cacheKey, projectStats);
+        return projectStats;
     }
 
     @Override
