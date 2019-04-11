@@ -221,21 +221,24 @@ public class SphinxIndexService extends IndexBaseService {
             return cacheResult.getValue();
         }
 
-        // TODO add cache for this
         var totalFiles = this.sourceCode.getTotalFiles(repoId);
         var totalLines = this.sourceCode.getTotalLines(repoId);
 
         var languageFacet = this.sourceCode.getLanguageFacet(repoId);
         languageFacet.stream().forEach(x -> {
-            var l = this.languageType.getById(x.languageId);
-
-            l.ifPresent(y -> {
+            this.languageType.getById(x.languageId).ifPresent(y -> {
                 x.setLanguageName(y.getType());
             });
-
         });
 
-        var projectStats = new ProjectStats(totalLines, totalFiles, languageFacet, new ArrayList<>(), new ArrayList<>());
+        var languageLineFacet = this.sourceCode.getLanguageLineFacet(repoId);
+        languageLineFacet.stream().forEach(x -> {
+            this.languageType.getById(x.languageId).ifPresent(y -> {
+                x.setLanguageName(y.getType());
+            });
+        });
+
+        var projectStats = new ProjectStats(totalLines, totalFiles, languageFacet, languageLineFacet, new ArrayList<>());
 
         this.projectStatsCache.put(cacheKey, projectStats);
         return projectStats;

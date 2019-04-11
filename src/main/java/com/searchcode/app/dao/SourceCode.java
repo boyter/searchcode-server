@@ -132,7 +132,30 @@ public class SourceCode {
                 results.add(c);
             }
         } catch (SQLException ex) {
-            this.logger.severe(String.format("e9eeec4a::error in class %s exception %s searchcode", ex.getClass(), ex.getMessage()));
+            this.logger.severe(String.format("1c345fda::error in class %s exception %s searchcode", ex.getClass(), ex.getMessage()));
+        } finally {
+            this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
+        }
+
+        return results;
+    }
+
+    public ArrayList<CodeFacetLanguage> getLanguageLineFacet(int repoId) {
+        var connStmtRs = new ConnStmtRs();
+        var results = new ArrayList<CodeFacetLanguage>();
+
+        try {
+            connStmtRs.conn = this.dbConfig.getConnection();
+            connStmtRs.stmt = connStmtRs.conn.prepareStatement("select languagename, sum(linescount) as total from code where repoid = ? group by languagename order by 2 desc;");
+            connStmtRs.stmt.setInt(1, repoId);
+            connStmtRs.rs = connStmtRs.stmt.executeQuery();
+
+            while (connStmtRs.rs.next()) {
+                var c = new CodeFacetLanguage(Values.EMPTYSTRING, connStmtRs.rs.getInt(1), connStmtRs.rs.getInt(2));
+                results.add(c);
+            }
+        } catch (SQLException ex) {
+            this.logger.severe(String.format("3796e0f7::error in class %s exception %s searchcode", ex.getClass(), ex.getMessage()));
         } finally {
             this.helpers.closeQuietly(connStmtRs, this.dbConfig.closeConnection());
         }
