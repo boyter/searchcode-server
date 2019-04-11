@@ -69,33 +69,4 @@ public class SphinxIndexServiceTest extends TestCase {
         List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
         assertThat(codeFacetLanguages).hasSize(0);
     }
-
-//    public void testTransformLanguageTypeSingleResult() {
-//        if (Singleton.getHelpers().isStandaloneInstance()) return;
-//
-//        LanguageType mock = Mockito.mock(LanguageType.class);
-//        SphinxIndexService sphinxIndexService = new SphinxIndexService(mock);
-//
-//        when(mock.getLanguageNamesByIds(new ArrayList<>(Arrays.asList("1"))))
-//                .thenReturn(new ArrayList<>(Arrays.asList(new LanguageTypeDTO(1, "Java"))));
-//
-//        List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>(Arrays.asList(new CodeFacetLanguage("Java", 99)));
-//        assertThat(codeFacetLanguages).hasSize(1);
-//    }
-
-//    public void testIndexDocumentEndToEnd() throws IOException {
-////        SphinxIndexService sphinxIndexService = new SphinxIndexService();
-////
-////        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
-////        queue.add(this.codeIndexDocument);
-////        sphinxIndexService.indexDocument(queue);
-//
-//        for (int i=1; i <= 100; i++) {
-//            int mod = i % 8;
-//
-//            mod = mod == 0 ? 8 : mod;
-//
-//            System.out.println(i + " shard " + mod);
-//        }
-//    }
 }
