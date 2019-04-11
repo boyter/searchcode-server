@@ -1,9 +1,7 @@
 <#import "masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="${repoName} - Repository Overview">
-
     <div class="row">
         <br/>
-
         <center>
             <form method="GET" action="/">
                 <div class="form-inline">
@@ -19,7 +17,7 @@
         </center>
 
         <h4>Repository Overview for ${repoName}</h4>
-        <p>${busBlurb}</p>
+        <#if totalOwners != 0><p>${busBlurb}</p></#if>
         <table class="table">
             <tbody>
             <tr>
@@ -75,26 +73,23 @@
                     </table>
                 </td>
                 <td colspan="2">
-                    <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${totalOwners} Code
-                    Owners<br/><br/>
+                    <#if totalOwners != 0>
+                        <span class="glyphicon glyphicon-user" aria-hidden="true"></span> ${totalOwners} Code
+                        Owners<br/><br/>
 
-                    <strong>By File Count</strong><br/>
-                    <#list ownerFacet>
-                        <#items as result>
-                            <a href="/?q=on:${result.ownerSearchable}&repo=${repoName?html}&lit=true">${result.owner}</a>
-                            <small style="color: #999;">${result.count}
-                                files ${(result.count / totalFiles * 100)?ceiling}% of project
-                            </small><br/>
-                        </#items>
-                    </#list>
+                        <strong>By File Count</strong><br/>
+                        <#list ownerFacet>
+                            <#items as result>
+                                <a href="/?q=on:${result.ownerSearchable}&repo=${repoName?html}&lit=true">${result.owner}</a>
+                                <small style="color: #999;">${result.count}
+                                    files ${(result.count / totalFiles * 100)?ceiling}% of project
+                                </small><br/>
+                            </#items>
+                        </#list>
+                    </#if>
                 </td>
             </tr>
             </tbody>
         </table>
-
-
     </div>
-
-
-
 </@layout.masterTemplate>
