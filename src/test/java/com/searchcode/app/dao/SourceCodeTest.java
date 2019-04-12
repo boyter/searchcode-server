@@ -41,6 +41,22 @@ public class SourceCodeTest extends TestCase {
         assertThat(languageFacet).hasSize(0);
     }
 
+    public void testGetTotalLines() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        var code = new SourceCode();
+        var lines = code.getTotalLines(-1);
+        assertThat(lines).isZero();
+    }
+
+    public void testGetTotalFiles() {
+        if (Singleton.getHelpers().isStandaloneInstance()) return;
+
+        var code = new SourceCode();
+        var files = code.getTotalFiles(-1);
+        assertThat(files).isZero();
+    }
+
     public void testGetLocation() {
         if (Singleton.getHelpers().isStandaloneInstance()) return;
 
