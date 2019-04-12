@@ -397,7 +397,12 @@ public class CodeRouteService {
             }
 
             // TODO check if the format query string needs to be modified for sphinx
-            var searchResult = this.indexService.search(this.searchCodeLib.formatQueryString(query), facets, page, false);
+            var modQuery = query;
+            if (this.helpers.isStandaloneInstance()) {
+                modQuery = this.searchCodeLib.formatQueryString(query);
+            }
+
+            var searchResult = this.indexService.search(modQuery, facets, page, false);
             searchResult.setCodeResultList(this.codeMatcher.formatResults(searchResult.getCodeResultList(), query, true));
 
             // Set chosen filters to be selected
