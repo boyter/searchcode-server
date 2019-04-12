@@ -321,8 +321,8 @@ public class SourceCode {
             connStmtRs.conn = this.dbConfig.getConnection();
 
             var query = "   SELECT id, repoid, filetypeid, location, filename, UNCOMPRESS(content) AS content, hash, languagename, linescount" +
-                        "     FROM code" +
-                        "    WHERE id=? LIMIT 1;";
+                    "     FROM code" +
+                    "    WHERE id=? LIMIT 1;";
 
             connStmtRs.stmt = connStmtRs.conn.prepareStatement(query);
             connStmtRs.stmt.setInt(1, id);
