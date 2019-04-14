@@ -278,6 +278,8 @@ public class SphinxIndexService extends IndexBaseService {
 
     @Override
     public SearchResult search(String queryString, HashMap<String, String[]> facets, int page, boolean isLiteral) {
+        // TODO add cache for this response
+
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -384,10 +386,8 @@ public class SphinxIndexService extends IndexBaseService {
         codeFacetRepository = this.transformRepositoryType(codeFacetRepository);
         codeFacetSource = this.transformSourceType(codeFacetSource);
 
-        // Need to convert
 
         var searchResult = new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), codeFacetSource);
-
         return searchResult;
     }
 

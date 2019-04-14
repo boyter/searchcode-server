@@ -12,10 +12,13 @@ package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.SearchResult;
+import com.searchcode.app.dto.api.legacy.codesearch_I;
+import com.searchcode.app.dto.api.legacy.result_codesearch_I;
 import com.searchcode.app.service.Singleton;
 import spark.Request;
 import spark.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class SearchRouteService {
@@ -28,18 +31,47 @@ public class SearchRouteService {
         return this.getSearchResult(request, true);
     }
 
+    // Legacy mapping to expose searchcode API for other clients
+    public codesearch_I codeSearch_I(Request request, Response response) {
+        var results = this.getSearchResult(request, false);
+
+        var res = new codesearch_I();
+
+        res.page = results.getPage();
+        res.matchterm = results.getQuery();
+        res.query = results.getQuery();
+        res.searchterm = results.getQuery();
+        res.total = results.getTotalHits();
+
+
+        var code = new ArrayList<result_codesearch_I>();
+
+        for (var r : results.getCodeResultList()) {
+            var t = new result_codesearch_I();
+            t.id = r.getDocumentId();
+            t.filename = r.fileName;
+            t.linescount = Singleton.getHelpers().tryParseInt(r.lines, "0");
+            t.language = r.languageName;
+            t.location = r.fileLocation;
+
+            code.add(t);
+        }
+
+        res.results = code;
+
+        return res;
+    }
+
     private SearchResult getSearchResult(Request request, boolean isLiteral) {
         if (!request.queryParams().contains("q") || request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
             return null;
         }
 
-        String query = request.queryParams("q").trim();
-
-        int page = 0;
-
+        var query = request.queryParams("q").trim();
+        var page = 0;
         page = CodeRouteService.getPage(request, page);
 
-        HashMap<String, String[]> facets = new HashMap<>();
+        var facets = new HashMap<String, String[]>();
 
         if (request.queryParams().contains("repo")) {
             facets.put("repo", request.queryParamsValues("repo"));
@@ -61,12 +93,12 @@ public class SearchRouteService {
             isLiteral = true;
         }
 
-        SearchResult searchResult = Singleton.getIndexService().search(query, facets, page, isLiteral);
+        var searchResult = Singleton.getIndexService().search(query, facets, page, isLiteral);
 
         searchResult.setCodeResultList(Singleton.getCodeMatcher().formatResults(searchResult.getCodeResultList(), query, true));
         searchResult.setQuery(query);
 
-        for (String altQuery : Singleton.getSearchCodeLib().generateAltQueries(query)) {
+        for (var altQuery : Singleton.getSearchCodeLib().generateAltQueries(query)) {
             searchResult.addAltQuery(altQuery);
         }
 

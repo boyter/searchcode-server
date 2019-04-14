@@ -1,4 +1,4 @@
-package com.searchcode.app.dto.api;
+package com.searchcode.app.dto.api.legacy;
 
 import java.util.ArrayList;
 
@@ -12,5 +12,5 @@ public class codesearch_I {
     public int previouspage;
     public ArrayList<String> source_filters;
     public ArrayList<String> language_filters;
-    public ArrayList<String> results;
+    public ArrayList<result_codesearch_I> results;
 }

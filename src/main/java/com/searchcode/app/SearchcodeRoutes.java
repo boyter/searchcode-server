@@ -1,7 +1,7 @@
 package com.searchcode.app;
 
-import com.searchcode.app.dto.api.codesearch_I;
 import com.searchcode.app.service.route.CodeRouteService;
+import com.searchcode.app.service.route.SearchRouteService;
 import com.searchcode.app.util.JsonTransformer;
 import spark.ModelAndView;
 import spark.Response;
@@ -47,22 +47,24 @@ public class SearchcodeRoutes {
                             "repository_overview.ftl"));
         });
 
-
         ///api/codesearch_I/
         path("/api", () -> {
             // Older endpoints maintained for backwards compatibility
             get("/codesearch_I/", (request, response) -> {
                 addJsonHeaders(response);
-               return new JsonTransformer().render(new codesearch_I());
+                var searchRouteService = new SearchRouteService();
+                return new JsonTransformer().render(searchRouteService.codeSearch_I(request, response));
             });
 
             // All new API endpoints should go in here to allow public exposure and versioning
             path("/v1", () -> {
                 get("/version/", (request, response) -> {
+                    addJsonHeaders(response);
                     return new JsonTransformer().render("");
                 });
 
                 get("/health-check/", (request, response) -> {
+                    addJsonHeaders(response);
                     return new JsonTransformer().render("");
                 });
             });
