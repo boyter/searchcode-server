@@ -218,7 +218,9 @@ public class IndexService extends IndexBaseService {
 
                         try {
                             writer.updateDocument(new Term(Values.PATH, x.getRepoLocationRepoNameLocationFilename()), facetsConfig.build(taxonomyWriter, document));
-                        } catch (Exception ignored) {}
+                        } catch (Exception ex) {
+                            this.logger.severe(String.format("b824ed70::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+                        }
                     });
         }
         finally {
@@ -718,10 +720,12 @@ public class IndexService extends IndexBaseService {
      */
     @Override
     public SearchResult search(String queryString, HashMap<String, String[]> facets, int page, boolean isLiteral) {
-        SearchResult searchResult = new SearchResult();
+
+        var searchResult = new SearchResult();
         this.statsService.incrementSearchCount();
         IndexReader reader = null;
 
+        // Required to ensure that results work the way we expect for the index
         if (!isLiteral) {
             queryString = this.searchcodeLib.formatQueryString(queryString);
         }

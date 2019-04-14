@@ -205,12 +205,12 @@ public class IndexServiceTest extends TestCase {
     public void testSearchRepo() throws IOException {
         this.indexService = new IndexService();
 
-        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        var queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
         queue.add(this.codeIndexDocument);
         this.indexService.indexDocument(queue);
 
-        Helpers helpers = new Helpers();
-        SearchResult contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), null, 0, true);
+        var helpers = new Helpers();
+        var contents = this.indexService.search("rn:" + helpers.replaceForIndex(this.repoName), null, 0, true);
 
         assertThat(contents.getTotalHits()).isNotZero();
         assertThat(contents.getLanguageFacetResults().size()).isNotZero();
@@ -572,7 +572,7 @@ public class IndexServiceTest extends TestCase {
     public void testIndexIssue188() throws IOException {
         this.indexService = new IndexService();
 
-        Queue<CodeIndexDocument> queue = new ConcurrentLinkedQueue<>();
+        var queue = new ConcurrentLinkedQueue<CodeIndexDocument>();
         queue.add(new CodeIndexDocument()
                 .setRepoLocationRepoNameLocationFilename("something")
                 .setRepoName(this.repoName)
@@ -589,7 +589,7 @@ public class IndexServiceTest extends TestCase {
                 .setSource("source"));
         this.indexService.indexDocument(queue);
 
-        SearchResult search = this.indexService.search("PhysicsServer::get_singleton", null, 0, false);
+        var search = this.indexService.search("PhysicsServer::get_singleton", null, 0, false);
         assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
         search = this.indexService.search("std::cout", null, 0, false);
         assertThat(search.getTotalHits()).isGreaterThanOrEqualTo(1);
