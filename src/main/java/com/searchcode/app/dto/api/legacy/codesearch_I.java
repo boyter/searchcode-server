@@ -10,7 +10,7 @@ public class codesearch_I {
     public int page;
     public int nextpage;
     public int previouspage;
-    public ArrayList<String> source_filters;
+    public ArrayList<source_filter> source_filters;
     public ArrayList<language_filter> language_filters;
     public ArrayList<result_codesearch_I> results;
 }
