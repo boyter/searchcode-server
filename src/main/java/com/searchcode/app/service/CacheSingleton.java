@@ -21,7 +21,6 @@ public final class CacheSingleton {
     private static Cache<String, HighlighterResponse> highlightCache = null;
     private static Cache<String, Optional<SourceCodeDTO>> sourceCodeCache = null;
     private static Cache<String, Optional<RepoResult>> repoResultCache = null;
-    private static Cache<String, SearchResult> searchResultCache = null;
     private static Cache<String, ProjectStats> projectStatsCache = null;
 
     /**
@@ -101,18 +100,6 @@ public final class CacheSingleton {
         }
 
         return repoResultCache;
-    }
-
-    public static synchronized Cache<String, SearchResult> getSearchResultCache() {
-        if (searchResultCache == null) {
-            searchResultCache = new Cache2kBuilder<String, SearchResult>() {}
-                    .name("searchResultCache")
-                    .expireAfterWrite(Values.LOW_CACHE_DAYS, TimeUnit.DAYS)
-                    .entryCapacity(Values.DEFAULT_CACHE_SIZE)
-                    .build();
-        }
-
-        return searchResultCache;
     }
 
     public static synchronized Cache<String, ProjectStats> getProjectStatsCache() {

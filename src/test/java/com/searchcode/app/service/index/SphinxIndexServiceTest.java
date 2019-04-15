@@ -64,7 +64,7 @@ public class SphinxIndexServiceTest extends TestCase {
         var mock = Mockito.mock(LanguageType.class);
         var mockRepo = Mockito.mock(MySQLRepo.class);
         var mockSource = Mockito.mock(Source.class);
-        var sphinxIndexService = new SphinxIndexService(mock, mockRepo, mockSource, CacheSingleton.getSearchResultCache(), CacheSingleton.getProjectStatsCache());
+        var sphinxIndexService = new SphinxIndexService(mock, mockRepo, mockSource, CacheSingleton.getProjectStatsCache());
 
         List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
         assertThat(codeFacetLanguages).hasSize(0);

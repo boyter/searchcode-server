@@ -31,19 +31,17 @@ public class SphinxIndexService extends IndexBaseService {
     private final LanguageType languageType;
     private final IRepo repo;
     private final com.searchcode.app.dao.Source source;
-    private final Cache<String, SearchResult> cache;
     private final Cache<String, ProjectStats> projectStatsCache;
 
     public SphinxIndexService() {
-        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getSearchResultCache(), CacheSingleton.getProjectStatsCache());
+        this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getProjectStatsCache());
     }
 
-    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source, Cache<String, SearchResult> cache, Cache<String, ProjectStats> projectStatsCache) {
+    public SphinxIndexService(LanguageType languageType, IRepo repo, com.searchcode.app.dao.Source source, Cache<String, ProjectStats> projectStatsCache) {
         super();
         this.languageType = languageType;
         this.repo = repo;
         this.source = source;
-        this.cache = cache;
         this.projectStatsCache = projectStatsCache;
 
         this.helpers = Singleton.getHelpers();
@@ -278,7 +276,7 @@ public class SphinxIndexService extends IndexBaseService {
 
     @Override
     public SearchResult search(String queryString, HashMap<String, String[]> facets, int page, boolean isLiteral) {
-        // TODO add cache for this response
+        // NB you cannot cache SearchResult because it seems to strip out parts of the object for some reason
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -304,8 +302,6 @@ public class SphinxIndexService extends IndexBaseService {
                     " FACET repoid ORDER BY COUNT(*) DESC " +
                     " FACET languageid ORDER BY COUNT(*) DESC" +
                     " FACET sourceid ORDER BY COUNT(*) DESC;" +
-                    // "FACET ownerid ORDER BY COUNT(*) DESC " +
-                    // "FACET licenseid ORDER BY COUNT(*) DESC; " +
                     "SHOW META;";
 
             // SELECT *, WEIGHT() FROM codesearchrealtime WHERE match('import test java') AND languageid IN (77) FACET languageid ORDER BY COUNT(*) DESC FACET sourceid ORDER BY COUNT(*) DESC; SHOW META;
