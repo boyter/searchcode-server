@@ -11,6 +11,6 @@ public class codesearch_I {
     public int nextpage;
     public int previouspage;
     public ArrayList<String> source_filters;
-    public ArrayList<String> language_filters;
+    public ArrayList<language_filter> language_filters;
     public ArrayList<result_codesearch_I> results;
 }

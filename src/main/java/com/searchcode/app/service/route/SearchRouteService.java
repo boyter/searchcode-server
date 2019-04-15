@@ -14,6 +14,7 @@ import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.SearchResult;
 import com.searchcode.app.dto.api.legacy.coderesult;
 import com.searchcode.app.dto.api.legacy.codesearch_I;
+import com.searchcode.app.dto.api.legacy.language_filter;
 import com.searchcode.app.dto.api.legacy.result_codesearch_I;
 import com.searchcode.app.service.Singleton;
 import spark.Request;
@@ -53,7 +54,6 @@ public class SearchRouteService {
         }
 
         var code = new ArrayList<result_codesearch_I>();
-
         for (var r : results.getCodeResultList()) {
             var t = new result_codesearch_I();
             t.id = r.getDocumentId();
@@ -71,8 +71,18 @@ public class SearchRouteService {
 
             code.add(t);
         }
-
         res.results = code;
+
+        var lang = new ArrayList<language_filter>();
+        for (var r : results.getLanguageFacetResults()) {
+            var t = new language_filter();
+            t.count = r.count;
+            t.id = r.languageId;
+            t.language = r.languageName;
+
+            lang.add(t);
+        }
+        res.language_filters = lang;
 
         return res;
     }
