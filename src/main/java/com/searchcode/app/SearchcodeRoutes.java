@@ -12,6 +12,9 @@ import static spark.Spark.path;
 
 /**
  * Provides all the routes for the searchcode.com version of searchcode
+ * Some comparison searches
+ * http://localhost:8080/?q=wookieeRunnerPath
+ * https://searchcode.com/?q=wookieeRunnerPath
  */
 public class SearchcodeRoutes {
     public static void RegisterSearchcodeRoutes() {
