@@ -12,6 +12,7 @@ package com.searchcode.app.service.route;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.SearchResult;
+import com.searchcode.app.dto.api.legacy.coderesult;
 import com.searchcode.app.dto.api.legacy.codesearch_I;
 import com.searchcode.app.dto.api.legacy.result_codesearch_I;
 import com.searchcode.app.service.Singleton;
@@ -43,6 +44,13 @@ public class SearchRouteService {
         res.searchterm = results.getQuery();
         res.total = results.getTotalHits();
 
+        if (res.page >= 0) {
+            res.nextpage = res.page + 1;
+        }
+
+        if (res.page >= 1) {
+            res.previouspage = res.page - 1;
+        }
 
         var code = new ArrayList<result_codesearch_I>();
 
@@ -53,6 +61,8 @@ public class SearchRouteService {
             t.linescount = Singleton.getHelpers().tryParseInt(r.lines, "0");
             t.language = r.languageName;
             t.location = r.fileLocation;
+            t.md5hash = r.md5hash;
+            t.name = r.repoName;
 
             t.lines = new HashMap<Integer, String>();
             for (var x : r.matchingResults) {
@@ -65,6 +75,18 @@ public class SearchRouteService {
         res.results = code;
 
         return res;
+    }
+
+    // Legacy mapping to expose searchcode API for other clients
+    public coderesult codeResult(Request request, Response response) {
+        var codeId = Singleton.getHelpers().tryParseInt(request.params(":codeid"), "-1");
+
+        var result = Singleton.getSourceCode().getById(codeId);
+
+        var resp = new coderesult();
+        result.ifPresent(x -> resp.code = x.content);
+
+        return resp;
     }
 
     private SearchResult getSearchResult(Request request, boolean isLiteral, boolean highlight) {

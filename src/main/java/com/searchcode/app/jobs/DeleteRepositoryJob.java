@@ -88,7 +88,7 @@ public class DeleteRepositoryJob implements Job {
                 try {
                     this.logger.info(String.format("050ac264::deleting repository %s", x.getName()));
                     this.indexService.deleteByRepo(x);
-                    String repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
+                    var repoLocations = Properties.getProperties().getProperty(Values.REPOSITORYLOCATION, Values.DEFAULTREPOSITORYLOCATION);
 
                     // remove the directory
                     this.helpers.tryDelete(repoLocations + x.getDirectoryName() + "/");

@@ -56,6 +56,12 @@ public class SearchcodeRoutes {
                 return new JsonTransformer().render(searchRouteService.codeSearch_I(request, response));
             });
 
+            get("/result/:codeid/", (request, response) -> {
+                addJsonHeaders(response);
+                var searchRouteService = new SearchRouteService();
+                return new JsonTransformer().render(searchRouteService.codeResult(request, response));
+            });
+
             // All new API endpoints should go in here to allow public exposure and versioning
             path("/v1", () -> {
                 get("/version/", (request, response) -> {
