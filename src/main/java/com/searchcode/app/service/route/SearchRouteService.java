@@ -24,16 +24,16 @@ import java.util.HashMap;
 public class SearchRouteService {
 
     public SearchResult codeSearch(Request request, Response response) {
-        return this.getSearchResult(request, false);
+        return this.getSearchResult(request, false, true);
     }
 
     public SearchResult literalCodeSearch(Request request, Response response) {
-        return this.getSearchResult(request, true);
+        return this.getSearchResult(request, true, true);
     }
 
     // Legacy mapping to expose searchcode API for other clients
     public codesearch_I codeSearch_I(Request request, Response response) {
-        var results = this.getSearchResult(request, false);
+        var results = this.getSearchResult(request, false, false);
 
         var res = new codesearch_I();
 
@@ -54,6 +54,11 @@ public class SearchRouteService {
             t.language = r.languageName;
             t.location = r.fileLocation;
 
+            t.lines = new HashMap<Integer, String>();
+            for (var x : r.matchingResults) {
+                t.lines.put(x.lineNumber, x.line);
+            }
+
             code.add(t);
         }
 
@@ -62,7 +67,7 @@ public class SearchRouteService {
         return res;
     }
 
-    private SearchResult getSearchResult(Request request, boolean isLiteral) {
+    private SearchResult getSearchResult(Request request, boolean isLiteral, boolean highlight) {
         if (!request.queryParams().contains("q") || request.queryParams("q").trim().equals(Values.EMPTYSTRING)) {
             return null;
         }
@@ -95,7 +100,7 @@ public class SearchRouteService {
 
         var searchResult = Singleton.getIndexService().search(query, facets, page, isLiteral);
 
-        searchResult.setCodeResultList(Singleton.getCodeMatcher().formatResults(searchResult.getCodeResultList(), query, true));
+        searchResult.setCodeResultList(Singleton.getCodeMatcher().formatResults(searchResult.getCodeResultList(), query, highlight));
         searchResult.setQuery(query);
 
         for (var altQuery : Singleton.getSearchCodeLib().generateAltQueries(query)) {
