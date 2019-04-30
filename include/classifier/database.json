@@ -577,6 +577,40 @@
       ]
     ]
   },
+  "Bosque": {
+    "complexitychecks": [
+      "if ",
+      "if(",
+      "switch ",
+      "match ",
+      "case ",
+      "| ",
+      "|| ",
+      "& ",
+      "&& ",
+      "!= ",
+      "!== ",
+      "== ",
+      "=== "
+    ],
+    "extensions": [
+      "bsq"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ],
+      [
+        "'",
+        "'"
+      ]
+    ]
+  },
   "Brainfuck": {
     "complexitychecks": [
       "[",
@@ -1925,6 +1959,43 @@
       ]
     ]
   },
+  "Flow9": {
+    "complexitychecks": [
+      "if ",
+      "if(",
+      "else ",
+      "else{",
+      "fori ",
+      "fori(",
+      "switch ",
+      "switch(",
+      "fold ",
+      "fold(",
+      "|| ",
+      "&& ",
+      "!= ",
+      "== ",
+      "|> "
+    ],
+    "extensions": [
+      "flow"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ]
+    ]
+  },
   "Forth": {
     "complexitychecks": [
       "for ",
@@ -3208,7 +3279,8 @@
       "unlicense",
       "unlicence",
       "license-mit",
-      "licence-mit"
+      "licence-mit",
+      "copyright"
     ],
     "line_comment": [],
     "multi_line": [],
