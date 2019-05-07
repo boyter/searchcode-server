@@ -7,8 +7,6 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.model.ValidatorResult;
 import com.searchcode.app.util.Helpers;
 
-import java.util.Optional;
-
 /**
  * Validation logic for anything that spits an error back to the user or though the
  * API should go in here.
@@ -41,7 +39,7 @@ public class ValidatorService {
         }
 
         if (!ignoreDuplicates) {
-            Optional<RepoResult> repoByName = this.repo.getRepoByName(repoResult.getName());
+            var repoByName = this.repo.getRepoByName(repoResult.getName());
             if (repoByName.isPresent()) {
                 return new ValidatorResult(false, "Repository Name must be unique");
             }

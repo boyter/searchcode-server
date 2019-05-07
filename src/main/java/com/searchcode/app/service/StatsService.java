@@ -17,7 +17,6 @@ import com.searchcode.app.util.Helpers;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
-import java.lang.management.RuntimeMXBean;
 import java.text.NumberFormat;
 
 /**
@@ -41,7 +40,7 @@ public class StatsService {
     }
 
     public void incrementSearchCount() {
-        int totalCount = this.helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        var totalCount = this.helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
 
         if (totalCount == Integer.MAX_VALUE) {
             totalCount = 0;
@@ -56,7 +55,7 @@ public class StatsService {
     }
 
     public int getSearchCount() {
-        int totalCount = this.helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
+        var totalCount = this.helpers.tryParseInt(data.getDataByName(Values.CACHE_TOTAL_SEARCH, "0"), "0");
         return totalCount;
     }
 
@@ -72,30 +71,30 @@ public class StatsService {
     }
 
     public String getArch() {
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        var osBean = ManagementFactory.getOperatingSystemMXBean();
         return osBean.getArch();
     }
 
     public String getOsVersion() {
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        var osBean = ManagementFactory.getOperatingSystemMXBean();
         return osBean.getVersion();
     }
 
     public String getProcessorCount() {
-        OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+        var osBean = ManagementFactory.getOperatingSystemMXBean();
         return Values.EMPTYSTRING + osBean.getAvailableProcessors();
     }
 
     public String getMemoryUsage(String seperator) {
-        Runtime runtime = Runtime.getRuntime();
+        var runtime = Runtime.getRuntime();
 
-        NumberFormat format = NumberFormat.getInstance();
+        var format = NumberFormat.getInstance();
 
-        StringBuilder sb = new StringBuilder();
-        long maxMemory = runtime.maxMemory();
-        long allocatedMemory = runtime.totalMemory();
-        long freeMemory = runtime.freeMemory();
-        long usedMB = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
+        var sb = new StringBuilder();
+        var maxMemory = runtime.maxMemory();
+        var allocatedMemory = runtime.totalMemory();
+        var freeMemory = runtime.freeMemory();
+        var usedMB = (runtime.totalMemory() - runtime.freeMemory()) / 1024 / 1024;
 
         sb.append("free memory: ").append(format.format(freeMemory / 1024)).append(seperator);
         sb.append("allocated memory: ").append(format.format(allocatedMemory / 1024)).append(seperator);
@@ -113,12 +112,11 @@ public class StatsService {
      * TODO change to display something such as 3 days 4 hours 45 minutes 23 seconds
      */
     public String getUpTime() {
-        RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+        var runtimeBean = ManagementFactory.getRuntimeMXBean();
 
-        int upTime = (int) (runtimeBean.getUptime() / 1_000);
-        int minutes = upTime / 60;
-        int hours = minutes / 60;
-
+        var upTime = (int) (runtimeBean.getUptime() / 1_000);
+        var minutes = upTime / 60;
+        var hours = minutes / 60;
 
         if (upTime < 120) {
             return upTime + " seconds";
