@@ -10,6 +10,7 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.CacheSingleton;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
+import com.searchcode.app.util.LruCache;
 import com.searchcode.app.util.SearchCodeLib;
 import org.apache.lucene.document.Document;
 import org.cache2k.Cache;
@@ -32,6 +33,7 @@ public class SphinxIndexService extends IndexBaseService {
     private final IRepo repo;
     private final com.searchcode.app.dao.Source source;
     private final Cache<String, ProjectStats> projectStatsCache;
+    private final LruCache<String, SearchResult> resultCache;
 
     public SphinxIndexService() {
         this(Singleton.getLanguageType(), Singleton.getRepo(), Singleton.getSource(), CacheSingleton.getProjectStatsCache());
@@ -48,6 +50,8 @@ public class SphinxIndexService extends IndexBaseService {
         this.sphinxSearchConfig = new SphinxSearchConfig();
         this.sourceCode = Singleton.getSourceCode();
         this.searchcodeLib = Singleton.getSearchCodeLib();
+
+        this.resultCache = new LruCache<>(Values.SMALL_CACHE_SIZE);
     }
 
     @Override
@@ -276,7 +280,21 @@ public class SphinxIndexService extends IndexBaseService {
 
     @Override
     public SearchResult search(String queryString, HashMap<String, String[]> facets, int page, boolean isLiteral) {
-        // NB you cannot cache SearchResult because it seems to strip out parts of the object for some reason
+        // NB you cannot cache SearchResult in Cache2k because it seems to strip out parts of the object for some reason
+
+        var cacheKey = queryString;
+        for (var key : facets.keySet()) {
+            cacheKey += ":" + key;
+            for (var value : facets.get(key)) {
+                cacheKey += value;
+            }
+        }
+        cacheKey += page + ":" + isLiteral;
+
+        var res = this.resultCache.get(cacheKey);
+        if (res != null) {
+            return res;
+        }
 
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -382,8 +400,9 @@ public class SphinxIndexService extends IndexBaseService {
         codeFacetRepository = this.transformRepositoryType(codeFacetRepository);
         codeFacetSource = this.transformSourceType(codeFacetSource);
 
-
         var searchResult = new SearchResult(numTotalHits, page, queryString, codeResultList, pages, codeFacetLanguages, codeFacetRepository, new ArrayList<>(), codeFacetSource);
+        this.resultCache.put(cacheKey, searchResult);
+
         return searchResult;
     }
 

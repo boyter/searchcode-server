@@ -34,6 +34,9 @@ assets/integration_test/fileupdatetest/*.java
 assets/integration_test/gitupdate/*.cpp
 assets/integration_test/svnload/*.php
 
+assets/integration_test/searchcode/.pytest_cache
+assets/integration_test/searchcode/__pycache__
+
 assets/documentation/_build
 e2e_test/
 
