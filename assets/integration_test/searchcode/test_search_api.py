@@ -16,9 +16,12 @@ def test_search_api():
 
 def test_search_api_blns():
     for naughty in get_blns():
-        url = get_base_url() + 'api/codesearch_I/?q' + urllib.parse.quote_plus(naughty)
+        url = get_base_url() + 'api/codesearch_I/?q=' + urllib.parse.quote_plus(naughty)
         r = requests.get(url)
-        j = r.json()
+        try:
+            j = r.json()
+        except:
+            raise Exception("Error decoding JSON for ", url)
 
         assert r.status_code == 200, url
 
