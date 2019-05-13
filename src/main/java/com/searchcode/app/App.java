@@ -44,8 +44,10 @@ public class App {
         Singleton.getJobService().initialJobs();
 
         if (Singleton.getHelpers().isStandaloneInstance()) {
+            // searchcode server routes
             RegisterServerRoutes();
         } else {
+            // searchcode.com routes
             RegisterSearchcodeRoutes();
         }
     }

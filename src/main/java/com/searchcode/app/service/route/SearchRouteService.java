@@ -60,6 +60,7 @@ public class SearchRouteService {
             t.location = r.fileLocation;
             t.md5hash = r.md5hash;
             t.name = r.repoName;
+            t.repo = r.repo;
 
             t.lines = new HashMap<Integer, String>();
             for (var x : r.matchingResults) {

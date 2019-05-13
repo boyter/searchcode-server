@@ -311,14 +311,18 @@ public class SphinxIndexService extends IndexBaseService {
 
             var isResultSet = stmt.execute();
 
-            // TODO sourcecode needs to hold the connection till we are done
             if (isResultSet) {
                 resultSet = stmt.getResultSet();
 
                 while (resultSet.next()) {
                     int id = resultSet.getInt("id");
                     var sourceCodeDTO = this.sourceCode.getById(id);
-                    sourceCodeDTO.ifPresent(sourceCodeDTO1 -> codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1)));
+
+                    sourceCodeDTO.ifPresent(sourceCodeDTO1 -> {
+                        var repoDto = this.repo.getRepoById(sourceCodeDTO1.repoId);
+                        repoDto.ifPresent(repoDto1 -> sourceCodeDTO1.setRepo(repoDto1.getUrl()));
+                        codeResultList.add(this.sourceCodeDTOtoCodeResult(sourceCodeDTO1));
+                    });
                 }
 
                 isResultSet = stmt.getMoreResults();
@@ -439,7 +443,11 @@ public class SphinxIndexService extends IndexBaseService {
 
         codeResult.setCodePath(sourceCodeDTO.location);
         codeResult.setFileName(sourceCodeDTO.filename);
-        codeResult.setLanguageName(this.languageType.getById(sourceCodeDTO.languageName).get().getType());
+//        codeResult.setLanguageName(this.languageType.getById(sourceCodeDTO.languageName).get().getType());
+
+        var languageType = this.languageType.getById(sourceCodeDTO.languageName).orElse(new LanguageTypeDTO());
+        codeResult.setLanguageName(languageType.getType());
+
         codeResult.setMd5hash(sourceCodeDTO.hash);
         codeResult.setCodeLines(Integer.toString(sourceCodeDTO.linesCount));
         codeResult.setDocumentId(sourceCodeDTO.id);
@@ -448,6 +456,7 @@ public class SphinxIndexService extends IndexBaseService {
         codeResult.setRepoLocation(sourceCodeDTO.location + Values.EMPTYSTRING);
         codeResult.setCodeId(sourceCodeDTO.id + Values.EMPTYSTRING);
         codeResult.setDisplayLocation(sourceCodeDTO.location);
+        codeResult.setRepo(sourceCodeDTO.repo);
 
         return codeResult;
     }

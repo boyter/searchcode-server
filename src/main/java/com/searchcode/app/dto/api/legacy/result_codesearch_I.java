@@ -3,7 +3,6 @@ package com.searchcode.app.dto.api.legacy;
 import java.util.HashMap;
 
 public class result_codesearch_I {
-
     public String repo;
     public String language;
     public int linescount;

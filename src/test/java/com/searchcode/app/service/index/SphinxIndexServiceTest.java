@@ -69,4 +69,18 @@ public class SphinxIndexServiceTest extends TestCase {
         List<CodeFacetLanguage> codeFacetLanguages = sphinxIndexService.transformLanguageType(new ArrayList<>());
         assertThat(codeFacetLanguages).hasSize(0);
     }
+
+//    public void testSourceCodeDTOtoCodeResult() {
+//        var mock = Mockito.mock(LanguageType.class);
+//        var mockRepo = Mockito.mock(MySQLRepo.class);
+//        var mockSource = Mockito.mock(Source.class);
+//        var sphinxIndexService = new SphinxIndexService(mock, mockRepo, mockSource, CacheSingleton.getProjectStatsCache());
+//
+//        when(mock.getById(any())).thenReturn(Optional.empty());
+//
+//        var result = sphinxIndexService.sourceCodeDTOtoCodeResult(new SourceCodeDTO()
+//                .setContent("")
+//                .setRepo("something"));
+//        assertThat(result.getRepo()).isEqualTo("something");
+//    }
 }

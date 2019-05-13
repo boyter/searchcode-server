@@ -44,6 +44,7 @@ public class CodeResult {
     public String source = Values.EMPTYSTRING;
     public float score = 0;
     public int repoId = 0;
+    public String repo = Values.EMPTYSTRING; // Used by searchcode.com to display the git/svn URL in api
 
     public CodeResult(){}
 
@@ -280,4 +281,12 @@ public class CodeResult {
         return this;
     }
 
+    public String getRepo() {
+        return repo;
+    }
+
+    public CodeResult setRepo(String repo) {
+        this.repo = repo;
+        return this;
+    }
 }

@@ -24,6 +24,8 @@ public class SourceCodeDTO {
     public int estimatedCost; // COCOMO calculation figure
     public int linesCount; // Count of the number of lines in the file blank + comment + code
 
+    public String repo; // Used to set the git location used by searchcode.com in its search results
+
     public SourceCodeDTO() {}
 
     public SourceCodeDTO setId(int id) {
@@ -88,6 +90,11 @@ public class SourceCodeDTO {
 
     public SourceCodeDTO setLinesCount(int linesCount) {
         this.linesCount = linesCount;
+        return this;
+    }
+
+    public SourceCodeDTO setRepo(String repo) {
+        this.repo = repo;
         return this;
     }
 }
