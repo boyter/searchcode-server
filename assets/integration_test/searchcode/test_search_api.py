@@ -14,6 +14,15 @@ def test_search_api():
     assert r.status_code == 200
 
 
+def test_search_api_blns():
+    for naughty in get_blns():
+        url = get_base_url() + 'api/codesearch_I/?q' + urllib.parse.quote_plus(naughty)
+        r = requests.get(url)
+        j = r.json()
+
+        assert r.status_code == 200, url
+
+
 def test_search_values():
     url = get_base_url() + 'api/codesearch_I/?q=test'
     r = requests.get(url)
