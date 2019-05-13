@@ -36,11 +36,11 @@ def test_search_values():
     assert 'results' in j
 
     for x in j['results']:
-        # assert 'repo' in x
+        assert 'repo' in x
         assert 'language' in x
         assert 'linescount' in x
         assert 'name' in x
-        # assert 'url' in x
+        assert 'url' in x
         assert 'md5hash' in x
         assert 'lines' in x
         assert 'id' in x
