@@ -61,6 +61,7 @@ public class SearchRouteService {
             t.md5hash = r.md5hash;
             t.name = r.repoName;
             t.repo = r.repo;
+            t.url = "https://searchcode.com/codesearch/view/" + r.getDocumentId() + "/";
 
             t.lines = new HashMap<Integer, String>();
             for (var x : r.matchingResults) {
