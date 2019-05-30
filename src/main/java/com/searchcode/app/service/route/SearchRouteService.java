@@ -30,8 +30,12 @@ public class SearchRouteService {
         return this.getSearchResult(request, true, true);
     }
 
-    // Legacy mapping to expose searchcode API for other clients
+    /**
+     * Legacy mapping to expose searchcode API for other clients
+     * this is very ugly but should never need to be touched again
+     */
     public codesearch_I codeSearch_I(Request request, Response response) {
+        // TODO need to be able to turn off the escaping
         var results = this.getSearchResult(request, false, false);
 
         var res = new codesearch_I();
@@ -148,7 +152,7 @@ public class SearchRouteService {
             searchResult.addAltQuery(altQuery);
         }
 
-        // Null out code as it isnt required and there is no point in bloating our ajax requests
+        // Null out code as it isn't required and there is no point in bloating our ajax requests
         searchResult.getCodeResultList().forEach(x -> x.setCode(null));
 
         return searchResult;

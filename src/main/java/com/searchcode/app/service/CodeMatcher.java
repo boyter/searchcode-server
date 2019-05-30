@@ -179,6 +179,7 @@ public class CodeMatcher {
                 }
             }
         } else {
+            // TODO add way to disable the escape line
             for (var cmr : resultLines) {
                 cmr.setLine(StringEscapeUtils.escapeHtml4(cmr.getLine()));
             }
