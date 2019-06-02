@@ -535,6 +535,17 @@
       ]
     ]
   },
+  "Bitbucket Pipeline": {
+    "complexitychecks": [],
+    "extensions": [
+      "bitbucket-pipelines.yml"
+    ],
+    "line_comment": [
+      "#"
+    ],
+    "multi_line": [],
+    "quotes": []
+  },
   "Boo": {
     "complexitychecks": [
       "for ",
@@ -1540,6 +1551,18 @@
       ]
     ]
   },
+  "Docker ignore": {
+    "complexitychecks": [],
+    "extensions": [
+      ".dockerignore"
+    ],
+    "line_comment": [
+      "#",
+      "//"
+    ],
+    "multi_line": [],
+    "quotes": []
+  },
   "Dockerfile": {
     "complexitychecks": [
       "for ",
@@ -1555,8 +1578,7 @@
       "== "
     ],
     "extensions": [
-      "dockerfile",
-      "dockerignore"
+      "dockerfile"
     ],
     "line_comment": [
       "#"
@@ -4235,6 +4257,44 @@
       ]
     ]
   },
+  "Pony": {
+    "complexitychecks": [
+      "for ",
+      "if ",
+      "match ",
+      "repeat",
+      "while ",
+      "else ",
+      "elseif ",
+      "| ",
+      "|| ",
+      "&& ",
+      "!= ",
+      "== "
+    ],
+    "extensions": [
+      "pony"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [
+      [
+        "/*",
+        "*/"
+      ]
+    ],
+    "quotes": [
+      [
+        "\"",
+        "\""
+      ],
+      [
+        "\\\"\\\"\\\"",
+        "\\\"\\\"\\\""
+      ]
+    ]
+  },
   "Powershell": {
     "complexitychecks": [
       "while ",
@@ -4484,6 +4544,43 @@
       [
         "'''",
         "'''"
+      ]
+    ]
+  },
+  "Q#": {
+    "complexitychecks": [
+      "for ",
+      "for(",
+      "repeat ",
+      "repeat{",
+      "until (",
+      "until(",
+      "if ",
+      "if(",
+      "elif ",
+      "elif{",
+      "else ",
+      "else{",
+      "||| ",
+      "&&& ",
+      "<<<",
+      ">>>",
+      "^^^",
+      "~~~",
+      "!= ",
+      "== "
+    ],
+    "extensions": [
+      "qs"
+    ],
+    "line_comment": [
+      "//"
+    ],
+    "multi_line": [],
+    "quotes": [
+      [
+        "\"",
+        "\""
       ]
     ]
   },
