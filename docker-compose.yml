@@ -1,0 +1,23 @@
+version: '3'
+services:
+  searchcode:
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - manticore
+      - mysql
+  manticore:
+    image: "manticoresearch/manticore:2.8.2"
+    ports:
+      - "9306:9306"
+  mysql:
+    image: "mysql:5.7.26"
+    ports:
+      - "3306:3306"
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: example

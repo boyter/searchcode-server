@@ -1,0 +1,14 @@
+target
+logs
+index
+assets
+repo
+
+# Intellij project files
+*.iml
+*.ipr
+*.iws
+.idea/*
+
+# Mac system files
+.DS_Store
