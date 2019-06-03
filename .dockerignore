@@ -4,6 +4,8 @@ index
 assets
 repo
 
+.git
+
 # Intellij project files
 *.iml
 *.ipr
