@@ -25,7 +25,7 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
 
     private final Helpers helpers;
     private final LoggerWrapper logger;
-    private final HikariDataSource datasource;
+    private HikariDataSource datasource = null;
 
     public MySQLDatabaseConfig() {
         this.helpers = Singleton.getHelpers();
@@ -38,7 +38,13 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        this.datasource = new HikariDataSource(config);
+
+        try {
+            this.datasource = new HikariDataSource(config);
+        }
+        catch (Exception ex) {
+            this.logger.severe(String.format("16ca6fd9::error in class %s exception %s unable to connect to mysql", ex.getClass(), ex.getMessage()));
+        }
     }
 
     @Override
