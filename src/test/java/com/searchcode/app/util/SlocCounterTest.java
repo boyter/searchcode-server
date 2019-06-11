@@ -172,7 +172,11 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.blankCount).isEqualTo(3);
     }
 
-    // TODO this is still wrong but close enough for multiline comments
+    /**
+     * TODO this is still wrong but close enough for multiline comments
+     * Multiline comments are a real pain in the neck. Thankfully
+     * they appear to not be that common in the real world.
+     */
     public void testTokeiTest() {
         String language = "Rust";
         String contents = "// 39 lines 32 code 2 comments 5 blanks\n" +
@@ -218,7 +222,71 @@ public class SlocCounterTest extends TestCase {
         SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
         assertThat(slocCount.linesCount).isEqualTo(39);
         assertThat(slocCount.codeCount).isEqualTo(33);
-        assertThat(slocCount.blankCount).isEqualTo(5);
         assertThat(slocCount.commentCount).isEqualTo(1);
+        assertThat(slocCount.blankCount).isEqualTo(5);
+    }
+
+    public void testBomSkip() {
+        String language = "C#";
+        String contents = "   // Comment 1\n" +
+                "namespace Baz";
+        char[] chars = contents.toCharArray();
+        chars[0] = 239;
+        chars[1] = 187;
+        chars[2] = 191;
+
+        contents = new String(chars);
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(2);
+        assertThat(slocCount.codeCount).isEqualTo(1);
+        assertThat(slocCount.commentCount).isEqualTo(1);
+        assertThat(slocCount.blankCount).isEqualTo(0);
+    }
+
+    public void testBomSkipEdge() {
+        String language = "C#";
+        String contents = "   //";
+        char[] chars = contents.toCharArray();
+        chars[0] = 239;
+        chars[1] = 187;
+        chars[2] = 191;
+
+        contents = new String(chars);
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(1);
+        assertThat(slocCount.codeCount).isEqualTo(0);
+        assertThat(slocCount.commentCount).isEqualTo(1);
+        assertThat(slocCount.blankCount).isEqualTo(0);
+    }
+
+    /**
+     * For very small files which are invalid anyway the count will be off
+     * because we don't check the length of the token. However this is probably
+     * fine for the moment because as mentioned this would be invalid anyway so
+     * even a tokenizer would get this wrong
+     */
+    public void testIncorrectCountWhenSmallFile() {
+        String language = "C#";
+        String contents = "/";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(1);
+        assertThat(slocCount.codeCount).isEqualTo(0); // NB this should be 1
+        assertThat(slocCount.commentCount).isEqualTo(1); // NB this should be 0
+        assertThat(slocCount.blankCount).isEqualTo(0);
+    }
+
+    public void testEscapedQuoteString() {
+        String language = "Java";
+        String contents = "'\\\"'{\n" +
+                "code";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(2);
+        assertThat(slocCount.codeCount).isEqualTo(2);
+        assertThat(slocCount.commentCount).isEqualTo(0);
+        assertThat(slocCount.blankCount).isEqualTo(0);
     }
 }

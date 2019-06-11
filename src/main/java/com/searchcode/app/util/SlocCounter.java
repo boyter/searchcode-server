@@ -142,8 +142,14 @@ public class SlocCounter {
         int commentCount = 0;
         int complexity = 0;
 
-        for (int index = 0; index < contents.length(); index++) {
+        int start = 0;
 
+        // Check if UTF8 BOM present and if so skip it
+        if (contents.length() > 3 && contents.charAt(0) == 239 && contents.charAt(1) == 187 && contents.charAt(2) == 191) {
+            start = 3;
+        }
+
+        for (int index = start; index < contents.length(); index++) {
             if (!isWhitespace(contents.charAt(index))) {
                 switch (currentState) {
                     case S_CODE:
@@ -177,7 +183,6 @@ public class SlocCounter {
                         break;
                     case S_MULTICOMMENT:
                     case S_MULTICOMMENT_CODE:
-
                         if (fileClassifierResult.nestedmultiline || endComments.isEmpty()) {
                             endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.multi_line, contents);
                             if (endString != null) {
@@ -268,6 +273,10 @@ public class SlocCounter {
         return new SlocCount(linesCount, blankCount, codeCount, commentCount, complexity);
     }
 
+    /**
+     * Object SlocCounter returns which contains the details of what was
+     * found inside the file it was asked to count.
+     */
     public class SlocCount {
         public int linesCount = 0;
         public int blankCount = 0;
