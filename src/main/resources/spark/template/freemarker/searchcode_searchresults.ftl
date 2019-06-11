@@ -113,7 +113,7 @@
                         <#list result.matchingResults>
                             <#items as line>
                                 <li value="${line.lineNumber?c}">
-                                    <a href="/file/${result.codeId}/${result.codePath}#${line.lineNumber?c}">
+                                    <a href="/file/${result.codeId}/${result.codePath}#l-${line.lineNumber?c}">
                                         <pre>${line.line}</pre>
                                     </a>
                                     <#if line.addBreak >
