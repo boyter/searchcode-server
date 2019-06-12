@@ -179,7 +179,7 @@ public class SlocCounterTest extends TestCase {
      * Multiline comments are a real pain in the neck. Thankfully
      * they appear to not be that common in the real world.
      */
-    public void testTokeiTest() {
+    public void testTokeiRust() {
         String language = "Rust";
         String contents = "// 39 lines 32 code 2 comments 5 blanks\n" +
                 "\n" +
@@ -226,6 +226,64 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.codeCount).isEqualTo(33);
         assertThat(slocCount.commentCount).isEqualTo(1);
         assertThat(slocCount.blankCount).isEqualTo(5);
+    }
+
+    public void testTokeiJava() {
+        String language = "Java";
+        String contents = "/* 23 lines 16 code 4 comments 3 blanks */\n" +
+                "\n" +
+                "/*\n" +
+                "* Simple test class\n" +
+                "*/\n" +
+                "public class Test\n" +
+                "{\n" +
+                " int j = 0; // Not counted\n" +
+                " public static void main(String[] args)\n" +
+                " {\n" +
+                "     Foo f = new Foo();\n" +
+                "     f.bar();\n" +
+                "\n" +
+                " }\n" +
+                "}\n" +
+                "\n" +
+                "class Foo\n" +
+                "{\n" +
+                " public void bar()\n" +
+                " {\n" +
+                "   System.out.println(\"FooBar\"); //Not counted\n" +
+                " }\n" +
+                "}";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(23);
+        assertThat(slocCount.codeCount).isEqualTo(16);
+        assertThat(slocCount.commentCount).isEqualTo(4);
+        assertThat(slocCount.blankCount).isEqualTo(3);
+    }
+
+    public void testTokeiCPlusPlus() {
+        String language = "Java";
+        String contents = "/* 15 lines 7 code 4 comments 4 blanks */\n" +
+                "\n" +
+                "#include <iostream>\n" +
+                "\n" +
+                "\n" +
+                "using namespace std;\n" +
+                "\n" +
+                "/*\n" +
+                " * Simple test\n" +
+                " */\n" +
+                "int main()\n" +
+                "{\n" +
+                "    cout<<\"Hello world\"<<endl;\n" +
+                "    return 0;\n" +
+                "}\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(15);
+        assertThat(slocCount.codeCount).isEqualTo(7);
+        assertThat(slocCount.commentCount).isEqualTo(4);
+        assertThat(slocCount.blankCount).isEqualTo(4);
     }
 
     public void testBomSkip() {
