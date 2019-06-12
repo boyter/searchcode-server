@@ -286,6 +286,25 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.blankCount).isEqualTo(4);
     }
 
+    public void testTokeiRakeFile() {
+        String language = "Rakefile";
+        String contents = "# 10 lines 4 code 2 comments 4 blanks\n" +
+                "\n" +
+                "# this is a rakefile\n" +
+                "\n" +
+                "task default: %w[test]\n" +
+                "\n" +
+                "task :test do # not counted\n" +
+                "  ruby \"test/unittest.rb\"\n" +
+                "end\n\n";
+
+        SlocCounter.SlocCount slocCount = this.slocCounter.countStats(contents, language);
+        assertThat(slocCount.linesCount).isEqualTo(10);
+        assertThat(slocCount.codeCount).isEqualTo(4);
+        assertThat(slocCount.commentCount).isEqualTo(2);
+        assertThat(slocCount.blankCount).isEqualTo(4);
+    }
+
     public void testBomSkip() {
         String language = "C#";
         String contents = "   // Comment 1\n" +
