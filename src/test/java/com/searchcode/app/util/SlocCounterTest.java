@@ -2,6 +2,8 @@ package com.searchcode.app.util;
 
 import junit.framework.TestCase;
 
+import java.util.List;
+
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 public class SlocCounterTest extends TestCase {
@@ -244,7 +246,7 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.blankCount).isEqualTo(0);
     }
 
-    public void testBomSkipEdge() {
+    public void testBomUTF8() {
         String language = "C#";
         String contents = "   //";
         char[] chars = contents.toCharArray();
@@ -288,5 +290,22 @@ public class SlocCounterTest extends TestCase {
         assertThat(slocCount.codeCount).isEqualTo(2);
         assertThat(slocCount.commentCount).isEqualTo(0);
         assertThat(slocCount.blankCount).isEqualTo(0);
+    }
+
+    public void testBomSkipAll() {
+        for (List<Integer> bom : slocCounter.getByteOrderMarks()) {
+            String contents = "              ";
+            char[] chars = contents.toCharArray();
+
+            for (int i = 0; i < bom.size(); i++) {
+                chars[i] = (char) (int) bom.get(i);
+            }
+
+            contents = new String(chars);
+            int skipSize = this.slocCounter.checkBomSkip(contents);
+
+            assertThat(skipSize).isEqualTo(bom.size());
+            assertThat(skipSize).isNotZero();
+        }
     }
 }

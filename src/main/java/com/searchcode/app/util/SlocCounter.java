@@ -14,25 +14,40 @@ import com.searchcode.app.dto.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class SlocCounter {
 
     private final HashMap<String, FileClassifierResult> database;
-
-    public enum State {
-        S_BLANK,
-        S_CODE,
-        S_COMMENT,
-        S_COMMENT_CODE,
-        S_MULTICOMMENT,
-        S_MULTICOMMENT_CODE,
-        S_MULTICOMMENT_BLANK,
-        S_STRING,
-    }
+    private final ArrayList<java.util.List<Integer>> byteOrderMarks;
 
     public SlocCounter() {
         this.database = Singleton.getFileClassifier().getDatabase();
+
+        // Taken from https://en.wikipedia.org/wiki/Byte_order_mark#Byte_order_marks_by_encoding
+        byteOrderMarks = new ArrayList<>(Arrays.asList(
+                Arrays.asList(239, 187, 191),       // UTF-8
+                Arrays.asList(254, 255),            // UTF-16 BE
+                Arrays.asList(255, 254),            // UTF-16 LE
+                Arrays.asList(0, 0, 254, 255),      // UTF-32 BE
+                Arrays.asList(255, 254, 0, 0),      // UTF-32 LE
+                Arrays.asList(43, 47, 118, 56),     // UTF-7
+                Arrays.asList(43, 47, 118, 57),     // UTF-7
+                Arrays.asList(43, 47, 118, 43),     // UTF-7
+                Arrays.asList(43, 47, 118, 47),     // UTF-7
+                Arrays.asList(43, 47, 118, 56, 45), // UTF-7
+                Arrays.asList(247, 100, 76),        // UTF-7
+                Arrays.asList(221, 115, 102, 115),  // UTF-EBCDIC
+                Arrays.asList(14, 254, 255),        // SCSU
+                Arrays.asList(251, 238, 40),        // BOCU-1
+                Arrays.asList(132, 49, 149, 51)     // GB-18030
+        ));
+    }
+
+    public ArrayList<List<Integer>> getByteOrderMarks() {
+        return byteOrderMarks;
     }
 
     public boolean checkForMatch(char currentByte, int index, int endPoint, String[] matches, String content) {
@@ -73,14 +88,11 @@ public class SlocCounter {
                 }
             }
 
-            if (potentialMatch) {
-                return true;
-            }
+            return potentialMatch;
         }
 
         return false;
     }
-
 
     public String checkForMatchMultiOpen(char currentByte, int index, int endPoint, String[][] matches, String content) {
         if (matches == null) {
@@ -109,11 +121,7 @@ public class SlocCounter {
     }
 
     public boolean isWhitespace(char currentByte) {
-        if (currentByte != ' ' && currentByte != '\t' && currentByte != '\n' && currentByte != '\r') {
-            return false;
-        }
-
-        return true;
+        return currentByte == ' ' || currentByte == '\t' || currentByte == '\n' || currentByte == '\r';
     }
 
     /**
@@ -142,12 +150,7 @@ public class SlocCounter {
         int commentCount = 0;
         int complexity = 0;
 
-        int start = 0;
-
-        // Check if UTF8 BOM present and if so skip it
-        if (contents.length() > 3 && contents.charAt(0) == 239 && contents.charAt(1) == 187 && contents.charAt(2) == 191) {
-            start = 3;
-        }
+        int start = this.checkBomSkip(contents);
 
         for (int index = start; index < contents.length(); index++) {
             if (!isWhitespace(contents.charAt(index))) {
@@ -271,6 +274,40 @@ public class SlocCounter {
         }
 
         return new SlocCount(linesCount, blankCount, codeCount, commentCount, complexity);
+    }
+
+    public int checkBomSkip(String contents) {
+        int start = 0;
+
+        for (List<Integer> bom : byteOrderMarks) {
+            if (contents.length() >= bom.size()) {
+                boolean isMatch = true;
+                for (int i = 0; i < bom.size(); i++) {
+                    if (contents.charAt(i) != bom.get(i)) {
+                        isMatch = false;
+                    }
+                }
+
+                if (isMatch) {
+                    start = bom.size();
+                }
+            }
+        }
+
+        return start;
+    }
+
+    // Used to hold the state of the pointer so we know what type of code we
+    // are dealing with
+    public enum State {
+        S_BLANK,
+        S_CODE,
+        S_COMMENT,
+        S_COMMENT_CODE,
+        S_MULTICOMMENT,
+        S_MULTICOMMENT_CODE,
+        S_MULTICOMMENT_BLANK,
+        S_STRING,
     }
 
     /**
