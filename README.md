@@ -1,6 +1,7 @@
 # searchcode server
 
 [![Build Status](https://travis-ci.org/boyter/searchcode-server.svg?branch=master)](https://travis-ci.org/boyter/searchcode-server)
+[![Scc Count Badge](https://sloc.xyz/github/boyter/searchcode-server/)](https://github.com/boyter/searchcode-server/)
 
 [![Video](https://searchcodeserver.com/images/videos/searchcode_server_search.gif)](https://searchcodeserver.com/images/videos/searchcode_server_search.gif)
 
