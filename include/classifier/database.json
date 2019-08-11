@@ -1,4 +1,12 @@
 {
+  "Unknown": {
+    "line_comment": [],
+    "complexitychecks": [],
+    "extensions": [],
+    "multi_line": [],
+    "quotes": [],
+    "comment": "This is here as a failsafe in case we fallback to unknown and look for a definition"
+  },
   "ABAP": {
     "complexitychecks": [
       "for ",
