@@ -8,14 +8,15 @@
  * Version 1.3.15
  */
 
-package com.searchcode.app.dto;
+package com.searchcode.app.dto.classifier;
 
 public class FileClassifierResult {
     public String[] extensions;
+    public String[] extensionfile;
     public String[] line_comment;
     public String[] complexitychecks;
     public String[][] multi_line;
-    public String[][] quotes;
+    public Quote[] quotes;
     public boolean nestedmultiline;
     public String[] keywords; // Used to identify languages that share extensions
 

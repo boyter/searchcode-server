@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.searchcode.app.config.Values;
-import com.searchcode.app.dto.FileClassifierResult;
+import com.searchcode.app.dto.classifier.FileClassifierResult;
 import com.searchcode.app.service.Singleton;
 
 import java.io.FileNotFoundException;

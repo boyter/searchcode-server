@@ -10,7 +10,8 @@
 
 package com.searchcode.app.util;
 
-import com.searchcode.app.dto.FileClassifierResult;
+import com.searchcode.app.dto.classifier.FileClassifierResult;
+import com.searchcode.app.dto.classifier.Quote;
 import com.searchcode.app.service.Singleton;
 
 import java.util.ArrayList;
@@ -120,6 +121,32 @@ public class SlocCounter {
         return null;
     }
 
+    public String checkForMatchMultiOpenQuote(char currentByte, int index, int endPoint, Quote[] matches, String content) {
+        if (matches == null) {
+            return null;
+        }
+
+        for (int i = 0; i < matches.length; i++) { // For each match
+            if (currentByte == matches[i].start.charAt(0)) { // If the first character matches
+                boolean potentialMatch = true;
+
+                for (int j = 0; j < matches[i].start.length(); j++) { // Check if the rest match
+                    if (index + j <= endPoint && matches[i].start.charAt(j) != content.charAt(index + j)) {
+                        potentialMatch = false;
+                        break;
+                    }
+                }
+
+                if (potentialMatch) {
+                    // Refers to the closing condition for the matching open
+                    return matches[i].end;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public boolean isWhitespace(char currentByte) {
         return currentByte == ' ' || currentByte == '\t' || currentByte == '\n' || currentByte == '\r';
     }
@@ -171,7 +198,7 @@ public class SlocCounter {
                             break;
                         }
 
-                        endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
+                        endString = this.checkForMatchMultiOpenQuote(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
                         if (endString != null) {
                             currentState = State.S_STRING;
                             break;
@@ -226,7 +253,7 @@ public class SlocCounter {
                             }
                         }
 
-                        endString = this.checkForMatchMultiOpen(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
+                        endString = this.checkForMatchMultiOpenQuote(contents.charAt(index), index, endPoint, fileClassifierResult.quotes, contents);
                         if (endString != null) {
                             currentState = State.S_STRING;
                             break;

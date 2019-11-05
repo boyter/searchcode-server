@@ -1,6 +1,6 @@
 package com.searchcode.app.util;
 
-import com.searchcode.app.dto.FileClassifierResult;
+import com.searchcode.app.dto.classifier.FileClassifierResult;
 import junit.framework.TestCase;
 import org.assertj.core.api.AssertionsForClassTypes;
 

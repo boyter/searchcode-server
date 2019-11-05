@@ -3,7 +3,7 @@ package com.searchcode.app.util;
 import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
-import com.searchcode.app.dto.FileClassifierResult;
+import com.searchcode.app.dto.classifier.FileClassifierResult;
 import junit.framework.TestCase;
 import org.apache.commons.lang3.RandomStringUtils;
 

@@ -23,6 +23,9 @@ release/
 *.log.*
 assets/sales/output
 
+.project
+.settings
+
 lib/
 logs/
 trash/
