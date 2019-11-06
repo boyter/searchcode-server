@@ -6914,7 +6914,6 @@
   "gitignore": {
     "complexitychecks": [],
     "extensions": [
-      ".gitignore"
     ],
     "filenames": [
       ".gitignore"

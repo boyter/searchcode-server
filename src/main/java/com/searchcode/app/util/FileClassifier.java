@@ -72,8 +72,13 @@ public class FileClassifier {
         var matches = new ArrayList<String>();
         var extension = Values.EMPTYSTRING;
 
+        // Try finding based on full name match
+        matches = this.checkIfFilenameExists(fileName);
+
         // Try finding using the whole name EG LICENSE
-        matches = this.checkIfExtentionExists(fileName);
+        if (matches.isEmpty()) {
+            matches = this.checkIfExtentionExists(fileName);
+        }
 
         // Try matching based on one level EG d.ts OR ts
         if (matches.isEmpty()) {
@@ -102,7 +107,7 @@ public class FileClassifier {
 
         for (var m : matches) {
             toSort.put(m, 0);
-            for (var keyword: this.database.get(m).keywords) {
+            for (var keyword : this.database.get(m).keywords) {
                 if (content.contains(keyword)) {
                     toSort.put(m, toSort.get(m) + 1);
                 }
@@ -121,6 +126,24 @@ public class FileClassifier {
             for (var ext : fileClassifierResult.extensions) {
                 if (extension.equals(ext)) {
                     matches.add(key);
+                }
+            }
+        }
+
+        return matches;
+    }
+
+    private ArrayList<String> checkIfFilenameExists(String extension) {
+        var matches = new ArrayList<String>();
+
+        for (String key : database.keySet()) {
+            var fileClassifierResult = database.get(key);
+
+            if (fileClassifierResult.filenames != null) {
+                for (var ext : fileClassifierResult.filenames) {
+                    if (extension.equals(ext)) {
+                        matches.add(key);
+                    }
                 }
             }
         }

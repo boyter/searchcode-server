@@ -19,6 +19,7 @@ public class FileClassifierResult {
     public Quote[] quotes;
     public boolean nestedmultiline;
     public String[] keywords; // Used to identify languages that share extensions
+    public String[] filenames;
 
     public FileClassifierResult(String extensions) {
         this.extensions = extensions.toLowerCase().split(",");
