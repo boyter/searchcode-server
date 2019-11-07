@@ -9,18 +9,27 @@ services:
 #    depends_on:
 #      - manticore
 #      - mysql
-  manticore:
+  mysql_seed:
+    build:
+      context: .
+      dockerfile: ./seed.Dockerfile
+    links:
+      - mysql:mysqldocker
+    depends_on:
+      - mysql
+      - manticore1
+  manticore1:
     build:
       context: .
       dockerfile: ./manticore.Dockerfile
     ports:
       - "9306:9306"
   mysql:
-    build:
-      context: .
-      dockerfile: ./mysql.Dockerfile
+    image: mysql:5.7.26
     ports:
       - "3306:3306"
+    expose:
+      - "3306"
     # command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: searchcode
