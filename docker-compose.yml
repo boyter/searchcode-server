@@ -24,5 +24,4 @@ services:
     # command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_DATABASE: searchcode
-      # MYSQL_ROOT_PASSWORD: example
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
