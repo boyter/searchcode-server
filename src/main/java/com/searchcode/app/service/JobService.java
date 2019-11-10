@@ -302,11 +302,11 @@ public class JobService {
      * pulling out files and adding them to the queue to be indexed
      */
     public void startReIndexer() {
-        JobDetail job = newJob(ReindexerJob.class)
+        var job = newJob(ReindexerJob.class)
                 .withIdentity("reindexer")
                 .build();
 
-        SimpleTrigger trigger = newTrigger()
+        var trigger = newTrigger()
                 .withIdentity("reindexer")
                 .withSchedule(simpleSchedule()
                         .withIntervalInSeconds(this.INDEXTIME)
