@@ -71,9 +71,11 @@ public class ReindexerJob implements Job {
                 var indexDocuments = codeBetween.stream().map(this::convert).collect(Collectors.toList());
                 this.indexQueue.addAll(indexDocuments);
 
-                // TODO check what the highest value is, and if less than were we are reset
-                this.data.saveData("reIndexerStart", String.valueOf(endIndex));
+                if (endIndex > this.sourcecode.getMaxId()) {
+                    endIndex = 0;
+                }
 
+                this.data.saveData("reIndexerStart", String.valueOf(endIndex));
                 Thread.sleep(this.INDEXTIME * this.helpers.getRandomSleepTimeMilliseconds());
             }
         } catch (Exception ex) {
