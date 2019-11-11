@@ -468,4 +468,41 @@ public class Helpers {
             connections.get(key).ifPresent(this::closeQuietly);
         }
     }
+
+    // It is useful to get random prime numbers to avoid thundering heard issues
+    // where you want processes to sleep randomly so this process picks one
+    // randomly from the first 10000 so the max number is 9973 and least is
+    public int getRandomSleepTimeMilliseconds() {
+        var primes = sieveOfEratosthenes(10000);
+        var rand = new Random();
+
+        // We want them to be over 1000 in this case to ensure
+        // they sleep for a reasonable amount of time
+        var collect = primes.stream()
+                .filter(x -> x >= 1000)
+                .collect(Collectors.toList());
+
+        return collect.get(rand.nextInt(collect.size()));
+    }
+
+    private ArrayList<Integer> sieveOfEratosthenes(int n) {
+        boolean prime[] = new boolean[n + 1];
+        Arrays.fill(prime, true);
+        for (int p = 2; p * p <= n; p++) {
+            if (prime[p]) {
+                for (int i = p * 2; i <= n; i += p) {
+                    prime[i] = false;
+                }
+            }
+        }
+
+        var primeNumbers = new ArrayList<Integer>();
+        for (int i = 2; i <= n; i++) {
+            if (prime[i]) {
+                primeNumbers.add(i);
+            }
+        }
+
+        return primeNumbers;
+    }
 }

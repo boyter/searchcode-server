@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import org.mockito.Mockito;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -36,7 +37,7 @@ public class HelpersTest extends TestCase {
             tempDir.mkdir();
         }
 
-        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempDir + "/no_newlines"), "utf-8"))) {
+        try (Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempDir + "/no_newlines"), StandardCharsets.UTF_8))) {
             for (int i = 0; i < 100000000; i++) { // About 100 MB
                 writer.write("a");
             }
@@ -152,16 +153,24 @@ public class HelpersTest extends TestCase {
     public void testFilterRunningAndDeletedRepoJobs() {
         assertThat(this.helpers.filterRunningAndDeletedRepoJobs(new ArrayList<>()).size()).isEqualTo(0);
         assertThat(this.helpers.filterRunningAndDeletedRepoJobs(List.of(
-            new RepoResult()
-                    .setRowId(0)
-                    .setName("reallyuniquenameihope")
-                    .setScm("something")
-                    .setUrl("url")
-                    .setUsername("")
-                    .setPassword("")
-                    .setSource("source")
-                    .setBranch("branch")
-                    .setData("{}"))
+                new RepoResult()
+                        .setRowId(0)
+                        .setName("reallyuniquenameihope")
+                        .setScm("something")
+                        .setUrl("url")
+                        .setUsername("")
+                        .setPassword("")
+                        .setSource("source")
+                        .setBranch("branch")
+                        .setData("{}"))
         ).size()).isEqualTo(1);
+    }
+
+    public void testGetRandomSleepTime() {
+        for (var i = 0; i < 10000; i++) {
+            var randomPrimeNumber = this.helpers.getRandomSleepTimeMilliseconds();
+            assertThat(randomPrimeNumber % 2).isNotZero();
+            assertThat(randomPrimeNumber > 1000).isTrue();
+        }
     }
 }

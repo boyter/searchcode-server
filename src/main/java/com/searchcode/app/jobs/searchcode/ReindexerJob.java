@@ -1,10 +1,12 @@
 package com.searchcode.app.jobs.searchcode;
 
 import com.searchcode.app.config.Values;
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.SourceCode;
 import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.searchcode.SearchcodeCodeResult;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import org.quartz.DisallowConcurrentExecution;
@@ -27,15 +29,19 @@ public class ReindexerJob implements Job {
     private final LoggerWrapper logger;
     private final Queue<CodeIndexDocument> indexQueue;
     private final SourceCode sourcecode;
+    private final Data data;
+    private final Helpers helpers;
 
     public ReindexerJob() {
-        this(Singleton.getSourceCode(), Singleton.getCodeIndexQueue(), Singleton.getLogger());
+        this(Singleton.getSourceCode(), Singleton.getCodeIndexQueue(), Singleton.getData(), Singleton.getHelpers(), Singleton.getLogger());
     }
 
-    public ReindexerJob(SourceCode sourcecode, Queue<CodeIndexDocument> indexQueue, LoggerWrapper logger) {
+    public ReindexerJob(SourceCode sourcecode, Queue<CodeIndexDocument> indexQueue, Data data, Helpers helpers, LoggerWrapper logger) {
         this.sourcecode = sourcecode;
         this.indexQueue = indexQueue;
         this.logger = logger;
+        this.data = data;
+        this.helpers = helpers;
         this.INDEXTIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME), Values.DEFAULTINDEXTIME);
     }
 
@@ -56,14 +62,19 @@ public class ReindexerJob implements Job {
                     continue;
                 }
 
+                // Do it in batches of 500
+                var startIndex = this.helpers.tryParseInt(this.data.getDataByName("reIndexerStart", "0"), "0");
+                var endIndex = startIndex + 500;
+
                 // Fetch documents from SQL and add them to the index
-                var codeBetween = this.sourcecode.getCodeBetween(0, 1000);
+                var codeBetween = this.sourcecode.getCodeBetween(startIndex, endIndex);
                 var indexDocuments = codeBetween.stream().map(this::convert).collect(Collectors.toList());
                 this.indexQueue.addAll(indexDocuments);
 
-                // TODO update database so we know where we have started
+                // TODO check what the highest value is, and if less than were we are reset
+                this.data.saveData("reIndexerStart", String.valueOf(endIndex));
 
-                Thread.sleep(this.INDEXTIME * 100000);
+                Thread.sleep(this.INDEXTIME * this.helpers.getRandomSleepTimeMilliseconds());
             }
         } catch (Exception ex) {
             this.logger.severe(String.format("32639901::error in class %s exception %s", ex.getClass(), ex.getMessage()));
