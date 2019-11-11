@@ -86,8 +86,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean ignoreFile(String fileParent) {
         return true;
     }
-
-
+    
     /**
      * Check the file time against the last run time with 1 hour offset
      */
@@ -100,12 +99,8 @@ public abstract class IndexBaseRepoJob implements Job {
         long lastModified = file.lastModified();
         long truncatedNow = lastRunTime.minusSeconds(3600).toEpochMilli();
 
-        if (lastModified <= truncatedNow) {
-            // Skip the file because we in theory already indexed it
-            return false;
-        }
-
-        return true;
+        // Skip the file because we in theory already indexed it
+        return lastModified > truncatedNow;
     }
 
     /**
