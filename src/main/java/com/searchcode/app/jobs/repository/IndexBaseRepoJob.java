@@ -86,7 +86,7 @@ public abstract class IndexBaseRepoJob implements Job {
     public boolean ignoreFile(String fileParent) {
         return true;
     }
-    
+
     /**
      * Check the file time against the last run time with 1 hour offset
      */

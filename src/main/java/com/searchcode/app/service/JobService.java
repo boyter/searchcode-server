@@ -287,6 +287,7 @@ public class JobService {
         if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
             this.startReIndexer();
+            // Need to start enqueue job
         } else {
             this.startDeleteJob();
             this.startSpellingJob();
@@ -345,11 +346,11 @@ public class JobService {
      * indexing files that are added to the index queue
      */
     private void startIndexerJob() {
-        JobDetail job = newJob(IndexDocumentsJob.class)
+        var job = newJob(IndexDocumentsJob.class)
                 .withIdentity("indexerjob")
                 .build();
 
-        SimpleTrigger trigger = newTrigger()
+        var trigger = newTrigger()
                 .withIdentity("indexerjob")
                 .withSchedule(
                         simpleSchedule()
@@ -454,7 +455,7 @@ public class JobService {
         }
 
         if (this.dataservice.getPersistentDelete().contains(repoResult.getName()) ||
-                Singleton.getRunningIndexRepoJobs().keySet().contains(repoResult.getName())) {
+                Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             return false;
         }
 
