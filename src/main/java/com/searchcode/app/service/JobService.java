@@ -26,13 +26,10 @@ import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
-import com.searchcode.app.util.UniqueRepoQueue;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleTrigger;
 import org.zeroturnaround.exec.ProcessExecutor;
 
 import java.io.File;
@@ -40,7 +37,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.SimpleScheduleBuilder.simpleSchedule;
@@ -90,11 +86,11 @@ public class JobService {
      */
     public void startIndexGitRepoJobs(String uniquename) {
         try {
-            JobDetail job = newJob(IndexGitRepoJob.class)
+            var job = newJob(IndexGitRepoJob.class)
                     .withIdentity("updateindex-git-" + uniquename)
                     .build();
 
-            SimpleTrigger trigger = newTrigger()
+            var trigger = newTrigger()
                     .withIdentity("updateindex-git-" + uniquename)
                     .withSchedule(
                             simpleSchedule()
@@ -119,11 +115,11 @@ public class JobService {
      */
     public void startIndexFileRepoJobs(String uniquename) {
         try {
-            JobDetail job = newJob(IndexFileRepoJob.class)
+            var job = newJob(IndexFileRepoJob.class)
                     .withIdentity("updateindex-file-" + uniquename)
                     .build();
 
-            SimpleTrigger trigger = newTrigger()
+            var trigger = newTrigger()
                     .withIdentity("updateindex-file-" + uniquename)
                     .withSchedule(
                             simpleSchedule()
@@ -149,11 +145,11 @@ public class JobService {
      */
     public void startIndexSvnRepoJobs(String uniquename) {
         try {
-            JobDetail job = newJob(IndexSvnRepoJob.class)
+            var job = newJob(IndexSvnRepoJob.class)
                     .withIdentity("updateindex-svn-" + uniquename)
                     .build();
 
-            SimpleTrigger trigger = newTrigger()
+            var trigger = newTrigger()
                     .withIdentity("updateindex-svn-" + uniquename)
                     .withSchedule(
                             simpleSchedule()
@@ -180,11 +176,11 @@ public class JobService {
     private void startEnqueueJob() {
         try {
             // Setup the indexer which runs forever adding documents to be indexed
-            JobDetail job = newJob(EnqueueRepositoryJob.class)
+            var job = newJob(EnqueueRepositoryJob.class)
                     .withIdentity("enqueuejob")
                     .build();
 
-            SimpleTrigger trigger = newTrigger()
+            var trigger = newTrigger()
                     .withIdentity("enqueuejob")
                     .withSchedule(
                             simpleSchedule()
@@ -198,11 +194,11 @@ public class JobService {
             this.scheduler.start();
 
             // Setup the indexer which runs forever adding documents to be indexed
-            JobDetail job2 = newJob(EnqueueFileRepositoryJob.class)
+            var job2 = newJob(EnqueueFileRepositoryJob.class)
                     .withIdentity("enqueuefilejob")
                     .build();
 
-            SimpleTrigger trigger2 = newTrigger()
+            var trigger2 = newTrigger()
                     .withIdentity("enqueuefilejob")
                     .withSchedule(
                             simpleSchedule()
@@ -224,12 +220,11 @@ public class JobService {
      */
     private void startDeleteJob() {
         try {
-            // Setup the indexer which runs forever adding documents to be indexed
-            JobDetail job = newJob(DeleteRepositoryJob.class)
+            var job = newJob(DeleteRepositoryJob.class)
                     .withIdentity("deletejob")
                     .build();
 
-            SimpleTrigger trigger = newTrigger()
+            var trigger = newTrigger()
                     .withIdentity("deletejob")
                     .withSchedule(
                             simpleSchedule()
@@ -251,12 +246,11 @@ public class JobService {
      */
     private void startSpellingJob() {
         try {
-            // Setup the indexer which runs forever adding documents to be indexed
-            JobDetail job = newJob(PopulateSpellingCorrectorJob.class)
+            var job = newJob(PopulateSpellingCorrectorJob.class)
                     .withIdentity("spellingjob")
                     .build();
 
-            SimpleTrigger trigger = newTrigger()
+            var trigger = newTrigger()
                     .withIdentity("spellingjob")
                     .withSchedule(
                             simpleSchedule()
@@ -278,11 +272,11 @@ public class JobService {
      */
     public void initialJobs() {
         // Having this run multiple times can be an issue so ensure it can not happen
-        if (initialJobsRun) {
+        if (this.initialJobsRun) {
             return;
         }
 
-        initialJobsRun = true;
+        this.initialJobsRun = true;
 
         if (!Singleton.getHelpers().isStandaloneInstance()) {
             this.startHighlighter();
@@ -432,7 +426,7 @@ public class JobService {
             return false;
         }
 
-        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo());
+        var repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo());
         this.logger.info(String.format("ea4fc311::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
@@ -441,7 +435,7 @@ public class JobService {
 
     public int forceEnqueueWithCount() {
         // Get all of the repositories and enqueue them
-        List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo());
+        var repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo());
         this.logger.info(String.format("de4d4b59::adding %d repositories to be indexed", repoResultList.size()));
         repoResultList.forEach(this::enqueueRepository);
 
@@ -465,9 +459,9 @@ public class JobService {
     }
 
     private void enqueueRepository(RepoResult rr) {
-        UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
-        UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
-        UniqueRepoQueue repoFileQueue = Singleton.getUniqueFileRepoQueue();
+        var repoGitQueue = Singleton.getUniqueGitRepoQueue();
+        var repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+        var repoFileQueue = Singleton.getUniqueFileRepoQueue();
 
         this.logger.info(String.format("e30a1dca::adding %s to %s queue", rr.getName(), rr.getScm()));
 
