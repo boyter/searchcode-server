@@ -168,7 +168,7 @@ public class HelpersTest extends TestCase {
 
     public void testGetRandomSleepTime() {
         for (var i = 0; i < 10000; i++) {
-            var randomPrimeNumber = this.helpers.getRandomSleepTimeMilliseconds();
+            var randomPrimeNumber = this.helpers.getRandomJitterSleepTimeMilliseconds();
             assertThat(randomPrimeNumber % 2).isNotZero();
             assertThat(randomPrimeNumber > 1000).isTrue();
         }

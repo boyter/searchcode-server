@@ -5,7 +5,6 @@ import com.searchcode.app.dto.CodeIndexDocument;
 import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.LoggerWrapper;
-import com.searchcode.app.util.SlocCounter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +51,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
     public FileVisitResult visitFile(Object file, BasicFileAttributes attrs) throws IOException {
 
         try {
-            java.nio.file.Path filePath = (java.nio.file.Path) file;
+            var filePath = (java.nio.file.Path) file;
 
             // If pause or terminate has been triggered than exit at first opportunity
             if (this.indexBaseRepoJob.shouldJobPauseOrTerminate()) {
@@ -65,9 +64,9 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             }
 
             // Convert Path file to unix style that way everything is easier to reason about
-            String fileParent = FilenameUtils.separatorsToUnix(filePath.getParent().toString());
-            String fileToString = FilenameUtils.separatorsToUnix(filePath.toString());
-            String fileName = filePath.getFileName().toString();
+            var fileParent = FilenameUtils.separatorsToUnix(filePath.getParent().toString());
+            var fileToString = FilenameUtils.separatorsToUnix(filePath.toString());
+            var fileName = filePath.getFileName().toString();
 
             if (this.indexBaseRepoJob.ignoreFile(fileParent)) {
                 return FileVisitResult.CONTINUE;
@@ -81,13 +80,13 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.CONTINUE;
             }
 
-            IndexBaseRepoJob.CodeLinesReturn codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
+            var codeLinesReturn = this.indexBaseRepoJob.getCodeLines(fileToString, reportList);
             if (codeLinesReturn.isError()) {
                 fileLocationsMap.remove(fileToString);
                 return FileVisitResult.CONTINUE;
             }
 
-            IndexBaseRepoJob.IsMinifiedReturn isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
+            var isMinified = this.indexBaseRepoJob.getIsMinified(codeLinesReturn.getCodeLines(), fileName, reportList);
             if (isMinified.isMinified()) {
                 return FileVisitResult.CONTINUE;
             }
@@ -101,16 +100,16 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 return FileVisitResult.CONTINUE;
             }
 
-            String md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
-            String languageName = Singleton.getFileClassifier().languageGuesser(fileName, StringUtils.join(codeLinesReturn.getCodeLines(), "\n"));
-            String fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
-            String fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
-            String newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
-            String codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getDirectoryName(), fileRepoLocations, Singleton.getSearchCodeLib());
-            SlocCounter.SlocCount slocCount = Singleton.getSlocCounter().countStats(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"), languageName);
+            var md5Hash = this.indexBaseRepoJob.getFileMd5(fileToString);
+            var languageName = Singleton.getFileClassifier().languageGuesser(fileName, StringUtils.join(codeLinesReturn.getCodeLines(), "\n"));
+            var fileLocation = this.indexBaseRepoJob.getRelativeToProjectPath(file.toString(), fileToString);
+            var fileLocationFilename = this.indexBaseRepoJob.getFileLocationFilename(fileToString, fileRepoLocations);
+            var newString = this.indexBaseRepoJob.getBlameFilePath(fileLocationFilename);
+            var codeOwner = this.indexBaseRepoJob.getCodeOwner(codeLinesReturn.getCodeLines(), newString, this.repoResult.getDirectoryName(), fileRepoLocations, Singleton.getSearchCodeLib());
+            var slocCount = Singleton.getSlocCounter().countStats(StringUtils.join(codeLinesReturn.getCodeLines(), "\n"), languageName);
 
 
-            String displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1);
+            var displayLocation = fileLocationFilename.substring(fileLocationFilename.indexOf("/") + 1);
 
             if (Values.FILE.equals(this.repoResult.getScm())) {
                 displayLocation = fileToString.replace(this.repoResult.getUrl(), "");
@@ -119,7 +118,7 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
                 }
             }
 
-            CodeIndexDocument codeIndexDocument = new CodeIndexDocument()
+            var codeIndexDocument = new CodeIndexDocument()
                     .setRepoLocationRepoNameLocationFilename(fileToString)
                     .setRepoName(this.repoResult.getName())
                     .setFileName(fileName)
@@ -142,7 +141,6 @@ public class SearchcodeFileVisitor<Path> extends SimpleFileVisitor<Path> {
             if (this.indexBaseRepoJob.LOWMEMORY) {
                 Singleton.getIndexService().indexDocument(codeIndexDocument);
             } else {
-
                 Singleton.getIndexService().incrementCodeIndexLinesCount(slocCount.linesCount);
                 Singleton.getCodeIndexQueue().add(codeIndexDocument);
             }

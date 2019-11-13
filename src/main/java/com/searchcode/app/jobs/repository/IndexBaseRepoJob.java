@@ -16,8 +16,8 @@ import com.searchcode.app.dto.BinaryFinding;
 import com.searchcode.app.dto.RepositoryChanged;
 import com.searchcode.app.dto.RunningIndexJob;
 import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.Properties;
 import com.searchcode.app.util.SearchCodeLib;
@@ -27,7 +27,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.quartz.Job;
-import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -116,10 +115,10 @@ public abstract class IndexBaseRepoJob implements Job {
      */
     public void execute(JobExecutionContext context) throws JobExecutionException {
         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-        JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
+        var jobDataMap = context.getJobDetail().getJobDataMap();
 
         this.LOWMEMORY = Boolean.parseBoolean(jobDataMap.get("LOWMEMORY").toString());
-        String repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
+        var repoLocations = jobDataMap.get("REPOLOCATIONS").toString();
 
         if (!isEnabled() || this.indexService.shouldPause(IIndexService.JobType.REPO_PARSER)) {
             this.logger.info("080364f1::pausing parser as requested");
@@ -127,7 +126,7 @@ public abstract class IndexBaseRepoJob implements Job {
         }
 
         // Pull the next repo to index from the queue
-        RepoResult repoResult = this.getNextQueuedRepo().poll();
+        var repoResult = this.getNextQueuedRepo().poll();
 
         if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             this.haveRepoResult = true;
@@ -142,11 +141,11 @@ public abstract class IndexBaseRepoJob implements Job {
 
                 this.checkCloneSuccess(repoResult.getDirectoryName(), repoLocations);
 
-                String repoGitLocation = repoLocations + "/" + repoResult.getDirectoryName() + "/.git/";
+                var repoGitLocation = repoLocations + "/" + repoResult.getDirectoryName() + "/.git/";
 
-                File file = new File(repoGitLocation);
-                boolean existingRepo = file.exists(); // TODO this assumes git every time? Correct????
-                boolean useCredentials = repoResult.getUsername() != null && !repoResult.getUsername().isEmpty();
+                var file = new File(repoGitLocation);
+                var existingRepo = file.exists(); // TODO this assumes git every time? Correct????
+                var useCredentials = repoResult.getUsername() != null && !repoResult.getUsername().isEmpty();
                 RepositoryChanged repositoryChanged;
 
                 if (existingRepo) {
@@ -175,7 +174,7 @@ public abstract class IndexBaseRepoJob implements Job {
     }
 
     public void triggerIndex(RepoResult repoResult, String repoName, String repoRemoteLocation, String repoLocations, String repoGitLocation, boolean existingRepo, RepositoryChanged repositoryChanged) {
-        Instant jobStartTime = Instant.now();
+        var jobStartTime = Instant.now();
         this.logger.info(String.format("821f26c2::update found indexing %s", repoRemoteLocation));
         this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 

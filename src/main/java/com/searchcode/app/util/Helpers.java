@@ -472,7 +472,7 @@ public class Helpers {
     // It is useful to get random prime numbers to avoid thundering heard issues
     // where you want processes to sleep randomly so this process picks one
     // randomly from the first 10000 so the max number is 9973 and least is
-    public int getRandomSleepTimeMilliseconds() {
+    public int getRandomJitterSleepTimeMilliseconds() {
         var primes = sieveOfEratosthenes(10000);
         var rand = new Random();
 

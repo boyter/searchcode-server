@@ -278,17 +278,19 @@ public class JobService {
 
         this.initialJobsRun = true;
 
-        if (!Singleton.getHelpers().isStandaloneInstance()) {
-            this.startHighlighter();
-            this.startReIndexer();
-            // Need to start enqueue job
-        } else {
+        if (Singleton.getHelpers().isStandaloneInstance()) {
             this.startDeleteJob();
             this.startSpellingJob();
             this.startRepositoryJobs();
             this.startEnqueueJob();
+        } else {
+            // searchcode.com path
+            this.startHighlighter();
+            this.startReIndexer();
+            // Need to start enqueue job
         }
 
+        // This will determine itself what index to use so no need to if condition it
         this.startIndexerJob();
     }
 
