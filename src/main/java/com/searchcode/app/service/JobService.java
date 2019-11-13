@@ -81,6 +81,35 @@ public class JobService {
     }
 
     /**
+     * Starts all of the above jobs as per their unique requirements between searchcode.com
+     * and local runner
+     */
+    public void initialJobs() {
+        // Having this run multiple times can be an issue so ensure it can not happen
+        if (this.initialJobsRun) {
+            return;
+        }
+
+        this.initialJobsRun = true;
+
+        if (Singleton.getHelpers().isStandaloneInstance()) {
+            this.startDeleteJob();
+            this.startSpellingJob();
+            this.startRepositoryJobs();
+            this.startEnqueueJob();
+        } else {
+            // searchcode.com path
+            this.startHighlighter();
+            this.startReIndexer();
+            // Need to start enqueue job
+        }
+
+        // This will determine itself what index to use so no need to if condition it
+        this.startIndexerJob();
+    }
+
+
+    /**
      * Creates a git repo indexer job which will pull from the list of git repositories and start
      * indexing them
      */
@@ -265,33 +294,6 @@ public class JobService {
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("6e131da2::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
-    }
-
-    /**
-     * Starts all of the above jobs as per their unique requirements
-     */
-    public void initialJobs() {
-        // Having this run multiple times can be an issue so ensure it can not happen
-        if (this.initialJobsRun) {
-            return;
-        }
-
-        this.initialJobsRun = true;
-
-        if (Singleton.getHelpers().isStandaloneInstance()) {
-            this.startDeleteJob();
-            this.startSpellingJob();
-            this.startRepositoryJobs();
-            this.startEnqueueJob();
-        } else {
-            // searchcode.com path
-            this.startHighlighter();
-            this.startReIndexer();
-            // Need to start enqueue job
-        }
-
-        // This will determine itself what index to use so no need to if condition it
-        this.startIndexerJob();
     }
 
     /**
