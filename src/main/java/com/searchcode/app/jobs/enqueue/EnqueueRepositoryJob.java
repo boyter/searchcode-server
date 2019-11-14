@@ -12,16 +12,16 @@ package com.searchcode.app.jobs.enqueue;
 
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dao.IRepo;
-import com.searchcode.app.model.RepoResult;
-import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.service.Singleton;
+import com.searchcode.app.service.index.IIndexService;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
-import com.searchcode.app.util.UniqueRepoQueue;
-import org.quartz.*;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.PersistJobDataAfterExecution;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -53,19 +53,19 @@ public class EnqueueRepositoryJob implements Job {
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-            UniqueRepoQueue repoGitQueue = Singleton.getUniqueGitRepoQueue();
-            UniqueRepoQueue repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+            var repoGitQueue = Singleton.getUniqueGitRepoQueue();
+            var repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
 
             // Get all of the repositories and enqueue them
             // Filter out those queued to be deleted
-            List<RepoResult> repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo())
+            var repoResultList = this.helpers.filterRunningAndDeletedRepoJobs(this.repo.getAllRepo())
                     .stream()
                     .filter(x -> !x.getScm().equals(Values.FILE))
                     .collect(Collectors.toList());
 
             this.logger.info(String.format("d6ed27fe::adding %d file repositories to be indexed", repoResultList.size()));
 
-            for (RepoResult rr : repoResultList) {
+            for (var rr : repoResultList) {
                 if (Singleton.getEnqueueRepositoryJobFirstRun()) {
                     rr.getData().jobRunTime = Instant.parse("1800-01-01T00:00:00.000Z");
                     this.repo.saveRepo(rr);

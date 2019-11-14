@@ -16,6 +16,7 @@ import com.searchcode.app.jobs.DeleteRepositoryJob;
 import com.searchcode.app.jobs.PopulateSpellingCorrectorJob;
 import com.searchcode.app.jobs.enqueue.EnqueueFileRepositoryJob;
 import com.searchcode.app.jobs.enqueue.EnqueueRepositoryJob;
+import com.searchcode.app.jobs.enqueue.EnqueueSearchcodeRepositoryJob;
 import com.searchcode.app.jobs.repository.IndexDocumentsJob;
 import com.searchcode.app.jobs.repository.IndexFileRepoJob;
 import com.searchcode.app.jobs.repository.IndexGitRepoJob;
@@ -101,7 +102,7 @@ public class JobService {
             // searchcode.com path
             this.startHighlighter();
             this.startReIndexer();
-            // Need to start enqueue job
+            this.startSearchcodeEnqueueJob();
         }
 
         // This will determine itself what index to use so no need to if condition it
@@ -241,6 +242,30 @@ public class JobService {
             this.scheduler.start();
         } catch (SchedulerException ex) {
             this.logger.severe(String.format("40f20408::error in class %s exception %s", ex.getClass(), ex.getMessage()));
+        }
+    }
+
+    private void startSearchcodeEnqueueJob() {
+        try {
+            // Setup the indexer which runs forever adding documents to be indexed
+            var job = newJob(EnqueueSearchcodeRepositoryJob.class)
+                    .withIdentity("enqueuesearchcodejob")
+                    .build();
+
+            var trigger = newTrigger()
+                    .withIdentity("enqueuesearchcodejob")
+                    .withSchedule(
+                            simpleSchedule()
+                                    .withIntervalInSeconds(this.UPDATETIME)
+                                    .repeatForever()
+                    )
+                    .withPriority(2)
+                    .build();
+
+            this.scheduler.scheduleJob(job, trigger);
+            this.scheduler.start();
+        } catch (SchedulerException ex) {
+            this.logger.severe(String.format("9c4b9ccc::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
     }
 
