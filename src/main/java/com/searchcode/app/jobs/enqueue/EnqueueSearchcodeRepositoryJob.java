@@ -50,8 +50,6 @@ public class EnqueueSearchcodeRepositoryJob implements Job {
             // update the point
             // Get the batch of repositories from the database
             // add them to the queue
-
-
         } catch (Exception ex) {
             this.logger.severe(String.format("8675db36::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
