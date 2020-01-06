@@ -131,9 +131,11 @@ public abstract class IndexBaseRepoJob implements Job {
         if (repoResult != null && !Singleton.getRunningIndexRepoJobs().containsKey(repoResult.getName())) {
             this.haveRepoResult = true;
             this.logger.info(String.format("1d980f51::indexing repository %s", repoResult.getName()));
-            repoResult.getData().indexStatus = "indexing";
-            repoResult.getData().indexError = Values.EMPTYSTRING;
-            Singleton.getRepo().saveRepo(repoResult);
+            if (repoResult.getData() != null) {
+                repoResult.getData().indexStatus = "indexing";
+                repoResult.getData().indexError = Values.EMPTYSTRING;
+                Singleton.getRepo().saveRepo(repoResult);
+            }
 
             try {
                 Singleton.getRunningIndexRepoJobs().put(repoResult.getName(),
@@ -179,10 +181,13 @@ public abstract class IndexBaseRepoJob implements Job {
         this.updateIndex(repoResult, repoLocations, repoRemoteLocation, existingRepo, repositoryChanged);
 
         int runningTime = Singleton.getHelpers().getCurrentTimeSeconds() - Singleton.getRunningIndexRepoJobs().get(repoResult.getName()).startTime;
-        repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
-        repoResult.getData().indexStatus = "success";
-        repoResult.getData().jobRunTime = jobStartTime;
-        Singleton.getRepo().saveRepo(repoResult);
+
+        if (repoResult.getData() != null) {
+            repoResult.getData().averageIndexTimeSeconds = (repoResult.getData().averageIndexTimeSeconds + runningTime) / 2;
+            repoResult.getData().indexStatus = "success";
+            repoResult.getData().jobRunTime = jobStartTime;
+            Singleton.getRepo().saveRepo(repoResult);
+        }
     }
 
     /**
