@@ -85,7 +85,7 @@ public class JobService {
      * Starts all of the above jobs as per their unique requirements between searchcode.com
      * and local runner
      */
-    public void initialJobs() {
+    public synchronized void initialJobs() {
         // Having this run multiple times can be an issue so ensure it can not happen
         if (this.initialJobsRun) {
             return;
@@ -102,6 +102,7 @@ public class JobService {
             // searchcode.com path
             this.startHighlighter();
             this.startReIndexer();
+            this.startRepositoryJobs();
             this.startSearchcodeEnqueueJob();
         }
 

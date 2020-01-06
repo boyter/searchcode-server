@@ -1,5 +1,6 @@
 package com.searchcode.app.jobs.enqueue;
 
+import com.searchcode.app.dao.Data;
 import com.searchcode.app.dao.IRepo;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.service.index.IIndexService;
@@ -22,12 +23,14 @@ public class EnqueueSearchcodeRepositoryJob implements Job {
     private final LoggerWrapper logger;
     private final IRepo repo;
     private final Helpers helpers;
+    private final Data data;
 
     public EnqueueSearchcodeRepositoryJob() {
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
         this.logger = Singleton.getLogger();
         this.helpers = Singleton.getHelpers();
+        this.data = Singleton.getData();
     }
 
     public void execute(JobExecutionContext context) {
@@ -44,6 +47,14 @@ public class EnqueueSearchcodeRepositoryJob implements Job {
 
             var repoGitQueue = Singleton.getUniqueGitRepoQueue();
             var repoSvnQueue = Singleton.getUniqueSvnRepoQueue();
+
+//            this.repo.getAllRepo();
+
+//            for (var r : this.repo.getAllRepo()) {
+//                repoGitQueue.add(r);
+//            }
+
+            repoGitQueue.add(this.repo.getRepoById(1).get());
 
             // Determine where we have started from a repo collection
             // determine where that ends

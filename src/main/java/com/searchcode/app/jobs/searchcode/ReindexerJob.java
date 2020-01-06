@@ -53,7 +53,9 @@ public class ReindexerJob implements Job {
         try {
             while (true) {
                 // Sleep for a jitter time to avoid many indexers converging on the same schedule
-                Thread.sleep(this.INDEXTIME * this.helpers.getRandomJitterSleepTimeMilliseconds());
+                var sleepTime = this.helpers.getRandomJitterSleepTimeMilliseconds();
+                this.logger.info(String.format("6d380ec6::reindexer sleep time %d", sleepTime));
+                Thread.sleep(sleepTime);
 
                 var codeIndexQueueSize = this.indexQueue.size();
 
