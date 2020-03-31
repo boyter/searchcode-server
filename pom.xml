@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <jdk.version>1.11</jdk.version>
-        <spark.version>2.7.2</spark.version>
+        <spark.version>2.8.0</spark.version>
         <spark.freemarker.version>2.0.0</spark.freemarker.version>
         <freemarker.version>2.3.23</freemarker.version>
         <dbcp.version>2.1.1</dbcp.version>
@@ -68,7 +68,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.10</version>
+            <version>1.13</version>
         </dependency>
         <!--  Gson: Java to Json conversion -->
         <dependency>
