@@ -43,7 +43,7 @@
                     <tr>
                         <td></td>
                         <td>Empty this field to reset. Should be in format similar to the below.
-                            This format can be created using <a target="_blank"
+                            This format can be created using <a target="_blank" rel="noopener noreferrer"
                                                                 href="http://www.dailycoding.com/Utils/Converter/ImageToBase64.aspx">Online
                                 Image to Base64 Converter</a>
                             but consider resizing the image to a height of 24 px first.
