@@ -254,7 +254,7 @@
             </p>
 
             <h3 id="estimatedcost">Estimated Cost</h3>
-            <p>The estimated cost for any file or project is created using the <a target="_blank"
+            <p>The estimated cost for any file or project is created using the <a target="_blank" rel="noopener noreferrer"
                                                                                   href="https://en.wikipedia.org/wiki/COCOMO">Basic
                     COCOMO</a>
                 algorithmic software cost estimation model. The cost reflected includes design, coding, testing,
@@ -957,7 +957,7 @@ String myHmac = HmacUtils.hmacSha512Hex(MYPRIVATEKEY, PARAMSTOHMAC);</textarea>
                 <#if isCommunity??>
                     <#if isCommunity == true>
                         You are using the community edition of searchcode server. As such you will be unable to change anything here. If you would like the ability to configure the settings page
-                        you can purchase a copy at <a href="hhttps://searchcodeserver.com/pricing.html">https://searchcodeserver.com/pricing.html</a>
+                        you can purchase a copy at <a href="https://searchcodeserver.com/pricing.html">https://searchcodeserver.com/pricing.html</a>
                     </#if>
                 </#if>
 
