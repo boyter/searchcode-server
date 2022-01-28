@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <jdk.version>1.11</jdk.version>
-        <spark.version>2.7.2</spark.version>
+        <spark.version>2.8.0</spark.version>
         <spark.freemarker.version>2.0.0</spark.freemarker.version>
         <freemarker.version>2.3.23</freemarker.version>
         <dbcp.version>2.1.1</dbcp.version>
@@ -51,7 +51,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.35</version>
+            <version>8.0.28</version>
         </dependency>
         <!--  Connection pool -->
         <dependency>
