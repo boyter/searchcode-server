@@ -45,7 +45,7 @@
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>3.8.6</version>
+            <version>3.41.2.2</version>
         </dependency>
         <!-- MySQL/Sphinx http://sphinxsearch.com/forum/view.html?id=16178 must be version 5.1.35 -->
         <dependency>
