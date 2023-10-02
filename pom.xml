@@ -9,7 +9,7 @@
     <url>http://maven.apache.org</url>
     <properties>
         <jdk.version>1.11</jdk.version>
-        <spark.version>2.7.2</spark.version>
+        <spark.version>2.9.4</spark.version>
         <spark.freemarker.version>2.0.0</spark.freemarker.version>
         <freemarker.version>2.3.23</freemarker.version>
         <dbcp.version>2.1.1</dbcp.version>
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
-            <version>2.2.2</version>
+            <version>2.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.5.0.201609210915-r</version>
+            <version>5.1.0.201809111528-r</version>
         </dependency>
         <!-- String escaping -->
         <dependency>
