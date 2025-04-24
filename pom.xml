@@ -98,7 +98,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>4.5.0.201609210915-r</version>
+            <version>5.13.3.202401111512-r</version>
         </dependency>
         <!-- String escaping -->
         <dependency>
