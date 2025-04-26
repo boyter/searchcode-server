@@ -43,11 +43,11 @@ public class DeleteRepositoryJob implements Job {
     private final Helpers helpers;
 
     public DeleteRepositoryJob() {
+        this.logger = Singleton.getLogger();
         this.dataService = Singleton.getDataService();
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
         this.helpers = Singleton.getHelpers();
-        this.logger = Singleton.getLogger();
     }
 
     public void execute(JobExecutionContext context) {

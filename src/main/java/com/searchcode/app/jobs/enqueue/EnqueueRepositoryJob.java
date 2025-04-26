@@ -39,9 +39,9 @@ public class EnqueueRepositoryJob implements Job {
     private final Helpers helpers;
 
     public EnqueueRepositoryJob() {
+        this.logger = Singleton.getLogger();
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
-        this.logger = Singleton.getLogger();
         this.helpers = Singleton.getHelpers();
     }
 

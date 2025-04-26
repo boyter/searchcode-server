@@ -11,9 +11,12 @@
 package com.searchcode.app.model;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.searchcode.app.config.Values;
 import com.searchcode.app.dto.RepoData;
 import org.apache.commons.codec.digest.DigestUtils;
+
+import java.time.Instant;
 
 public class RepoResult {
     private int rowId = -1;
@@ -156,7 +159,12 @@ public class RepoResult {
     }
 
     public String getDataAsJson() {
-        Gson gson = new Gson();
+        // TODO REFACTORY REPAIR BUG
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .create();
+
         return gson.toJson(this.data);
     }
 
@@ -166,7 +174,12 @@ public class RepoResult {
     }
 
     public RepoResult setData(String data) {
-        Gson gson = new Gson();
+        // REFACTORY REPAIR ERROR
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+                .create();
+
         this.setData(gson.fromJson(data, RepoData.class));
         return this;
     }

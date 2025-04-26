@@ -38,9 +38,9 @@ public class LanguageType {
     }
 
     public LanguageType(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger, Cache<String, Optional<LanguageTypeDTO>> typeCache) {
+        this.logger = logger;
         this.dbConfig = dbConfig;
         this.helpers = helpers;
-        this.logger = logger;
         this.typeCache = typeCache;
     }
 

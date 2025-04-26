@@ -10,7 +10,8 @@
 
 package com.searchcode.app.config;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
+// TODO REMOVE
+//import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 import com.searchcode.app.service.Singleton;
 import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
@@ -39,12 +40,13 @@ public class SphinxSearchConfig {
     private final LoggerWrapper logger;
 
     public SphinxSearchConfig() {
-        this.helpers = Singleton.getHelpers();
         this.logger = Singleton.getLogger();
+        this.helpers = Singleton.getHelpers();
 
         this.SPHINX_SERVERS_SHARDS = Properties.getProperties().getProperty(Values.SPHINX_SERVERS_SHARDS, Values.DEFAULT_SPHINX_SERVERS_SHARDS);
     }
 
+    // TODO VERIFY THROWS sqlexception
     public Optional<Connection> getConnection(String server) throws SQLException {
         Connection connection = null;
 
@@ -63,7 +65,7 @@ public class SphinxSearchConfig {
             }
         } catch (ClassNotFoundException ex) {
             this.logger.severe(String.format("f9e4283d::error in class %s exception %s it appears searchcode is unable to connect sphinx using mysql connection as the driver is missing", ex.getClass(), ex.getMessage()));
-        } catch (MySQLSyntaxErrorException ex) {
+        } catch (SQLException ex) {
             this.logger.severe(String.format("2362eb21::error in class %s exception %s it appears searchcode is unable to connect sphinx", ex.getClass(), ex.getMessage()));
         }
 

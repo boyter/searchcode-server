@@ -18,9 +18,17 @@ import com.searchcode.app.model.RepoResult;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+
+// TODO REMOVE
+//import org.apache.http.client.methods.HttpPost;
+//import org.apache.http.entity.StringEntity;
+//import org.apache.http.impl.client.DefaultHttpClient;
+
+import org.apache.hc.core5.http.io.entity.StringEntity;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+
 import org.apache.lucene.facet.taxonomy.TaxonomyWriter;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -346,21 +354,25 @@ public class Helpers {
      * Post top a given url with the given value payload (usually JSON)
      */
     public String sendPost(String url, String value) throws Exception {
-        var client = new DefaultHttpClient();
-        var post = new HttpPost(url);
+        try (var client = HttpClients.createDefault()) {
 
-        post.setEntity(new StringEntity(value));
+            var post = new HttpPost(url);
+            var entity = new StringEntity(value, StandardCharsets.UTF_8);
 
-        var response = client.execute(post);
-        var rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+            post.setEntity(entity);
 
-        var result = new StringBuffer();
-        var line = Values.EMPTYSTRING;
-        while ((line = rd.readLine()) != null) {
-            result.append(line);
+            var response = client.execute(post);
+            var rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+
+            var result = new StringBuffer();
+            var line = Values.EMPTYSTRING;
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+
+            return result.toString();
         }
-
-        return result.toString();
+        // TODO ERROR HANDLING
     }
 
     /**

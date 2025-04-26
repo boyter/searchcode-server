@@ -41,10 +41,10 @@ public class IndexDocumentsJob implements Job {
     }
 
     public IndexDocumentsJob(IIndexService indexService, StatsService statsService, Queue<CodeIndexDocument> indexQueue, LoggerWrapper logger) {
+        this.logger = logger;
         this.indexService = indexService;
         this.statsService = statsService;
         this.indexQueue = indexQueue;
-        this.logger = logger;
         this.INDEXTIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME), Values.DEFAULTINDEXTIME);
     }
 

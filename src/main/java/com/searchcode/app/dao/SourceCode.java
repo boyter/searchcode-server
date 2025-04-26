@@ -45,10 +45,10 @@ public class SourceCode {
     }
 
     public SourceCode(IDatabaseConfig dbConfig, Helpers helpers, LanguageType languageType, LoggerWrapper logger, Cache<String, Optional<SourceCodeDTO>> codeCache) {
+        this.logger = logger;
         this.dbConfig = dbConfig;
         this.helpers = helpers;
         this.languageType = languageType;
-        this.logger = logger;
         this.codeCache = codeCache;
     }
 

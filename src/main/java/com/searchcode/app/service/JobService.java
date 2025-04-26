@@ -71,6 +71,7 @@ public class JobService {
     private boolean initialJobsRun = false;
 
     public JobService() {
+        this.logger = Singleton.getLogger();
         this.scheduler = Singleton.getScheduler();
         this.helpers = Singleton.getHelpers();
         this.repo = Singleton.getRepo();
@@ -78,7 +79,6 @@ public class JobService {
         this.UPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKREPOCHANGES, Values.DEFAULTCHECKREPOCHANGES), Values.DEFAULTCHECKREPOCHANGES);
         this.FILEINDEXUPDATETIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.CHECKFILEREPOCHANGES, Values.DEFAULTCHECKFILEREPOCHANGES), Values.DEFAULTCHECKFILEREPOCHANGES);
         this.INDEXTIME = Singleton.getHelpers().tryParseInt(Properties.getProperties().getProperty(Values.INDEXTIME, Values.DEFAULTINDEXTIME), Values.DEFAULTINDEXTIME);
-        this.logger = Singleton.getLogger();
     }
 
     /**

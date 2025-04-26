@@ -94,10 +94,10 @@ public class IndexService extends IndexBaseService {
 
     public IndexService(Data data, StatsService statsService, SearchCodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue, JobService jobService) {
         super();
+        this.logger = logger;
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
-        this.logger = logger;
         this.helpers = helpers;
         this.jobService = jobService;
 

@@ -26,9 +26,9 @@ public class EnqueueSearchcodeRepositoryJob implements Job {
     private final Data data;
 
     public EnqueueSearchcodeRepositoryJob() {
+        this.logger = Singleton.getLogger();
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
-        this.logger = Singleton.getLogger();
         this.helpers = Singleton.getHelpers();
         this.data = Singleton.getData();
     }

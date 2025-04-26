@@ -50,6 +50,7 @@ public class ApiRouteService {
     }
 
     public ApiRouteService(ApiService apiService, JobService jobService, IRepo repo, DataService dataService, ValidatorService validatorService, IIndexService indexService, Helpers helpers, LoggerWrapper logger) {
+        this.logger = logger;
         this.apiService = apiService;
         this.jobService = jobService;
         this.repo = repo;
@@ -57,7 +58,6 @@ public class ApiRouteService {
         this.validatorService = validatorService;
         this.indexService = indexService;
         this.helpers = helpers;
-        this.logger = logger;
     }
 
     public ApiResponse repositoryReindex(Request request, Response response) {

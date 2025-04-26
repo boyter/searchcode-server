@@ -42,9 +42,9 @@ public class EnqueueFileRepositoryJob implements Job {
     private final Helpers helpers;
 
     public EnqueueFileRepositoryJob() {
+        this.logger = Singleton.getLogger();
         this.indexService = Singleton.getIndexService();
         this.repo = Singleton.getRepo();
-        this.logger = Singleton.getLogger();
         this.helpers = Singleton.getHelpers();
     }
 
