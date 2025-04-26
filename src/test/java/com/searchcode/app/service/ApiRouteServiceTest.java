@@ -12,7 +12,7 @@ import com.searchcode.app.util.Helpers;
 import com.searchcode.app.util.LoggerWrapper;
 import com.searchcode.app.util.UniqueRepoQueue;
 import junit.framework.TestCase;
-import org.mockito.Matchers;
+import org.mockito.ArgumentMatchers;
 import spark.Request;
 
 import java.util.HashMap;
@@ -20,9 +20,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
@@ -159,7 +159,7 @@ public class ApiRouteServiceTest extends TestCase {
         Request mockRequest = mock(Request.class);
         SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        when(mockJobService.forceEnqueue(Matchers.anyObject())).thenReturn(true);
+        when(mockJobService.forceEnqueue(ArgumentMatchers.any())).thenReturn(true);
         when(mockSQLiteRepo.getRepoByUrl(anyString())).thenReturn(Optional.empty());
 
         ApiRouteService apiRouteService = new ApiRouteService(null, mockJobService, mockSQLiteRepo, null, null, null, new Helpers(), new LoggerWrapper());
@@ -175,7 +175,7 @@ public class ApiRouteServiceTest extends TestCase {
         Request mockRequest = mock(Request.class);
         SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        when(mockJobService.forceEnqueue(Matchers.anyObject())).thenReturn(true);
+        when(mockJobService.forceEnqueue(ArgumentMatchers.any())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("test");
         when(mockSQLiteRepo.getRepoByUrl(any())).thenReturn(Optional.empty());
 
@@ -192,7 +192,7 @@ public class ApiRouteServiceTest extends TestCase {
         Request mockRequest = mock(Request.class);
         SQLiteRepo mockSQLiteRepo = mock(SQLiteRepo.class);
 
-        when(mockJobService.forceEnqueue(Matchers.<RepoResult>anyObject())).thenReturn(true);
+        when(mockJobService.forceEnqueue(ArgumentMatchers.<RepoResult>any())).thenReturn(true);
         when(mockRequest.queryParams("repoUrl")).thenReturn("http://test/");
         when(mockSQLiteRepo.getRepoByUrl("http://test/")).thenReturn(Optional.of(new RepoResult()));
 
@@ -661,7 +661,7 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
         assertThat(apiResponse.isSucessful()).isTrue();
-        verify(mockSQLiteRepo, times(1)).saveRepo(Matchers.anyObject());
+        verify(mockSQLiteRepo, times(1)).saveRepo(ArgumentMatchers.any());
     }
 
     public void testRepoAddAuthPubMissing() {
@@ -770,6 +770,6 @@ public class ApiRouteServiceTest extends TestCase {
 
         assertThat(apiResponse.getMessage()).isEqualTo("added repository successfully");
         assertThat(apiResponse.isSucessful()).isTrue();
-        verify(mockSQLiteRepo, times(1)).saveRepo(Matchers.anyObject());
+        verify(mockSQLiteRepo, times(1)).saveRepo(ArgumentMatchers.any());
     }
 }
