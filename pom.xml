@@ -16,6 +16,7 @@
         <jbcrypt.version>0.4</jbcrypt.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.io.tmpdir>\tmp\search-code</java.io.tmpdir>
     </properties>
     <dependencies>
         <!-- Spark Java -->
@@ -247,6 +248,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
+                    <argLine>-Djava.io.tmpdir=${java.io.tmpdir}</argLine>
                     <excludes>
                         <exclude>**/*ITCase.java</exclude>
                     </excludes>
@@ -259,6 +261,7 @@
                         </goals>
                         <phase>integration-test</phase>
                         <configuration>
+                            <argLine>-Djava.io.tmpdir=${java.io.tmpdir}</argLine>
                             <excludes>
                                 <exclude>none</exclude>
                             </excludes>
