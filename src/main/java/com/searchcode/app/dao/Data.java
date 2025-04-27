@@ -37,9 +37,9 @@ public class Data {
     }
 
     public Data(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger) {
+        this.logger = logger;
         this.dbConfig = dbConfig;
         this.helpers = helpers;
-        this.logger = logger;
 
         if (Singleton.getHelpers().isStandaloneInstance()) {
             this.createTableIfMissing();

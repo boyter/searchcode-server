@@ -37,9 +37,9 @@ public class SQLiteRepo implements IRepo {
     }
 
     public SQLiteRepo(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper loggerWrapper) {
+        this.logger = loggerWrapper;
         this.dbConfig = dbConfig;
         this.helpers = helpers;
-        this.logger = loggerWrapper;
         this.createTableIfMissing();
     }
 

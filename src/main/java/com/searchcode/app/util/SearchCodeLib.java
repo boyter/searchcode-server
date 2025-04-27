@@ -16,8 +16,11 @@ import com.searchcode.app.dao.Data;
 import com.searchcode.app.dto.*;
 import com.searchcode.app.service.Singleton;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.queryparser.classic.QueryParser;
 
+import java.io.StringReader;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -558,6 +561,34 @@ public class SearchCodeLib {
         }
 
         return stringBuilder.toString().replace(",  and", " and");
+    }
+
+    private boolean isLogicalOperator(String term) {
+        return "AND".equals(term) || "OR".equals(term) || "NOT".equals(term);
+    }
+
+    public String lowcase(String text) {
+        StringBuilder returnFunction = new StringBuilder();
+
+        try (CodeAnalyzer analyzer = new CodeAnalyzer();
+             TokenStream stream = analyzer.tokenStream("field", new StringReader(text))) {
+
+            CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
+            stream.reset();
+
+            while (stream.incrementToken()) {
+                returnFunction.append(" ");
+                String term = termAtt.toString();
+
+                returnFunction.append(isLogicalOperator(term) ? term : term.toLowerCase());
+            }
+
+            stream.end();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Erro ao processar o texto");
+        }
+
+        return returnFunction.toString();
     }
 
 //    /**

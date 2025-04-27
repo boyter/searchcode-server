@@ -63,20 +63,17 @@ public class IndexService extends IndexBaseService {
 
     private final int MAX_INDEX_SIZE, MAX_LINES_INDEX_SIZE;
     private final Path INDEX_A_LOCATION, INDEX_B_LOCATION, FACET_A_LOCATION, FACET_B_LOCATION;
-    private Path INDEX_READ_LOCATION, INDEX_WRITE_LOCATION, FACET_WRITE_LOCATION;
-
-    private int CHILD_FACET_LIMIT;
-
     private final Queue<CodeIndexDocument> codeIndexDocumentQueue;
     private final UniqueRepoQueue uniqueGitRepoQueue, uniqueFileRepoQueue, uniqueSvnRepoQueue;
-
+    private Path INDEX_READ_LOCATION, INDEX_WRITE_LOCATION, FACET_WRITE_LOCATION;
+    private int CHILD_FACET_LIMIT;
     private boolean repoAdderPause = false;     // Controls if repo add job should pause, controlled through the UI
     private boolean repoJobExit = false;        // Controls if repo indexing jobs should exit instantly
     private int codeIndexLinesCount = 0;
 
     ///////////////////////////////////////////////////////////////////////
     // The below store state for when the reindexing + flip should occur
-    //////////////////////////////////////////////////////////////////////
+    /// ///////////////////////////////////////////////////////////////////
     private boolean reindexingAll = false;      // Are we in reindexing state waiting to flip over
     private int repoJobsCount = 0;              // If we are reindexing then how many jobs need to finish
 
@@ -94,10 +91,10 @@ public class IndexService extends IndexBaseService {
 
     public IndexService(Data data, StatsService statsService, SearchCodeLib searchcodeLib, LoggerWrapper logger, Helpers helpers, Queue<CodeIndexDocument> codeIndexDocumentQueue, JobService jobService) {
         super();
+        this.logger = logger;
         this.data = data;
         this.statsService = statsService;
         this.searchcodeLib = searchcodeLib;
-        this.logger = logger;
         this.helpers = helpers;
         this.jobService = jobService;
 
@@ -142,7 +139,8 @@ public class IndexService extends IndexBaseService {
 
     //////////////////////////////////////////////////////////////
     // Methods for controlling the index
-    //////////////////////////////////////////////////////////////
+
+    /// ///////////////////////////////////////////////////////////
 
     @Override
     public boolean getRepoAdderPause() {
@@ -222,14 +220,13 @@ public class IndexService extends IndexBaseService {
                             this.logger.severe(String.format("b824ed70::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                         }
                     });
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(writer);
             this.helpers.closeQuietly(taxonomyWriter);
             this.logger.info("f32cef3e::closing writers");
         }
     }
-    
+
     /**
      * Builds a document ready to be indexed by lucene
      */
@@ -258,29 +255,29 @@ public class IndexService extends IndexBaseService {
         this.searchcodeLib.addToSpellingCorrector(codeIndexDocument.getContents());
         String indexContents = this.indexContentPipeline(codeIndexDocument);
 
-        document.add(new TextField(Values.REPONAME,                 codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.REPO_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.FILENAME,                 codeIndexDocument.getFileName(), Field.Store.YES));
-        document.add(new TextField(Values.FILE_NAME_LITERAL,        this.helpers.replaceForIndex(codeIndexDocument.getFileName()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.FILELOCATION,             codeIndexDocument.getFileLocation(), Field.Store.YES));
-        document.add(new TextField(Values.FILELOCATIONFILENAME,     codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
-        document.add(new TextField(Values.DISPLAY_LOCATION,         codeIndexDocument.getDisplayLocation(), Field.Store.YES));
+        document.add(new TextField(Values.REPONAME, codeIndexDocument.getRepoName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.REPO_NAME_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getRepoName()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILENAME, codeIndexDocument.getFileName(), Field.Store.YES));
+        document.add(new TextField(Values.FILE_NAME_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getFileName()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.FILELOCATION, codeIndexDocument.getFileLocation(), Field.Store.YES));
+        document.add(new TextField(Values.FILELOCATIONFILENAME, codeIndexDocument.getFileLocationFilename(), Field.Store.YES));
+        document.add(new TextField(Values.DISPLAY_LOCATION, codeIndexDocument.getDisplayLocation(), Field.Store.YES));
         document.add(new TextField(Values.DISPLAY_LOCATION_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getDisplayLocation()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.MD5HASH,                  codeIndexDocument.getMd5hash(), Field.Store.YES));
-        document.add(new TextField(Values.LANGUAGENAME,             codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL,    this.helpers.replaceForIndex(codeIndexDocument.getLanguageName()).toLowerCase(), Field.Store.NO));
-        document.add(new IntField(Values.LINES,                     codeIndexDocument.getLines(), Field.Store.YES));
-        document.add(new IntField(Values.CODELINES,                 codeIndexDocument.getCodeLines(), Field.Store.YES));
-        document.add(new IntField(Values.BLANKLINES,                codeIndexDocument.getBlankLines(), Field.Store.YES));
-        document.add(new IntField(Values.COMMENTLINES,              codeIndexDocument.getCommentLines(), Field.Store.YES));
-        document.add(new IntField(Values.COMPLEXITY,                codeIndexDocument.getComplexity(), Field.Store.YES));
-        document.add(new TextField(Values.CONTENTS,                 indexContents.toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.REPOLOCATION,             codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
-        document.add(new TextField(Values.CODEOWNER,                codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
-        document.add(new TextField(Values.OWNER_NAME_LITERAL,       this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
-        document.add(new TextField(Values.CODEID,                   codeIndexDocument.getHash(), Field.Store.YES));
-        document.add(new TextField(Values.SCHASH,                   codeIndexDocument.getSchash(), Field.Store.YES));
-        document.add(new TextField(Values.SOURCE,                   this.helpers.replaceForIndex(codeIndexDocument.getSource()), Field.Store.YES));
+        document.add(new TextField(Values.MD5HASH, codeIndexDocument.getMd5hash(), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGENAME, codeIndexDocument.getLanguageName().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.LANGUAGE_NAME_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getLanguageName()).toLowerCase(), Field.Store.NO));
+        document.add(new IntField(Values.LINES, codeIndexDocument.getLines(), Field.Store.YES));
+        document.add(new IntField(Values.CODELINES, codeIndexDocument.getCodeLines(), Field.Store.YES));
+        document.add(new IntField(Values.BLANKLINES, codeIndexDocument.getBlankLines(), Field.Store.YES));
+        document.add(new IntField(Values.COMMENTLINES, codeIndexDocument.getCommentLines(), Field.Store.YES));
+        document.add(new IntField(Values.COMPLEXITY, codeIndexDocument.getComplexity(), Field.Store.YES));
+        document.add(new TextField(Values.CONTENTS, indexContents.toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.REPOLOCATION, codeIndexDocument.getRepoRemoteLocation(), Field.Store.YES));
+        document.add(new TextField(Values.CODEOWNER, codeIndexDocument.getCodeOwner().replace(" ", "_"), Field.Store.YES));
+        document.add(new TextField(Values.OWNER_NAME_LITERAL, this.helpers.replaceForIndex(codeIndexDocument.getCodeOwner()).toLowerCase(), Field.Store.NO));
+        document.add(new TextField(Values.CODEID, codeIndexDocument.getHash(), Field.Store.YES));
+        document.add(new TextField(Values.SCHASH, codeIndexDocument.getSchash(), Field.Store.YES));
+        document.add(new TextField(Values.SOURCE, this.helpers.replaceForIndex(codeIndexDocument.getSource()), Field.Store.YES));
 
         // Extra metadata in this case when it was last indexed
         document.add(new LongField(Values.MODIFIED, new Date().getTime(), Field.Store.YES));
@@ -423,7 +420,7 @@ public class IndexService extends IndexBaseService {
 
     @Override
     public synchronized boolean shouldExit(JobType jobType) {
-        switch(jobType) {
+        switch (jobType) {
             case REPO_PARSER:
                 return this.repoJobExit;
         }
@@ -455,8 +452,7 @@ public class IndexService extends IndexBaseService {
 
         try {
             this.codeIndexLinesCount = this.codeIndexLinesCount + incrementBy;
-        }
-        finally {
+        } finally {
             codeIndexLinesCountLock.unlock();
         }
     }
@@ -471,20 +467,7 @@ public class IndexService extends IndexBaseService {
             if (this.codeIndexLinesCount < 0) {
                 this.codeIndexLinesCount = 0;
             }
-        }
-        finally {
-            codeIndexLinesCountLock.unlock();
-        }
-    }
-
-    @Override
-    public void setCodeIndexLinesCount(int value) {
-        codeIndexLinesCountLock.lock();
-
-        try {
-            this.codeIndexLinesCount = value;
-        }
-        finally {
+        } finally {
             codeIndexLinesCountLock.unlock();
         }
     }
@@ -495,8 +478,18 @@ public class IndexService extends IndexBaseService {
 
         try {
             return this.codeIndexLinesCount;
+        } finally {
+            codeIndexLinesCountLock.unlock();
         }
-        finally {
+    }
+
+    @Override
+    public void setCodeIndexLinesCount(int value) {
+        codeIndexLinesCountLock.lock();
+
+        try {
+            this.codeIndexLinesCount = value;
+        } finally {
             codeIndexLinesCountLock.unlock();
         }
     }
@@ -509,11 +502,9 @@ public class IndexService extends IndexBaseService {
         try {
             reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             numDocs = reader.numDocs();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("f02f5a23::error in class %s exception %s unable to delete index locations", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(reader);
         }
 
@@ -551,11 +542,9 @@ public class IndexService extends IndexBaseService {
 
                 codeResult = this.createCodeResult(code, filePath, doc, hits[0].doc, hits[0].score);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("4e5f00d0::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(reader);
         }
 
@@ -591,8 +580,7 @@ public class IndexService extends IndexBaseService {
             }
 
             reader.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("44df9064::error in class %s exception %s", ex.getClass(), ex.getMessage()));
         }
 
@@ -638,13 +626,12 @@ public class IndexService extends IndexBaseService {
 
                 if (linesCount.containsKey(languageName)) {
                     linesCount.put(languageName, linesCount.get(languageName) + lines);
-                }
-                else {
+                } else {
                     linesCount.put(languageName, lines);
                 }
             }
 
-            for (var key: linesCount.keySet()) {
+            for (var key : linesCount.keySet()) {
                 codeByLines.add(new CodeFacetLanguage(key, linesCount.get(key)));
             }
             codeByLines.sort((a, b) -> b.getCount() - a.getCount());
@@ -652,11 +639,9 @@ public class IndexService extends IndexBaseService {
             totalFiles = results.totalHits;
             codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
             repoFacetOwners = this.getOwnerFacetResults(searcher, reader, query);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("61b491eb::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(reader);
         }
 
@@ -699,11 +684,9 @@ public class IndexService extends IndexBaseService {
                     break;
                 }
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("1c90b7f9::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(reader);
         }
 
@@ -725,14 +708,17 @@ public class IndexService extends IndexBaseService {
         this.statsService.incrementSearchCount();
         IndexReader reader = null;
 
-        // Required to ensure that results work the way we expect for the index
-        if (!isLiteral) {
-            queryString = this.searchcodeLib.formatQueryString(queryString);
-        }
-
-        queryString += this.buildFacets(facets);
-
         try {
+
+            // Required to ensure that results work the way we expect for the index
+            if (!isLiteral) {
+                queryString = this.searchcodeLib.formatQueryString(queryString);
+            } else {
+                queryString = this.searchcodeLib.lowcase(queryString);
+            }
+
+            queryString += this.buildFacets(facets);
+
             reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
 
@@ -747,13 +733,14 @@ public class IndexService extends IndexBaseService {
             this.logger.searchLog("a8895274::query " + query.toString(Values.CONTENTS) + " page " + page);
 
             searchResult = this.doPagingSearch(reader, searcher, query, page);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             this.logger.severe(String.format("bc93074f::error in class %s exception %s", ex.getClass(), ex.getMessage()));
-        }
-        finally {
+        } finally {
             this.helpers.closeQuietly(reader);
         }
+
+        queryString += this.buildFacets(facets);
+
 
         return searchResult;
     }
@@ -765,7 +752,7 @@ public class IndexService extends IndexBaseService {
 
         var filters = new StringBuilder(Values.EMPTYSTRING);
 
-        for (var key: facets.keySet()) {
+        for (var key : facets.keySet()) {
             switch (key) {
                 case "repo":
                     List<String> reposList = Arrays.stream(facets.get(key))
@@ -886,8 +873,7 @@ public class IndexService extends IndexBaseService {
                 List<String> code = new ArrayList<>();
                 try {
                     code = this.helpers.readFileLinesGuessEncoding(filePath, this.helpers.tryParseInt(Properties.getProperties().getProperty(Values.MAXFILELINEDEPTH, Values.DEFAULTMAXFILELINEDEPTH), Values.DEFAULTMAXFILELINEDEPTH));
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     this.logger.severe(String.format("cbd1868a::error in class %s exception %s", ex.getClass(), ex.getMessage()));
                 }
 
@@ -900,8 +886,8 @@ public class IndexService extends IndexBaseService {
 
         List<CodeFacetLanguage> codeFacetLanguages = this.getLanguageFacetResults(searcher, reader, query);
         List<CodeFacetRepo> repoFacetLanguages = this.getRepoFacetResults(searcher, reader, query);
-        List<CodeFacetOwner> repoFacetOwner= this.getOwnerFacetResults(searcher, reader, query);
-        List<CodeFacetSource> repoFacetSource= this.getSourceFacetResults(searcher, reader, query);
+        List<CodeFacetOwner> repoFacetOwner = this.getOwnerFacetResults(searcher, reader, query);
+        List<CodeFacetSource> repoFacetSource = this.getSourceFacetResults(searcher, reader, query);
 
         return new SearchResult(numTotalHits, page, query.toString(), codeResults, pages, codeFacetLanguages, repoFacetLanguages, repoFacetOwner, repoFacetSource);
     }
@@ -957,7 +943,8 @@ public class IndexService extends IndexBaseService {
                     }
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         return codeFacetLanguages;
     }
@@ -986,7 +973,8 @@ public class IndexService extends IndexBaseService {
                     }
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         return codeFacetRepo;
     }
@@ -1015,7 +1003,8 @@ public class IndexService extends IndexBaseService {
                     }
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         return codeFacetRepo;
     }
@@ -1044,7 +1033,8 @@ public class IndexService extends IndexBaseService {
                     }
                 }
             }
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
 
         return codeFacetSource;
     }

@@ -64,7 +64,9 @@ public class RepoResultTest extends TestCase {
         repoResult.setData(repoData);
         var actual = repoResult.getDataAsJson();
 
+
+
         assertThat(actual).contains("{\"averageIndexTimeSeconds\":20,\"indexStatus\":\"indexing\"");
-        assertThat(actual).contains("\"jobRunTime\":{\"seconds\":");
+        assertThat(actual).contains("jobRunTime\":\"1800-01-01T00:00:00Z\"");
     }
 }

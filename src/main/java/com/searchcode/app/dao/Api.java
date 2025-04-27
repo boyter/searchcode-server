@@ -38,9 +38,9 @@ public class Api {
     }
 
     public Api(IDatabaseConfig dbConfig, Helpers helpers, LoggerWrapper logger) {
+        this.logger = logger;
         this.dbConfig = dbConfig;
         this.helpers = helpers;
-        this.logger = logger;
         this.createTableIfMissing();
     }
 

@@ -28,8 +28,8 @@ public class MySQLDatabaseConfig implements IDatabaseConfig {
     private HikariDataSource datasource = null;
 
     public MySQLDatabaseConfig() {
-        this.helpers = Singleton.getHelpers();
         this.logger = Singleton.getLogger();
+        this.helpers = Singleton.getHelpers();
 
         var config = new HikariConfig();
         config.setJdbcUrl((String)Properties.getProperties().getOrDefault("searchcode_connection_string", "jdbc:mysql://localhost:3306/searchcode?serverTimezone=UTC"));

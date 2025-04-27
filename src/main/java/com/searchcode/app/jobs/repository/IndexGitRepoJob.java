@@ -309,7 +309,9 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
         try {
             localRepository = new FileRepository(new File(repoLocations + "/" + repoResult.getDirectoryName() + "/.git"));
 
-            Ref head = localRepository.getRef("HEAD");
+            // TODO REFACTORY
+            //Ref head = localRepository.getRef("HEAD");
+            Ref head = localRepository.findRef("HEAD");
             git = new Git(localRepository);
 
             git.reset();
@@ -322,7 +324,11 @@ public class IndexGitRepoJob extends IndexBaseRepoJob {
             }
 
             pullCmd.call();
-            Ref newHEAD = localRepository.getRef("HEAD");
+
+
+            // TODO REFACTORY
+            //Ref head = localRepository.getRef("HEAD");
+            Ref newHEAD = localRepository.findRef("HEAD");
 
             if (!head.toString().equals(newHEAD.toString())) {
                 changed = true;

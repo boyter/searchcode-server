@@ -19,9 +19,9 @@ public abstract class IndexBaseService implements IIndexService {
     protected final int PAGE_LIMIT, NO_PAGES_LIMIT;
 
     public IndexBaseService() {
+        this.logger = Singleton.getLogger();
         this.indexAllFields = Arrays.asList(Properties.getProperties().getProperty(Values.INDEX_ALL_FIELDS, Values.DEFAULT_INDEX_ALL_FIELDS).split(","));
         this.searchcodeLib = Singleton.getSearchCodeLib();
-        this.logger = Singleton.getLogger();
         this.PAGE_LIMIT = 20;
         this.NO_PAGES_LIMIT = 20;
     }

@@ -27,14 +27,14 @@ public class FileClassifier {
     private HashMap<String, FileClassifierResult> database;
 
     public FileClassifier() {
-        this.database = this.loadDatabase();
         this.logger = Singleton.getLogger();
+        this.database = this.loadDatabase();
         this.helpers = Singleton.getHelpers();
     }
 
     public FileClassifier(HashMap<String, FileClassifierResult> database) {
-        this.database = database;
         this.logger = Singleton.getLogger();
+        this.database = database;
         this.helpers = Singleton.getHelpers();
     }
 

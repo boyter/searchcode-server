@@ -64,6 +64,7 @@ public class AdminRouteService {
 
 
     public AdminRouteService(IRepo repo, Data data, JobService jobService, DataService dataService, IIndexService indexService, StatsService statsService, ValidatorService validatorService, RepositorySource repositorySource, LoggerWrapper loggerWrapper) {
+        this.logger = loggerWrapper;
         this.repo = repo;
         this.data = data;
         this.jobService = jobService;
@@ -72,7 +73,6 @@ public class AdminRouteService {
         this.statsService = statsService;
         this.validatorService = validatorService;
         this.repositorySource = repositorySource;
-        this.logger = loggerWrapper;
         this.gson = new Gson();
     }
 

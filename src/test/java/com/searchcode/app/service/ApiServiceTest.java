@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 import java.util.Optional;
 
-import static org.mockito.Matchers.anyObject;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -115,7 +115,7 @@ public class ApiServiceTest extends TestCase {
 
     public void testCreateKeys() {
         var apiMock = mock(Api.class);
-        when(apiMock.saveApi(anyObject())).thenReturn(true);
+        when(apiMock.saveApi(any())).thenReturn(true);
 
         var service = new ApiService(apiMock, new Helpers());
 
