@@ -717,6 +717,8 @@ public class IndexService extends IndexBaseService {
                 queryString = this.searchcodeLib.lowcase(queryString);
             }
 
+            queryString += this.buildFacets(facets);
+
             reader = DirectoryReader.open(FSDirectory.open(this.INDEX_READ_LOCATION));
             IndexSearcher searcher = new IndexSearcher(reader);
 

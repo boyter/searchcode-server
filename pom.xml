@@ -10,8 +10,8 @@
     <properties>
         <jdk.version>21</jdk.version>
         <spark.version>2.9.4</spark.version>
-        <spark.freemarker.version>2.7.1</spark.freemarker.version>
-        <freemarker.version>2.3.34</freemarker.version>
+        <spark.freemarker.version>2.0.0</spark.freemarker.version>
+        <freemarker.version>2.3.23</freemarker.version>
         <dbcp.version>2.1.1</dbcp.version>
         <jbcrypt.version>0.4</jbcrypt.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.13</version>
+            <version>1.10</version>
         </dependency>
         <!--  Gson: Java to Json conversion -->
         <dependency>
@@ -205,9 +205,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <release>11</release>
+                    <source>21</source>
+                    <target>21</target>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>
